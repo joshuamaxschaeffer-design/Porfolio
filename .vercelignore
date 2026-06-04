@@ -1,0 +1,2 @@
+# Large media is served from Vercel Blob, not bundled in the deploy.
+public/baserate/videos/
