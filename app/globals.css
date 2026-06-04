@@ -1,0 +1,153 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Personal site palette (light by default) */
+  --color-background: #ffffff;
+  --color-foreground: #0a0a0a;
+  --color-muted: #737373;
+  --color-accent: #0a0a0a;
+}
+
+/* Practice variant (applied when data-brand="practice" on <html>) */
+[data-brand="practice"] {
+  --color-background: #0a0a0a;
+  --color-foreground: #fafafa;
+  --color-muted: #a1a1aa;
+  --color-accent: #fafafa;
+  color-scheme: dark;
+}
+
+html {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: 100vh;
+}
+
+.container {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 80rem;
+}
+
+/* ============================================================
+ * View Transitions
+ *
+ * Cross-route fade. Asymmetric timing (fast exit, slower entry)
+ * so the new content arrives gently. Browsers without support
+ * just do a normal navigation — no degradation.
+ * ============================================================ */
+
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root) {
+  animation: fade-out 150ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+::view-transition-new(root) {
+  animation: fade-in 280ms cubic-bezier(0, 0, 0.2, 1) 50ms both;
+}
+
+@keyframes fade-out {
+  to { opacity: 0; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
+}
+
+/* ============================================================
+ * Image loading
+ *
+ * Smooth opacity fade as Next/Image swaps in the loaded image.
+ * Combined with blur placeholders, this hides any jank.
+ * ============================================================ */
+
+img {
+  /* Prevent layout shift while images load */
+  height: auto;
+  max-width: 100%;
+}
+
+/* ============================================================
+ * Baserate case study
+ *
+ * Tokens + helpers scoped to the Baserate page. The design uses a
+ * ~1443px editorial column on a white field, near-black headings,
+ * muted-gray body, and a single gold accent for tags & emphasis.
+ * ============================================================ */
+
+:root {
+  --br-gold: #9a7b2e;        /* outlined tags, vertical line, inline emphasis */
+  --br-gold-soft: #b8932f;   /* slightly brighter for accent text on photos */
+  --br-ink: #0a0a0a;
+  --br-muted: #6b6b70;
+  --br-line: #e7e7e9;
+  --br-card-radius: 16px;
+}
+
+/* Editorial column. Figma column = 1443px; we cap a touch wider container
+ * and pad so the carousels can bleed to the right edge on large screens. */
+.br-container {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1280px;
+  padding-inline: 1.5rem;
+}
+@media (min-width: 1024px) {
+  .br-container {
+    padding-inline: 2rem;
+  }
+}
+
+/* Carousels bleed past the right edge of the column. This wrapper keeps the
+ * left edge aligned to the column while letting content overflow right. */
+.br-bleed-right {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1280px;
+  padding-left: 1.5rem;
+  overflow: visible;
+}
+@media (min-width: 1024px) {
+  .br-bleed-right {
+    padding-left: 2rem;
+  }
+}
+
+/* Hide scrollbars on the draggable challenge track while keeping it scrollable. */
+.br-noscrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.br-noscrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Grabbable cursor affordance for draggable tracks. */
+.br-grab {
+  cursor: grab;
+}
+.br-grab:active,
+.br-grabbing {
+  cursor: grabbing;
+}
