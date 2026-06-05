@@ -151,27 +151,53 @@ function ImageCard({ src }: { src: string }) {
 function VideoCard({ row }: { row: CarouselRow }) {
   const ref = useRef<HTMLVideoElement>(null)
 
-  // `autoPlay` alone is unreliable for muted videos (especially off-screen at
-  // mount), so we force `.play()` once the element can play, and retry when it
-  // scrolls into view. Always muted, so autoplay policy allows it.
+  // Muted autoplay is a core feature, but `autoPlay` alone is unreliable in
+  // real browsers (off-screen at mount, buffering, deferred autoplay policy).
+  // We aggressively force playback: set muted, call play() on every readiness
+  // event, poll until it's actually advancing, retry on visibility, and fall
+  // back to the first user interaction if the browser still refuses.
   useEffect(() => {
     const v = ref.current
     if (!v) return
     v.muted = true
+    v.defaultMuted = true
+
+    let stop = false
     const tryPlay = () => {
+      if (stop || !v.paused) return
       const p = v.play()
       if (p && typeof p.catch === 'function') p.catch(() => {})
     }
-    tryPlay()
-    v.addEventListener('canplay', tryPlay)
-    const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => e.isIntersecting && tryPlay()),
-      { threshold: 0.1 },
-    )
+
+    // Fire on every event that signals the video can advance.
+    const evts = ['loadedmetadata', 'loadeddata', 'canplay', 'canplaythrough', 'stalled', 'suspend']
+    evts.forEach((e) => v.addEventListener(e, tryPlay))
+
+    // Poll for the first ~6s in case all events fire before React attaches.
+    const poll = setInterval(tryPlay, 400)
+    setTimeout(() => clearInterval(poll), 6000)
+
+    // Resume when scrolled into view.
+    const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && tryPlay()), {
+      threshold: 0.05,
+    })
     io.observe(v)
+
+    // Last-resort: kick all paused videos on the first user gesture.
+    const onGesture = () => tryPlay()
+    window.addEventListener('pointerdown', onGesture, { once: true, passive: true })
+    window.addEventListener('keydown', onGesture, { once: true })
+    window.addEventListener('scroll', onGesture, { once: true, passive: true })
+
+    tryPlay()
     return () => {
-      v.removeEventListener('canplay', tryPlay)
+      stop = true
+      clearInterval(poll)
+      evts.forEach((e) => v.removeEventListener(e, tryPlay))
       io.disconnect()
+      window.removeEventListener('pointerdown', onGesture)
+      window.removeEventListener('keydown', onGesture)
+      window.removeEventListener('scroll', onGesture)
     }
   }, [])
 

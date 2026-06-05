@@ -29,7 +29,7 @@ function FeatureColumn({ section }: { section: FeatureSection }) {
         {section.features.map((f) => (
           <li
             key={f.label}
-            className="br-data inline-flex items-center gap-2.5 rounded-[var(--br-tag-radius)] border border-[var(--br-stroke)] bg-white px-4 py-2 text-[14px] uppercase text-[var(--br-muted)]"
+            className="br-data inline-flex items-center gap-2.5 rounded-[var(--br-tag-radius)] border border-[var(--br-stroke)] px-4 py-2 text-[14px] uppercase text-[var(--br-muted)]"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={`/baserate/icons/${f.icon}.svg`} alt="" aria-hidden className="h-4 w-4 shrink-0" />

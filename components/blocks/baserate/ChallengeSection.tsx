@@ -36,12 +36,16 @@ export function ChallengeSection(props: ChallengeProps) {
     if (!el) return
     setCanLeft(el.scrollLeft > 4)
     setCanRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4)
-    // Track which card is nearest the left edge for the pager.
+    // Track which card sits at the left content edge (the header's left margin)
+    // for the pager. The track is left-padded, so the aligned card's offsetLeft
+    // equals scrollLeft + paddingLeft — compare against that, not raw scrollLeft,
+    // or the highlight is off by one.
+    const padLeft = parseFloat(getComputedStyle(el).paddingLeft) || 0
     const children = Array.from(el.querySelectorAll<HTMLElement>('[data-card]'))
     let nearest = 0
     let best = Infinity
     children.forEach((c, i) => {
-      const d = Math.abs(c.offsetLeft - el.scrollLeft)
+      const d = Math.abs(c.offsetLeft - (el.scrollLeft + padLeft))
       if (d < best) {
         best = d
         nearest = i

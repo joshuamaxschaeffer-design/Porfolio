@@ -41,7 +41,7 @@ export function ProductSystemSection(props: ProductSystemProps) {
 
       <div className="mt-16">
         <h3 className="text-[24px] font-semibold uppercase leading-tight text-[var(--br-ink)]">{productsHeading}</h3>
-        <p className="mt-2 max-w-xl text-base text-[var(--br-muted)]">{productsIntro}</p>
+        <p className="mt-2 text-base text-[var(--br-muted)] md:whitespace-nowrap">{productsIntro}</p>
       </div>
 
       {/* Devices + product cards — a "stage" that reproduces the Figma's exact
@@ -69,7 +69,7 @@ function ProductStage({
   return (
     <>
       {/* Desktop / wide: the exact absolute stage */}
-      <div className="relative mt-24 hidden w-full md:block" style={{ aspectRatio: '1283 / 689' }}>
+      <div className="relative mt-6 hidden w-full md:block" style={{ aspectRatio: '1283 / 689' }}>
         {/* Desktop UI screenshot (overlaps Baserate card) */}
         <div
           className="absolute overflow-hidden rounded-[4px] border border-[var(--br-stroke)] bg-white shadow-[6px_14px_14px_rgba(0,0,0,0.1)]"
