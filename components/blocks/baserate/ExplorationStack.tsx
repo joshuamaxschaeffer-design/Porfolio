@@ -54,7 +54,9 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
               type="button"
               onClick={() => setActive(i)}
               aria-label={`Show ${item.title}`}
-              className="absolute inset-0 origin-left overflow-hidden rounded-2xl border border-[var(--br-line)] bg-white shadow-[0_24px_50px_-26px_rgba(0,0,0,0.35)] focus:outline-none"
+              className={`absolute inset-0 origin-left overflow-hidden rounded-2xl bg-white shadow-[0_24px_50px_-26px_rgba(0,0,0,0.35)] focus:outline-none ${
+                isFront ? 'border border-[var(--br-line)]' : ''
+              }`}
               style={{ zIndex: n - depth, transformStyle: 'preserve-3d' }}
               initial={false}
               animate={
@@ -191,16 +193,23 @@ function BlurRamp({
                 `linear-gradient(to right, transparent ${Math.max(0, a - 20)}%, black ${a}%, black 100%)`
               : `linear-gradient(to right, transparent ${a}%, black ${c}%, transparent ${b}%)`
         return (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          // Each band is the image PLUS the rounded border, blurred together, so
+          // the stroke softens by the same amount as the content it surrounds —
+          // no sharp-edge / blurred-centre mismatch.
+          <div
             key={k}
-            src={src}
-            alt={k === 0 ? alt : ''}
-            aria-hidden={k !== 0}
-            draggable={false}
-            className="absolute inset-0 h-full w-full object-contain"
+            className="absolute inset-0 rounded-2xl border border-[var(--br-line)]"
             style={{ filter: `blur(${blur.toFixed(1)}px)`, WebkitMaskImage: mask, maskImage: mask }}
-          />
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={src}
+              alt={k === 0 ? alt : ''}
+              aria-hidden={k !== 0}
+              draggable={false}
+              className="h-full w-full object-contain"
+            />
+          </div>
         )
       })}
     </div>
