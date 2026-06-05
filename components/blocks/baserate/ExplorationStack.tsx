@@ -54,8 +54,10 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
               type="button"
               onClick={() => setActive(i)}
               aria-label={`Show ${item.title}`}
-              className={`absolute inset-0 origin-left overflow-hidden rounded-2xl bg-white shadow-[0_24px_50px_-26px_rgba(0,0,0,0.35)] focus:outline-none ${
-                isFront ? 'border border-[var(--br-line)]' : ''
+              className={`absolute inset-0 origin-left overflow-hidden rounded-2xl bg-white focus:outline-none ${
+                isFront
+                  ? 'border border-[var(--br-line)] shadow-[0_24px_50px_-26px_rgba(0,0,0,0.35)]'
+                  : 'shadow-[0_18px_40px_-28px_rgba(0,0,0,0.25)]'
               }`}
               style={{ zIndex: n - depth, transformStyle: 'preserve-3d' }}
               initial={false}
@@ -68,6 +70,11 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
                       z,
                       scale,
                       opacity: depth > 2 ? 0 : 1,
+                      // Base blur on the WHOLE card softens the panel edge + its
+                      // shadow so the silhouette isn't sharp against the bg while
+                      // the interior is blurred. The inner BlurRamp adds the
+                      // graduated focal-plane blur on top of this.
+                      filter: `blur(${baseBlur}px)`,
                     }
               }
               transition={{ type: 'spring', stiffness: 220, damping: 28 }}
@@ -83,7 +90,7 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
                    image at increasing blur, each masked to a progressive band.
                    Every layer is hard-clipped to the rounded rect so the blur
                    never bleeds past the corners (which was smearing the stroke). */
-                <BlurRamp src={item.image} alt={item.title} baseBlur={baseBlur} farBlur={farBlur} />
+                <BlurRamp src={item.image} alt={item.title} baseBlur={0} farBlur={farBlur} />
               )}
             </motion.button>
           )

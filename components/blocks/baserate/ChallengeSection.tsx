@@ -187,14 +187,14 @@ function ChallengeCardView({
           e.preventDefault()
         }
       }}
-      className={`relative ${CARD_RATIO[card.span]} h-[600px] shrink-0 overflow-hidden rounded-2xl border border-[var(--br-stroke)]`}
+      className={`relative ${CARD_RATIO[card.span]} h-[600px] shrink-0 overflow-hidden rounded-2xl shadow-[inset_0_0_0_1px_var(--br-stroke)]`}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={card.image}
         alt={`Problem ${card.problem}`}
         draggable={false}
-        className="pointer-events-none h-full w-full object-cover"
+        className="pointer-events-none h-full w-full rounded-2xl object-cover"
       />
     </article>
   )

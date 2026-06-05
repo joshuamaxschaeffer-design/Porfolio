@@ -39,16 +39,17 @@ export function ProductSystemSection(props: ProductSystemProps) {
         ))}
       </ul>
 
-      <div className="mt-16">
-        <h3 className="text-[24px] font-semibold uppercase leading-tight text-[var(--br-ink)]">{productsHeading}</h3>
-        <p className="mt-2 text-base text-[var(--br-muted)] md:whitespace-nowrap">{productsIntro}</p>
-      </div>
-
       {/* Devices + product cards — a "stage" that reproduces the Figma's exact
-          1283×689 absolute placement, scaled to the column width. Unique layout:
-          the desktop UI overlaps the (taller) Baserate card; the two phones (the
-          right one larger/lower) overlap the (shorter, higher) Journalytic card. */}
-      <ProductStage baserate={baserate} journalytic={journalytic} />
+          1283×689 absolute placement, scaled to the column width. The "2 PRODUCTS"
+          heading sits INSIDE the stage at the top-left (as in Figma), occupying
+          the band above the devices instead of stacking a separate block above
+          it (which doubled the empty space). */}
+      <ProductStage
+        baserate={baserate}
+        journalytic={journalytic}
+        productsHeading={productsHeading}
+        productsIntro={productsIntro}
+      />
       </div>
     </section>
   )
@@ -62,14 +63,25 @@ export function ProductSystemSection(props: ProductSystemProps) {
 function ProductStage({
   baserate,
   journalytic,
+  productsHeading,
+  productsIntro,
 }: {
   baserate: typeof defaults.baserate
   journalytic: typeof defaults.journalytic
+  productsHeading: string
+  productsIntro: string
 }) {
   return (
     <>
-      {/* Desktop / wide: the exact absolute stage */}
-      <div className="relative mt-6 hidden w-full md:block" style={{ aspectRatio: '1283 / 689' }}>
+      {/* Desktop / wide: the exact absolute stage. The "2 PRODUCTS" heading
+          overlays the empty top band (above the first device), as in Figma. */}
+      <div className="relative mt-8 hidden w-full md:block" style={{ aspectRatio: '1283 / 689' }}>
+        {/* "2 PRODUCTS" heading — overlays the empty top band of the stage,
+            left-aligned, exactly as in Figma (rather than a separate block above). */}
+        <div className="absolute left-0 top-0 z-10 w-full">
+          <h3 className="text-[24px] font-semibold uppercase leading-tight text-[var(--br-ink)]">{productsHeading}</h3>
+          <p className="mt-2 text-base text-[var(--br-muted)] md:whitespace-nowrap">{productsIntro}</p>
+        </div>
         {/* Desktop UI screenshot (overlaps Baserate card) */}
         <div
           className="absolute overflow-hidden rounded-[4px] border border-[var(--br-stroke)] bg-white shadow-[6px_14px_14px_rgba(0,0,0,0.1)]"
