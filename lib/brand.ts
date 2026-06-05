@@ -3,8 +3,10 @@ export type Brand = 'personal' | 'practice'
 export const BRANDS: Brand[] = ['personal', 'practice']
 
 export const BRAND_DOMAINS: Record<Brand, string[]> = {
-  personal: ['schaeffer.design', 'localhost:3000', 'localhost:3001'],
-  practice: ['schaefferpractice.com'],
+  // schaeffer.design = personal/portfolio; schaeffer.studio = practice/studio.
+  // (schaefferpractice.com kept as an alias in case it's pointed here later.)
+  personal: ['schaeffer.design', 'localhost:3000', 'localhost:3001', 'localhost:3100'],
+  practice: ['schaeffer.studio', 'schaefferpractice.com'],
 }
 
 export const BRAND_LABELS: Record<Brand, string> = {
