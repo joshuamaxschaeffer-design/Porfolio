@@ -1,5 +1,5 @@
 import type { Viewport } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Lexend_Deca, Noto_Sans, Recursive } from 'next/font/google'
 import { SmoothScroll } from '@/components/animation/SmoothScroll'
 import { SpeculationRules } from '@/components/loading/SpeculationRules'
 import { PageTransition } from '@/components/loading/PageTransition'
@@ -11,6 +11,27 @@ const inter = Inter({
   display: 'swap',
   variable: '--font-sans',
   weight: ['400', '500', '600', '700'],
+})
+
+// Baserate design-system fonts (match Figma):
+// headings = Lexend Deca, body = Noto Sans, data/mono = Recursive.
+const lexend = Lexend_Deca({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-heading',
+  weight: ['400', '500', '600', '700'],
+})
+const notoSans = Noto_Sans({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-body',
+  weight: ['400', '500', '600', '700'],
+})
+const recursive = Recursive({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-data',
+  weight: ['400', '500'],
 })
 
 export const viewport: Viewport = {
@@ -31,7 +52,10 @@ export const viewport: Viewport = {
  */
 export default function FrontendLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html
+      lang="en"
+      className={`${inter.variable} ${lexend.variable} ${notoSans.variable} ${recursive.variable}`}
+    >
       <head>
         <SpeculationRules />
       </head>

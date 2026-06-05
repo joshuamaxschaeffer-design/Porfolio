@@ -1,5 +1,5 @@
 import { productSystem as defaults } from './data'
-import { BaserateBadge, BaserateWordmark, JournalyticBadge } from './BaserateLogo'
+import { BaserateBadge, BaserateWordmark, JournalyticBadge, JournalyticWordmark } from './BaserateLogo'
 
 interface ProductSystemProps {
   heading?: string
@@ -22,20 +22,25 @@ export function ProductSystemSection(props: ProductSystemProps) {
 
   return (
     <section className="br-container mt-28 md:mt-40">
-      <h2 className="text-3xl font-bold tracking-tight text-[var(--br-ink)] md:text-4xl">{heading}</h2>
-      <p className="mt-4 max-w-2xl text-base leading-relaxed text-neutral-600 md:text-lg">{intro}</p>
+      <h2 className="text-[32px] font-medium uppercase leading-none text-[var(--br-ink)] md:text-[40px]">
+        {heading}
+      </h2>
+      <p className="mt-4 max-w-2xl text-base leading-relaxed text-[var(--br-muted)] md:text-[22px]">{intro}</p>
 
-      <ul className="mt-7 flex flex-wrap gap-2.5">
+      <ul className="mt-7 flex flex-wrap gap-4">
         {pills.map((p) => (
-          <li key={p} className="rounded-md border border-[var(--br-gold)] px-3 py-1.5 text-sm text-[var(--br-gold)]">
+          <li
+            key={p}
+            className="br-data rounded-[var(--br-tag-radius)] border border-[var(--br-gold)] px-5 py-3 text-[18px] text-[var(--br-gold)]"
+          >
             {p}
           </li>
         ))}
       </ul>
 
       <div className="mt-16">
-        <h3 className="text-lg font-bold tracking-tight text-[var(--br-ink)]">{productsHeading}</h3>
-        <p className="mt-1.5 max-w-xl text-sm text-neutral-600">{productsIntro}</p>
+        <h3 className="text-[24px] font-semibold uppercase leading-tight text-[var(--br-ink)]">{productsHeading}</h3>
+        <p className="mt-2 max-w-xl text-base text-[var(--br-muted)]">{productsIntro}</p>
       </div>
 
       {/* Two products. Baserate gets more visual weight: wider column, gold
@@ -49,16 +54,16 @@ export function ProductSystemSection(props: ProductSystemProps) {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={baserate.screenshot} alt="Baserate product" className="w-full" />
           </div>
-          <div className="relative rounded-[var(--br-card-radius)] border-2 border-[var(--br-gold)] bg-white px-6 pb-8 pt-20 text-center md:pt-24">
+          <div className="relative flex flex-col items-center gap-4 rounded-[8px] border-2 border-[var(--br-gold)] bg-white px-10 pb-10 pt-16 text-center md:pt-20">
             {'badge' in baserate && baserate.badge && (
-              <span className="absolute left-5 top-5 rounded-md bg-[var(--br-gold)] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-white">
+              <span className="br-body absolute left-2 top-2 rounded-[var(--br-tag-radius)] bg-[var(--br-gold)] px-4 py-2 text-[16px] text-white">
                 {baserate.badge}
               </span>
             )}
-            <BaserateBadge className="absolute left-1/2 top-0 h-16 w-16 -translate-x-1/2 -translate-y-1/2" />
-            <BaserateWordmark className="text-2xl text-[var(--br-ink)] md:text-3xl" />
-            <p className="mt-4 text-sm font-semibold text-[var(--br-ink)] md:text-base">{baserate.tagline}</p>
-            <p className="mt-1.5 text-sm italic text-neutral-400">{baserate.sub}</p>
+            <BaserateBadge className="absolute left-1/2 top-0 h-[88px] w-[88px] -translate-x-1/2 -translate-y-1/2 md:h-[100px] md:w-[100px]" />
+            <BaserateWordmark className="h-9 w-auto" />
+            <p className="text-[18px] text-[var(--br-ink)]">{baserate.tagline}</p>
+            <p className="text-[18px] italic text-[var(--br-muted)] opacity-50">{baserate.sub}</p>
           </div>
         </div>
 
@@ -75,14 +80,11 @@ export function ProductSystemSection(props: ProductSystemProps) {
               />
             ))}
           </div>
-          <div className="relative rounded-[var(--br-card-radius)] border border-[var(--br-line)] bg-white px-6 pb-7 pt-16 text-center md:pt-20">
-            <JournalyticBadge className="absolute left-1/2 top-0 h-14 w-14 -translate-x-1/2 -translate-y-1/2" />
-            <span className="inline-flex items-center gap-2 text-xl font-semibold text-[var(--br-ink)] md:text-2xl">
-              <JournalyticBadge className="h-7 w-7 shadow-none ring-0" />
-              Journalytic
-            </span>
-            <p className="mt-3 text-sm font-medium text-[var(--br-ink)]">{journalytic.tagline}</p>
-            <p className="mt-1.5 text-sm italic text-neutral-400">{journalytic.sub}</p>
+          <div className="relative flex flex-col items-center gap-4 rounded-[8px] border border-[var(--br-stroke)] bg-white px-10 pb-10 pt-16 text-center md:pt-20">
+            <JournalyticBadge className="absolute left-1/2 top-0 h-[88px] w-[88px] -translate-x-1/2 -translate-y-1/2 md:h-[100px] md:w-[100px]" />
+            <JournalyticWordmark className="h-9 w-auto" />
+            <p className="text-[18px] text-[var(--br-ink)]">{journalytic.tagline}</p>
+            <p className="text-[18px] italic text-[var(--br-muted)] opacity-50">{journalytic.sub}</p>
           </div>
         </div>
       </div>

@@ -97,12 +97,48 @@ img {
  * ============================================================ */
 
 :root {
-  --br-gold: #9a7b2e;        /* outlined tags, vertical line, inline emphasis */
-  --br-gold-soft: #b8932f;   /* slightly brighter for accent text on photos */
-  --br-ink: #0a0a0a;
-  --br-muted: #6b6b70;
-  --br-line: #e7e7e9;
+  /* Exact Figma design tokens (Baserate design system) */
+  --br-gold: #ae7d00;        /* Brand Color — tags, vertical line, inline emphasis */
+  --br-gold-soft: #c79016;   /* brighter gold for accent text on dark photos */
+  --br-ink: #070e2c;         /* Text Dark — deep navy headings */
+  --br-body: #242627;        /* Text Colors/Dark — body copy */
+  --br-muted: #585b6b;       /* Text Light — muted/secondary */
+  --br-muted-2: #7e7f88;     /* Text Colors/Light */
+  --br-line: #dcdce1;        /* Strokes/Card */
+  --br-stroke: #d6d6d6;      /* Stroke */
+  --br-divider: #b4b5bc;     /* Strokes/Divider */
+  --br-bg-2: #f8f8fb;        /* Background 2 */
+  --br-pill: #e7e7ef;        /* Pill Color */
+  --br-grey-card: #ebecf0;   /* Backgrounds/Grey Cards */
+  --br-success: #005529;     /* Text Colors/Success */
   --br-card-radius: 16px;
+  --br-tag-radius: 4px;
+  --br-card-shadow: 0 8px 13px rgba(0, 0, 0, 0.08);  /* Card Shadow */
+  --br-popover-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Popover Shadow */
+
+  /* Typography (match Figma): headings Lexend Deca, body Noto Sans, data Recursive */
+  --br-font-heading: var(--font-heading), 'Lexend Deca', ui-sans-serif, system-ui, sans-serif;
+  --br-font-body: var(--font-body), 'Noto Sans', ui-sans-serif, system-ui, sans-serif;
+  --br-font-data: var(--font-data), 'Recursive', ui-monospace, monospace;
+}
+
+/* Apply the Baserate type system within the case study article. */
+.br-article {
+  font-family: var(--br-font-body);
+  color: var(--br-body);
+}
+.br-article h1,
+.br-article h2,
+.br-article h3,
+.br-article h4,
+.br-heading {
+  font-family: var(--br-font-heading);
+  color: var(--br-ink);
+  font-weight: 500;        /* Lexend Deca Medium, per Figma */
+  letter-spacing: 0;
+}
+.br-data {
+  font-family: var(--br-font-data);
 }
 
 /* Editorial column. Figma column = 1443px; we cap a touch wider container

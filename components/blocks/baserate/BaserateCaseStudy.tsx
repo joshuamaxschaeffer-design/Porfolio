@@ -25,7 +25,7 @@ export interface BaserateCaseStudyProps {
  */
 export function BaserateCaseStudy(props: BaserateCaseStudyProps = {}) {
   return (
-    <article className="bg-white pb-32 text-[var(--br-ink)]">
+    <article className="br-article bg-white pb-32">
       <OverviewSection
         dateRange={props.dateRange}
         lead={props.lead}
