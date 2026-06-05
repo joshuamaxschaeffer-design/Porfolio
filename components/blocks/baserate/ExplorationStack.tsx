@@ -42,8 +42,12 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
           const rotateY = isFront ? 0 : 52 // degrees — sharper Cover Flow tilt
           const z = isFront ? 0 : -150 * depth // pushed back in 3D space
           const scale = isFront ? 1 : 1 - depth * 0.03
-          // Per-depth max blur for the far edge of the masked-blur overlay.
-          const farBlur = depth === 1 ? 5 : 10
+          // Even base blur applied to the WHOLE card per depth (2px on the 2nd
+          // card back, 6px on the furthest).
+          const baseBlur = isFront ? 0 : depth === 1 ? 2 : 6
+          // Far-edge intensity of the graduated focal-plane overlay (~3x the
+          // previous values) — ramps from sharp at the near edge to this at the far edge.
+          const farBlur = depth === 1 ? 15 : 30
           return (
             <motion.button
               key={item.title}
@@ -66,9 +70,18 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
               }
               transition={{ type: 'spring', stiffness: 220, damping: 28 }}
             >
-              {/* Every card shows its real screenshot — even behind. */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={item.image} alt={item.title} draggable={false} className="h-full w-full object-contain" />
+              {/* Every card shows its real screenshot — even behind. Behind cards
+                  carry an even base blur (2px / 6px by depth). */}
+              <motion.img
+                // eslint-disable-next-line @next/next/no-img-element
+                src={item.image}
+                alt={item.title}
+                draggable={false}
+                className="h-full w-full object-contain"
+                initial={false}
+                animate={{ filter: `blur(${baseBlur}px)` }}
+                transition={{ type: 'spring', stiffness: 220, damping: 28 }}
+              />
 
               {/* Graduated "focal-plane" blur for receding cards: a blurred copy
                   of the same image, revealed by a left→right gradient mask so the
@@ -83,12 +96,12 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
                   draggable={false}
                   className="pointer-events-none absolute inset-0 h-full w-full object-contain"
                   initial={false}
-                  animate={{ filter: `blur(${farBlur}px)` }}
+                  animate={{ filter: `blur(${baseBlur + farBlur}px)` }}
                   transition={{ type: 'spring', stiffness: 220, damping: 28 }}
                   style={{
                     // Mask ramps transparent→opaque across the width: the near
-                    // (left) third stays fully sharp (blurred layer invisible),
-                    // then the blurred copy ramps in toward the far (right) edge.
+                    // (left) third stays fully sharp (only the base blur shows),
+                    // then this heavily-blurred copy ramps in toward the far edge.
                     WebkitMaskImage:
                       'linear-gradient(to right, transparent 30%, rgba(0,0,0,0.65) 65%, black 95%)',
                     maskImage:
