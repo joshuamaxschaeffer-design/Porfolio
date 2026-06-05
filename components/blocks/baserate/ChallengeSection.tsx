@@ -108,7 +108,7 @@ export function ChallengeSection(props: ChallengeProps) {
   }
 
   return (
-    <section className="mt-24 md:mt-32">
+    <section className="bg-[var(--br-bg-2)] py-20 md:py-28">
       <div className="br-container">
         <h2 className="text-[28px] font-medium leading-none text-[var(--br-ink)]">{heading}</h2>
         <div className="mt-3 flex items-end justify-between gap-4">

@@ -43,51 +43,121 @@ export function ProductSystemSection(props: ProductSystemProps) {
         <p className="mt-2 max-w-xl text-base text-[var(--br-muted)]">{productsIntro}</p>
       </div>
 
-      {/* Two products. Baserate gets more visual weight: wider column, gold
-          border + Premium badge, larger floating desktop shot. Extra top
-          margin leaves room for the floating screenshots above each card. */}
-      <div className="mt-28 grid gap-16 md:mt-32 md:grid-cols-[1.15fr_0.85fr] md:gap-8 md:items-end">
-        {/* Baserate — emphasized */}
+      {/* Devices + product cards — a "stage" that reproduces the Figma's exact
+          1283×689 absolute placement, scaled to the column width. Unique layout:
+          the desktop UI overlaps the (taller) Baserate card; the two phones (the
+          right one larger/lower) overlap the (shorter, higher) Journalytic card. */}
+      <ProductStage baserate={baserate} journalytic={journalytic} />
+    </section>
+  )
+}
+
+/**
+ * Pixel-accurate device/card stage. Native coordinate space is 1283×689 (from
+ * Figma); we place children by percentage so the whole thing scales fluidly.
+ * Hidden on narrow screens in favour of a simple stacked fallback.
+ */
+function ProductStage({
+  baserate,
+  journalytic,
+}: {
+  baserate: typeof defaults.baserate
+  journalytic: typeof defaults.journalytic
+}) {
+  return (
+    <>
+      {/* Desktop / wide: the exact absolute stage */}
+      <div className="relative mt-24 hidden w-full md:block" style={{ aspectRatio: '1283 / 689' }}>
+        {/* Desktop UI screenshot (overlaps Baserate card) */}
+        <div
+          className="absolute overflow-hidden rounded-[4px] border border-[var(--br-stroke)] bg-white shadow-[6px_14px_14px_rgba(0,0,0,0.1)]"
+          style={{ left: '5.14%', top: '16.3%', width: '42.8%', height: '49.8%' }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={baserate.screenshot} alt="Baserate product" className="h-full w-full object-cover object-left-top" />
+        </div>
+
+        {/* Phone 1 (left, upright) */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={journalytic.phones[0]}
+          alt=""
+          aria-hidden
+          className="absolute object-contain drop-shadow-xl"
+          style={{ left: '65.5%', top: '27%', width: '15%', height: '56.6%' }}
+        />
+        {/* Phone 2 (right, larger, lower) */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={journalytic.phones[1]}
+          alt=""
+          aria-hidden
+          className="absolute object-contain drop-shadow-xl"
+          style={{ left: '76%', top: '29.2%', width: '20.4%', height: '58.7%' }}
+        />
+
+        {/* Baserate card — taller, lower, gold border */}
+        <div
+          className="absolute flex flex-col items-center gap-4 rounded-[8px] border-2 border-[var(--br-gold)] bg-white px-[6%] text-center"
+          style={{ left: '0%', top: '70.8%', width: '53.1%', height: '38.2%', paddingTop: '6%', paddingBottom: '6%' }}
+        >
+          {'badge' in baserate && baserate.badge && (
+            <span className="br-body absolute left-[1.5%] top-[5%] rounded-[var(--br-tag-radius)] bg-[var(--br-gold)] px-4 py-1.5 text-[clamp(11px,1vw,16px)] text-white">
+              {baserate.badge}
+            </span>
+          )}
+          <BaserateBadge className="absolute left-1/2 top-0 aspect-square w-[15%] -translate-x-1/2 -translate-y-1/2" />
+          <BaserateWordmark className="mt-[2%] h-auto w-[40%]" />
+          <p className="text-[clamp(12px,1.4vw,18px)] text-[var(--br-ink)]">{baserate.tagline}</p>
+          <p className="text-[clamp(12px,1.4vw,18px)] italic text-[var(--br-muted)] opacity-50">{baserate.sub}</p>
+        </div>
+
+        {/* Journalytic card — shorter, higher, plain border */}
+        <div
+          className="absolute flex flex-col items-center gap-4 rounded-[8px] border border-[var(--br-stroke)] bg-white px-[5%] text-center"
+          style={{ left: '55.3%', top: '72.4%', width: '44.7%', height: '33.4%', paddingTop: '5.5%', paddingBottom: '5.5%' }}
+        >
+          <JournalyticBadge className="absolute left-1/2 top-0 aspect-square w-[17%] -translate-x-1/2 -translate-y-1/2" />
+          <JournalyticWordmark className="mt-[1%] h-auto w-[52%]" />
+          <p className="text-[clamp(12px,1.4vw,18px)] text-[var(--br-ink)]">{journalytic.tagline}</p>
+          <p className="text-[clamp(12px,1.4vw,18px)] italic text-[var(--br-muted)] opacity-50">{journalytic.sub}</p>
+        </div>
+      </div>
+
+      {/* Mobile fallback: simple stacked cards */}
+      <div className="mt-24 flex flex-col gap-16 md:hidden">
         <div className="relative">
-          {/* floating desktop screenshot */}
-          <div className="absolute -top-20 left-1/2 w-[88%] -translate-x-1/2 overflow-hidden rounded-xl border border-[var(--br-line)] bg-white shadow-[0_30px_60px_-30px_rgba(0,0,0,0.4)] md:-top-24">
+          <div className="absolute -top-16 left-1/2 w-[88%] -translate-x-1/2 overflow-hidden rounded-xl border border-[var(--br-line)] bg-white shadow-lg">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={baserate.screenshot} alt="Baserate product" className="w-full" />
           </div>
-          <div className="relative flex flex-col items-center gap-4 rounded-[8px] border-2 border-[var(--br-gold)] bg-white px-10 pb-10 pt-16 text-center md:pt-20">
+          <div className="relative flex flex-col items-center gap-4 rounded-[8px] border-2 border-[var(--br-gold)] bg-white px-6 pb-8 pt-14 text-center">
             {'badge' in baserate && baserate.badge && (
-              <span className="br-body absolute left-2 top-2 rounded-[var(--br-tag-radius)] bg-[var(--br-gold)] px-4 py-2 text-[16px] text-white">
+              <span className="br-body absolute left-2 top-2 rounded-[var(--br-tag-radius)] bg-[var(--br-gold)] px-3 py-1.5 text-sm text-white">
                 {baserate.badge}
               </span>
             )}
-            <BaserateBadge className="absolute left-1/2 top-0 h-[88px] w-[88px] -translate-x-1/2 -translate-y-1/2 md:h-[100px] md:w-[100px]" />
-            <BaserateWordmark className="h-9 w-auto" />
-            <p className="text-[18px] text-[var(--br-ink)]">{baserate.tagline}</p>
-            <p className="text-[18px] italic text-[var(--br-muted)] opacity-50">{baserate.sub}</p>
+            <BaserateBadge className="absolute left-1/2 top-0 h-16 w-16 -translate-x-1/2 -translate-y-1/2" />
+            <BaserateWordmark className="h-8 w-auto" />
+            <p className="text-base text-[var(--br-ink)]">{baserate.tagline}</p>
+            <p className="text-base italic text-[var(--br-muted)] opacity-50">{baserate.sub}</p>
           </div>
         </div>
-
-        {/* Journalytic — de-emphasized */}
         <div className="relative">
-          <div className="absolute -top-16 left-1/2 flex w-[70%] -translate-x-1/2 justify-center gap-2 md:-top-20">
+          <div className="absolute -top-14 left-1/2 flex w-[60%] -translate-x-1/2 justify-center gap-2">
             {journalytic.phones.map((src, i) => (
               // eslint-disable-next-line @next/next/no-img-element
-              <img
-                key={i}
-                src={src}
-                alt="Journalytic mobile"
-                className={`w-1/2 drop-shadow-xl ${i === 0 ? 'mt-4' : ''}`}
-              />
+              <img key={i} src={src} alt="" aria-hidden className={`w-1/2 drop-shadow-xl ${i === 0 ? 'mt-3' : ''}`} />
             ))}
           </div>
-          <div className="relative flex flex-col items-center gap-4 rounded-[8px] border border-[var(--br-stroke)] bg-white px-10 pb-10 pt-16 text-center md:pt-20">
-            <JournalyticBadge className="absolute left-1/2 top-0 h-[88px] w-[88px] -translate-x-1/2 -translate-y-1/2 md:h-[100px] md:w-[100px]" />
-            <JournalyticWordmark className="h-9 w-auto" />
-            <p className="text-[18px] text-[var(--br-ink)]">{journalytic.tagline}</p>
-            <p className="text-[18px] italic text-[var(--br-muted)] opacity-50">{journalytic.sub}</p>
+          <div className="relative flex flex-col items-center gap-4 rounded-[8px] border border-[var(--br-stroke)] bg-white px-6 pb-8 pt-14 text-center">
+            <JournalyticBadge className="absolute left-1/2 top-0 h-16 w-16 -translate-x-1/2 -translate-y-1/2" />
+            <JournalyticWordmark className="h-8 w-auto" />
+            <p className="text-base text-[var(--br-ink)]">{journalytic.tagline}</p>
+            <p className="text-base italic text-[var(--br-muted)] opacity-50">{journalytic.sub}</p>
           </div>
         </div>
       </div>
-    </section>
+    </>
   )
 }

@@ -243,7 +243,7 @@ export const featureSections = [
     body: 'Features around measuring and reporting user bias.',
     features: [
       feat('Idea Dashboard', 'idea-dashboard'),
-      feat('Decision Analysis Pages', 'decision-analysis-pages'),
+      feat('Decision Analysis Pages', 'decision-analysis-pages-track'),
       feat('Manual Idea Lists', 'manual-idea-lists'),
       feat('Dynamic Idea Lists', 'dynamic-idea-lists'),
       feat('Idea Labels', 'idea-labels'),

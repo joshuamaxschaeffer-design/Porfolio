@@ -27,27 +27,25 @@ export function ExplorationStack({ items }: { items: ExplorationItem[] }) {
 
   return (
     <div className="grid items-center gap-10 md:grid-cols-2 md:gap-16">
-      {/* Image stack. Container uses the images' real ~874/932 ratio so the full
-          frame shows (no bottom crop). Right padding gives the fanned cards room
-          to skew behind the front one without clipping the container edge. */}
-      <div className="relative mx-auto aspect-[874/932] w-full max-w-[480px] pr-16 [perspective:1400px]">
+      {/* Image stack. Matches Figma: the front card is flat/upright; the cards
+          behind are plain flat rectangles peeking out to the UPPER-LEFT (no 3D
+          rotation, no skew). Left padding leaves room for them. */}
+      <div className="relative mx-auto aspect-[874/932] w-full max-w-[460px] pl-14 pt-6">
         {items.map((item, i) => {
           // depth = how far behind the front this card is (0 = front)
           const depth = (i - active + n) % n
           const isFront = depth === 0
-          // Behind cards fan to the RIGHT, rotate and skew so they read as a 3D stack.
-          const x = isFront ? 0 : 44 * depth
-          const y = isFront ? 0 : 6 * depth
-          const scale = isFront ? 1 : 1 - depth * 0.04
-          const rotateY = isFront ? 0 : -22
-          const skewY = isFront ? 0 : 4
+          // Behind cards step out to the upper-left, slightly smaller. Flat — no rotate/skew.
+          const x = isFront ? 0 : -26 * depth
+          const y = isFront ? 0 : -20 * depth
+          const scale = isFront ? 1 : 1 - depth * 0.03
           return (
             <motion.button
               key={item.title}
               type="button"
               onClick={() => setActive(i)}
               aria-label={`Show ${item.title}`}
-              className="absolute inset-0 origin-right overflow-hidden rounded-2xl border border-[var(--br-line)] bg-white shadow-[0_20px_50px_-25px_rgba(0,0,0,0.35)] focus:outline-none"
+              className="absolute inset-0 origin-center overflow-hidden rounded-2xl border border-[var(--br-line)] bg-white shadow-[0_18px_44px_-28px_rgba(0,0,0,0.3)] focus:outline-none"
               style={{ zIndex: n - depth }}
               initial={false}
               animate={
@@ -57,17 +55,18 @@ export function ExplorationStack({ items }: { items: ExplorationItem[] }) {
                       x,
                       y,
                       scale,
-                      rotateY,
-                      skewY,
-                      opacity: depth > 2 ? 0 : isFront ? 1 : 0.7,
-                      filter: isFront ? 'blur(0px)' : 'blur(0.5px)',
+                      opacity: depth > 2 ? 0 : 1,
                     }
               }
               transition={{ type: 'spring', stiffness: 260, damping: 30 }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={item.image} alt={item.title} draggable={false} className="h-full w-full object-contain" />
-              {!isFront && <span className="absolute inset-0 bg-white/40" />}
+              {/* Front card shows the image; the cards behind are blank panels (as in Figma). */}
+              {isFront ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={item.image} alt={item.title} draggable={false} className="h-full w-full object-contain" />
+              ) : (
+                <span className="absolute inset-0 bg-white" />
+              )}
             </motion.button>
           )
         })}
