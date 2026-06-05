@@ -36,11 +36,14 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
           // depth = how far behind the front this card is (0 = front)
           const depth = (i - active + n) % n
           const isFront = depth === 0
-          // Behind cards: shifted left, angled away (rotateY), pushed back in Z, smaller.
-          const x = isFront ? 0 : -64 * depth
-          const rotateY = isFront ? 0 : 38 // degrees — Cover Flow tilt
-          const z = isFront ? 0 : -120 * depth // pushed back in 3D space
-          const scale = isFront ? 1 : 1 - depth * 0.02
+          // Behind cards fan out HARD (sharp rotateY) so most of each image stays
+          // visible to the left of the card in front, then recede in Z.
+          const x = isFront ? 0 : -150 - 70 * (depth - 1)
+          const rotateY = isFront ? 0 : 52 // degrees — sharper Cover Flow tilt
+          const z = isFront ? 0 : -150 * depth // pushed back in 3D space
+          const scale = isFront ? 1 : 1 - depth * 0.03
+          // Per-depth max blur for the far edge of the masked-blur overlay.
+          const farBlur = depth === 1 ? 5 : 10
           return (
             <motion.button
               key={item.title}
@@ -63,16 +66,39 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
               }
               transition={{ type: 'spring', stiffness: 220, damping: 28 }}
             >
-              {/* Front card shows the image; cards behind read as blank angled panels. */}
-              {isFront ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={item.image} alt={item.title} draggable={false} className="h-full w-full object-contain" />
-              ) : (
-                <>
-                  <span className="absolute inset-0 bg-white" />
-                  {/* subtle shading on the receding face for depth */}
-                  <span className="absolute inset-0 bg-gradient-to-l from-black/0 to-black/[0.06]" />
-                </>
+              {/* Every card shows its real screenshot — even behind. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={item.image} alt={item.title} draggable={false} className="h-full w-full object-contain" />
+
+              {/* Graduated "focal-plane" blur for receding cards: a blurred copy
+                  of the same image, revealed by a left→right gradient mask so the
+                  near (left) edge stays sharp and the far (right) edge — the part
+                  tucked behind the front card — blurs progressively. */}
+              {!isFront && (
+                <motion.img
+                  // eslint-disable-next-line @next/next/no-img-element
+                  src={item.image}
+                  alt=""
+                  aria-hidden
+                  draggable={false}
+                  className="pointer-events-none absolute inset-0 h-full w-full object-contain"
+                  initial={false}
+                  animate={{ filter: `blur(${farBlur}px)` }}
+                  transition={{ type: 'spring', stiffness: 220, damping: 28 }}
+                  style={{
+                    // Mask ramps transparent→opaque across the width: the near
+                    // (left) third stays fully sharp (blurred layer invisible),
+                    // then the blurred copy ramps in toward the far (right) edge.
+                    WebkitMaskImage:
+                      'linear-gradient(to right, transparent 30%, rgba(0,0,0,0.65) 65%, black 95%)',
+                    maskImage:
+                      'linear-gradient(to right, transparent 30%, rgba(0,0,0,0.65) 65%, black 95%)',
+                  }}
+                />
+              )}
+              {/* faint depth shading only on the far edge — keep the screenshot legible */}
+              {!isFront && (
+                <span className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-black/[0.06]" />
               )}
             </motion.button>
           )
