@@ -140,6 +140,11 @@ export function ChallengeSection(props: ChallengeProps) {
         {cards.map((card) => (
           <ChallengeCardView key={card.problem} card={card} dragRef={drag} />
         ))}
+        {/* Trailing spacer so even the LAST card can scroll far enough left to
+            align with the header (the browser clamps scrollLeft to
+            scrollWidth-clientWidth; without runway the last cards stop short).
+            An odd gap to the right of the last card is expected/fine. */}
+        <div aria-hidden className="shrink-0" style={{ width: 'min(85vw, 1000px)' }} />
       </div>
 
       {/* Pager */}

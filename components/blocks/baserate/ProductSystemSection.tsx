@@ -21,7 +21,7 @@ export function ProductSystemSection(props: ProductSystemProps) {
   const journalytic = props.journalytic ?? defaults.journalytic
 
   return (
-    <section className="bg-[var(--br-bg-2)] py-24 md:py-32">
+    <section className="pt-24 md:pt-32">
       <div className="br-container">
       <h2 className="text-[32px] font-medium uppercase leading-none text-[var(--br-ink)] md:text-[40px]">
         {heading}
@@ -121,8 +121,8 @@ function ProductStage({
         >
           <JournalyticBadge className="absolute left-1/2 top-0 aspect-square w-[17%] -translate-x-1/2 -translate-y-1/2" />
           <JournalyticWordmark className="mt-[1%] h-auto w-[52%]" />
-          <p className="text-[clamp(12px,1.4vw,18px)] text-[var(--br-ink)]">{journalytic.tagline}</p>
-          <p className="text-[clamp(12px,1.4vw,18px)] italic text-[var(--br-muted)] opacity-50">{journalytic.sub}</p>
+          <p className="whitespace-nowrap text-[clamp(11px,1.32vw,18px)] text-[var(--br-ink)]">{journalytic.tagline}</p>
+          <p className="whitespace-nowrap text-[clamp(11px,1.32vw,18px)] italic text-[var(--br-muted)] opacity-50">{journalytic.sub}</p>
         </div>
       </div>
 

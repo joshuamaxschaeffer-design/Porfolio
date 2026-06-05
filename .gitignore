@@ -37,11 +37,8 @@ next-env.d.ts
 # payload
 media
 
-# large media — served from a CDN (Vercel Blob), not committed to git.
-# Keep the local copies for dev; they're pulled from NEXT_PUBLIC_MEDIA_BASE_URL in prod.
-public/baserate/videos/**/*.mp4
-public/baserate/videos/**/*.webm
-public/baserate/videos/*.mp4
-public/baserate/videos/*.webm
+# The 3 compressed demo videos (~7.4MB total) ARE committed so they ship with
+# the deploy and play without depending on a CDN env var. (NEXT_PUBLIC_MEDIA_BASE_URL
+# can still override to a CDN if set; empty -> local /baserate/videos/ path.)
 # uncompressed source masters — never commit
 public/baserate/videos/originals/

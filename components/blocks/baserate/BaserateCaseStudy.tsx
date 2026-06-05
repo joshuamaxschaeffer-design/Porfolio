@@ -34,8 +34,13 @@ export function BaserateCaseStudy(props: BaserateCaseStudyProps = {}) {
       />
       <ChallengeSection heading={props.challengeHeading} intro={props.challengeIntro} />
       <ArchitectureSection intro={props.architectureIntro} />
-      <ProductSystemSection intro={props.productSystemIntro} />
-      <FeatureEcosystemSection />
+      {/* "Building the Product System" is one continuous grey (#F8F8FB) region:
+          the product stage AND all the auto-scrolling feature carousels/columns
+          share the same background. */}
+      <div className="bg-[var(--br-bg-2)]">
+        <ProductSystemSection intro={props.productSystemIntro} />
+        <FeatureEcosystemSection />
+      </div>
     </article>
   )
 }
