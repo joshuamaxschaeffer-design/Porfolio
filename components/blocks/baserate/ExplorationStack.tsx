@@ -70,48 +70,18 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
               }
               transition={{ type: 'spring', stiffness: 220, damping: 28 }}
             >
-              {/* Every card shows its real screenshot — even behind. Behind cards
-                  carry an even base blur (2px / 6px by depth). */}
-              <motion.img
+              {isFront ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                src={item.image}
-                alt={item.title}
-                draggable={false}
-                className="h-full w-full object-contain"
-                initial={false}
-                animate={{ filter: `blur(${baseBlur}px)` }}
-                transition={{ type: 'spring', stiffness: 220, damping: 28 }}
-              />
-
-              {/* Graduated "focal-plane" blur for receding cards: a blurred copy
-                  of the same image, revealed by a left→right gradient mask so the
-                  near (left) edge stays sharp and the far (right) edge — the part
-                  tucked behind the front card — blurs progressively. */}
-              {!isFront && (
-                <motion.img
-                  // eslint-disable-next-line @next/next/no-img-element
-                  src={item.image}
-                  alt=""
-                  aria-hidden
-                  draggable={false}
-                  className="pointer-events-none absolute inset-0 h-full w-full object-contain"
-                  initial={false}
-                  animate={{ filter: `blur(${baseBlur + farBlur}px)` }}
-                  transition={{ type: 'spring', stiffness: 220, damping: 28 }}
-                  style={{
-                    // Mask ramps transparent→opaque across the width: the near
-                    // (left) third stays fully sharp (only the base blur shows),
-                    // then this heavily-blurred copy ramps in toward the far edge.
-                    WebkitMaskImage:
-                      'linear-gradient(to right, transparent 30%, rgba(0,0,0,0.65) 65%, black 95%)',
-                    maskImage:
-                      'linear-gradient(to right, transparent 30%, rgba(0,0,0,0.65) 65%, black 95%)',
-                  }}
-                />
-              )}
-              {/* faint depth shading only on the far edge — keep the screenshot legible */}
-              {!isFront && (
-                <span className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-black/[0.06]" />
+                <img src={item.image} alt={item.title} draggable={false} className="h-full w-full object-contain" />
+              ) : (
+                /* Behind cards: a graduated "focal-plane" blur that RAMPS smoothly
+                   across the full width — sharpest at the near (left) edge,
+                   blurriest at the far (right) edge — so the increase reads even
+                   in the thin exposed sliver. Built from several copies of the
+                   image at increasing blur, each masked to a progressive band.
+                   Every layer is hard-clipped to the rounded rect so the blur
+                   never bleeds past the corners (which was smearing the stroke). */
+                <BlurRamp src={item.image} alt={item.title} baseBlur={baseBlur} farBlur={farBlur} />
               )}
             </motion.button>
           )
@@ -173,6 +143,66 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
           </ul>
         </div>
       </div>
+    </div>
+  )
+}
+
+/**
+ * A left→right graduated blur of a single image. Renders the image as a stack
+ * of `layers` copies, each blurred progressively more (from `baseBlur` at the
+ * near edge up to `baseBlur + farBlur` at the far edge) and each revealed by a
+ * narrow gradient band so the copies cross-fade into one another. The result is
+ * a smooth focal-plane ramp whose blur increase is visible at ANY horizontal
+ * position — including the thin sliver that peeks out from behind the front
+ * card. Every layer is clipped to the rounded rect so blur can't smear the
+ * card's stroke/corners.
+ */
+function BlurRamp({
+  src,
+  alt,
+  baseBlur,
+  farBlur,
+  layers = 5,
+}: {
+  src: string
+  alt: string
+  baseBlur: number
+  farBlur: number
+  layers?: number
+}) {
+  const clip = { clipPath: 'inset(0 round 1rem)', WebkitClipPath: 'inset(0 round 1rem)' } as const
+  return (
+    <div className="pointer-events-none absolute inset-0" style={clip}>
+      {Array.from({ length: layers }).map((_, k) => {
+        const t = k / (layers - 1) // 0 → 1 across the width (near → far)
+        const blur = baseBlur + farBlur * t
+        // Centre of this layer's reveal band, as a % across the width.
+        const c = t * 100
+        // Soft band: fully visible at the centre, fading out ~22% to each side,
+        // so adjacent layers overlap and blend into a continuous ramp.
+        const a = Math.max(0, c - 24)
+        const b = Math.min(100, c + 24)
+        const mask =
+          k === 0
+            ? // first (sharpest) layer covers the whole near side so there's no gap
+              `linear-gradient(to right, black 0%, black ${b}%, transparent ${Math.min(100, b + 20)}%)`
+            : k === layers - 1
+              ? // last (blurriest) layer covers the whole far side
+                `linear-gradient(to right, transparent ${Math.max(0, a - 20)}%, black ${a}%, black 100%)`
+              : `linear-gradient(to right, transparent ${a}%, black ${c}%, transparent ${b}%)`
+        return (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            key={k}
+            src={src}
+            alt={k === 0 ? alt : ''}
+            aria-hidden={k !== 0}
+            draggable={false}
+            className="absolute inset-0 h-full w-full object-contain"
+            style={{ filter: `blur(${blur.toFixed(1)}px)`, WebkitMaskImage: mask, maskImage: mask }}
+          />
+        )
+      })}
     </div>
   )
 }
