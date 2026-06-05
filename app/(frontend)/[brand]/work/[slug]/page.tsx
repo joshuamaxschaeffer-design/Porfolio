@@ -26,6 +26,20 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
   const cs = await getCaseStudyBySlug(slug, brand)
   if (!cs) notFound()
 
+  // Some blocks own the entire page (their own header, hero, layout). When a
+  // case study is built from one of these "full-bleed" blocks, skip the generic
+  // template chrome so it isn't duplicated.
+  const FULL_BLEED_BLOCKS = ['baserateCaseStudy']
+  const isFullBleed = (cs.blocks || []).some((b: any) => FULL_BLEED_BLOCKS.includes(b.blockType))
+
+  if (isFullBleed) {
+    return (
+      <article>
+        <BlockRenderer blocks={cs.blocks || []} />
+      </article>
+    )
+  }
+
   return (
     <article>
       {/* Hero header */}

@@ -22,13 +22,15 @@ import { brandFromHostname, asBrand, type Brand } from '@/lib/brand'
 export function middleware(request: NextRequest) {
   const { pathname, search, searchParams } = request.nextUrl
 
-  // Never touch the Payload admin/API, Next internals, or the revalidate route.
+  // Never touch the Payload admin/API, Next internals, the revalidate route,
+  // or any static file (anything with a file extension, e.g. /baserate/...png).
   // (Belt-and-suspenders alongside `config.matcher` below.)
   if (
     pathname.startsWith('/admin') ||
     pathname.startsWith('/api') ||
     pathname.startsWith('/_next') ||
-    pathname === '/favicon.ico'
+    pathname === '/favicon.ico' ||
+    /\.[a-zA-Z0-9]+$/.test(pathname) // has a file extension → static asset
   ) {
     return NextResponse.next()
   }
@@ -61,5 +63,5 @@ export function middleware(request: NextRequest) {
 export const config = {
   // Run on everything except Next internals, the favicon, and static assets.
   // Admin/API are also guarded inside the function above.
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|admin|api).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|admin|api|.*\\.[a-zA-Z0-9]+$).*)'],
 }
