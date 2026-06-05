@@ -5,10 +5,6 @@ import type { Metadata } from 'next'
 
 import { importMap } from '../importMap.js'
 
-// Render the admin entirely at request time — it imports CSS and server-only
-// modules that can't be statically collected at build time (Next 15 + Payload 3).
-export const dynamic = 'force-dynamic'
-
 type Args = {
   params: Promise<{
     segments: string[]

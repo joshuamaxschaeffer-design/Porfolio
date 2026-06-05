@@ -8,18 +8,6 @@ const nextConfig: NextConfig = {
   // the build-time gate here. (Run `pnpm tsc` locally for real type-checking.)
   typescript: { ignoreBuildErrors: true },
   eslint: { ignoreDuringBuilds: true },
-  // Keep server-only Payload deps (pino logger, storage handlers) out of the
-  // client/edge bundle. They import Node built-ins (worker_threads, node:assert)
-  // that webpack can't bundle for the browser.
-  serverExternalPackages: [
-    'payload',
-    'pino',
-    'pino-pretty',
-    'pino-abstract-transport',
-    '@payloadcms/storage-vercel-blob',
-    '@payloadcms/plugin-cloud-storage',
-    'react-image-crop',
-  ],
   experimental: {
     // Enables the View Transitions API for smooth cross-route transitions.
     // Falls back gracefully in browsers that don't support it.
