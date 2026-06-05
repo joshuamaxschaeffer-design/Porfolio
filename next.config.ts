@@ -18,6 +18,7 @@ const nextConfig: NextConfig = {
     'pino-abstract-transport',
     '@payloadcms/storage-vercel-blob',
     '@payloadcms/plugin-cloud-storage',
+    'react-image-crop',
   ],
   experimental: {
     // Enables the View Transitions API for smooth cross-route transitions.
