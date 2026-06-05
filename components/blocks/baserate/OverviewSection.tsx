@@ -26,8 +26,10 @@ export function OverviewSection(props: OverviewProps) {
         {dateRange}
       </p>
 
-      <h2 className="mt-10 text-[28px] font-medium leading-none text-[var(--br-ink)]">OVERVIEW</h2>
-      <p className="mt-3 max-w-2xl text-base text-[var(--br-muted)] md:text-lg">{lead}</p>
+      <h2 className="mt-10 text-[32px] font-medium uppercase leading-none text-[var(--br-ink)] md:text-[40px]">
+        OVERVIEW
+      </h2>
+      <p className="mt-3 max-w-3xl text-lg text-[var(--br-muted)] md:text-[22px]">{lead}</p>
 
       <div className="mt-8">
         <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--br-muted-2)]">Role</p>

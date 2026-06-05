@@ -62,11 +62,16 @@ export function ChallengeSection(props: ChallengeProps) {
     }
   }, [updateEdges])
 
+  // Scroll a card to the very left of the track so its left edge lines up with
+  // the heading/intro above (the column's left gutter, which == the track's
+  // left padding). offsetLeft already includes that padding, so subtract it.
   const scrollToCard = useCallback((i: number) => {
     const el = trackRef.current
     if (!el) return
     const card = el.querySelectorAll<HTMLElement>('[data-card]')[i]
-    if (card) el.scrollTo({ left: card.offsetLeft - 4, behavior: 'smooth' })
+    if (!card) return
+    const padLeft = parseFloat(getComputedStyle(el).paddingLeft) || 0
+    el.scrollTo({ left: card.offsetLeft - padLeft, behavior: 'smooth' })
   }, [])
 
   const step = useCallback(
@@ -110,9 +115,11 @@ export function ChallengeSection(props: ChallengeProps) {
   return (
     <section className="bg-[var(--br-bg-2)] py-20 md:py-28">
       <div className="br-container">
-        <h2 className="text-[28px] font-medium leading-none text-[var(--br-ink)]">{heading}</h2>
-        <div className="mt-3 flex items-end justify-between gap-4">
-          <p className="max-w-xl text-base text-neutral-600">{intro}</p>
+        <h2 className="text-[32px] font-medium uppercase leading-none text-[var(--br-ink)] md:text-[40px]">
+          {heading}
+        </h2>
+        <div className="mt-4 flex items-end justify-between gap-4">
+          <p className="max-w-2xl text-lg text-[var(--br-muted)] md:text-[22px]">{intro}</p>
           <div className="hidden shrink-0 gap-2 md:flex">
             <ArrowBtn dir="left" disabled={!canLeft} onClick={() => step(-1)} />
             <ArrowBtn dir="right" disabled={!canRight} onClick={() => step(1)} />
@@ -171,7 +178,7 @@ function ChallengeCardView({
           e.preventDefault()
         }
       }}
-      className={`relative ${CARD_RATIO[card.span]} h-[420px] shrink-0 overflow-hidden rounded-2xl`}
+      className={`relative ${CARD_RATIO[card.span]} h-[600px] shrink-0 overflow-hidden rounded-2xl border border-[var(--br-stroke)]`}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img

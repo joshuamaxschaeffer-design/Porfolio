@@ -28,8 +28,10 @@ export function ArchitectureSection(props: ArchitectureProps) {
 
   return (
     <section className="br-container mt-28 md:mt-40">
-      <h2 className="text-[28px] font-medium leading-none text-[var(--br-ink)]">{heading}</h2>
-      <p className="mt-3 max-w-2xl text-base text-neutral-600 md:text-lg">{intro}</p>
+      <h2 className="text-[32px] font-medium uppercase leading-none text-[var(--br-ink)] md:text-[40px]">
+        {heading}
+      </h2>
+      <p className="mt-4 max-w-3xl text-lg text-[var(--br-muted)] md:text-[22px]">{intro}</p>
 
       {/* Exploration — interactive image stack */}
       <div className="mt-14">

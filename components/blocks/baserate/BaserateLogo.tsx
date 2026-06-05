@@ -1,65 +1,49 @@
 /**
  * Brand marks for the Baserate case study.
- * The Baserate mark is a crisp inline SVG (true vector, scales infinitely);
- * the wordmark is live text in the heading font. Journalytic uses the exact
- * SVG exports from Figma.
+ * These are the real vector logos exported from the Figma source
+ * (public/baserate/logos/*.svg) — true vectors, crisp at any size.
+ *
+ *   baserate-logo.svg      270×36  (mark + BASERATE wordmark)
+ *   baserate-app.svg       100×100 (black app badge)
+ *   journalytic-logo.svg   300×57  (mark + Journalytic wordmark)
+ *   journalytic-app.svg    100×100 (app badge)
  */
 
 const L = '/baserate/logos'
 
-/** Baserate double-mountain mark — inline SVG, scales to any size. */
-export function BaserateMark({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 34 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      {/* back peak (lighter) */}
-      <path d="M20.5 2 33 22H21l-6.2-9.9L20.5 2Z" fill="currentColor" opacity="0.45" />
-      {/* front peak (solid) with a notch */}
-      <path d="M9.5 6 19 22H0L9.5 6Zm0 5.8L5.3 19h8.4L9.5 11.8Z" fill="currentColor" />
-    </svg>
-  )
-}
-
-/** Baserate wordmark: mark + "BASE" (bold) + "RATE" (light), live text. */
+/** Baserate full wordmark (mark + BASERATE), exact vector. 270:36 ratio. */
 export function BaserateWordmark({ className }: { className?: string }) {
-  return (
-    <span className={`inline-flex items-center gap-2 leading-none ${className || ''}`}>
-      <BaserateMark className="h-[0.8em] w-auto" />
-      <span className="tracking-[-0.01em]" style={{ fontFamily: 'var(--br-font-heading)' }}>
-        <span className="font-bold">BASE</span>
-        <span className="font-light">RATE</span>
-      </span>
-    </span>
-  )
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src={`${L}/baserate-logo.svg`} alt="Baserate" className={className} />
 }
 
 /** Full lockup used in the Overview header. */
 export function BaserateLogo({ className }: { className?: string }) {
-  return <BaserateWordmark className={`text-[28px] text-[var(--br-ink)] md:text-[32px] ${className || ''}`} />
+  return <BaserateWordmark className={`h-8 w-auto ${className || ''}`} />
 }
 
-/** App badge: black rounded square with the white mark — used on the product card. */
+/** Baserate app badge (black rounded square w/ mark) — exact vector. */
 export function BaserateBadge({ className }: { className?: string }) {
   return (
-    <span
-      className={`inline-flex items-center justify-center rounded-[20px] bg-black text-white shadow-[var(--br-card-shadow)] ${className || ''}`}
-    >
-      <BaserateMark className="h-[44%] w-auto" />
+    <span className={`inline-flex items-center justify-center ${className || ''}`}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={`${L}/baserate-app.svg`} alt="" aria-hidden className="h-full w-full object-contain" />
     </span>
   )
 }
 
-/** Journalytic wordmark (book + chart mark + text) — exact SVG from Figma. */
+/** Journalytic full wordmark (mark + Journalytic), exact vector. 300:57 ratio. */
 export function JournalyticWordmark({ className }: { className?: string }) {
   // eslint-disable-next-line @next/next/no-img-element
-  return <img src={`${L}/journalytic-wordmark.png`} alt="Journalytic" className={className} />
+  return <img src={`${L}/journalytic-logo.svg`} alt="Journalytic" className={className} />
 }
 
-/** Journalytic app badge — exact SVG from Figma. */
+/** Journalytic app badge — exact vector. */
 export function JournalyticBadge({ className }: { className?: string }) {
   return (
     <span className={`inline-flex items-center justify-center ${className || ''}`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={`${L}/journalytic-badge.png`} alt="" aria-hidden className="h-full w-full object-contain" />
+      <img src={`${L}/journalytic-app.svg`} alt="" aria-hidden className="h-full w-full object-contain" />
     </span>
   )
 }

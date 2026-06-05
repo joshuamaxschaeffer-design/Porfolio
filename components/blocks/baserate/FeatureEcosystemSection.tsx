@@ -16,21 +16,23 @@ interface FeatureEcosystemProps {
 function FeatureColumn({ section }: { section: FeatureSection }) {
   return (
     <div>
-      <div className="flex items-center gap-2.5">
-        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--br-ink)] text-[11px] font-semibold text-white">
+      {/* number badge (26px circle, Recursive ExtraBold 16) + title (24px Lexend SemiBold uppercase) */}
+      <div className="flex items-center gap-2">
+        <span className="br-data flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full bg-[var(--br-ink)] text-[16px] font-extrabold leading-none text-white">
           {section.number}
         </span>
-        <h3 className="text-base font-bold tracking-tight text-[var(--br-ink)] md:text-lg">{section.title}</h3>
+        <h3 className="text-[24px] font-semibold uppercase leading-[26px] text-[var(--br-ink)]">{section.title}</h3>
       </div>
-      <p className="mt-2 max-w-md text-sm leading-snug text-neutral-500">{section.body}</p>
-      <ul className="mt-4 flex flex-wrap gap-2">
+      <p className="mt-2 text-[16px] leading-snug text-[var(--br-muted)]">{section.body}</p>
+      {/* pills: Recursive 14px UPPERCASE, border #d6d6d6, px16 py8, gap10 icon↔text */}
+      <ul className="mt-4 flex flex-wrap gap-x-3 gap-y-4">
         {section.features.map((f) => (
           <li
             key={f.label}
-            className="inline-flex items-center gap-1.5 rounded-md border border-[var(--br-line)] bg-white px-2.5 py-1.5 text-xs text-neutral-700"
+            className="br-data inline-flex items-center gap-2.5 rounded-[var(--br-tag-radius)] border border-[var(--br-stroke)] bg-white px-4 py-2 text-[14px] uppercase text-[var(--br-muted)]"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`/baserate/icons/${f.icon}.svg`} alt="" aria-hidden className="h-3.5 w-3.5 text-neutral-500" />
+            <img src={`/baserate/icons/${f.icon}.svg`} alt="" aria-hidden className="h-4 w-4 shrink-0" />
             {f.label}
           </li>
         ))}
@@ -59,9 +61,10 @@ export function FeatureEcosystemSection(props: FeatureEcosystemProps) {
                 <AutoScrollCarousel row={carousel} startOffset={carousel.offset ?? 0} />
               </div>
             )}
-            {/* Feature columns */}
-            <div className="br-container mt-10">
-              <div className="grid gap-x-12 gap-y-12 md:grid-cols-2">
+            {/* Feature columns. Figma: outer gutters 80px, inner gutter ~40px
+                (left col pr-20 + right col pl-20). br-container already pads 80px. */}
+            <div className="br-container mt-12">
+              <div className="grid gap-x-10 gap-y-14 md:grid-cols-2">
                 {pair.map((section) => (
                   <FeatureColumn key={section.number} section={section} />
                 ))}

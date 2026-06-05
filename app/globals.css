@@ -141,17 +141,18 @@ img {
   font-family: var(--br-font-data);
 }
 
-/* Editorial column. Figma column = 1443px; we cap a touch wider container
- * and pad so the carousels can bleed to the right edge on large screens. */
+/* Editorial column. Figma frame = 1443px with 80px side padding (1283px
+ * content). We reproduce that: cap at 1443 and pad 80px on wide screens so the
+ * content edges land exactly where Figma's do. */
 .br-container {
   margin-inline: auto;
   width: 100%;
-  max-width: 1280px;
+  max-width: 1443px;
   padding-inline: 1.5rem;
 }
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .br-container {
-    padding-inline: 2rem;
+    padding-inline: 5rem; /* 80px — matches Figma */
   }
 }
 
