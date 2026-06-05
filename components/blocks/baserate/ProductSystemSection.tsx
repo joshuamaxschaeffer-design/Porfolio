@@ -21,7 +21,7 @@ export function ProductSystemSection(props: ProductSystemProps) {
   const journalytic = props.journalytic ?? defaults.journalytic
 
   return (
-    <section className="pt-24 md:pt-32">
+    <section className="py-14 md:py-20">
       <div className="br-container">
       <h2 className="text-[32px] font-medium uppercase leading-none text-[var(--br-ink)] md:text-[40px]">
         {heading}
