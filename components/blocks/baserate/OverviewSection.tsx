@@ -42,7 +42,7 @@ export function OverviewSection(props: OverviewProps) {
           {scope.map((s) => (
             <li
               key={s}
-              className="rounded-[var(--br-tag-radius)] border border-[var(--br-gold)] px-3 py-1.5 text-sm text-[var(--br-gold)]"
+              className="br-data rounded-[var(--br-tag-radius)] border border-[var(--br-gold)] px-3 py-1.5 text-[14px] uppercase text-[var(--br-gold)]"
             >
               {s}
             </li>

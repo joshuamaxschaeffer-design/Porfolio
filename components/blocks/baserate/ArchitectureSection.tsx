@@ -50,8 +50,8 @@ export function ArchitectureSection(props: ArchitectureProps) {
             <ul className="mt-6 space-y-6 md:space-y-8">
               {crystalization.items.map((item) => (
                 <li key={item.title}>
-                  <h4 className="text-[18px] font-medium text-[var(--br-ink)] md:text-xl">{item.title}</h4>
-                  <p className="mt-1.5 max-w-md text-base leading-snug text-[var(--br-muted)]">{item.body}</p>
+                  <h4 className="text-[24px] font-medium uppercase leading-[26px] text-[var(--br-ink)]">{item.title}</h4>
+                  <p className="mt-2 max-w-md text-base leading-snug text-[var(--br-muted)]">{item.body}</p>
                 </li>
               ))}
             </ul>

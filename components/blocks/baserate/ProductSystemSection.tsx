@@ -21,17 +21,18 @@ export function ProductSystemSection(props: ProductSystemProps) {
   const journalytic = props.journalytic ?? defaults.journalytic
 
   return (
-    <section className="br-container mt-28 md:mt-40">
+    <section className="bg-[var(--br-bg-2)] py-24 md:py-32">
+      <div className="br-container">
       <h2 className="text-[32px] font-medium uppercase leading-none text-[var(--br-ink)] md:text-[40px]">
         {heading}
       </h2>
-      <p className="mt-4 max-w-2xl text-base leading-relaxed text-[var(--br-muted)] md:text-[22px]">{intro}</p>
+      <p className="mt-4 max-w-3xl text-lg leading-relaxed text-[var(--br-ink)] md:text-[22px]">{intro}</p>
 
-      <ul className="mt-7 flex flex-wrap gap-4">
+      <ul className="mt-6 flex flex-wrap gap-4">
         {pills.map((p) => (
           <li
             key={p}
-            className="br-data rounded-[var(--br-tag-radius)] border border-[var(--br-gold)] px-5 py-3 text-[18px] text-[var(--br-gold)]"
+            className="br-data rounded-[var(--br-tag-radius)] border border-[var(--br-gold)] px-5 py-3 text-[20px] leading-[26px] text-[var(--br-gold)]"
           >
             {p}
           </li>
@@ -48,6 +49,7 @@ export function ProductSystemSection(props: ProductSystemProps) {
           the desktop UI overlaps the (taller) Baserate card; the two phones (the
           right one larger/lower) overlap the (shorter, higher) Journalytic card. */}
       <ProductStage baserate={baserate} journalytic={journalytic} />
+      </div>
     </section>
   )
 }

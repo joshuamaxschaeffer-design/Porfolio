@@ -104,8 +104,8 @@ export function ExplorationStack({ items }: { items: ExplorationItem[] }) {
                   className="block w-full py-5 pl-6 text-left md:py-6"
                 >
                   <h4
-                    className={`text-base font-bold tracking-tight transition-colors md:text-lg ${
-                      selected ? 'text-[var(--br-ink)]' : 'text-neutral-400'
+                    className={`text-[24px] font-medium uppercase leading-[26px] transition-colors ${
+                      selected ? 'text-[var(--br-ink)]' : 'text-[var(--br-muted-2)]'
                     }`}
                   >
                     {item.title}

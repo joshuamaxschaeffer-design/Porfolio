@@ -139,10 +139,10 @@ function Clone({ children }: { children: React.ReactNode }) {
 }
 
 // Carousel cards keep the 16:9 (1920×1080) ratio of the source images/videos so
-// nothing is cropped (object-contain). ~640px wide, per Figma.
+// nothing is cropped (object-contain). 617px wide, per Figma.
 function ImageCard({ src }: { src: string }) {
   return (
-    <div className="relative aspect-video w-[640px] shrink-0 overflow-hidden rounded-[12px] border border-[var(--br-stroke)] bg-white">
+    <div className="relative aspect-video w-[617px] shrink-0 overflow-hidden rounded-[12px] border border-[var(--br-stroke)] bg-white">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={src} alt="" draggable={false} className="pointer-events-none h-full w-full object-contain" />
     </div>
@@ -151,7 +151,7 @@ function ImageCard({ src }: { src: string }) {
 
 function VideoCard({ row }: { row: CarouselRow }) {
   return (
-    <div className="relative aspect-video w-[640px] shrink-0 overflow-hidden rounded-[12px] border border-[var(--br-stroke)] bg-white">
+    <div className="relative aspect-video w-[617px] shrink-0 overflow-hidden rounded-[12px] border border-[var(--br-stroke)] bg-white">
       <video
         className="pointer-events-none h-full w-full object-contain"
         src={row.video}
