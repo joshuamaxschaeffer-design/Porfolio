@@ -1,2 +1,4 @@
-# Large media is served from Vercel Blob, not bundled in the deploy.
-public/baserate/videos/
+# (intentionally empty)
+# The 3 compressed demo videos in public/baserate/videos/ are bundled with the
+# deploy so the feature carousels play without depending on a CDN. Do NOT
+# re-add an exclusion for them here — that was the cause of videos 404ing live.
