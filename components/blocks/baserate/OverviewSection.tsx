@@ -21,7 +21,8 @@ export function OverviewSection(props: OverviewProps) {
       <BaserateLogo className="text-[var(--br-ink)]" />
 
       <p className="br-data mt-3 flex items-center gap-2 text-sm text-[var(--br-muted)]">
-        <CalendarIcon className="h-4 w-4" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/baserate/icons/calendar-icon.svg" alt="" aria-hidden className="h-4 w-4" />
         {dateRange}
       </p>
 
@@ -50,11 +51,4 @@ export function OverviewSection(props: OverviewProps) {
   )
 }
 
-function CalendarIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 16 16" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <rect x="2" y="3" width="12" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.2" />
-      <path d="M2 6h12M5 1.5v3M11 1.5v3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-    </svg>
-  )
-}
+

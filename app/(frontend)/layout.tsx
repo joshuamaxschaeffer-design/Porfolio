@@ -1,5 +1,6 @@
 import type { Viewport } from 'next'
-import { Inter, Lexend_Deca, Noto_Sans, Recursive } from 'next/font/google'
+import { Inter, Noto_Sans } from 'next/font/google'
+import localFont from 'next/font/local'
 import { SmoothScroll } from '@/components/animation/SmoothScroll'
 import { SpeculationRules } from '@/components/loading/SpeculationRules'
 import { PageTransition } from '@/components/loading/PageTransition'
@@ -13,25 +14,26 @@ const inter = Inter({
   weight: ['400', '500', '600', '700'],
 })
 
-// Baserate design-system fonts (match Figma):
-// headings = Lexend Deca, body = Noto Sans, data/mono = Recursive.
-const lexend = Lexend_Deca({
-  subsets: ['latin'],
+// Baserate design-system fonts (match Figma exactly):
+// headings = Lexend Deca, body = Noto Sans, data/pills = Recursive.
+// Lexend + Recursive are self-hosted from the exact variable font files.
+const lexend = localFont({
+  src: '../fonts/LexendDeca.ttf',
   display: 'swap',
   variable: '--font-heading',
-  weight: ['400', '500', '600', '700'],
+  weight: '100 900',
+})
+const recursive = localFont({
+  src: '../fonts/Recursive.ttf',
+  display: 'swap',
+  variable: '--font-data',
+  weight: '300 1000',
 })
 const notoSans = Noto_Sans({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-body',
   weight: ['400', '500', '600', '700'],
-})
-const recursive = Recursive({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-data',
-  weight: ['400', '500'],
 })
 
 export const viewport: Viewport = {

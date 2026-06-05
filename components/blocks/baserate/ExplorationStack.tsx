@@ -27,26 +27,27 @@ export function ExplorationStack({ items }: { items: ExplorationItem[] }) {
 
   return (
     <div className="grid items-center gap-10 md:grid-cols-2 md:gap-16">
-      {/* Image stack. Extra left padding gives the fanned cards room to sit
-          behind the front one without clipping the container edge. */}
-      <div className="relative mx-auto aspect-[4/3] w-full max-w-[520px] pl-12 [perspective:1600px]">
+      {/* Image stack. Container uses the images' real ~874/932 ratio so the full
+          frame shows (no bottom crop). Right padding gives the fanned cards room
+          to skew behind the front one without clipping the container edge. */}
+      <div className="relative mx-auto aspect-[874/932] w-full max-w-[480px] pr-16 [perspective:1400px]">
         {items.map((item, i) => {
           // depth = how far behind the front this card is (0 = front)
           const depth = (i - active + n) % n
           const isFront = depth === 0
-          // Behind cards fan to the left and skew — "2 of the images are skewed behind".
-          const x = isFront ? 0 : -30 * depth
-          const y = isFront ? 0 : 8 * depth
-          const scale = isFront ? 1 : 1 - depth * 0.05
-          const rotateY = isFront ? 0 : 14
-          const skewY = isFront ? 0 : -2.5
+          // Behind cards fan to the RIGHT, rotate and skew so they read as a 3D stack.
+          const x = isFront ? 0 : 44 * depth
+          const y = isFront ? 0 : 6 * depth
+          const scale = isFront ? 1 : 1 - depth * 0.04
+          const rotateY = isFront ? 0 : -22
+          const skewY = isFront ? 0 : 4
           return (
             <motion.button
               key={item.title}
               type="button"
               onClick={() => setActive(i)}
               aria-label={`Show ${item.title}`}
-              className="absolute inset-0 origin-left overflow-hidden rounded-2xl border border-[var(--br-line)] bg-white shadow-[0_20px_50px_-25px_rgba(0,0,0,0.35)] focus:outline-none"
+              className="absolute inset-0 origin-right overflow-hidden rounded-2xl border border-[var(--br-line)] bg-white shadow-[0_20px_50px_-25px_rgba(0,0,0,0.35)] focus:outline-none"
               style={{ zIndex: n - depth }}
               initial={false}
               animate={
@@ -58,15 +59,15 @@ export function ExplorationStack({ items }: { items: ExplorationItem[] }) {
                       scale,
                       rotateY,
                       skewY,
-                      opacity: depth > 2 ? 0 : isFront ? 1 : 0.55,
+                      opacity: depth > 2 ? 0 : isFront ? 1 : 0.7,
                       filter: isFront ? 'blur(0px)' : 'blur(0.5px)',
                     }
               }
               transition={{ type: 'spring', stiffness: 260, damping: 30 }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={item.image} alt={item.title} draggable={false} className="h-full w-full object-cover" />
-              {!isFront && <span className="absolute inset-0 bg-white/30" />}
+              <img src={item.image} alt={item.title} draggable={false} className="h-full w-full object-contain" />
+              {!isFront && <span className="absolute inset-0 bg-white/40" />}
             </motion.button>
           )
         })}

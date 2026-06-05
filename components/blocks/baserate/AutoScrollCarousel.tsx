@@ -138,9 +138,11 @@ function Clone({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }
 
+// Carousel cards match the 16:9 (1920×1080) ratio of the source images/videos,
+// sized large so the UI inside is legible.
 function ImageCard({ src }: { src: string }) {
   return (
-    <div className="relative aspect-[16/10] w-[300px] shrink-0 overflow-hidden rounded-2xl border border-[var(--br-line)] bg-neutral-100 sm:w-[360px]">
+    <div className="relative aspect-video w-[640px] shrink-0 overflow-hidden rounded-2xl border border-[var(--br-line)] bg-neutral-100">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={src} alt="" draggable={false} className="pointer-events-none h-full w-full object-cover" />
     </div>
@@ -149,7 +151,7 @@ function ImageCard({ src }: { src: string }) {
 
 function VideoCard({ row }: { row: CarouselRow }) {
   return (
-    <div className="relative aspect-[16/10] w-[340px] shrink-0 overflow-hidden rounded-2xl border border-[var(--br-line)] bg-neutral-50 sm:w-[420px]">
+    <div className="relative aspect-video w-[640px] shrink-0 overflow-hidden rounded-2xl border border-[var(--br-line)] bg-neutral-50">
       <video
         className="pointer-events-none h-full w-full object-cover"
         src={row.video}
@@ -159,17 +161,6 @@ function VideoCard({ row }: { row: CarouselRow }) {
         playsInline
         preload="metadata"
       />
-      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-        <span className="inline-flex items-center gap-2 rounded-full bg-white/85 px-4 py-2 text-sm font-medium text-[var(--br-ink)] shadow-sm backdrop-blur-sm">
-          <Icon slug={row.centerIcon} className="h-4 w-4" />
-          {row.centerLabel}
-        </span>
-      </div>
     </div>
   )
-}
-
-function Icon({ slug, className }: { slug: string; className?: string }) {
-  // eslint-disable-next-line @next/next/no-img-element
-  return <img src={`/baserate/icons/${slug}.svg`} alt="" aria-hidden className={className} />
 }

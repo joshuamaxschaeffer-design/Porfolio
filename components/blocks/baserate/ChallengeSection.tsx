@@ -9,10 +9,13 @@ interface ChallengeProps {
   cards?: ChallengeCard[]
 }
 
-const SPAN_WIDTH: Record<ChallengeCard['span'], string> = {
-  sm: 'w-[300px] sm:w-[340px]',
-  md: 'w-[340px] sm:w-[400px]',
-  lg: 'w-[560px] sm:w-[680px]',
+// The problem images are all 1150px tall. Two widths: wide = 1920 (ratio ~1.67),
+// narrow = 1204 (ratio ~1.047). Cards keep a fixed height and the real aspect
+// ratio so nothing is cropped. `lg` = wide, everything else = narrow.
+const CARD_RATIO: Record<ChallengeCard['span'], string> = {
+  sm: 'aspect-[1204/1150]',
+  md: 'aspect-[1204/1150]',
+  lg: 'aspect-[1920/1150]',
 }
 
 export function ChallengeSection(props: ChallengeProps) {
@@ -127,8 +130,8 @@ export function ChallengeSection(props: ChallengeProps) {
         onPointerUp={endDrag}
         onPointerCancel={endDrag}
       >
-        {cards.map((card, i) => (
-          <ChallengeCardView key={card.problem} card={card} index={i} dragRef={drag} />
+        {cards.map((card) => (
+          <ChallengeCardView key={card.problem} card={card} dragRef={drag} />
         ))}
       </div>
 
@@ -152,72 +155,31 @@ export function ChallengeSection(props: ChallengeProps) {
 
 function ChallengeCardView({
   card,
-  index,
   dragRef,
 }: {
   card: ChallengeCard
-  index: number
   dragRef: React.MutableRefObject<{ moved: boolean }>
 }) {
-  const dark = card.tone === 'dark'
+  // The image already contains its "Problem N" label and headline baked in,
+  // so the card is just the image at its real aspect ratio (no overlay).
   return (
     <article
       data-card
-      // Cancel the click if the user was dragging.
       onClickCapture={(e) => {
         if (dragRef.current.moved) {
           e.stopPropagation()
           e.preventDefault()
         }
       }}
-      className={`relative ${SPAN_WIDTH[card.span]} aspect-[4/3] shrink-0 overflow-hidden rounded-2xl border border-[var(--br-line)] bg-neutral-100`}
+      className={`relative ${CARD_RATIO[card.span]} h-[420px] shrink-0 overflow-hidden rounded-2xl`}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={card.image}
-        alt=""
+        alt={`Problem ${card.problem}`}
         draggable={false}
-        className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+        className="pointer-events-none h-full w-full object-cover"
       />
-      {dark && (
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
-      )}
-
-      {/* Problem tag */}
-      <span
-        className={`absolute left-4 top-4 rounded-md px-2.5 py-1 text-[11px] font-medium ${
-          dark ? 'bg-white/15 text-white backdrop-blur-sm' : 'bg-neutral-900/5 text-neutral-600'
-        }`}
-      >
-        Problem {card.problem}
-      </span>
-
-      {/* Title + body anchored to bottom */}
-      <div className="absolute inset-x-0 bottom-0 p-5 md:p-6">
-        <h3
-          className={`text-lg font-bold leading-tight tracking-tight md:text-xl ${
-            dark ? 'text-white' : 'text-[var(--br-ink)]'
-          }`}
-        >
-          {card.title.map((t, i) => (
-            <span key={i} style={t.accent ? { color: dark ? 'var(--br-gold-soft)' : 'var(--br-gold)' } : undefined}>
-              {t.text}
-            </span>
-          ))}
-        </h3>
-        {card.body && (
-          <p className={`mt-2 text-sm leading-snug ${dark ? 'text-white/80' : 'text-neutral-600'}`}>
-            {card.body.map((t, i) => (
-              <span
-                key={i}
-                style={t.accent ? { color: dark ? 'var(--br-gold-soft)' : 'var(--br-gold)', fontWeight: 600 } : undefined}
-              >
-                {t.text}
-              </span>
-            ))}
-          </p>
-        )}
-      </div>
     </article>
   )
 }

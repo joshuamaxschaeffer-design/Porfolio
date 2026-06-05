@@ -39,19 +39,22 @@ export function ArchitectureSection(props: ArchitectureProps) {
         </div>
       </div>
 
-      {/* Crystalization — static image + text list */}
+      {/* Crystalization — static image + text list. The tag sits directly above
+          the text items; no dividers between items. */}
       <div className="mt-20 md:mt-28">
-        <Tag>{crystalization.tag}</Tag>
-        <div className="mt-6 grid items-center gap-10 md:grid-cols-2 md:gap-16">
-          <ul className="md:order-1">
-            {crystalization.items.map((item) => (
-              <li key={item.title} className="border-t border-[var(--br-line)] py-5 first:border-t-0 md:py-6">
-                <h4 className="text-base font-bold tracking-tight text-[var(--br-ink)] md:text-lg">{item.title}</h4>
-                <p className="mt-1.5 text-sm leading-snug text-neutral-600">{item.body}</p>
-              </li>
-            ))}
-          </ul>
-          <div className="overflow-hidden rounded-2xl border border-[var(--br-line)] bg-neutral-900 md:order-2">
+        <div className="grid gap-10 md:grid-cols-2 md:gap-16">
+          <div className="md:order-1">
+            <Tag>{crystalization.tag}</Tag>
+            <ul className="mt-6 space-y-6 md:space-y-8">
+              {crystalization.items.map((item) => (
+                <li key={item.title}>
+                  <h4 className="text-[18px] font-medium text-[var(--br-ink)] md:text-xl">{item.title}</h4>
+                  <p className="mt-1.5 max-w-md text-base leading-snug text-[var(--br-muted)]">{item.body}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="overflow-hidden rounded-2xl border border-[var(--br-line)] bg-white md:order-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={crystalization.image} alt="Crystalization" className="w-full" />
           </div>
