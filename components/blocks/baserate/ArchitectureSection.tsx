@@ -14,7 +14,7 @@ interface ArchitectureProps {
 
 function Tag({ children }: { children: React.ReactNode }) {
   return (
-    <span className="inline-block rounded-md border border-[var(--br-gold)] px-2.5 py-1 text-xs font-medium text-[var(--br-gold)]">
+    <span className="br-data inline-block rounded-[var(--br-tag-radius)] border border-[var(--br-gold)] px-3 py-1.5 text-[14px] uppercase text-[var(--br-gold)]">
       {children}
     </span>
   )
@@ -33,12 +33,11 @@ export function ArchitectureSection(props: ArchitectureProps) {
       </h2>
       <p className="mt-4 max-w-3xl text-lg text-[var(--br-muted)] md:text-[22px]">{intro}</p>
 
-      {/* Exploration — interactive image stack */}
+      {/* Exploration — interactive image stack. The tag is rendered INSIDE the
+          stack's right-hand text column (like Crystalization), not above the
+          whole block. */}
       <div className="mt-14">
-        <Tag>{exploration.tag}</Tag>
-        <div className="mt-6">
-          <ExplorationStack items={exploration.items} />
-        </div>
+        <ExplorationStack items={exploration.items} tag={exploration.tag} />
       </div>
 
       {/* Crystalization — static image + text list. The tag sits directly above

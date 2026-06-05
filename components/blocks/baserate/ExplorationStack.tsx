@@ -17,7 +17,7 @@ export interface ExplorationItem {
  *    item slides the line to it; clicking selects it, which fades the current
  *    top image out, drops it to the back, and brings the others forward.
  */
-export function ExplorationStack({ items }: { items: ExplorationItem[] }) {
+export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag?: string }) {
   const reduce = useReducedMotion()
   const [active, setActive] = useState(0)
   const [hover, setHover] = useState<number | null>(null)
@@ -79,19 +79,27 @@ export function ExplorationStack({ items }: { items: ExplorationItem[] }) {
         })}
       </div>
 
-      {/* Text items with vertical indicator line */}
-      <div className="relative">
-        {/* track */}
-        <div className="absolute left-0 top-0 h-full w-px bg-[var(--br-line)]" />
-        {/* moving line */}
-        <motion.div
-          className="absolute left-0 w-[2px] bg-[var(--br-gold)]"
-          initial={false}
-          animate={{ top: `${(lineIndex / n) * 100}%` }}
-          transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 400, damping: 35 }}
-          style={{ height: `${100 / n}%` }}
-        />
-        <ul>
+      {/* Text column. The "Exploration" tag sits above the items — matching how
+          "Crystalization" sits above its text items in the next section. */}
+      <div>
+        {tag && (
+          <span className="br-data mb-6 ml-6 inline-block rounded-[var(--br-tag-radius)] border border-[var(--br-gold)] px-3 py-1.5 text-[14px] uppercase text-[var(--br-gold)]">
+            {tag}
+          </span>
+        )}
+        {/* items with vertical indicator line */}
+        <div className="relative">
+          {/* track */}
+          <div className="absolute left-0 top-0 h-full w-px bg-[var(--br-line)]" />
+          {/* moving line */}
+          <motion.div
+            className="absolute left-0 w-[2px] bg-[var(--br-gold)]"
+            initial={false}
+            animate={{ top: `${(lineIndex / n) * 100}%` }}
+            transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 400, damping: 35 }}
+            style={{ height: `${100 / n}%` }}
+          />
+          <ul>
           {items.map((item, i) => {
             const selected = i === active
             return (
@@ -123,7 +131,8 @@ export function ExplorationStack({ items }: { items: ExplorationItem[] }) {
               </li>
             )
           })}
-        </ul>
+          </ul>
+        </div>
       </div>
     </div>
   )

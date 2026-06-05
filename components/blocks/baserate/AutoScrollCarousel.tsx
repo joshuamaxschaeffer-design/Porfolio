@@ -21,7 +21,7 @@ export interface CarouselRow {
  */
 export function AutoScrollCarousel({
   row,
-  speed = 28,
+  speed = 14,
   startOffset = 0,
 }: {
   row: CarouselRow
@@ -50,6 +50,15 @@ export function AutoScrollCarousel({
     return () => ro.disconnect()
   }, [])
 
+  // Wrap ANY value into the window (-half, 0] so the loop is seamless in BOTH
+  // directions — there is never a left or right edge to hit.
+  const wrap = (v: number) => {
+    const half = halfRef.current || 1
+    let w = v % half
+    if (w > 0) w -= half
+    return w
+  }
+
   // Drift loop via rAF on the motion value.
   useEffect(() => {
     if (reduce || !ready) return
@@ -59,11 +68,7 @@ export function AutoScrollCarousel({
       const dt = (t - last.current) / 1000
       last.current = t
       if (!dragging.current) {
-        let next = x.get() - speed * dt
-        const half = halfRef.current || 1
-        // wrap: keep within (-half, 0]
-        if (next <= -half) next += half
-        x.set(next)
+        x.set(wrap(x.get() - speed * dt))
       }
       raf = requestAnimationFrame(tick)
     }
@@ -72,15 +77,8 @@ export function AutoScrollCarousel({
       cancelAnimationFrame(raf)
       last.current = null
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reduce, ready, speed, x])
-
-  // Normalize x after a drag so it stays inside the wrap window.
-  const normalize = () => {
-    const half = halfRef.current || 1
-    let v = x.get() % half
-    if (v > 0) v -= half
-    x.set(v)
-  }
 
   const drag = useRef({ down: false, startX: 0, startVal: 0 })
   const onPointerDown = (e: React.PointerEvent) => {
@@ -90,12 +88,13 @@ export function AutoScrollCarousel({
   }
   const onPointerMove = (e: React.PointerEvent) => {
     if (!drag.current.down) return
-    x.set(drag.current.startVal + (e.clientX - drag.current.startX))
+    // Wrap while dragging so dragging right never reveals an empty left edge.
+    x.set(wrap(drag.current.startVal + (e.clientX - drag.current.startX)))
   }
   const onPointerUp = (e: React.PointerEvent) => {
     drag.current.down = false
     dragging.current = false
-    normalize()
+    x.set(wrap(x.get()))
     try {
       ;(e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId)
     } catch {}
@@ -150,16 +149,43 @@ function ImageCard({ src }: { src: string }) {
 }
 
 function VideoCard({ row }: { row: CarouselRow }) {
+  const ref = useRef<HTMLVideoElement>(null)
+
+  // `autoPlay` alone is unreliable for muted videos (especially off-screen at
+  // mount), so we force `.play()` once the element can play, and retry when it
+  // scrolls into view. Always muted, so autoplay policy allows it.
+  useEffect(() => {
+    const v = ref.current
+    if (!v) return
+    v.muted = true
+    const tryPlay = () => {
+      const p = v.play()
+      if (p && typeof p.catch === 'function') p.catch(() => {})
+    }
+    tryPlay()
+    v.addEventListener('canplay', tryPlay)
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && tryPlay()),
+      { threshold: 0.1 },
+    )
+    io.observe(v)
+    return () => {
+      v.removeEventListener('canplay', tryPlay)
+      io.disconnect()
+    }
+  }, [])
+
   return (
     <div className="relative aspect-video w-[617px] shrink-0 overflow-hidden rounded-[12px] border border-[var(--br-stroke)] bg-white">
       <video
+        ref={ref}
         className="pointer-events-none h-full w-full object-contain"
         src={row.video}
         muted
         autoPlay
         loop
         playsInline
-        preload="metadata"
+        preload="auto"
       />
     </div>
   )

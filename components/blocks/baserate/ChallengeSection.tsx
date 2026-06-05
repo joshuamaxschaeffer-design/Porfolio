@@ -130,7 +130,7 @@ export function ChallengeSection(props: ChallengeProps) {
       {/* Draggable track, bleeds to the right edge */}
       <div
         ref={trackRef}
-        className="br-noscrollbar br-grab mt-8 flex gap-5 overflow-x-auto overscroll-x-contain scroll-smooth pb-2 pl-[max(1.5rem,calc((100vw-1280px)/2+2rem))] pr-6 select-none"
+        className="br-noscrollbar br-grab mt-8 flex gap-5 overflow-x-auto overscroll-x-contain scroll-smooth pb-2 pl-[max(1.5rem,calc((100vw-1443px)/2+5rem))] pr-6 select-none"
         style={{ touchAction: 'pan-y' }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}

@@ -40,7 +40,7 @@ export const challenge = {
   cards: [
     {
       problem: 1,
-      span: 'md',
+      span: 'lg',
       tone: 'dark',
       image: `${IMG}/challenge/problem-1.png`,
       title: [
@@ -178,7 +178,7 @@ export const productSystem = {
     badge: 'Premium',
     tagline: 'B2B Operating System for Modern Investment Teams',
     sub: 'Full features that touch the entire investment process.',
-    screenshot: `${IMG}/system/baserate-docs.png`,
+    screenshot: `${IMG}/system/baserate-desktop-ui.png`,
   },
   journalytic: {
     emphasized: false,
