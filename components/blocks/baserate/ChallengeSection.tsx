@@ -117,7 +117,7 @@ export function ChallengeSection(props: ChallengeProps) {
   }
 
   return (
-    <section className="bg-[var(--br-bg-2)] py-14 md:py-20">
+    <section className="bg-[var(--br-bg-2)] py-20 md:py-[160px]">
       <div className="br-container">
         <h2 className="text-[32px] font-medium uppercase leading-none text-[var(--br-ink)] md:text-[40px]">
           {heading}

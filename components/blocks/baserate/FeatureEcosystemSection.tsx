@@ -50,7 +50,7 @@ export function FeatureEcosystemSection(props: FeatureEcosystemProps) {
   for (let i = 0; i < sections.length; i += 2) pairs.push(sections.slice(i, i + 2))
 
   return (
-    <section className="pb-14 md:pb-20">
+    <section className="pb-20 pt-[120px] md:pb-[160px] md:pt-[120px]">
       {pairs.map((pair, p) => {
         const carousel = carousels[p]
         return (

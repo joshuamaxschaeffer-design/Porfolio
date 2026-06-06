@@ -27,7 +27,7 @@ export function ArchitectureSection(props: ArchitectureProps) {
   const crystalization = props.crystalization ?? defaults.crystalization
 
   return (
-    <section className="br-container py-14 md:py-20">
+    <section className="br-container py-20 md:py-[160px]">
       <h2 className="text-[32px] font-medium uppercase leading-none text-[var(--br-ink)] md:text-[40px]">
         {heading}
       </h2>
