@@ -33,7 +33,7 @@ export function ExplorationStack({ items }: { items: ExplorationItem[] }) {
           forward (flat); the cards behind it angle away in 3D (rotateY), getting
           the foreshortened trapezoidal look, fanning to the left. Selecting a
           card brings it to the front and pushes the others back. */}
-      <div className="relative mx-auto aspect-[874/932] w-full max-w-[440px] pl-20" style={{ perspective: '1200px' }}>
+      <div className="relative mx-auto aspect-[874/932] w-full max-w-[440px] pl-8 md:pl-20" style={{ perspective: '1200px' }}>
         {items.map((item, i) => {
           // depth = how far behind the front this card is (0 = front)
           const depth = (i - current + n) % n

@@ -131,11 +131,13 @@ export function ChallengeSection(props: ChallengeProps) {
         </div>
       </div>
 
-      {/* Draggable track, bleeds to the right edge */}
+      {/* Draggable track, bleeds to the right edge. On mobile it's a scroll-snap
+          carousel (one ~88vw card per view with a peek); on desktop it stays a
+          free drag track. (Baserate Mobile Spec §2.) */}
       <div
         ref={trackRef}
-        className="br-noscrollbar br-grab mt-8 flex gap-5 overflow-x-auto overscroll-x-contain scroll-smooth pb-2 pl-[max(1.5rem,calc((100vw-1443px)/2+5rem))] pr-6 select-none"
-        style={{ touchAction: 'pan-y' }}
+        className="br-noscrollbar br-grab mt-8 flex gap-5 overflow-x-auto overscroll-x-contain scroll-smooth pb-2 pl-[max(1.5rem,calc((100vw-1443px)/2+5rem))] pr-6 select-none snap-x snap-mandatory lg:snap-none"
+        style={{ touchAction: 'pan-y', scrollPaddingInline: '1.5rem' }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}
@@ -187,7 +189,7 @@ function ChallengeCardView({
           e.preventDefault()
         }
       }}
-      className={`relative ${CARD_RATIO[card.span]} h-[600px] shrink-0 rounded-2xl bg-white`}
+      className={`relative ${CARD_RATIO[card.span]} w-[88vw] max-w-[88vw] shrink-0 snap-start rounded-2xl bg-white lg:h-[600px] lg:w-auto lg:max-w-none`}
     >
       {/* image clipped to the radius in its own layer */}
       <div className="absolute inset-0 overflow-hidden rounded-2xl">

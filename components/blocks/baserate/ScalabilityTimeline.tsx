@@ -109,16 +109,51 @@ export function ScalabilityTimeline() {
         />
       </div>
 
-      {/* ----- Mobile fallback: clean vertical fade-back stack ----- */}
-      <div className="mx-auto mt-10 flex max-w-md flex-col gap-5 px-6 md:hidden">
-        {frames.map((frame, i) => (
-          <div key={frame.image} className="min-w-0" style={{ opacity: 1 - i * 0.14 }}>
-            <div className="overflow-hidden rounded-xl border border-white/10 bg-white shadow-lg">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={frame.image} alt="Baserate screen" className="w-full" />
-            </div>
-          </div>
-        ))}
+      {/* ----- Mobile: clamped depth stack. The perspective scene can't fit a
+          phone (Baserate Mobile Spec §7), so we keep the *metaphor* — scrolling
+          DOWN = moving forward in time — as a vertical sequence with a shallow,
+          clamped depth cue (decreasing scale floored so text stays legible, +
+          decreasing opacity, + a slight overlap) and a thin rail down the side
+          echoing the desktop timeline. No live blur (GPU-cheap). ----- */}
+      <div className="relative mx-auto mt-10 max-w-md px-6 md:hidden">
+        {/* thin rail running down the stack */}
+        <div
+          aria-hidden
+          className="absolute bottom-6 left-[34px] top-2 w-px"
+          style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.45), rgba(255,255,255,0.06))' }}
+        />
+        <div className="flex flex-col">
+          {frames.map((frame, i) => {
+            // clamp the falloff: scale floors at 0.78 so the deepest card's UI
+            // stays readable; opacity floors at 0.45; cards overlap slightly.
+            const scale = Math.max(0.78, 1 - i * 0.05)
+            const opacity = Math.max(0.45, 1 - i * 0.12)
+            return (
+              <div
+                key={frame.image}
+                className="relative min-w-0"
+                style={{
+                  transform: `scale(${scale})`,
+                  transformOrigin: 'center top',
+                  opacity,
+                  marginTop: i === 0 ? 0 : -18,
+                  zIndex: frames.length - i,
+                }}
+              >
+                {/* floor dot on the rail, aligned to this card */}
+                <span
+                  aria-hidden
+                  className="absolute -left-[2px] top-5 h-2 w-2 -translate-x-1/2 rounded-full"
+                  style={{ background: '#000', border: '1.5px solid rgba(255,255,255,0.9)' }}
+                />
+                <div className="ml-6 overflow-hidden rounded-xl border border-white/10 bg-white shadow-[0_20px_50px_-24px_rgba(0,0,0,0.7)]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={frame.image} alt="Baserate screen" className="w-full" />
+                </div>
+              </div>
+            )
+          })}
+        </div>
       </div>
     </>
   )

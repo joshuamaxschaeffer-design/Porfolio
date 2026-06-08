@@ -38,6 +38,19 @@ export function AutoScrollCarousel({
   const last = useRef<number | null>(null)
   const [ready, setReady] = useState(false)
 
+  // On mobile/touch the auto-drifting marquee with tiny 617px cards reads as
+  // illegible motion (see Baserate Mobile Spec §5). There we switch to a native
+  // CSS scroll-snap carousel: ~85vw cards the user swipes, no auto-drift. We
+  // detect that mode with a media query (coarse pointer OR < lg width).
+  const [snapMode, setSnapMode] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 1023px), (pointer: coarse)')
+    const apply = () => setSnapMode(mq.matches)
+    apply()
+    mq.addEventListener('change', apply)
+    return () => mq.removeEventListener('change', apply)
+  }, [])
+
   // The track renders COPIES copies of the content back-to-back. We wrap x
   // within one copy's width, so as long as there are >=3 copies the viewport is
   // always covered no matter where a (fast) drag lands — no empty edge ever.
@@ -65,9 +78,10 @@ export function AutoScrollCarousel({
     return w
   }
 
-  // Drift loop via rAF on the motion value.
+  // Drift loop via rAF on the motion value. Skipped in snapMode (mobile/touch),
+  // where the user drives a native scroll-snap track instead.
   useEffect(() => {
-    if (reduce || !ready) return
+    if (reduce || !ready || snapMode) return
     let raf = 0
     const tick = (t: number) => {
       if (last.current == null) last.current = t
@@ -118,6 +132,28 @@ export function AutoScrollCarousel({
   })
   if (mid >= sequence.length) items.push(<VideoCard key="v-end" row={row} />)
 
+  // Mobile / touch: native CSS scroll-snap carousel — one large ~85vw card per
+  // view with a peek of the next, user-swiped, no auto-drift. One copy of the
+  // sequence (no infinite loop needed when the user is in control).
+  if (snapMode) {
+    return (
+      <div
+        className="br-snaprow flex gap-4 overflow-x-auto overscroll-x-contain px-6 pb-2"
+        style={{
+          scrollSnapType: 'x mandatory',
+          scrollPaddingInline: '1.5rem',
+          WebkitOverflowScrolling: 'touch',
+        }}
+      >
+        {items.map((node, i) => (
+          <div key={`s-${i}`} className="shrink-0 snap-start" style={{ scrollSnapAlign: 'start' }}>
+            {node}
+          </div>
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div className="br-grab overflow-hidden" style={{ touchAction: 'pan-y' }}>
       <motion.div
@@ -147,7 +183,7 @@ function Clone({ children }: { children: React.ReactNode }) {
 // nothing is cropped (object-contain). 617px wide, per Figma.
 function ImageCard({ src }: { src: string }) {
   return (
-    <div className="relative aspect-video w-[617px] shrink-0 overflow-hidden rounded-[12px] border border-[var(--br-stroke)] bg-white">
+    <div className="relative aspect-video w-[85vw] max-w-[617px] shrink-0 overflow-hidden rounded-[12px] border border-[var(--br-stroke)] bg-white lg:w-[617px]">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={src} alt="" draggable={false} className="pointer-events-none h-full w-full object-contain" />
     </div>
@@ -238,7 +274,7 @@ function VideoCard({ row }: { row: CarouselRow }) {
   }, [start])
 
   return (
-    <div className="relative aspect-video w-[617px] shrink-0 overflow-hidden rounded-[12px] border border-[var(--br-stroke)] bg-white">
+    <div className="relative aspect-video w-[85vw] max-w-[617px] shrink-0 overflow-hidden rounded-[12px] border border-[var(--br-stroke)] bg-white lg:w-[617px]">
       <video
         ref={ref}
         className="pointer-events-none h-full w-full object-contain"

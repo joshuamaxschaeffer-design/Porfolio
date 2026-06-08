@@ -79,9 +79,14 @@ export function AIPrototypingPanel({
         </div>
       </div>
 
-      {/* ----- Mobile fallback: stacked, UI under the video ----- */}
+      {/* ----- Mobile: video leads (it's the actual deliverable); below it, a
+          single-column CHAT-ONLY recreation of the Claude UI at full width so
+          the text stays legible. Scaling the full 3-column 885px canvas to a
+          ~358px column makes text ~4px (Baserate Mobile Spec §9) — so we show
+          the representative region (the chat that builds the Pairwise feature)
+          rather than shrinking the whole interface. ----- */}
       <div className="mt-8 flex flex-col gap-4 md:hidden">
-        <div className="overflow-hidden rounded-xl border border-white/10 bg-[#0d0f15]" style={{ aspectRatio: '16 / 9' }}>
+        <div className="overflow-hidden rounded-xl border border-white/10 bg-[#0d0f15] shadow-[0_24px_60px_-30px_rgba(0,0,0,0.8)]" style={{ aspectRatio: '16 / 9' }}>
           {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
           <video
             className="pointer-events-none h-full w-full object-cover"
@@ -97,8 +102,8 @@ export function AIPrototypingPanel({
             onContextMenu={(e) => e.preventDefault()}
           />
         </div>
-        <div className="overflow-hidden rounded-xl border border-black/10 bg-white" style={{ aspectRatio: '885 / 560' }}>
-          <ScaledClaudeUI />
+        <div className="h-[460px] overflow-hidden rounded-xl border border-black/10 bg-white shadow-[0_24px_60px_-30px_rgba(0,0,0,0.6)]">
+          <ClaudeUI mobile />
         </div>
       </div>
     </div>
@@ -168,7 +173,21 @@ const RECENTS = [
   'Supabase realtime sync',
 ]
 
-export function ClaudeUI() {
+export function ClaudeUI({ mobile = false }: { mobile?: boolean }) {
+  // Mobile: a single full-width column showing just the chat — the
+  // representative region of the interface — at legible, unscaled text sizes.
+  if (mobile) {
+    return (
+      <div
+        className="flex h-full w-full flex-col bg-white text-[13px] text-[#1f1f1f] select-none"
+        style={{ fontFamily: 'ui-sans-serif, system-ui, sans-serif', WebkitUserSelect: 'none', userSelect: 'none' }}
+        onMouseDown={(e) => e.preventDefault()}
+      >
+        <ChatColumn mobile />
+      </div>
+    )
+  }
+
   return (
     <div
       className="grid h-full w-full grid-cols-[26%_1fr_28%] bg-white text-[#1f1f1f] select-none"
@@ -262,7 +281,7 @@ const PROMPT =
 const REPLY =
   'Got it — built CreatePairwiseRankModal with the question picker + all-pairs/budget toggle, the one-pair-at-a-time voting flow, Bayesian-adjusted scoring, and the results table with per-row threads (others blurred until everyone votes). Reuses Ticker + CommentSystem. Live in the prototype.'
 
-function ChatColumn() {
+function ChatColumn({ mobile = false }: { mobile?: boolean }) {
   const [msgs, setMsgs] = useState<ChatMsg[]>(SEED_CHAT)
   const [typed, setTyped] = useState('')
   const [phase, setPhase] = useState<'idle' | 'typing' | 'thinking' | 'reply'>('idle')
@@ -319,14 +338,14 @@ function ChatColumn() {
   return (
     <div className="flex h-full flex-col">
       {/* breadcrumb */}
-      <div className="flex items-center gap-2 border-b border-black/8 px-[4%] py-[3%] text-[11px] text-black/55">
+      <div className={`flex items-center gap-2 border-b border-black/8 ${mobile ? 'px-4 py-3 text-[12px]' : 'px-[4%] py-[3%] text-[11px]'} text-black/55`}>
         <span className="font-semibold text-black/80">Baserate Toolkit</span>
         <span className="text-black/30">/</span>
         <span>Pairwise tool — Figma import</span>
       </div>
 
       {/* conversation */}
-      <div className="flex min-h-0 flex-1 flex-col justify-end gap-[3%] overflow-hidden px-[5%] py-[4%] text-[11px] leading-[1.55]">
+      <div className={`flex min-h-0 flex-1 flex-col justify-end overflow-hidden leading-[1.55] ${mobile ? 'gap-3 px-4 py-4 text-[13px]' : 'gap-[3%] px-[5%] py-[4%] text-[11px]'}`}>
         {msgs.map((m, i) =>
           m.who === 'claude' ? (
             <div key={i} className="text-black/75">
@@ -349,9 +368,9 @@ function ChatColumn() {
       </div>
 
       {/* composer with live-typed text + send button (mic swapped out) */}
-      <div className="mx-[4%] mb-[4%] rounded-lg border border-black/12 px-[3%] py-[2.5%] text-[11px] shadow-sm">
+      <div className={`rounded-lg border border-black/12 shadow-sm ${mobile ? 'mx-4 mb-3 px-3 py-2.5 text-[12px]' : 'mx-[4%] mb-[4%] px-[3%] py-[2.5%] text-[11px]'}`}>
         <div
-          className={`max-h-[64px] overflow-hidden leading-[1.5] ${canSend ? 'text-black/80' : 'text-black/40'}`}
+          className={`overflow-hidden leading-[1.5] ${mobile ? 'max-h-[88px]' : 'max-h-[64px]'} ${canSend ? 'text-black/80' : 'text-black/40'}`}
           style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
         >
           {canSend ? (
