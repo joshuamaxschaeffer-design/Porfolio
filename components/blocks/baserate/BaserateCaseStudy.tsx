@@ -3,6 +3,7 @@ import { ChallengeSection } from './ChallengeSection'
 import { ArchitectureSection } from './ArchitectureSection'
 import { ProductSystemSection } from './ProductSystemSection'
 import { FeatureEcosystemSection } from './FeatureEcosystemSection'
+import { DesignSystemsSection } from './DesignSystemsSection'
 
 export interface BaserateCaseStudyProps {
   /** Overview overrides */
@@ -25,7 +26,7 @@ export interface BaserateCaseStudyProps {
  */
 export function BaserateCaseStudy(props: BaserateCaseStudyProps = {}) {
   return (
-    <article className="br-article bg-white pb-32">
+    <article className="br-article bg-white">
       <OverviewSection
         dateRange={props.dateRange}
         lead={props.lead}
@@ -41,6 +42,8 @@ export function BaserateCaseStudy(props: BaserateCaseStudyProps = {}) {
         <ProductSystemSection intro={props.productSystemIntro} />
         <FeatureEcosystemSection />
       </div>
+      {/* Dark closing coda — bleeds edge to edge, so no article bottom padding. */}
+      <DesignSystemsSection />
     </article>
   )
 }

@@ -1,5 +1,5 @@
 import type { Viewport } from 'next'
-import { Inter, Noto_Sans } from 'next/font/google'
+import { Inter, Noto_Sans, Roboto } from 'next/font/google'
 import localFont from 'next/font/local'
 import { SmoothScroll } from '@/components/animation/SmoothScroll'
 import { SpeculationRules } from '@/components/loading/SpeculationRules'
@@ -35,6 +35,14 @@ const notoSans = Noto_Sans({
   variable: '--font-body',
   weight: ['400', '500', '600', '700'],
 })
+// Roboto — used by the Baserate product UI components ported into the Handoff
+// section, so they render in the exact product typeface. Self-hosted at build.
+const roboto = Roboto({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-roboto',
+  weight: ['400', '500', '700'],
+})
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -56,7 +64,7 @@ export default function FrontendLayout({ children }: { children: React.ReactNode
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${lexend.variable} ${notoSans.variable} ${recursive.variable}`}
+      className={`${inter.variable} ${lexend.variable} ${notoSans.variable} ${recursive.variable} ${roboto.variable}`}
     >
       <head>
         <SpeculationRules />

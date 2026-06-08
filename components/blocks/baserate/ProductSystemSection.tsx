@@ -50,6 +50,8 @@ export function ProductSystemSection(props: ProductSystemProps) {
         productsHeading={productsHeading}
         productsIntro={productsIntro}
       />
+      {/* 150px of breathing room below the 2 PRODUCTS block for impact */}
+      <div aria-hidden className="h-[150px]" />
       </div>
     </section>
   )

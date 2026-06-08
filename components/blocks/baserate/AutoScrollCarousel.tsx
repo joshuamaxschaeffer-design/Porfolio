@@ -10,6 +10,8 @@ export interface CarouselRow {
   images: string[]
   /** horizontal start offset in px, used to stagger rows from each other */
   offset?: number
+  /** seconds to skip from the start of the video (intro trim); loops back here */
+  videoStart?: number
 }
 
 /**
@@ -150,17 +152,44 @@ function ImageCard({ src }: { src: string }) {
 
 function VideoCard({ row }: { row: CarouselRow }) {
   const ref = useRef<HTMLVideoElement>(null)
+  const start = row.videoStart ?? 0
 
   // Muted autoplay is a core feature, but `autoPlay` alone is unreliable in
   // real browsers (off-screen at mount, buffering, deferred autoplay policy).
   // We aggressively force playback: set muted, call play() on every readiness
   // event, poll until it's actually advancing, retry on visibility, and fall
   // back to the first user interaction if the browser still refuses.
+  // Intro trim: seek to `start` once metadata is known, and loop back to
+  // `start` (not 0) via the `ended` event instead of the native `loop` attr.
   useEffect(() => {
     const v = ref.current
     if (!v) return
     v.muted = true
     v.defaultMuted = true
+
+    let seeded = false
+    const seekToStart = () => {
+      if (start > 0 && !isNaN(v.duration) && start < v.duration) {
+        try {
+          v.currentTime = start
+        } catch {}
+      }
+    }
+    // Seek to the start offset the first time we know the duration.
+    const onMeta = () => {
+      if (!seeded) {
+        seeded = true
+        seekToStart()
+      }
+    }
+    // Manual loop: when it ends, jump back to the offset and keep playing.
+    const onEnded = () => {
+      seekToStart()
+      const p = v.play()
+      if (p && typeof p.catch === 'function') p.catch(() => {})
+    }
+    v.addEventListener('loadedmetadata', onMeta)
+    v.addEventListener('ended', onEnded)
 
     let stop = false
     const tryPlay = () => {
@@ -189,17 +218,20 @@ function VideoCard({ row }: { row: CarouselRow }) {
     window.addEventListener('keydown', onGesture, { once: true })
     window.addEventListener('scroll', onGesture, { once: true, passive: true })
 
+    if (v.readyState >= 1) onMeta()
     tryPlay()
     return () => {
       stop = true
       clearInterval(poll)
       evts.forEach((e) => v.removeEventListener(e, tryPlay))
+      v.removeEventListener('loadedmetadata', onMeta)
+      v.removeEventListener('ended', onEnded)
       io.disconnect()
       window.removeEventListener('pointerdown', onGesture)
       window.removeEventListener('keydown', onGesture)
       window.removeEventListener('scroll', onGesture)
     }
-  }, [])
+  }, [start])
 
   return (
     <div className="relative aspect-video w-[617px] shrink-0 overflow-hidden rounded-[12px] border border-[var(--br-stroke)] bg-white">
@@ -209,7 +241,6 @@ function VideoCard({ row }: { row: CarouselRow }) {
         src={row.video}
         muted
         autoPlay
-        loop
         playsInline
         preload="auto"
       />

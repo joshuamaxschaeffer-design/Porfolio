@@ -321,6 +321,7 @@ export const featureCarousels = [
     video: videoSrc('decision-demo.mp4'),
     images: [`${IMG}/system/decision-builder.png`, `${IMG}/system/baserate-docs.png`],
     offset: 0,
+    videoStart: 50, // skip the first 50s intro
   },
   {
     centerLabel: 'Idea Lists',
@@ -328,6 +329,7 @@ export const featureCarousels = [
     video: videoSrc('baserate-idea-list-demo.mp4'),
     images: [`${IMG}/system/idea-lists.png`, `${IMG}/system/tasks.png`, `${IMG}/system/calendar.png`],
     offset: 150,
+    videoStart: 30, // skip the first 30s intro
   },
   {
     centerLabel: 'Conviction',
@@ -335,5 +337,39 @@ export const featureCarousels = [
     video: videoSrc('conviction-demo-video.mp4'),
     images: [`${IMG}/system/reporting.png`, `${IMG}/system/mood-graph.png`, `${IMG}/system/chat.png`],
     offset: 75,
+    videoStart: 40, // skip the first 40s intro
   },
 ]
+
+/* ============================================================
+ * Design Systems & Implementation — the dark closing section.
+ * Header + four panels: Component Libraries (artifact), Scalability
+ * (3D receding timeline), Handoff (live UI + code box), AI Prototyping (TODO).
+ * ============================================================ */
+
+export const designSystems = {
+  heading: 'DESIGN SYSTEMS & IMPLEMENTATION',
+  components: {
+    title: 'COMPONENT LIBRARIES',
+    body: 'Full component libraries from icons to larger complex components',
+    artifact: `${IMG}/components.png`,
+  },
+  scalability: {
+    title: 'SCALABILITY',
+    body: 'Designed with future implementations in mind',
+    /**
+     * Screens float above a timeline that recedes into 3D space toward the
+     * top-right. Front (index 0) = most recent / most complex, sharp and bright;
+     * each step back gets smaller, dimmer and softer — the product's history
+     * vanishing into the distance. `date` labels the dot on the timeline.
+     */
+    frames: [
+      { image: `${IMG}/scalability/scalability-6.png`, date: '2026' },
+      { image: `${IMG}/scalability/scalability-5.png`, date: '2025' },
+      { image: `${IMG}/scalability/scalability-4.png`, date: '2024' },
+      { image: `${IMG}/scalability/scalability-3.png`, date: '2023' },
+      { image: `${IMG}/scalability/scalability-2.png`, date: '2022' },
+      { image: `${IMG}/scalability/scalability-1.png`, date: 'MVP' },
+    ],
+  },
+}
