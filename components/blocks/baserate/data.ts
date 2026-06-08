@@ -364,12 +364,12 @@ export const designSystems = {
      * vanishing into the distance. `date` labels the dot on the timeline.
      */
     frames: [
-      { image: `${IMG}/scalability/scalability-6.png`, date: '2026' },
-      { image: `${IMG}/scalability/scalability-5.png`, date: '2027' },
-      { image: `${IMG}/scalability/scalability-4.png`, date: '2028' },
-      { image: `${IMG}/scalability/scalability-3.png`, date: '2029' },
-      { image: `${IMG}/scalability/scalability-2.png`, date: '2030' },
-      { image: `${IMG}/scalability/scalability-1.png`, date: '2031' },
+      { image: `${IMG}/scalability/scalability-1.png`, date: '2026' },
+      { image: `${IMG}/scalability/scalability-2.png`, date: '2027' },
+      { image: `${IMG}/scalability/scalability-3.png`, date: '2028' },
+      { image: `${IMG}/scalability/scalability-4.png`, date: '2029' },
+      { image: `${IMG}/scalability/scalability-5.png`, date: '2030' },
+      { image: `${IMG}/scalability/scalability-6.png`, date: '2031' },
     ],
   },
 }

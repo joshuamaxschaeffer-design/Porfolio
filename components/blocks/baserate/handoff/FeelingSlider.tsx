@@ -219,27 +219,44 @@ export function FeelingSlider({
                 </div>
               )}
 
-              <div
-                style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: '50%',
-                  background: 'white',
-                  border: `2px solid ${hasValue || dragging ? pinColor : '#e3e3e3'}`,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: hovering && hasValue ? `0 0 0 4px ${pinColor}18` : 'none',
-                }}
-              >
-                {showPlus ? (
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                    <path d="M6 1V11M1 6H11" stroke="#999" strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
-                ) : hasValue || dragging ? (
-                  <div style={{ width: 12, height: 12, borderRadius: '50%', background: dotColor }} />
-                ) : null}
-              </div>
+              {/* On hover (or while dragging) the handle FILLS with the pin
+                  color — switching from the white-outline state to full color
+                  so it clearly reads as the interactive grabber. */}
+              {(() => {
+                const filled = (hovering || dragging) && (hasValue || dragging)
+                return (
+                  <div
+                    style={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: '50%',
+                      background: filled ? pinColor : 'white',
+                      border: `2px solid ${hasValue || dragging ? pinColor : '#e3e3e3'}`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: hovering && hasValue ? `0 0 0 5px ${pinColor}26` : 'none',
+                      transition: 'background 130ms ease, box-shadow 130ms ease',
+                    }}
+                  >
+                    {showPlus ? (
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                        <path d="M6 1V11M1 6H11" stroke="#999" strokeWidth="1.5" strokeLinecap="round" />
+                      </svg>
+                    ) : hasValue || dragging ? (
+                      <div
+                        style={{
+                          width: 12,
+                          height: 12,
+                          borderRadius: '50%',
+                          background: filled ? 'white' : dotColor,
+                          transition: 'background 130ms ease',
+                        }}
+                      />
+                    ) : null}
+                  </div>
+                )
+              })()}
             </div>
           )}
 

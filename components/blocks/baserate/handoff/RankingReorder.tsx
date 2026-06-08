@@ -36,6 +36,7 @@ export function RankingReorder({ items: initial = DEFAULT_ITEMS }: { items?: Ran
   const [items, setItems] = useState<RankItem[]>(initial)
 
   const [draggingId, setDraggingId] = useState<string | null>(null)
+  const [hoveredId, setHoveredId] = useState<string | null>(null)
   const [insertIdx, setInsertIdx] = useState<number | null>(null)
   const [dragDelta, setDragDelta] = useState({ x: 0, y: 0 })
 
@@ -159,11 +160,23 @@ export function RankingReorder({ items: initial = DEFAULT_ITEMS }: { items?: Ran
     <div ref={colRef} style={{ display: 'flex', flexDirection: 'column', gap: 6, fontFamily: S.fontFamily, fontVariationSettings: S.fontVar }}>
       {items.map((item, idx) => {
         const isDragging = draggingId === item.id
+        const isHovered = hoveredId === item.id
+        // the row directly BEHIND the hovered one gets a 50% gold stroke
+        const isBehindHovered = idx > 0 && items[idx - 1].id === hoveredId
+        const borderColor = isDragging
+          ? 'var(--br-gold)'
+          : isBehindHovered
+            ? 'rgba(174,125,0,0.5)'
+            : isHovered
+              ? 'rgba(255,255,255,0.22)'
+              : 'rgba(255,255,255,0.08)'
         return (
           <div
             key={item.id}
             data-reorder-id={item.id}
             onMouseDown={(e) => startDrag(item.id, e)}
+            onMouseEnter={() => setHoveredId(item.id)}
+            onMouseLeave={() => setHoveredId((h) => (h === item.id ? null : h))}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -173,8 +186,13 @@ export function RankingReorder({ items: initial = DEFAULT_ITEMS }: { items?: Ran
               borderRadius: 6,
               cursor: 'grab',
               userSelect: 'none',
-              background: isDragging ? 'rgba(174,125,0,0.16)' : 'rgba(255,255,255,0.04)',
-              border: isDragging ? '1px solid var(--br-gold)' : '1px solid rgba(255,255,255,0.08)',
+              transition: 'background 140ms ease, border-color 140ms ease',
+              background: isDragging
+                ? 'rgba(174,125,0,0.16)'
+                : isHovered
+                  ? 'rgba(255,255,255,0.08)'
+                  : 'rgba(255,255,255,0.04)',
+              border: `1px solid ${borderColor}`,
               boxShadow: isDragging ? '0 8px 20px rgba(0,0,0,0.45)' : 'none',
               ...getItemStyle(item.id, idx),
             }}

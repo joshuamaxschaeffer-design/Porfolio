@@ -1,5 +1,6 @@
 import { productSystem as defaults } from './data'
 import { BaserateBadge, BaserateWordmark, JournalyticBadge, JournalyticWordmark } from './BaserateLogo'
+import { ProductDeviceStage } from './ProductDeviceStage'
 
 interface ProductSystemProps {
   heading?: string
@@ -84,32 +85,11 @@ function ProductStage({
           <h3 className="text-[24px] font-semibold uppercase leading-tight text-[var(--br-ink)]">{productsHeading}</h3>
           <p className="mt-2 text-base text-[var(--br-muted)] md:whitespace-nowrap">{productsIntro}</p>
         </div>
-        {/* Desktop UI screenshot (overlaps Baserate card) */}
-        <div
-          className="absolute overflow-hidden rounded-[4px] border border-[var(--br-stroke)] bg-white shadow-[6px_14px_14px_rgba(0,0,0,0.1)]"
-          style={{ left: '5.14%', top: '16.3%', width: '42.8%', height: '49.8%' }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={baserate.screenshot} alt="Baserate product" className="h-full w-full object-cover object-left-top" />
-        </div>
-
-        {/* Phone 1 (left, upright) */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={journalytic.phones[0]}
-          alt=""
-          aria-hidden
-          className="absolute object-contain drop-shadow-xl"
-          style={{ left: '65.5%', top: '27%', width: '15%', height: '56.6%' }}
-        />
-        {/* Phone 2 (right, larger, lower) */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={journalytic.phones[1]}
-          alt=""
-          aria-hidden
-          className="absolute object-contain drop-shadow-xl"
-          style={{ left: '76%', top: '29.2%', width: '20.4%', height: '58.7%' }}
+        {/* Devices (desktop UI + 2 phones) with scroll animation + soft shadows */}
+        <ProductDeviceStage
+          desktopSrc={baserate.screenshot}
+          phone1Src={journalytic.phones[0]}
+          phone2Src={journalytic.phones[1]}
         />
 
         {/* Baserate card — taller, lower, gold border */}

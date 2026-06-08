@@ -278,11 +278,11 @@ function ChatColumn() {
       let i = 0
       const typeNext = () => {
         if (cancelled) return
-        // type a few chars per tick so a long spec types in a few seconds, not 25
-        i += 2 + Math.floor(Math.random() * 3)
+        // type ~5 chars/tick so the long spec types in ~2s (whole run ≈ 4s).
+        i += 5 + Math.floor(Math.random() * 3)
         setTyped(PROMPT.slice(0, i))
         if (i < PROMPT.length) {
-          timers.push(setTimeout(typeNext, 16 + Math.random() * 22))
+          timers.push(setTimeout(typeNext, 12 + Math.random() * 14))
         } else {
           setTyped(PROMPT)
           // send
@@ -292,30 +292,22 @@ function ChatColumn() {
               setMsgs((m) => [...m, { who: 'user', text: PROMPT }])
               setTyped('')
               setPhase('thinking')
-              // think, then reply
+              // think, then reply — then STOP (no loop, leave at final state).
               timers.push(
                 setTimeout(() => {
                   if (cancelled) return
                   setMsgs((m) => [...m, { who: 'claude', text: REPLY }])
                   setPhase('reply')
-                  // hold, then reset back to the seed and loop
-                  timers.push(
-                    setTimeout(() => {
-                      if (cancelled) return
-                      setMsgs(SEED_CHAT)
-                      setPhase('idle')
-                      timers.push(setTimeout(run, 2600))
-                    }, 5200),
-                  )
-                }, 1400),
+                }, 850),
               )
-            }, 650),
+            }, 350),
           )
         }
       }
-      timers.push(setTimeout(typeNext, 400))
+      timers.push(setTimeout(typeNext, 300))
     }
-    timers.push(setTimeout(run, 1400))
+    // run once, shortly after mount
+    timers.push(setTimeout(run, 600))
     return () => {
       cancelled = true
       timers.forEach(clearTimeout)

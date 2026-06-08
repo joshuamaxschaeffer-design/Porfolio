@@ -53,11 +53,13 @@ function project(z: number) {
 // the first ~1.3 steps so the front TWO cards read fully crisp, then ramp hard
 // so card 3+ dissolve into black — matching the PS mockup (front sharp, back
 // barely there).
+// Gentle ramp across ALL 6 cards: card 1 (d≈0) and card 2 (d≈1) crisp, then a
+// steady fade so card 6 (d≈5) is the one that's barely visible — not the 4th.
 function darkenForD(d: number) {
-  return Math.max(0, Math.min(0.96, (d - 1.1) * 0.85))
+  return Math.max(0, Math.min(0.95, (d - 1) * 0.2))
 }
 function blurForD(d: number) {
-  return Math.max(0, (d - 1.1) * 22) // px (split across two layers)
+  return Math.max(0, (d - 1) * 7) // px (split across two layers)
 }
 
 export function ScalabilityTimeline() {
@@ -183,20 +185,20 @@ function Rail({ n, gap }: { n: number; gap: MotionValue<number> }) {
 function RailTick({ step, steps, n, gap }: { step: number; steps: number; n: number; gap: MotionValue<number> }) {
   // tick depth: spread ticks across the same z-range the cards occupy
   const frac = step / (steps - 1)
-  const zMaxRatio = frac * (n - 1) * 1.05 // tick's depth ratio (in GAP_MAX units)
-  const proj = useTransform(gap, (g) => project(frac * (n - 1) * g * 1.05))
+  const zMaxRatio = frac * (n - 1) // tick's depth ratio (in GAP_MAX units)
+  const proj = useTransform(gap, (g) => project(frac * (n - 1) * g))
   const left = useTransform(proj, (pr) => `${pr.x}%`)
-  // ticks sit on the "floor" well below the (now bigger) card centers
-  const top = useTransform(proj, (pr) => `${pr.y + 34 * pr.s}%`)
-  const width = useTransform(proj, (pr) => `${Math.max(0.2, 4 * pr.s)}%`)
-  // near ticks bright + crisp; fade fast with depth ratio so the floor reads
-  // for the first ~2 steps then vanishes.
-  const opacity = useTransform(gap, () => Math.max(0, 0.5 - zMaxRatio * 0.42))
-  const blur = useTransform(gap, () => `blur(${blurForD(zMaxRatio) * 0.45}px)`)
+  // ticks sit on the "floor" below the card centers (offset shrinks with depth)
+  const top = useTransform(proj, (pr) => `${pr.y + 30 * pr.s}%`)
+  const width = useTransform(proj, (pr) => `${Math.max(0.3, 4.5 * pr.s)}%`)
+  // brighter near the camera so the receding "floor ruler" is clearly visible
+  // for the first few steps, then fading with the same gentle curve as cards.
+  const opacity = useTransform(gap, () => Math.max(0, 0.6 - zMaxRatio * 0.16))
+  const blur = useTransform(gap, () => `blur(${blurForD(zMaxRatio) * 0.4}px)`)
   return (
     <motion.span
       className="absolute bg-white"
-      style={{ left, top, width, height: '1px', x: '-50%', y: '-50%', opacity, filter: blur }}
+      style={{ left, top, width, height: '1.5px', x: '-50%', y: '-50%', opacity, filter: blur, zIndex: 0 }}
     />
   )
 }
