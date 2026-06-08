@@ -154,7 +154,8 @@ function FrameCard({ frame, index, gap, total }: { frame: Frame; index: number; 
 
   return (
     <>
-      {/* connector line (card → floor dot) */}
+      {/* connector line (card → floor dot) — matches the receding line's 1px
+          weight + lighter color */}
       <motion.div
         className="absolute"
         style={{
@@ -163,15 +164,15 @@ function FrameCard({ frame, index, gap, total }: { frame: Frame; index: number; 
           height: lineHeight,
           width: '1px',
           x: '-50%',
-          background: 'linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 100%)',
+          background: 'rgba(255,255,255,0.55)',
           opacity: cueOpacity,
           filter: cueBlur,
           zIndex: 0,
         }}
       />
-      {/* floor dot */}
+      {/* floor dot — solid black fill + white stroke (not a grey fill) */}
       <motion.div
-        className="absolute rounded-full bg-white"
+        className="absolute rounded-full"
         style={{
           left,
           top: dotTop,
@@ -181,7 +182,8 @@ function FrameCard({ frame, index, gap, total }: { frame: Frame; index: number; 
           y: '-50%',
           opacity: cueOpacity,
           filter: cueBlur,
-          boxShadow: '0 0 8px rgba(255,255,255,0.5)',
+          background: '#000000',
+          border: '1px solid rgba(255,255,255,0.7)',
           zIndex: 0,
         }}
       />
@@ -221,8 +223,8 @@ function FrameCard({ frame, index, gap, total }: { frame: Frame; index: number; 
  * and darken fast — invisible within the first few steps, as in real fog/DOF.
  */
 function Rail({ n, gap }: { n: number; gap: MotionValue<number> }) {
-  // Sample many fine z steps from the front out to ~the last card's depth.
-  const STEPS = 30
+  // Many fine z steps (≈4× the old density) — a dense "ground ruler".
+  const STEPS = 120
   const ticks = Array.from({ length: STEPS }, (_, i) => i)
   return (
     <div className="absolute inset-0" style={{ zIndex: 0 }}>
@@ -252,9 +254,10 @@ function RailLine({ n, gap }: { n: number; gap: MotionValue<number> }) {
   return (
     <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full" style={{ zIndex: 0 }}>
       <defs>
+        {/* the single receding line is the BRIGHT element (≈3× the ticks) */}
         <linearGradient id="railLineFade" x1="0" y1="1" x2="1" y2="0">
-          <stop offset="0%" stopColor="rgba(255,255,255,0.7)" />
-          <stop offset="40%" stopColor="rgba(255,255,255,0.22)" />
+          <stop offset="0%" stopColor="rgba(255,255,255,0.95)" />
+          <stop offset="45%" stopColor="rgba(255,255,255,0.55)" />
           <stop offset="100%" stopColor="rgba(255,255,255,0)" />
         </linearGradient>
       </defs>
@@ -274,10 +277,9 @@ function RailTick({ step, steps, n, gap }: { step: number; steps: number; n: num
   // vanishing point as depth increases — so it's the visible "ground ruler"
   // running beneath the floating cards, never hidden behind the front card.
   const top = useTransform(proj, (pr) => `${VP_Y + (FLOOR_Y - VP_Y) * pr.s}%`)
-  const width = useTransform(proj, (pr) => `${Math.max(0.3, 5 * pr.s)}%`)
-  // bright near the camera so the receding "floor ruler" reads clearly, then
-  // fading out within the first few steps.
-  const opacity = useTransform(gap, () => Math.max(0, 0.85 - zMaxRatio * 0.22))
+  const width = useTransform(proj, (pr) => `${Math.max(0.3, 4.5 * pr.s)}%`)
+  // DARKER than before (subtle dense ruler), fading out within a few steps.
+  const opacity = useTransform(gap, () => Math.max(0, 0.22 - zMaxRatio * 0.07))
   const blur = useTransform(gap, () => `blur(${blurForD(zMaxRatio) * 0.4}px)`)
   return (
     <motion.span
@@ -286,14 +288,13 @@ function RailTick({ step, steps, n, gap }: { step: number; steps: number; n: num
         left,
         top,
         width,
-        height: '2px',
+        height: '1px',
         x: '-50%',
         y: '-50%',
         opacity,
         filter: blur,
         zIndex: 0,
-        background: 'rgba(255,255,255,0.9)',
-        boxShadow: '0 0 6px rgba(255,255,255,0.4)',
+        background: 'rgba(255,255,255,0.85)',
       }}
     />
   )
