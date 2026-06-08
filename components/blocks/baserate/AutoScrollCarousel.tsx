@@ -38,12 +38,16 @@ export function AutoScrollCarousel({
   const last = useRef<number | null>(null)
   const [ready, setReady] = useState(false)
 
-  // Measure one copy's width (half the track) so we can wrap seamlessly.
+  // The track renders COPIES copies of the content back-to-back. We wrap x
+  // within one copy's width, so as long as there are >=3 copies the viewport is
+  // always covered no matter where a (fast) drag lands — no empty edge ever.
+  const COPIES = 3
+  // Measure ONE copy's width so we can wrap seamlessly.
   useEffect(() => {
     const measure = () => {
       const el = trackRef.current
       if (!el) return
-      halfRef.current = el.scrollWidth / 2
+      halfRef.current = el.scrollWidth / COPIES
       setReady(true)
     }
     measure()
@@ -52,12 +56,12 @@ export function AutoScrollCarousel({
     return () => ro.disconnect()
   }, [])
 
-  // Wrap ANY value into the window (-half, 0] so the loop is seamless in BOTH
+  // Wrap ANY value into the window (-copyW, 0] so the loop is seamless in BOTH
   // directions — there is never a left or right edge to hit.
   const wrap = (v: number) => {
-    const half = halfRef.current || 1
-    let w = v % half
-    if (w > 0) w -= half
+    const copyW = halfRef.current || 1
+    let w = v % copyW
+    if (w > 0) w -= copyW
     return w
   }
 
@@ -125,11 +129,11 @@ export function AutoScrollCarousel({
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
       >
-        {items}
-        {/* duplicate for seamless loop */}
-        {items.map((node, i) => (
-          <Clone key={`clone-${i}`}>{node}</Clone>
-        ))}
+        {/* COPIES copies back-to-back so a fast drag never reveals an empty
+            edge (one copy can be narrower than the viewport). */}
+        {Array.from({ length: COPIES }).flatMap((_, c) =>
+          items.map((node, i) => <Clone key={`c${c}-${i}`}>{node}</Clone>),
+        )}
       </motion.div>
     </div>
   )

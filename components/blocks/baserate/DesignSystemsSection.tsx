@@ -1,6 +1,7 @@
 import { designSystems as defaults } from './data'
 import { ScalabilityTimeline } from './ScalabilityTimeline'
 import { HandoffSection } from './handoff/HandoffSection'
+import { Tilt3D } from '@/components/animation/Tilt3D'
 
 interface DesignSystemsProps {
   heading?: string
@@ -25,7 +26,7 @@ export function DesignSystemsSection(props: DesignSystemsProps) {
   const scalability = defaults.scalability
 
   return (
-    <section className="relative mt-28 bg-[#070a14] py-24 text-white md:mt-40 md:py-32">
+    <section className="relative bg-[#070a14] py-24 text-white md:py-32">
       <div className="br-container">
         {/* Section header */}
         <h2 className="text-[32px] font-medium uppercase leading-none text-white md:text-[40px]">{heading}</h2>
@@ -33,10 +34,19 @@ export function DesignSystemsSection(props: DesignSystemsProps) {
         {/* ----- Panel 1: Component Libraries ----- */}
         <div className="mt-20 md:mt-28">
           <PanelHeader title={components.title} body={props.componentsBody ?? components.body} />
-          <div className="mt-10 overflow-hidden rounded-2xl bg-white shadow-[0_40px_90px_-40px_rgba(0,0,0,0.8)] md:mt-12">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={components.artifact} alt="Baserate component library" className="block w-full" />
-          </div>
+          {/* Cursor-reactive 3D tilt (mouse-tracked) with a soft cursor-following
+              shine. Reduced-motion users get a static card. */}
+          <Tilt3D
+            max={6}
+            shine
+            scale={1.01}
+            className="mt-10 rounded-2xl shadow-[0_40px_90px_-40px_rgba(0,0,0,0.8)] md:mt-12"
+          >
+            <div className="overflow-hidden rounded-2xl bg-white">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={components.artifact} alt="Baserate component library" className="block w-full" />
+            </div>
+          </Tilt3D>
         </div>
 
         {/* ----- Panel 2: Scalability ----- */}
