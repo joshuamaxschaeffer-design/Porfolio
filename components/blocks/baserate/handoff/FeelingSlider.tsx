@@ -74,10 +74,14 @@ export function FeelingSlider({
   const showPin = hasValue || dragging
   const showPlus = !hasValue && !dragging && !isAbstaining
 
+  // Resting state = white outline (pin transparent-white, handle white). On
+  // hover OR drag the whole thing fills with the live pin color. This is the
+  // "switch from white outline to full color on hover" behavior.
+  const active = hovering || dragging
   const pinColor = FEELING_COLORS[Math.max(0, Math.min(10, displayValue))]
-  const pinFill = hasValue || dragging ? pinColor : 'white'
-  const pinTextColor = hasValue || dragging ? (displayValue <= 3 ? 'white' : T.textDark) : T.textDark
-  const dotColor = hasValue || dragging ? pinColor : T.blue700
+  const pinFill = active ? pinColor : 'white'
+  const pinTextColor = active ? (displayValue <= 3 ? 'white' : T.textDark) : T.textDark
+  const dotColor = active ? pinColor : T.blue700
   const filterId = useFilterId('fs')
 
   const labelColor = dark ? 'rgba(255,255,255,0.78)' : T.textDark
@@ -114,6 +118,8 @@ export function FeelingSlider({
 
   return (
     <div
+      onMouseEnter={() => !readonly && setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
       onMouseDown={(e) => {
         if ((e.target as HTMLElement).closest('button')) return
         handleMouseDown(e)
@@ -144,8 +150,6 @@ export function FeelingSlider({
 
           {!isAbstaining && (
             <div
-              onMouseEnter={() => !dragging && setHovering(true)}
-              onMouseLeave={() => setHovering(false)}
               style={{
                 position: 'absolute',
                 left: `${displayPct}%`,
@@ -195,9 +199,11 @@ export function FeelingSlider({
                     <path
                       d="M19 46C19 46 0 28.5 0 18C0 8.06 8.51 0 19 0C29.49 0 38 8.06 38 18C38 28.5 19 46 19 46Z"
                       fill={pinFill}
+                      stroke={active ? 'none' : '#d6d6d6'}
+                      strokeWidth={active ? 0 : 1.5}
                       filter={`url(#${filterId})`}
                     />
-                    {!hasValue && !dragging && (
+                    {showPlus && (
                       <circle cx="19" cy="18" r="8" fill="none" stroke="#e3e3e3" strokeWidth="1" />
                     )}
                   </svg>

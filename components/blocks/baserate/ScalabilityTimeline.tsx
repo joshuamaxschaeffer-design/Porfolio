@@ -32,10 +32,14 @@ const GAP_MAX = 560 // z-distance between adjacent cards when fully spread
 const GAP_MIN = 230 // at scroll start — SUBTLE dolly (small travel to GAP_MAX)
 // Vanishing point in stage % — where everything converges as z → ∞.
 const VP_X = 88
-const VP_Y = 26
-// Front card anchor in stage %.
+const VP_Y = 20
+// Front card anchor in stage %. Sits high so the lower band of the stage stays
+// open for the receding floor line/ticks to read clearly beneath the cards.
 const FRONT_X = 33
-const FRONT_Y = 50
+const FRONT_Y = 40
+// The floor baseline (near-camera) the rail line + ticks rest on — well below
+// the card stack so the timeline is never occluded by the big front card.
+const FLOOR_Y = 92
 
 // Project a depth z (>=0) → {scale, screenX%, screenY%} via the pinhole law.
 function project(z: number) {
@@ -175,10 +179,40 @@ function Rail({ n, gap }: { n: number; gap: MotionValue<number> }) {
   const ticks = Array.from({ length: STEPS }, (_, i) => i)
   return (
     <div className="absolute inset-0" style={{ zIndex: 0 }}>
+      <RailLine n={n} gap={gap} />
       {ticks.map((i) => (
         <RailTick key={i} step={i} steps={STEPS} n={n} gap={gap} />
       ))}
     </div>
+  )
+}
+
+/** A continuous receding "ground line" along the same floor baseline as the
+ *  ticks, so the timeline reads as one line trailing toward the vanishing
+ *  point (where individual ticks would be hidden behind the cards). */
+function RailLine({ n, gap }: { n: number; gap: MotionValue<number> }) {
+  const SEG = 24
+  const pts = useTransform(gap, (g) => {
+    const arr: string[] = []
+    for (let i = 0; i <= SEG; i++) {
+      const frac = i / SEG
+      const pr = project(frac * (n - 1) * g)
+      const y = VP_Y + (FLOOR_Y - VP_Y) * pr.s
+      arr.push(`${pr.x},${y}`)
+    }
+    return arr.join(' ')
+  })
+  return (
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full" style={{ zIndex: 0 }}>
+      <defs>
+        <linearGradient id="railLineFade" x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0%" stopColor="rgba(255,255,255,0.7)" />
+          <stop offset="40%" stopColor="rgba(255,255,255,0.22)" />
+          <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+        </linearGradient>
+      </defs>
+      <motion.polyline points={pts} fill="none" stroke="url(#railLineFade)" strokeWidth="1" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+    </svg>
   )
 }
 
@@ -188,17 +222,32 @@ function RailTick({ step, steps, n, gap }: { step: number; steps: number; n: num
   const zMaxRatio = frac * (n - 1) // tick's depth ratio (in GAP_MAX units)
   const proj = useTransform(gap, (g) => project(frac * (n - 1) * g))
   const left = useTransform(proj, (pr) => `${pr.x}%`)
-  // ticks sit on the "floor" below the card centers (offset shrinks with depth)
-  const top = useTransform(proj, (pr) => `${pr.y + 30 * pr.s}%`)
-  const width = useTransform(proj, (pr) => `${Math.max(0.3, 4.5 * pr.s)}%`)
-  // brighter near the camera so the receding "floor ruler" is clearly visible
-  // for the first few steps, then fading with the same gentle curve as cards.
-  const opacity = useTransform(gap, () => Math.max(0, 0.6 - zMaxRatio * 0.16))
+  // ticks live on a dedicated FLOOR baseline below the cards: near the camera
+  // it sits at the very bottom of the stage (98%) and recedes up toward the
+  // vanishing point as depth increases — so it's the visible "ground ruler"
+  // running beneath the floating cards, never hidden behind the front card.
+  const top = useTransform(proj, (pr) => `${VP_Y + (FLOOR_Y - VP_Y) * pr.s}%`)
+  const width = useTransform(proj, (pr) => `${Math.max(0.3, 5 * pr.s)}%`)
+  // bright near the camera so the receding "floor ruler" reads clearly, then
+  // fading out within the first few steps.
+  const opacity = useTransform(gap, () => Math.max(0, 0.85 - zMaxRatio * 0.22))
   const blur = useTransform(gap, () => `blur(${blurForD(zMaxRatio) * 0.4}px)`)
   return (
     <motion.span
-      className="absolute bg-white"
-      style={{ left, top, width, height: '1.5px', x: '-50%', y: '-50%', opacity, filter: blur, zIndex: 0 }}
+      className="absolute"
+      style={{
+        left,
+        top,
+        width,
+        height: '2px',
+        x: '-50%',
+        y: '-50%',
+        opacity,
+        filter: blur,
+        zIndex: 0,
+        background: 'rgba(255,255,255,0.9)',
+        boxShadow: '0 0 6px rgba(255,255,255,0.4)',
+      }}
     />
   )
 }
