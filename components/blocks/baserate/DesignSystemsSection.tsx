@@ -1,7 +1,7 @@
 import { designSystems as defaults } from './data'
 import { ScalabilityTimeline } from './ScalabilityTimeline'
 import { HandoffSection } from './handoff/HandoffSection'
-import { Tilt3D } from '@/components/animation/Tilt3D'
+import { ComponentsTiltCard } from './ComponentsTiltCard'
 
 interface DesignSystemsProps {
   heading?: string
@@ -34,19 +34,8 @@ export function DesignSystemsSection(props: DesignSystemsProps) {
         {/* ----- Panel 1: Component Libraries ----- */}
         <div className="mt-20 md:mt-28">
           <PanelHeader title={components.title} body={props.componentsBody ?? components.body} />
-          {/* Cursor-reactive 3D tilt (mouse-tracked) with a soft cursor-following
-              shine. Reduced-motion users get a static card. */}
-          <Tilt3D
-            max={6}
-            shine
-            scale={1.01}
-            className="mt-10 rounded-2xl shadow-[0_40px_90px_-40px_rgba(0,0,0,0.8)] md:mt-12"
-          >
-            <div className="overflow-hidden rounded-2xl bg-white">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={components.artifact} alt="Baserate component library" className="block w-full" />
-            </div>
-          </Tilt3D>
+          {/* Dramatic cursor-reactive tilt — hovering a corner pushes it back. */}
+          <ComponentsTiltCard src={components.artifact} alt="Baserate component library" />
         </div>
 
         {/* ----- Panel 2: Scalability ----- */}

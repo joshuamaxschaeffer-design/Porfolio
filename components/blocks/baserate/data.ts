@@ -365,11 +365,11 @@ export const designSystems = {
      */
     frames: [
       { image: `${IMG}/scalability/scalability-6.png`, date: '2026' },
-      { image: `${IMG}/scalability/scalability-5.png`, date: '2025' },
-      { image: `${IMG}/scalability/scalability-4.png`, date: '2024' },
-      { image: `${IMG}/scalability/scalability-3.png`, date: '2023' },
-      { image: `${IMG}/scalability/scalability-2.png`, date: '2022' },
-      { image: `${IMG}/scalability/scalability-1.png`, date: 'MVP' },
+      { image: `${IMG}/scalability/scalability-5.png`, date: '2027' },
+      { image: `${IMG}/scalability/scalability-4.png`, date: '2028' },
+      { image: `${IMG}/scalability/scalability-3.png`, date: '2029' },
+      { image: `${IMG}/scalability/scalability-2.png`, date: '2030' },
+      { image: `${IMG}/scalability/scalability-1.png`, date: '2031' },
     ],
   },
 }

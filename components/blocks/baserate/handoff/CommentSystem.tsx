@@ -181,7 +181,8 @@ export function CommentSystem({ title = 'Comments' }: { title?: string }) {
 
   const [activeInputs, setActiveInputs] = useState<Record<string, boolean>>({})
 
-  const myAvatar = initialsAvatar('You', 'self')
+  // The viewer is Joe Smith in this demo — the reply composer shows his avatar.
+  const myAvatar = initialsAvatar('Joe Smith', 'joe')
 
   const mutateById = (id: string, fn: (c: CommentReply) => CommentReply) =>
     setComments((prev) =>
@@ -224,7 +225,7 @@ export function CommentSystem({ title = 'Comments' }: { title?: string }) {
                 ...c.replies,
                 {
                   id: `r-${Date.now()}`,
-                  author: 'You',
+                  author: 'Joe Smith',
                   avatar: myAvatar,
                   time: 'Just now',
                   mentions: [],
@@ -434,7 +435,9 @@ export function CommentSystem({ title = 'Comments' }: { title?: string }) {
                   {c.replies.map((reply, rIdx) => (
                     <div key={reply.id} style={{ display: 'flex', paddingLeft: 12 }}>
                       <div style={{ width: 20, flexShrink: 0, display: 'flex', flexDirection: 'column', alignSelf: 'stretch' }}>
-                        <div style={{ width: 20, height: 30, borderLeft: `1px solid ${D.line}`, borderBottom: `1px solid ${D.line}`, borderBottomLeftRadius: 6, boxSizing: 'border-box' }} />
+                        {/* elbow drops from the parent down to the reply avatar's
+                            center (~18px below the row top) so the line connects */}
+                        <div style={{ width: 20, height: 18, borderLeft: `1px solid ${D.line}`, borderBottom: `1px solid ${D.line}`, borderBottomLeftRadius: 6, boxSizing: 'border-box' }} />
                         {(rIdx < c.replies.length - 1) && <div style={{ flex: 1, width: 0, borderLeft: `1px dashed ${D.line}`, marginLeft: -0.5 }} />}
                       </div>
                       <div style={{ flex: 1, minWidth: 0, paddingTop: 6 }}>

@@ -50,6 +50,8 @@ export function RankingReorder({ items: initial = DEFAULT_ITEMS }: { items?: Ran
 
   const startDrag = (id: string, e: React.MouseEvent) => {
     if (draggingId !== null || e.button !== 0) return
+    // Suppress the browser's native text selection while dragging a row.
+    e.preventDefault()
     const dragIdx = items.findIndex((i) => i.id === id)
     if (dragIdx === -1) return
 
