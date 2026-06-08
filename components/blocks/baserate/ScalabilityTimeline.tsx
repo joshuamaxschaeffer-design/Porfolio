@@ -162,9 +162,9 @@ function FrameCard({ frame, index, gap, total }: { frame: Frame; index: number; 
           left,
           top: lineTop,
           height: lineHeight,
-          width: '1px',
+          width: '1.5px',
           x: '-50%',
-          background: 'rgba(255,255,255,0.9)',
+          background: 'rgba(255,255,255,1)',
           opacity: cueOpacity,
           filter: cueBlur,
           zIndex: 0,
@@ -183,7 +183,7 @@ function FrameCard({ frame, index, gap, total }: { frame: Frame; index: number; 
           opacity: cueOpacity,
           filter: cueBlur,
           background: '#000000',
-          border: '1px solid rgba(255,255,255,0.9)',
+          border: '1.5px solid rgba(255,255,255,1)',
           zIndex: 0,
         }}
       />
@@ -256,12 +256,12 @@ function RailLine({ n, gap }: { n: number; gap: MotionValue<number> }) {
       <defs>
         {/* the single receding line — bright white, fading only near the VP */}
         <linearGradient id="railLineFade" x1="0" y1="1" x2="1" y2="0">
-          <stop offset="0%" stopColor="rgba(255,255,255,0.9)" />
-          <stop offset="55%" stopColor="rgba(255,255,255,0.7)" />
+          <stop offset="0%" stopColor="rgba(255,255,255,1)" />
+          <stop offset="60%" stopColor="rgba(255,255,255,0.85)" />
           <stop offset="100%" stopColor="rgba(255,255,255,0)" />
         </linearGradient>
       </defs>
-      <motion.polyline points={pts} fill="none" stroke="url(#railLineFade)" strokeWidth="1" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+      <motion.polyline points={pts} fill="none" stroke="url(#railLineFade)" strokeWidth="1.5" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
     </svg>
   )
 }
@@ -278,8 +278,8 @@ function RailTick({ step, steps, n, gap }: { step: number; steps: number; n: num
   // running beneath the floating cards, never hidden behind the front card.
   const top = useTransform(proj, (pr) => `${VP_Y + (FLOOR_Y - VP_Y) * pr.s}%`)
   const width = useTransform(proj, (pr) => `${Math.max(0.3, 4.5 * pr.s)}%`)
-  // DARKER than before (subtle dense ruler), fading out within a few steps.
-  const opacity = useTransform(gap, () => Math.max(0, 0.22 - zMaxRatio * 0.07))
+  // Visible but clearly dimmer than the bright receding line + connectors.
+  const opacity = useTransform(gap, () => Math.max(0, 0.55 - zMaxRatio * 0.14))
   const blur = useTransform(gap, () => `blur(${blurForD(zMaxRatio) * 0.4}px)`)
   return (
     <motion.span
@@ -294,8 +294,7 @@ function RailTick({ step, steps, n, gap }: { step: number; steps: number; n: num
         opacity,
         filter: blur,
         zIndex: 0,
-        // dimmer than the receding line + connectors (the "less visible" ticks)
-        background: 'rgba(255,255,255,0.45)',
+        background: 'rgba(255,255,255,0.9)',
       }}
     />
   )
