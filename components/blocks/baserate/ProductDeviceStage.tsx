@@ -34,12 +34,18 @@ export function ProductDeviceStage({
   const deskOpacity = useTransform(p, [0, 1], [0.6, 1])
 
   // Phones: rotate + slide into place.
-  const p1Rot = useTransform(p, [0, 1], [-10, 0]) // deg
-  const p1X = useTransform(p, [0, 1], [-26, 0]) // px
-  const p1Y = useTransform(p, [0, 1], [28, 0])
-  const p2Rot = useTransform(p, [0, 1], [12, 0])
-  const p2X = useTransform(p, [0, 1], [34, 0])
-  const p2Y = useTransform(p, [0, 1], [40, 0])
+  // Left phone (p1): ~1/4 the motion of the original, and that motion is biased
+  // toward up + forward rather than rotation/slide — small rotate, small x, but
+  // a real rise (y) and a scale-up (coming forward).
+  const p1Rot = useTransform(p, [0, 1], [-2.5, 0]) // deg (was -10)
+  const p1X = useTransform(p, [0, 1], [-6, 0]) // px (was -26)
+  const p1Y = useTransform(p, [0, 1], [34, 0]) // rises more
+  const p1Scale = useTransform(p, [0, 1], [0.965, 1]) // comes forward
+  // Right phone (p2): half the original motion, plus a little extra up + forward.
+  const p2Rot = useTransform(p, [0, 1], [6, 0]) // was 12
+  const p2X = useTransform(p, [0, 1], [17, 0]) // was 34
+  const p2Y = useTransform(p, [0, 1], [26, 0]) // half of 40, + a touch of rise
+  const p2Scale = useTransform(p, [0, 1], [0.975, 1]) // comes forward
   const phoneOpacity = useTransform(p, [0, 0.5, 1], [0, 0.7, 1])
 
   return (
@@ -76,7 +82,7 @@ export function ProductDeviceStage({
           height: '56.6%',
           filter: 'drop-shadow(0 18px 26px rgba(0,0,0,0.15))',
           transformOrigin: '50% 90%',
-          ...(reduce ? {} : { rotate: p1Rot, x: p1X, y: p1Y, opacity: phoneOpacity }),
+          ...(reduce ? {} : { rotate: p1Rot, x: p1X, y: p1Y, scale: p1Scale, opacity: phoneOpacity }),
         }}
       />
       {/* Phone 2 (right, larger, lower) */}
@@ -92,7 +98,7 @@ export function ProductDeviceStage({
           height: '58.7%',
           filter: 'drop-shadow(0 20px 30px rgba(0,0,0,0.15))',
           transformOrigin: '50% 90%',
-          ...(reduce ? {} : { rotate: p2Rot, x: p2X, y: p2Y, opacity: phoneOpacity }),
+          ...(reduce ? {} : { rotate: p2Rot, x: p2X, y: p2Y, scale: p2Scale, opacity: phoneOpacity }),
         }}
       />
     </div>
