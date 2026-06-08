@@ -74,14 +74,16 @@ export function FeelingSlider({
   const showPin = hasValue || dragging
   const showPlus = !hasValue && !dragging && !isAbstaining
 
-  // Resting state = white outline (pin transparent-white, handle white). On
-  // hover OR drag the whole thing fills with the live pin color. This is the
-  // "switch from white outline to full color on hover" behavior.
+  // Resting state = BLACK pin with a white stroke + white number (reads against
+  // the dark section). On hover OR drag the whole thing fills with the live pin
+  // color and the number flips to ink/white for contrast.
   const active = hovering || dragging
+  const REST_BG = '#0c0f17' // near-black, matches the dark panel
   const pinColor = FEELING_COLORS[Math.max(0, Math.min(10, displayValue))]
-  const pinFill = active ? pinColor : 'white'
-  const pinTextColor = active ? (displayValue <= 3 ? 'white' : T.textDark) : T.textDark
-  const dotColor = active ? pinColor : T.blue700
+  const pinFill = active ? pinColor : REST_BG
+  const pinStroke = active ? 'none' : 'rgba(255,255,255,0.85)'
+  const pinTextColor = active ? (displayValue <= 3 ? 'white' : T.textDark) : 'white'
+  const dotColor = active ? 'white' : 'white'
   const filterId = useFilterId('fs')
 
   const labelColor = dark ? 'rgba(255,255,255,0.78)' : T.textDark
@@ -185,21 +187,23 @@ export function FeelingSlider({
                     bottom: '100%',
                     transform: 'translateX(-50%)',
                     marginBottom: 6,
-                    width: 38,
-                    height: 48,
+                    width: 46,
+                    height: 56,
                     pointerEvents: 'none',
                   }}
                 >
-                  <svg width="38" height="48" viewBox="0 0 38 48" fill="none">
+                  {/* padded viewBox so the stroke + shadow aren't clipped at the
+                      teardrop's left/right edges */}
+                  <svg width="46" height="56" viewBox="-4 -4 46 56" fill="none">
                     <defs>
-                      <filter id={filterId} x="-4" y="-2" width="46" height="56" filterUnits="userSpaceOnUse">
-                        <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#000" floodOpacity="0.35" />
+                      <filter id={filterId} x="-8" y="-6" width="54" height="64" filterUnits="userSpaceOnUse">
+                        <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#000" floodOpacity="0.5" />
                       </filter>
                     </defs>
                     <path
                       d="M19 46C19 46 0 28.5 0 18C0 8.06 8.51 0 19 0C29.49 0 38 8.06 38 18C38 28.5 19 46 19 46Z"
                       fill={pinFill}
-                      stroke={active ? 'none' : '#d6d6d6'}
+                      stroke={pinStroke}
                       strokeWidth={active ? 0 : 1.5}
                       filter={`url(#${filterId})`}
                     />
@@ -229,20 +233,21 @@ export function FeelingSlider({
                   color — switching from the white-outline state to full color
                   so it clearly reads as the interactive grabber. */}
               {(() => {
-                const filled = (hovering || dragging) && (hasValue || dragging)
+                // Rest: black bg, white border, white dot. Hover/drag: fills
+                // with the pin color (white dot stays for contrast).
                 return (
                   <div
                     style={{
                       width: 24,
                       height: 24,
                       borderRadius: '50%',
-                      background: filled ? pinColor : 'white',
-                      border: `2px solid ${hasValue || dragging ? pinColor : '#e3e3e3'}`,
+                      background: active ? pinColor : REST_BG,
+                      border: `2px solid ${active ? pinColor : 'rgba(255,255,255,0.85)'}`,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      boxShadow: hovering && hasValue ? `0 0 0 5px ${pinColor}26` : 'none',
-                      transition: 'background 130ms ease, box-shadow 130ms ease',
+                      boxShadow: active ? `0 0 0 5px ${pinColor}26` : 'none',
+                      transition: 'background 130ms ease, border-color 130ms ease, box-shadow 130ms ease',
                     }}
                   >
                     {showPlus ? (
@@ -255,7 +260,7 @@ export function FeelingSlider({
                           width: 12,
                           height: 12,
                           borderRadius: '50%',
-                          background: filled ? 'white' : dotColor,
+                          background: dotColor,
                           transition: 'background 130ms ease',
                         }}
                       />

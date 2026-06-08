@@ -39,7 +39,8 @@ const FRONT_X = 33
 const FRONT_Y = 40
 // The floor baseline (near-camera) the rail line + ticks rest on — well below
 // the card stack so the timeline is never occluded by the big front card.
-const FLOOR_Y = 92
+// (Pushed lower so the receding ground line + dots read clearly.)
+const FLOOR_Y = 99
 
 // Project a depth z (>=0) → {scale, screenX%, screenY%} via the pinhole law.
 function project(z: number) {
@@ -86,7 +87,9 @@ export function ScalabilityTimeline() {
   return (
     <>
       {/* ----- Desktop / tablet: the perspective stage ----- */}
-      <div ref={stageRef} className="relative mx-auto hidden h-[620px] w-full max-w-[1240px] md:block lg:h-[720px]">
+      {/* taller + top padding so the front card never collides with the
+          SCALABILITY header above it */}
+      <div ref={stageRef} className="relative mx-auto hidden h-[720px] w-full max-w-[1240px] pt-16 md:block lg:h-[820px]">
         {/* floor rail (behind everything) */}
         <Rail n={n} gap={gapMV} />
 
@@ -139,7 +142,50 @@ function FrameCard({ frame, index, gap, total }: { frame: Frame; index: number; 
   const blurOuter = useTransform(d, (dd) => `blur(${blurForD(dd) * 0.45}px)`)
   const blurInner = useTransform(d, (dd) => `blur(${blurForD(dd) * 0.55}px)`)
 
+  // Dot on the floor directly below this card + a connector line from the
+  // card down to it. Both fade/blur with depth like the card.
+  const dotTop = useTransform(proj, (pr) => `${VP_Y + (FLOOR_Y - VP_Y) * pr.s}%`)
+  const dotSize = useTransform(proj, (pr) => `${Math.max(3, 11 * pr.s)}px`)
+  const cueOpacity = useTransform(d, (dd) => Math.max(0, 1 - dd * 0.32))
+  const cueBlur = useTransform(d, (dd) => `blur(${blurForD(dd) * 0.4}px)`)
+  // connector line: from card bottom (proj.y + ~half card height in %) to dot
+  const lineTop = useTransform(proj, (pr) => `${pr.y}%`)
+  const lineHeight = useTransform(proj, (pr) => `${VP_Y + (FLOOR_Y - VP_Y) * pr.s - pr.y}%`)
+
   return (
+    <>
+      {/* connector line (card → floor dot) */}
+      <motion.div
+        className="absolute"
+        style={{
+          left,
+          top: lineTop,
+          height: lineHeight,
+          width: '1px',
+          x: '-50%',
+          background: 'linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 100%)',
+          opacity: cueOpacity,
+          filter: cueBlur,
+          zIndex: 0,
+        }}
+      />
+      {/* floor dot */}
+      <motion.div
+        className="absolute rounded-full bg-white"
+        style={{
+          left,
+          top: dotTop,
+          width: dotSize,
+          height: dotSize,
+          x: '-50%',
+          y: '-50%',
+          opacity: cueOpacity,
+          filter: cueBlur,
+          boxShadow: '0 0 8px rgba(255,255,255,0.5)',
+          zIndex: 0,
+        }}
+      />
+
     <motion.div
       className="absolute"
       style={{
@@ -165,6 +211,7 @@ function FrameCard({ frame, index, gap, total }: { frame: Frame; index: number; 
         <motion.div className="pointer-events-none absolute inset-0 bg-[#070a14]" style={{ opacity: darken }} />
       </motion.div>
     </motion.div>
+    </>
   )
 }
 
