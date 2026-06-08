@@ -1,5 +1,6 @@
 import { featureSections as defaultSections, featureCarousels as defaultCarousels, type Feature } from './data'
 import { AutoScrollCarousel, type CarouselRow } from './AutoScrollCarousel'
+import { EdgeFadeBlur } from './EdgeFadeBlur'
 
 interface FeatureSection {
   number: number
@@ -57,8 +58,13 @@ export function FeatureEcosystemSection(props: FeatureEcosystemProps) {
           <div key={p} className={p > 0 ? 'mt-20 md:mt-28' : ''}>
             {/* Carousel bleeds full-width; staggered by its offset. The
                 component manages its own overflow (clipped marquee on desktop,
-                native scroll-snap on mobile), so no clipping wrapper here. */}
-            {carousel && <AutoScrollCarousel row={carousel} startOffset={carousel.offset ?? 0} />}
+                native scroll-snap on mobile). EdgeFadeBlur dissolves the left &
+                right edges into the white page bg with a progressive blur. */}
+            {carousel && (
+              <EdgeFadeBlur bg="#ffffff">
+                <AutoScrollCarousel row={carousel} startOffset={carousel.offset ?? 0} />
+              </EdgeFadeBlur>
+            )}
             {/* Feature columns. Figma: outer gutters 80px, inner gutter ~40px
                 (left col pr-20 + right col pl-20). br-container already pads 80px. */}
             <div className="br-container mt-12">

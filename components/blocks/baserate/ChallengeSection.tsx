@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { challenge as defaults, type ChallengeCard } from './data'
+import { EdgeFadeBlur } from './EdgeFadeBlur'
 
 interface ChallengeProps {
   heading?: string
@@ -208,27 +209,30 @@ export function ChallengeSection(props: ChallengeProps) {
         </div>
       </div>
 
-      {/* Draggable track, bleeds to the right edge. On mobile it's a scroll-snap
+      {/* Draggable track, bleeds to both edges. On mobile it's a scroll-snap
           carousel (one ~88vw card per view with a peek); on desktop it stays a
-          free drag track. (Baserate Mobile Spec §2.) */}
-      <div
-        ref={trackRef}
-        className="br-noscrollbar br-grab mt-8 flex gap-5 overflow-x-auto overscroll-x-contain scroll-smooth pb-2 pl-[max(1.5rem,calc((100vw-1443px)/2+5rem))] pr-6 select-none snap-x snap-mandatory lg:snap-none"
-        style={{ touchAction: 'pan-y', scrollPaddingInline: '1.5rem' }}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={endDrag}
-        onPointerCancel={endDrag}
-      >
-        {cards.map((card) => (
-          <ChallengeCardView key={card.problem} card={card} dragRef={drag} />
-        ))}
-        {/* Trailing spacer so even the LAST card can scroll far enough left to
-            align with the header (the browser clamps scrollLeft to
-            scrollWidth-clientWidth; without runway the last cards stop short).
-            An odd gap to the right of the last card is expected/fine. */}
-        <div aria-hidden className="shrink-0" style={{ width: 'min(85vw, 1000px)' }} />
-      </div>
+          free drag track with flick momentum. EdgeFadeBlur dissolves the left &
+          right edges into the grey section bg with a progressive blur. */}
+      <EdgeFadeBlur bg="var(--br-bg-2)" className="mt-8">
+        <div
+          ref={trackRef}
+          className="br-noscrollbar br-grab flex gap-5 overflow-x-auto overscroll-x-contain scroll-smooth pb-2 pl-[max(1.5rem,calc((100vw-1443px)/2+5rem))] pr-6 select-none snap-x snap-mandatory lg:snap-none"
+          style={{ touchAction: 'pan-y', scrollPaddingInline: '1.5rem' }}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+        >
+          {cards.map((card) => (
+            <ChallengeCardView key={card.problem} card={card} dragRef={drag} />
+          ))}
+          {/* Trailing spacer so even the LAST card can scroll far enough left to
+              align with the header (the browser clamps scrollLeft to
+              scrollWidth-clientWidth; without runway the last cards stop short).
+              An odd gap to the right of the last card is expected/fine. */}
+          <div aria-hidden className="shrink-0" style={{ width: 'min(85vw, 1000px)' }} />
+        </div>
+      </EdgeFadeBlur>
 
       {/* Pager */}
       <div className="br-container mt-6 flex flex-wrap gap-x-5 gap-y-2">
