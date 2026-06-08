@@ -26,20 +26,20 @@ type Frame = (typeof designSystems.scalability.frames)[number]
  */
 
 // --- camera / projection constants ---
-const F = 1100 // focal length (px-ish, in the same units as z)
-const GAP_MAX = 900 // real z-distance between adjacent cards when fully spread
-const GAP_MIN = 70 // when clustered at the front (scroll start)
+// Larger F = gentler perspective shrink (cards stay big, like the mockup).
+const F = 1500 // focal length
+const GAP_MAX = 560 // z-distance between adjacent cards when fully spread
+const GAP_MIN = 230 // at scroll start — SUBTLE dolly (small travel to GAP_MAX)
 // Vanishing point in stage % — where everything converges as z → ∞.
-const VP_X = 86
-const VP_Y = 30
+const VP_X = 88
+const VP_Y = 26
 // Front card anchor in stage %.
-const FRONT_X = 30
-const FRONT_Y = 52
+const FRONT_X = 33
+const FRONT_Y = 50
 
 // Project a depth z (>=0) → {scale, screenX%, screenY%} via the pinhole law.
 function project(z: number) {
   const s = F / (F + z) // 1 at z=0, →0 far away
-  // interpolate from the front anchor toward the VP by how far we've receded
   const k = 1 - s
   return {
     s,
@@ -48,15 +48,16 @@ function project(z: number) {
   }
 }
 
-// Depth cues from the scale factor. Tuned (steep) so the 2nd card back is
-// already deeply dimmed and the 3rd+ have all but dissolved into the black —
-// matching real atmospheric/DOF falloff in the reference.
-function darkenFor(s: number) {
-  // (1-s) for cards: c1≈0.45, c2≈0.62, c3≈0.71 → push hard with a low exponent.
-  return Math.min(0.96, Math.pow(1 - s, 0.55) * 1.95)
+// Depth cues keyed to the DEPTH RATIO d = z / GAP_MAX (so d≈0 = front card,
+// d≈1 = the next card back at full spread, etc). Crucially these stay ~0 for
+// the first ~1.3 steps so the front TWO cards read fully crisp, then ramp hard
+// so card 3+ dissolve into black — matching the PS mockup (front sharp, back
+// barely there).
+function darkenForD(d: number) {
+  return Math.max(0, Math.min(0.96, (d - 1.1) * 0.85))
 }
-function blurFor(s: number) {
-  return Math.pow(1 - s, 0.7) * 42 // px (split across two layers)
+function blurForD(d: number) {
+  return Math.max(0, (d - 1.1) * 22) // px (split across two layers)
 }
 
 export function ScalabilityTimeline() {
@@ -120,15 +121,17 @@ export function ScalabilityTimeline() {
  * layers + a darkening overlay give a smooth, fast depth falloff.
  */
 function FrameCard({ frame, index, gap, total }: { frame: Frame; index: number; gap: MotionValue<number>; total: number }) {
+  // depth ratio d = z / GAP_MAX → drives the cues (front 2 stay crisp).
+  const d = useTransform(gap, (g) => (index * g) / GAP_MAX)
   const proj = useTransform(gap, (g) => project(index * g))
   const left = useTransform(proj, (pr) => `${pr.x}%`)
   const top = useTransform(proj, (pr) => `${pr.y}%`)
   const scale = useTransform(proj, (pr) => pr.s)
-  const darken = useTransform(proj, (pr) => darkenFor(pr.s))
+  const darken = useTransform(d, (dd) => darkenForD(dd))
   // split the blur across the outer wrapper and the inner image for a softer,
   // double-applied look (cheap approximation of a gaussian pyramid).
-  const blurOuter = useTransform(proj, (pr) => `blur(${blurFor(pr.s) * 0.45}px)`)
-  const blurInner = useTransform(proj, (pr) => `blur(${blurFor(pr.s) * 0.55}px)`)
+  const blurOuter = useTransform(d, (dd) => `blur(${blurForD(dd) * 0.45}px)`)
+  const blurInner = useTransform(d, (dd) => `blur(${blurForD(dd) * 0.55}px)`)
 
   return (
     <motion.div
@@ -136,7 +139,7 @@ function FrameCard({ frame, index, gap, total }: { frame: Frame; index: number; 
       style={{
         left,
         top,
-        width: '40%',
+        width: '54%',
         x: '-50%',
         y: '-50%',
         scale,
@@ -145,9 +148,11 @@ function FrameCard({ frame, index, gap, total }: { frame: Frame; index: number; 
         willChange: 'transform, filter',
       }}
     >
+      {/* No border — a white/translucent edge + blur creates a glowing halo.
+          Clean clipped corners that simply fade into the black instead. */}
       <motion.div
-        className="relative overflow-hidden rounded-xl border border-white/10 bg-white"
-        style={{ boxShadow: '0 30px 60px -24px rgba(0,0,0,0.6)', filter: blurInner }}
+        className="relative overflow-hidden rounded-xl bg-white"
+        style={{ boxShadow: '0 30px 70px -28px rgba(0,0,0,0.7)', filter: blurInner }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={frame.image} alt="Baserate screen" draggable={false} className="block w-full select-none" />
@@ -176,18 +181,18 @@ function Rail({ n, gap }: { n: number; gap: MotionValue<number> }) {
 }
 
 function RailTick({ step, steps, n, gap }: { step: number; steps: number; n: number; gap: MotionValue<number> }) {
-  // tick depth: spread the ticks across the same z-range the cards occupy
+  // tick depth: spread ticks across the same z-range the cards occupy
   const frac = step / (steps - 1)
-  const proj = useTransform(gap, (g) => {
-    const zMax = (n - 1) * g
-    return project(frac * zMax * 1.05)
-  })
+  const zMaxRatio = frac * (n - 1) * 1.05 // tick's depth ratio (in GAP_MAX units)
+  const proj = useTransform(gap, (g) => project(frac * (n - 1) * g * 1.05))
   const left = useTransform(proj, (pr) => `${pr.x}%`)
-  // ticks sit a bit BELOW the card centers, on the "floor"
-  const top = useTransform(proj, (pr) => `${pr.y + 26 * pr.s}%`)
-  const width = useTransform(proj, (pr) => `${Math.max(0.2, 3.2 * pr.s)}%`)
-  const opacity = useTransform(proj, (pr) => Math.max(0, 0.32 * Math.pow(pr.s, 2.2)))
-  const blur = useTransform(proj, (pr) => `blur(${blurFor(pr.s) * 0.5}px)`)
+  // ticks sit on the "floor" well below the (now bigger) card centers
+  const top = useTransform(proj, (pr) => `${pr.y + 34 * pr.s}%`)
+  const width = useTransform(proj, (pr) => `${Math.max(0.2, 4 * pr.s)}%`)
+  // near ticks bright + crisp; fade fast with depth ratio so the floor reads
+  // for the first ~2 steps then vanishes.
+  const opacity = useTransform(gap, () => Math.max(0, 0.5 - zMaxRatio * 0.42))
+  const blur = useTransform(gap, () => `blur(${blurForD(zMaxRatio) * 0.45}px)`)
   return (
     <motion.span
       className="absolute bg-white"
