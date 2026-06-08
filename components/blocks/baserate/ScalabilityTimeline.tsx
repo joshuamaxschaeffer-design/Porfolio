@@ -162,9 +162,9 @@ function FrameCard({ frame, index, gap, total }: { frame: Frame; index: number; 
           left,
           top: lineTop,
           height: lineHeight,
-          width: '3px',
+          width: '1px',
           x: '-50%',
-          background: 'rgba(255,255,255,0.55)',
+          background: 'rgba(255,255,255,0.9)',
           opacity: cueOpacity,
           filter: cueBlur,
           zIndex: 0,
@@ -183,7 +183,7 @@ function FrameCard({ frame, index, gap, total }: { frame: Frame; index: number; 
           opacity: cueOpacity,
           filter: cueBlur,
           background: '#000000',
-          border: '1px solid rgba(255,255,255,0.7)',
+          border: '1px solid rgba(255,255,255,0.9)',
           zIndex: 0,
         }}
       />
@@ -254,14 +254,14 @@ function RailLine({ n, gap }: { n: number; gap: MotionValue<number> }) {
   return (
     <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full" style={{ zIndex: 0 }}>
       <defs>
-        {/* the single receding line is the BRIGHT element (≈3× the ticks) */}
+        {/* the single receding line — bright white, fading only near the VP */}
         <linearGradient id="railLineFade" x1="0" y1="1" x2="1" y2="0">
-          <stop offset="0%" stopColor="rgba(255,255,255,0.95)" />
-          <stop offset="45%" stopColor="rgba(255,255,255,0.55)" />
+          <stop offset="0%" stopColor="rgba(255,255,255,0.9)" />
+          <stop offset="55%" stopColor="rgba(255,255,255,0.7)" />
           <stop offset="100%" stopColor="rgba(255,255,255,0)" />
         </linearGradient>
       </defs>
-      <motion.polyline points={pts} fill="none" stroke="url(#railLineFade)" strokeWidth="3" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+      <motion.polyline points={pts} fill="none" stroke="url(#railLineFade)" strokeWidth="1" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
     </svg>
   )
 }
@@ -288,13 +288,14 @@ function RailTick({ step, steps, n, gap }: { step: number; steps: number; n: num
         left,
         top,
         width,
-        height: '3px',
+        height: '1px',
         x: '-50%',
         y: '-50%',
         opacity,
         filter: blur,
         zIndex: 0,
-        background: 'rgba(255,255,255,0.85)',
+        // dimmer than the receding line + connectors (the "less visible" ticks)
+        background: 'rgba(255,255,255,0.45)',
       }}
     />
   )

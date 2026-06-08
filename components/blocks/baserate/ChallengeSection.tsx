@@ -187,17 +187,20 @@ function ChallengeCardView({
           e.preventDefault()
         }
       }}
-      // white bg fills any sub-pixel gap at the rounded corners (was showing the
-      // grey section bg as a "white notch"); the ring follows the radius cleanly.
-      className={`relative ${CARD_RATIO[card.span]} h-[600px] shrink-0 overflow-hidden rounded-2xl bg-white shadow-[inset_0_0_0_1px_var(--br-stroke)]`}
+      className={`relative ${CARD_RATIO[card.span]} h-[600px] shrink-0 rounded-2xl bg-white`}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={card.image}
-        alt={`Problem ${card.problem}`}
-        draggable={false}
-        className="pointer-events-none h-full w-full rounded-2xl object-cover"
-      />
+      {/* image clipped to the radius in its own layer */}
+      <div className="absolute inset-0 overflow-hidden rounded-2xl">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={card.image}
+          alt={`Problem ${card.problem}`}
+          draggable={false}
+          className="pointer-events-none h-full w-full object-cover"
+        />
+      </div>
+      {/* stroke is a border-only overlay (no content to bleed past the corner) */}
+      <div className="pointer-events-none absolute inset-0 rounded-2xl border border-[var(--br-stroke)]" />
     </article>
   )
 }
