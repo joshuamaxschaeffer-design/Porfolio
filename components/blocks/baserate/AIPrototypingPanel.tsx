@@ -251,13 +251,16 @@ const SEED_CHAT: ChatMsg[] = [
   {
     who: 'claude',
     text:
-      'Built the Conviction slider for the Create Decision modal — 0–10 gradient track with the teardrop pin, drag + click to set, and the abstain toggle. Wired it into FeelingSlider too so they share one primitive in sliders.tsx.',
+      'Conviction slider is in and shared with FeelingSlider via sliders.tsx. Ready for the next one whenever you are.',
   },
 ]
 
-const PROMPT = 'Add a kill-criteria field to the decision modal that turns red when conviction drops below it.'
+// The long "here's everything you need" spec the user sends to pull the next
+// feature (Pairwise) in from Figma.
+const PROMPT =
+  "Pull in the next feature from the Figma — the Pairwise tool (node Pairwise/Flow). Build it as CreatePairwiseRankModal + the voting flow. Setup: pick a default question (\"Which company has a wider moat?\", \"better management team\", \"stronger balance sheet\") or write a custom one, choose the ideas to compare, and toggle \"all possible pairs\" vs a custom vote budget; individual or send-to-team mode. Voting is one pair at a time — two idea cards side by side with their tickers/logos, click to pick a winner, progress shows pair X of N. Score with the Bayesian-adjusted ranking from the prototype, not raw win counts. Results modal: a ranked table with each idea's score + win-rate and the comment/reply thread per row; in team mode, until everyone's voted show the current user's own scores and blur the rest with a \"pending\" overlay. Match the design tokens and reuse Ticker + CommentSystem."
 const REPLY =
-  'Done — added the Kill Criteria input under Conviction; when the live value falls under the threshold the row goes red and flags the decision for revisit. Pushed to the prototype.'
+  'Got it — built CreatePairwiseRankModal with the question picker + all-pairs/budget toggle, the one-pair-at-a-time voting flow, Bayesian-adjusted scoring, and the results table with per-row threads (others blurred until everyone votes). Reuses Ticker + CommentSystem. Live in the prototype.'
 
 function ChatColumn() {
   const [msgs, setMsgs] = useState<ChatMsg[]>(SEED_CHAT)
@@ -275,11 +278,13 @@ function ChatColumn() {
       let i = 0
       const typeNext = () => {
         if (cancelled) return
-        i++
+        // type a few chars per tick so a long spec types in a few seconds, not 25
+        i += 2 + Math.floor(Math.random() * 3)
         setTyped(PROMPT.slice(0, i))
         if (i < PROMPT.length) {
-          timers.push(setTimeout(typeNext, 28 + Math.random() * 40))
+          timers.push(setTimeout(typeNext, 16 + Math.random() * 22))
         } else {
+          setTyped(PROMPT)
           // send
           timers.push(
             setTimeout(() => {
@@ -325,7 +330,7 @@ function ChatColumn() {
       <div className="flex items-center gap-2 border-b border-black/8 px-[4%] py-[3%] text-[11px] text-black/55">
         <span className="font-semibold text-black/80">Baserate Toolkit</span>
         <span className="text-black/30">/</span>
-        <span>Conviction slider component</span>
+        <span>Pairwise tool — Figma import</span>
       </div>
 
       {/* conversation */}
@@ -338,7 +343,9 @@ function ChatColumn() {
             </div>
           ) : (
             <div key={i} className="flex justify-end">
-              <div className="max-w-[85%] rounded-2xl rounded-br-sm bg-[#f0eee9] px-3 py-2 text-black/80">{m.text}</div>
+              <div className="max-h-[150px] max-w-[88%] overflow-hidden rounded-2xl rounded-br-sm bg-[#f0eee9] px-3 py-2 leading-[1.5] text-black/80">
+                {m.text}
+              </div>
             </div>
           ),
         )}
@@ -351,7 +358,10 @@ function ChatColumn() {
 
       {/* composer with live-typed text + send button (mic swapped out) */}
       <div className="mx-[4%] mb-[4%] rounded-lg border border-black/12 px-[3%] py-[2.5%] text-[11px] shadow-sm">
-        <div className={canSend ? 'text-black/80' : 'text-black/40'}>
+        <div
+          className={`max-h-[64px] overflow-hidden leading-[1.5] ${canSend ? 'text-black/80' : 'text-black/40'}`}
+          style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
+        >
           {canSend ? (
             <>
               {typed}
