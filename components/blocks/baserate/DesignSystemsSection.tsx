@@ -2,6 +2,7 @@ import { designSystems as defaults } from './data'
 import { ScalabilityTimeline } from './ScalabilityTimeline'
 import { HandoffSection } from './handoff/HandoffSection'
 import { ComponentsTiltCard } from './ComponentsTiltCard'
+import { AIPrototypingPanel } from './AIPrototypingPanel'
 
 interface DesignSystemsProps {
   heading?: string
@@ -52,6 +53,9 @@ export function DesignSystemsSection(props: DesignSystemsProps) {
 
       {/* ----- Panel 3: Handoff (live UI + code box) ----- */}
       <HandoffSection />
+
+      {/* ----- Panel 4: AI Prototyping (prototype video + Claude UI overlay) ----- */}
+      <AIPrototypingPanel />
     </section>
   )
 }
