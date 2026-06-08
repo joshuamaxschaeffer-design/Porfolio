@@ -162,7 +162,7 @@ function FrameCard({ frame, index, gap, total }: { frame: Frame; index: number; 
           left,
           top: lineTop,
           height: lineHeight,
-          width: '1px',
+          width: '3px',
           x: '-50%',
           background: 'rgba(255,255,255,0.55)',
           opacity: cueOpacity,
@@ -261,7 +261,7 @@ function RailLine({ n, gap }: { n: number; gap: MotionValue<number> }) {
           <stop offset="100%" stopColor="rgba(255,255,255,0)" />
         </linearGradient>
       </defs>
-      <motion.polyline points={pts} fill="none" stroke="url(#railLineFade)" strokeWidth="1" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+      <motion.polyline points={pts} fill="none" stroke="url(#railLineFade)" strokeWidth="3" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
     </svg>
   )
 }
@@ -288,7 +288,7 @@ function RailTick({ step, steps, n, gap }: { step: number; steps: number; n: num
         left,
         top,
         width,
-        height: '1px',
+        height: '3px',
         x: '-50%',
         y: '-50%',
         opacity,

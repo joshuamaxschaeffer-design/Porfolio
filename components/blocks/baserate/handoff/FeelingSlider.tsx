@@ -217,15 +217,16 @@ export function FeelingSlider({
                   <span
                     style={{
                       position: 'absolute',
-                      top: 0,
+                      top: 4,
                       left: 0,
                       right: 0,
-                      height: 44,
+                      height: 36,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       fontSize: 19,
                       fontWeight: 700,
+                      lineHeight: 1,
                       color: pinTextColor,
                     }}
                   >
