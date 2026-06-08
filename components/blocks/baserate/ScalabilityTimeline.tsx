@@ -115,11 +115,12 @@ export function ScalabilityTimeline() {
           clamped depth cue (decreasing scale floored so text stays legible, +
           decreasing opacity, + a slight overlap) and a thin rail down the side
           echoing the desktop timeline. No live blur (GPU-cheap). ----- */}
-      <div className="relative mx-auto mt-10 max-w-md px-6 lg:hidden">
-        {/* thin rail running down the stack */}
+      <div className="relative mx-auto mt-[30px] max-w-md px-6 lg:hidden">
+        {/* thin rail running down the stack, hugging the left content edge so
+            the cards stay flush-left with the SCALABILITY heading above */}
         <div
           aria-hidden
-          className="absolute bottom-6 left-[34px] top-2 w-px"
+          className="absolute bottom-6 left-6 top-2 w-px"
           style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.45), rgba(255,255,255,0.06))' }}
         />
         <div className="flex flex-col">
@@ -134,19 +135,21 @@ export function ScalabilityTimeline() {
                 className="relative min-w-0"
                 style={{
                   transform: `scale(${scale})`,
-                  transformOrigin: 'center top',
+                  // scale from the LEFT edge so every card stays left-aligned
+                  // with the heading (centre origin would inset the deeper ones)
+                  transformOrigin: 'left top',
                   opacity,
                   marginTop: i === 0 ? 0 : -18,
                   zIndex: frames.length - i,
                 }}
               >
-                {/* floor dot on the rail, aligned to this card */}
+                {/* floor dot sitting on the rail at the card's left edge */}
                 <span
                   aria-hidden
-                  className="absolute -left-[2px] top-5 h-2 w-2 -translate-x-1/2 rounded-full"
+                  className="absolute left-0 top-5 h-2 w-2 -translate-x-1/2 rounded-full"
                   style={{ background: '#000', border: '1.5px solid rgba(255,255,255,0.9)' }}
                 />
-                <div className="ml-6 overflow-hidden rounded-xl border border-white/10 bg-white shadow-[0_20px_50px_-24px_rgba(0,0,0,0.7)]">
+                <div className="overflow-hidden rounded-xl border border-white/10 bg-white shadow-[0_20px_50px_-24px_rgba(0,0,0,0.7)]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={frame.image} alt="Baserate screen" className="w-full" />
                 </div>

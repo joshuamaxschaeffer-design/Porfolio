@@ -28,8 +28,56 @@ export function ChallengeSection(props: ChallengeProps) {
   const [canLeft, setCanLeft] = useState(false)
   const [canRight, setCanRight] = useState(true)
 
-  // Drag-to-scroll (pointer). Distinguishes a drag from a click so card taps still work.
-  const drag = useRef({ down: false, moved: false, startX: 0, startScroll: 0 })
+  // Drag-to-scroll (pointer) with flick momentum. Distinguishes a drag from a
+  // click so card taps still work. We sample pointer velocity during the drag
+  // and, on release, coast with exponential decay (mouse/trackpad only — touch
+  // devices already get native inertial scrolling, so we don't double it).
+  const drag = useRef({
+    down: false,
+    moved: false,
+    startX: 0,
+    startScroll: 0,
+    lastX: 0,
+    lastT: 0,
+    vx: 0, // px/ms (positive = content moving so finger drags right)
+    pointerType: 'mouse' as string,
+  })
+  const momentumRaf = useRef<number | null>(null)
+
+  const stopMomentum = useCallback(() => {
+    if (momentumRaf.current != null) {
+      cancelAnimationFrame(momentumRaf.current)
+      momentumRaf.current = null
+    }
+  }, [])
+
+  const startMomentum = useCallback((v0: number) => {
+    const el = trackRef.current
+    if (!el) return
+    stopMomentum()
+    let v = v0 // px/ms
+    let last = performance.now()
+    // exponential decay; tuned so a firm flick coasts ~0.4–0.8s then eases out
+    const DECAY = 0.0025 // higher = stops sooner
+    const MIN_V = 0.015 // px/ms — below this we stop
+    const step = (now: number) => {
+      const dt = Math.min(40, now - last) // clamp to avoid huge jumps after a stall
+      last = now
+      el.scrollLeft -= v * dt
+      // decay
+      v *= Math.exp(-DECAY * dt)
+      // stop if we've slowed enough or hit an edge
+      const atEdge = el.scrollLeft <= 0 || el.scrollLeft >= el.scrollWidth - el.clientWidth - 1
+      if (Math.abs(v) < MIN_V || atEdge) {
+        momentumRaf.current = null
+        return
+      }
+      momentumRaf.current = requestAnimationFrame(step)
+    }
+    momentumRaf.current = requestAnimationFrame(step)
+  }, [stopMomentum])
+
+  useEffect(() => () => stopMomentum(), [stopMomentum])
 
   const updateEdges = useCallback(() => {
     const el = trackRef.current
@@ -96,7 +144,18 @@ export function ChallengeSection(props: ChallengeProps) {
   const onPointerDown = (e: React.PointerEvent) => {
     const el = trackRef.current
     if (!el) return
-    drag.current = { down: true, moved: false, startX: e.clientX, startScroll: el.scrollLeft }
+    stopMomentum() // catching a coasting carousel stops it (like grabbing a spinning wheel)
+    const now = performance.now()
+    drag.current = {
+      down: true,
+      moved: false,
+      startX: e.clientX,
+      startScroll: el.scrollLeft,
+      lastX: e.clientX,
+      lastT: now,
+      vx: 0,
+      pointerType: e.pointerType || 'mouse',
+    }
     el.setPointerCapture(e.pointerId)
   }
   const onPointerMove = (e: React.PointerEvent) => {
@@ -105,6 +164,15 @@ export function ChallengeSection(props: ChallengeProps) {
     const dx = e.clientX - drag.current.startX
     if (Math.abs(dx) > 4) drag.current.moved = true
     el.scrollLeft = drag.current.startScroll - dx
+    // sample velocity over the last move (px/ms), lightly smoothed
+    const now = performance.now()
+    const dt = now - drag.current.lastT
+    if (dt > 0) {
+      const instV = (e.clientX - drag.current.lastX) / dt
+      drag.current.vx = drag.current.vx * 0.6 + instV * 0.4
+      drag.current.lastX = e.clientX
+      drag.current.lastT = now
+    }
   }
   const endDrag = (e: React.PointerEvent) => {
     const el = trackRef.current
@@ -113,7 +181,16 @@ export function ChallengeSection(props: ChallengeProps) {
         el.releasePointerCapture(e.pointerId)
       } catch {}
     }
+    const wasDown = drag.current.down
     drag.current.down = false
+    // Flick momentum — mouse/trackpad only (touch has native inertia). Only if
+    // the release was recent (still moving) and fast enough to count as a flick.
+    if (wasDown && el && drag.current.pointerType !== 'touch') {
+      const idle = performance.now() - drag.current.lastT
+      if (idle < 80 && Math.abs(drag.current.vx) > 0.05) {
+        startMomentum(drag.current.vx)
+      }
+    }
   }
 
   return (
