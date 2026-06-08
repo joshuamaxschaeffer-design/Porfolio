@@ -35,10 +35,15 @@ const STOPS = (i: number, n: number) => {
     dotY: 90 - t * 34, // rail sits low; recedes upward
     // card center floats this far ABOVE its dot (bigger gap up front).
     lift: 30 + (1 - t) * 12, // % of stage height
-    scale: 1 - t * 0.6,
-    opacity: 1 - t * 0.48,
-    blur: t * 3.2,
-    darken: t * 0.5,
+    // Scale falloff is HALF as dramatic as before (was t*0.6) — cards stay
+    // closer in size as they recede; depth is carried by blur + darkness.
+    scale: 1 - t * 0.3,
+    // Cards stay fully OPAQUE — a dark overlay (below) deepens with distance
+    // instead of fading opacity, so you never see the card behind through one.
+    opacity: 1,
+    // Blur + darken are MUCH stronger now so the back card is barely visible.
+    blur: t * 9,
+    darken: t * 0.86,
     dotSize: 14 - t * 8,
     z: -i * 230,
   }
@@ -124,44 +129,54 @@ export function ScalabilityTimeline() {
   )
 }
 
+// Sample the same receding path the photo stops use, but at an arbitrary t in
+// [0,1] — so the ticker marks can be placed continuously between the stops.
+function pathAt(t: number) {
+  return { x: 16 + t * 60, y: 90 - t * 34 }
+}
+
 /**
- * The rail: an SVG poly-line threaded through every dot, plus a glowing dot at
- * each stop. Drawn in the same percentage space the cards use, so each card
- * floats directly above its dot.
+ * The rail: a run of thin, short horizontal ticker marks marching along the
+ * receding path toward the vanishing point — like a ruler measuring time into
+ * the future. Low opacity, fading + shrinking with distance. White dots remain
+ * at the photo stops to anchor the year labels.
  */
 function Rail({ n }: { n: number }) {
   const stops = Array.from({ length: n }, (_, i) => STOPS(i, n))
-  const pts = stops.map((s) => `${s.dotX},${s.dotY}`).join(' ')
+
+  // Many evenly-spaced ticks from the front (t=0) to past the last stop (t=1).
+  const TICKS = 46
+  const ticks = Array.from({ length: TICKS }, (_, i) => i / (TICKS - 1))
+
   return (
     <div className="absolute inset-0" style={{ transform: 'translateZ(-1px)' }}>
-      <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full">
-        <defs>
-          <linearGradient id="railFade" x1="0" y1="1" x2="1" y2="0">
-            <stop offset="0%" stopColor="rgba(255,255,255,0.85)" />
-            <stop offset="50%" stopColor="rgba(255,255,255,0.32)" />
-            <stop offset="100%" stopColor="rgba(255,255,255,0)" />
-          </linearGradient>
-          <linearGradient id="railGlow" x1="0" y1="1" x2="1" y2="0">
-            <stop offset="0%" stopColor="rgba(174,125,0,0.5)" />
-            <stop offset="60%" stopColor="rgba(174,125,0,0.12)" />
-            <stop offset="100%" stopColor="rgba(174,125,0,0)" />
-          </linearGradient>
-        </defs>
-        {/* soft gold underglow beneath the rail */}
-        <polyline points={pts} fill="none" stroke="url(#railGlow)" strokeWidth="3" strokeLinecap="round" />
-        {/* the crisp rail line */}
-        <polyline
-          points={pts}
-          fill="none"
-          stroke="url(#railFade)"
-          strokeWidth="0.5"
-          strokeLinecap="round"
-          vectorEffect="non-scaling-stroke"
-        />
-      </svg>
+      {/* ticker marks — short horizontal lines receding into the distance */}
+      {ticks.map((t, i) => {
+        const p = pathAt(t)
+        // near the camera the ticks are wider + brighter; they shrink and fade
+        // as they go back, vanishing before the far end.
+        const width = 2.6 * (1 - t) + 0.4 // % of stage width
+        const opacity = Math.max(0, 0.32 * (1 - t * 1.1))
+        return (
+          <span
+            key={i}
+            className="absolute bg-white"
+            style={{
+              left: `${p.x}%`,
+              top: `${p.y}%`,
+              width: `${width}%`,
+              height: '1px',
+              transform: 'translate(-50%, -50%)',
+              opacity,
+            }}
+          />
+        )
+      })}
+
+      {/* white dots at the 6 photo stops (anchor the year labels) */}
       {stops.map((s, i) => (
         <span
-          key={i}
+          key={`dot-${i}`}
           className="absolute rounded-full bg-white"
           style={{
             left: `${s.dotX}%`,
@@ -169,7 +184,7 @@ function Rail({ n }: { n: number }) {
             width: `${s.dotSize}px`,
             height: `${s.dotSize}px`,
             transform: 'translate(-50%, -50%)',
-            opacity: Math.max(0.25, s.opacity),
+            opacity: Math.max(0.3, 1 - s.t * 0.55),
             boxShadow: `0 0 ${16 - s.t * 7}px rgba(255,255,255,${0.75 - s.t * 0.35})`,
           }}
         />

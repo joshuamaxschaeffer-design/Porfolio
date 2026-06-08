@@ -170,11 +170,15 @@ function Avatar({ src }: { src: string }) {
 export function CommentSystem({ title = 'Comments' }: { title?: string }) {
   const [comments, setComments] = useState<Comment[]>(() => buildSeed())
   const [hoveredId, setHoveredId] = useState<string | null>(null)
-  const [expanded, setExpanded] = useState<Set<string>>(() => new Set())
+  // Threads are always auto-expanded (no collapse UI) — seed with every
+  // comment id that has replies.
+  const [expanded, setExpanded] = useState<Set<string>>(
+    () => new Set(buildSeed().filter((c) => c.replies.length > 0).map((c) => c.id)),
+  )
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editingText, setEditingText] = useState('')
   const [threadInputs, setThreadInputs] = useState<Record<string, string>>({})
-  const [mainText, setMainText] = useState('')
+
   const [activeInputs, setActiveInputs] = useState<Record<string, boolean>>({})
 
   const myAvatar = initialsAvatar('You', 'self')
@@ -240,31 +244,6 @@ export function CommentSystem({ title = 'Comments' }: { title?: string }) {
     )
     setThreadInputs((p) => ({ ...p, [parentId]: '' }))
     if (!expanded.has(parentId)) toggleThread(parentId)
-  }
-
-  const addMainComment = () => {
-    const trimmed = mainText.trim()
-    if (!trimmed) return
-    setComments((prev) => [
-      ...prev,
-      {
-        id: `c-${Date.now()}`,
-        author: 'You',
-        avatar: myAvatar,
-        time: 'Just now',
-        mentions: [],
-        text: trimmed,
-        isNew: false,
-        seenCount: 0,
-        likeCount: 0,
-        iLiked: false,
-        iSeen: false,
-        editedAt: null,
-        deleted: false,
-        replies: [],
-      },
-    ])
-    setMainText('')
   }
 
   const renderComment = (comment: CommentReply, isThread = false, showLine = false, contentPb = 0, parentId: string | null = null) => {
@@ -449,31 +428,7 @@ export function CommentSystem({ title = 'Comments' }: { title?: string }) {
             <div key={c.id} style={{ position: 'relative' }}>
               {renderComment(c, false, parentShowLine, hasThread || isExpanded ? 8 : 24)}
 
-              {/* collapsed thread teaser */}
-              {hasThread && !isExpanded && (
-                <div
-                  onClick={() => toggleThread(c.id)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    cursor: 'pointer',
-                    color: D.link,
-                    fontSize: 14,
-                    lineHeight: '20px',
-                    paddingLeft: 32,
-                    paddingTop: 4,
-                    paddingBottom: 8,
-                  }}
-                >
-                  <svg width={14} height={14} viewBox="0 0 16 16" fill="none">
-                    <path d="M4.5 6L8 9.5L11.5 6" stroke="currentColor" strokeWidth="1.3" fill="none" />
-                  </svg>
-                  <span>Collapse Replies</span>
-                </div>
-              )}
-
-              {/* expanded thread */}
+              {/* thread is always expanded (no collapse UI) */}
               {isExpanded && (
                 <>
                   {c.replies.map((reply, rIdx) => (
@@ -483,17 +438,6 @@ export function CommentSystem({ title = 'Comments' }: { title?: string }) {
                         {(rIdx < c.replies.length - 1) && <div style={{ flex: 1, width: 0, borderLeft: `1px dashed ${D.line}`, marginLeft: -0.5 }} />}
                       </div>
                       <div style={{ flex: 1, minWidth: 0, paddingTop: 6 }}>
-                        {rIdx === 0 && (
-                          <button
-                            onClick={() => toggleThread(c.id)}
-                            style={{ background: 'none', border: 'none', color: D.link, fontSize: 12, lineHeight: '16px', cursor: 'pointer', padding: '0 0 8px 0', display: 'flex', alignItems: 'center', gap: 4 }}
-                          >
-                            <svg width={14} height={14} viewBox="0 0 16 16" fill="none" style={{ transform: 'rotate(180deg)' }}>
-                              <path d="M4.5 6L8 9.5L11.5 6" stroke="currentColor" strokeWidth="1.3" fill="none" />
-                            </svg>
-                            Collapse Replies
-                          </button>
-                        )}
                         {renderComment(reply, true, false, 16, c.id)}
                       </div>
                     </div>
@@ -532,48 +476,6 @@ export function CommentSystem({ title = 'Comments' }: { title?: string }) {
             </div>
           )
         })}
-      </div>
-
-      {/* main comment input */}
-      <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', marginTop: 4 }}>
-        <div style={{ width: 24, height: 24, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, border: `0.5px solid ${D.line}` }}>
-          <Avatar src={myAvatar} />
-        </div>
-        {(() => {
-          const isOpen = activeInputs['main'] || !!mainText.trim()
-          return (
-            <div
-              onFocus={() => setActiveInputs((p) => ({ ...p, main: true }))}
-              onBlur={(e) => {
-                if (!e.currentTarget.contains(e.relatedTarget as Node)) setActiveInputs((p) => ({ ...p, main: false }))
-              }}
-              style={{ flex: 1, borderRadius: 2, background: isOpen ? D.inputBgActive : D.inputBg, border: `1px solid ${isOpen ? D.border : 'transparent'}` }}
-            >
-              <textarea
-                placeholder="Add a Comment"
-                value={mainText}
-                onChange={(e) => setMainText(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault()
-                    addMainComment()
-                  }
-                }}
-                style={{ width: '100%', background: 'transparent', border: 'none', borderRadius: 2, padding: '6px 8px', fontFamily: S.fontFamily, fontVariationSettings: S.fontVar, fontSize: 14, color: D.text, outline: 'none', minHeight: 34, resize: 'none', boxSizing: 'border-box' }}
-              />
-              {isOpen && (
-                <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '4px 8px' }}>
-                  <button
-                    onClick={addMainComment}
-                    style={{ background: D.badgeBlue, color: 'white', border: 'none', borderRadius: 2, padding: '4px 12px', fontFamily: S.fontFamily, fontVariationSettings: S.fontVar, fontSize: 14, fontWeight: 700, cursor: 'pointer', minWidth: 60 }}
-                  >
-                    Send
-                  </button>
-                </div>
-              )}
-            </div>
-          )
-        })()}
       </div>
     </div>
   )
