@@ -187,7 +187,9 @@ function ChallengeCardView({
           e.preventDefault()
         }
       }}
-      className={`relative ${CARD_RATIO[card.span]} h-[600px] shrink-0 overflow-hidden rounded-2xl shadow-[inset_0_0_0_1px_var(--br-stroke)]`}
+      // white bg fills any sub-pixel gap at the rounded corners (was showing the
+      // grey section bg as a "white notch"); the ring follows the radius cleanly.
+      className={`relative ${CARD_RATIO[card.span]} h-[600px] shrink-0 overflow-hidden rounded-2xl bg-white shadow-[inset_0_0_0_1px_var(--br-stroke)]`}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
