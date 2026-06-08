@@ -7,39 +7,56 @@ import { designSystems } from './data'
 type Frame = (typeof designSystems.scalability.frames)[number]
 
 /**
- * SCALABILITY — a "zoom-out" timeline that reads as a 3D environment.
+ * SCALABILITY — a real pinhole-perspective "zoom-out" timeline.
  *
- * As the section scrolls in, the camera dollies BACKWARD: the cards start
- * clustered near the viewer (front card large, the rest stacked close behind),
- * then spread into depth — each one receding, shrinking, blurring and darkening.
- * A rail of dots + short ticker lines sits BEHIND the cards on the floor and
- * moves with the exact same camera, so the whole thing feels like one space.
+ * Cards sit in 3D at EQUAL depth intervals (card i at z = i * gap). A pinhole
+ * camera projects depth z to a scale factor s = F / (F + z); the card's screen
+ * position is interpolated from the front anchor toward the vanishing point by
+ * (1 − s). Because the spacing in z is constant, the projected gaps compress
+ * toward the vanishing point exactly the way a real lens renders them — the far
+ * cards bunch together near the VP rather than flying off.
  *
- * Implementation: a single scroll progress `p` (0 = clustered, 1 = fully zoomed
- * out) feeds every element. Each card has a base depth `i`; its effective depth
- * is `i * zoom(p)`, and position/scale/blur/darken all derive from that. The
- * rail samples the same depth→screen mapping, so card N always floats above its
- * dot. Dates count UP into the future (front = nearest year).
+ * Scroll = the dolly: `gap` animates from ~0 (cards stacked at the front) to its
+ * full value (spread into depth) as the section scrolls in.
+ *
+ * Depth cues ramp FAST: darkness and blur are functions of s so a card is
+ * mostly gone by the 3rd one back. Blur is double-applied (two stacked layers)
+ * for a smoother falloff. A floor of ticker lines shares the same projection,
+ * so they converge toward the VP and fade out within the first few steps.
  */
 
-// How clustered (p=0) vs spread (p=1) the depths are.
-const ZOOM_MIN = 0.18
-const ZOOM_MAX = 1
+// --- camera / projection constants ---
+const F = 1100 // focal length (px-ish, in the same units as z)
+const GAP_MAX = 900 // real z-distance between adjacent cards when fully spread
+const GAP_MIN = 70 // when clustered at the front (scroll start)
+// Vanishing point in stage % — where everything converges as z → ∞.
+const VP_X = 86
+const VP_Y = 30
+// Front card anchor in stage %.
+const FRONT_X = 30
+const FRONT_Y = 52
 
-// Map an effective depth d (0 = front) to all visual properties. `d` already
-// folds in the zoom, so this is the single source of truth for both cards and
-// the rail beneath them.
-function depthProps(d: number) {
+// Project a depth z (>=0) → {scale, screenX%, screenY%} via the pinhole law.
+function project(z: number) {
+  const s = F / (F + z) // 1 at z=0, →0 far away
+  // interpolate from the front anchor toward the VP by how far we've receded
+  const k = 1 - s
   return {
-    // screen path: marches up + right toward the vanishing point
-    x: 16 + d * 13.5, // %
-    y: 70 - d * 9, // % (card center; higher = further back)
-    railY: 92 - d * 8.5, // % (rail sits lower than the cards)
-    scale: 1 / (1 + d * 0.5), // perspective-ish shrink
-    blur: d * 2.7, // px
-    darken: Math.min(0.9, d * 0.2), // overlay alpha
-    dotSize: Math.max(4, 13 - d * 2.2), // px
+    s,
+    x: FRONT_X + (VP_X - FRONT_X) * k,
+    y: FRONT_Y + (VP_Y - FRONT_Y) * k,
   }
+}
+
+// Depth cues from the scale factor. Tuned (steep) so the 2nd card back is
+// already deeply dimmed and the 3rd+ have all but dissolved into the black —
+// matching real atmospheric/DOF falloff in the reference.
+function darkenFor(s: number) {
+  // (1-s) for cards: c1≈0.45, c2≈0.62, c3≈0.71 → push hard with a low exponent.
+  return Math.min(0.96, Math.pow(1 - s, 0.55) * 1.95)
+}
+function blurFor(s: number) {
+  return Math.pow(1 - s, 0.7) * 42 // px (split across two layers)
 }
 
 export function ScalabilityTimeline() {
@@ -52,37 +69,32 @@ export function ScalabilityTimeline() {
   })
   const p = useSpring(scrollYProgress, { stiffness: 110, damping: 30, mass: 0.6 })
 
-  // zoom: 0 → ZOOM_MIN (clustered), 1 → ZOOM_MAX (spread out)
-  const zoom = useTransform(p, [0, 1], [ZOOM_MIN, ZOOM_MAX])
-  // reduced-motion users get the fully-spread end state, static
-  const zoomStatic = useMotionValue(ZOOM_MAX)
-  const zoomMV = reduce ? zoomStatic : zoom
+  const gap = useTransform(p, [0, 1], [GAP_MIN, GAP_MAX])
+  const gapStatic = useMotionValue(GAP_MAX)
+  const gapMV = reduce ? gapStatic : gap
 
   const frames = designSystems.scalability.frames
   const n = frames.length
 
   return (
     <>
-      {/* ----- Desktop / tablet: the zoom-out 3D stage ----- */}
-      <div
-        ref={stageRef}
-        className="relative mx-auto hidden h-[600px] w-full max-w-[1240px] md:block lg:h-[700px]"
-      >
-        {/* Rail FIRST so it paints behind every card. */}
-        <Rail n={n} zoom={zoomMV} />
+      {/* ----- Desktop / tablet: the perspective stage ----- */}
+      <div ref={stageRef} className="relative mx-auto hidden h-[620px] w-full max-w-[1240px] md:block lg:h-[720px]">
+        {/* floor rail (behind everything) */}
+        <Rail n={n} gap={gapMV} />
 
-        {/* Cards far → near so nearer paint on top. */}
+        {/* cards far → near so nearer paint on top */}
         {frames.map((frame, i) => (
-          <FrameCard key={frame.image} frame={frame} index={i} zoom={zoomMV} total={n} />
+          <FrameCard key={frame.image} frame={frame} index={i} gap={gapMV} total={n} />
         ))}
 
-        {/* Vignette so the far end melts into the black panel. */}
+        {/* vignette: far half dissolves into the panel black */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0"
           style={{
             background:
-              'radial-gradient(135% 100% at 70% 26%, rgba(7,10,20,0) 30%, rgba(7,10,20,0.55) 74%, rgba(7,10,20,0.96) 100%)',
+              'radial-gradient(120% 110% at 84% 28%, rgba(7,10,20,0) 26%, rgba(7,10,20,0.6) 60%, rgba(7,10,20,0.98) 86%)',
           }}
         />
       </div>
@@ -90,21 +102,11 @@ export function ScalabilityTimeline() {
       {/* ----- Mobile fallback: clean vertical fade-back stack ----- */}
       <div className="mx-auto mt-10 flex max-w-md flex-col gap-5 px-6 md:hidden">
         {frames.map((frame, i) => (
-          <div key={frame.image} className="flex items-center gap-4">
-            <div className="flex flex-col items-center self-stretch pt-2">
-              <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.6)]" />
-              {i < n - 1 && <span className="mt-1 w-px flex-1 bg-white/20" />}
+          <div key={frame.image} className="min-w-0" style={{ opacity: 1 - i * 0.14 }}>
+            <div className="overflow-hidden rounded-xl border border-white/10 bg-white shadow-lg">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={frame.image} alt="Baserate screen" className="w-full" />
             </div>
-            <div className="min-w-0 flex-1">
-              <div
-                className="overflow-hidden rounded-xl border border-white/10 bg-white shadow-lg"
-                style={{ opacity: 1 - i * 0.12 }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={frame.image} alt={`Baserate ${frame.date}`} className="w-full" />
-              </div>
-            </div>
-            <span className="br-data shrink-0 self-start pt-1 text-xs text-white/50">{frame.date}</span>
           </div>
         ))}
       </div>
@@ -113,129 +115,83 @@ export function ScalabilityTimeline() {
 }
 
 /**
- * One screenshot card. Its effective depth = index * zoom, so as `zoom` grows
- * (scroll) the deeper cards push further back — a dolly-out. Position, scale,
- * blur and darken all derive from that depth via depthProps().
+ * One screenshot card, projected from its depth z = index * gap. As `gap` grows
+ * on scroll the card recedes along the true perspective path. Two stacked blur
+ * layers + a darkening overlay give a smooth, fast depth falloff.
  */
-function FrameCard({
-  frame,
-  index,
-  zoom,
-  total,
-}: {
-  frame: Frame
-  index: number
-  zoom: MotionValue<number>
-  total: number
-}) {
-  // Everything is a transform of the effective depth (index * zoom).
-  const left = useTransform(zoom, (z) => `${depthProps(index * z).x}%`)
-  const top = useTransform(zoom, (z) => `${depthProps(index * z).y}%`)
-  const scale = useTransform(zoom, (z) => depthProps(index * z).scale)
-  const blur = useTransform(zoom, (z) => `blur(${depthProps(index * z).blur}px)`)
-  const darken = useTransform(zoom, (z) => depthProps(index * z).darken)
-  // date sits just below the card's dot on the rail
-  const dateTop = useTransform(zoom, (z) => `${depthProps(index * z).railY}%`)
-  const dateOpacity = useTransform(zoom, (z) => Math.max(0, 1 - index * z * 0.5))
-  const dateSize = useTransform(zoom, (z) => `${Math.max(9, 14 - index * z * 2)}px`)
+function FrameCard({ frame, index, gap, total }: { frame: Frame; index: number; gap: MotionValue<number>; total: number }) {
+  const proj = useTransform(gap, (g) => project(index * g))
+  const left = useTransform(proj, (pr) => `${pr.x}%`)
+  const top = useTransform(proj, (pr) => `${pr.y}%`)
+  const scale = useTransform(proj, (pr) => pr.s)
+  const darken = useTransform(proj, (pr) => darkenFor(pr.s))
+  // split the blur across the outer wrapper and the inner image for a softer,
+  // double-applied look (cheap approximation of a gaussian pyramid).
+  const blurOuter = useTransform(proj, (pr) => `blur(${blurFor(pr.s) * 0.45}px)`)
+  const blurInner = useTransform(proj, (pr) => `blur(${blurFor(pr.s) * 0.55}px)`)
 
   return (
-    <>
+    <motion.div
+      className="absolute"
+      style={{
+        left,
+        top,
+        width: '40%',
+        x: '-50%',
+        y: '-50%',
+        scale,
+        zIndex: total - index,
+        filter: blurOuter,
+        willChange: 'transform, filter',
+      }}
+    >
       <motion.div
-        className="absolute"
-        style={{
-          left,
-          top,
-          width: '34%',
-          x: '-50%',
-          y: '-50%',
-          scale,
-          zIndex: total - index,
-          filter: blur,
-          willChange: 'transform, filter',
-        }}
+        className="relative overflow-hidden rounded-xl border border-white/10 bg-white"
+        style={{ boxShadow: '0 30px 60px -24px rgba(0,0,0,0.6)', filter: blurInner }}
       >
-        <div
-          className="relative overflow-hidden rounded-xl border border-white/10 bg-white"
-          style={{ boxShadow: '0 30px 60px -24px rgba(0,0,0,0.6)' }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={frame.image} alt={`Baserate ${frame.date}`} draggable={false} className="block w-full select-none" />
-          <motion.div className="pointer-events-none absolute inset-0 bg-[#070a14]" style={{ opacity: darken }} />
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={frame.image} alt="Baserate screen" draggable={false} className="block w-full select-none" />
+        <motion.div className="pointer-events-none absolute inset-0 bg-[#070a14]" style={{ opacity: darken }} />
       </motion.div>
-
-      {/* year label, anchored to this card's dot on the rail */}
-      <motion.span
-        className="br-data absolute -translate-x-1/2 whitespace-nowrap font-medium text-white"
-        style={{
-          left,
-          top: dateTop,
-          fontSize: dateSize,
-          letterSpacing: '0.08em',
-          opacity: dateOpacity,
-          zIndex: total + 2,
-          textShadow: '0 1px 8px rgba(0,0,0,0.85)',
-        }}
-      >
-        {frame.date}
-      </motion.span>
-    </>
+    </motion.div>
   )
 }
 
 /**
- * The rail: white dots at each photo stop + a run of thin ticker lines between
- * them, all on the "floor" behind the cards. Driven by the SAME zoom value so
- * it dollies out in lockstep, and each mark blurs + dims with depth exactly
- * like the cards above it.
+ * Floor rail: short horizontal ticker lines at EQUAL z spacing, projected with
+ * the same pinhole law so they converge toward the vanishing point. They blur
+ * and darken fast — invisible within the first few steps, as in real fog/DOF.
  */
-function Rail({ n, zoom }: { n: number; zoom: MotionValue<number> }) {
-  // Dots at integer depths 0..n-1; ticks at fine fractional depths between.
-  const dotDepths = Array.from({ length: n }, (_, i) => i)
-  const TICKS_PER_GAP = 5
-  const tickDepths: number[] = []
-  for (let i = 0; i < (n - 1) * TICKS_PER_GAP + 1; i++) tickDepths.push(i / TICKS_PER_GAP)
-
+function Rail({ n, gap }: { n: number; gap: MotionValue<number> }) {
+  // Sample many fine z steps from the front out to ~the last card's depth.
+  const STEPS = 30
+  const ticks = Array.from({ length: STEPS }, (_, i) => i)
   return (
-    // zIndex 0 keeps the whole rail behind the cards (which start at zIndex >= 1)
     <div className="absolute inset-0" style={{ zIndex: 0 }}>
-      {tickDepths.map((bd, i) => (
-        <RailTick key={`t${i}`} baseDepth={bd} zoom={zoom} />
-      ))}
-      {dotDepths.map((bd, i) => (
-        <RailDot key={`d${i}`} baseDepth={bd} zoom={zoom} />
+      {ticks.map((i) => (
+        <RailTick key={i} step={i} steps={STEPS} n={n} gap={gap} />
       ))}
     </div>
   )
 }
 
-function RailTick({ baseDepth, zoom }: { baseDepth: number; zoom: MotionValue<number> }) {
-  const left = useTransform(zoom, (z) => `${depthProps(baseDepth * z).x}%`)
-  const top = useTransform(zoom, (z) => `${depthProps(baseDepth * z).railY}%`)
-  const width = useTransform(zoom, (z) => `${Math.max(0.3, 2.4 / (1 + baseDepth * z * 0.5))}%`)
-  // fade + blur with depth, matching the cards
-  const opacity = useTransform(zoom, (z) => Math.max(0, 0.3 * (1 - baseDepth * z * 0.5)))
-  const blur = useTransform(zoom, (z) => `blur(${baseDepth * z * 1.6}px)`)
+function RailTick({ step, steps, n, gap }: { step: number; steps: number; n: number; gap: MotionValue<number> }) {
+  // tick depth: spread the ticks across the same z-range the cards occupy
+  const frac = step / (steps - 1)
+  const proj = useTransform(gap, (g) => {
+    const zMax = (n - 1) * g
+    return project(frac * zMax * 1.05)
+  })
+  const left = useTransform(proj, (pr) => `${pr.x}%`)
+  // ticks sit a bit BELOW the card centers, on the "floor"
+  const top = useTransform(proj, (pr) => `${pr.y + 26 * pr.s}%`)
+  const width = useTransform(proj, (pr) => `${Math.max(0.2, 3.2 * pr.s)}%`)
+  const opacity = useTransform(proj, (pr) => Math.max(0, 0.32 * Math.pow(pr.s, 2.2)))
+  const blur = useTransform(proj, (pr) => `blur(${blurFor(pr.s) * 0.5}px)`)
   return (
     <motion.span
       className="absolute bg-white"
       style={{ left, top, width, height: '1px', x: '-50%', y: '-50%', opacity, filter: blur }}
-    />
-  )
-}
-
-function RailDot({ baseDepth, zoom }: { baseDepth: number; zoom: MotionValue<number> }) {
-  const left = useTransform(zoom, (z) => `${depthProps(baseDepth * z).x}%`)
-  const top = useTransform(zoom, (z) => `${depthProps(baseDepth * z).railY}%`)
-  const size = useTransform(zoom, (z) => `${depthProps(baseDepth * z).dotSize}px`)
-  const opacity = useTransform(zoom, (z) => Math.max(0.15, 1 - baseDepth * z * 0.45))
-  const blur = useTransform(zoom, (z) => `blur(${baseDepth * z * 1.6}px)`)
-  const shadow = useTransform(zoom, (z) => `0 0 ${Math.max(2, 14 - baseDepth * z * 4)}px rgba(255,255,255,0.6)`)
-  return (
-    <motion.span
-      className="absolute rounded-full bg-white"
-      style={{ left, top, width: size, height: size, x: '-50%', y: '-50%', opacity, filter: blur, boxShadow: shadow }}
     />
   )
 }

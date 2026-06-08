@@ -1,7 +1,6 @@
 import { designSystems as defaults } from './data'
 import { ScalabilityTimeline } from './ScalabilityTimeline'
 import { HandoffSection } from './handoff/HandoffSection'
-import { ComponentsTiltCard } from './ComponentsTiltCard'
 import { AIPrototypingPanel } from './AIPrototypingPanel'
 
 interface DesignSystemsProps {
@@ -35,8 +34,12 @@ export function DesignSystemsSection(props: DesignSystemsProps) {
         {/* ----- Panel 1: Component Libraries ----- */}
         <div className="mt-20 md:mt-28">
           <PanelHeader title={components.title} body={props.componentsBody ?? components.body} />
-          {/* Dramatic cursor-reactive tilt — hovering a corner pushes it back. */}
-          <ComponentsTiltCard src={components.artifact} alt="Baserate component library" />
+          {/* Static, pixel-perfect — no transform/animation (those rasterize and
+              soften the image). Plain HD artifact on a white card. */}
+          <div className="mt-10 overflow-hidden rounded-2xl bg-white shadow-[0_40px_90px_-40px_rgba(0,0,0,0.8)] md:mt-12">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={components.artifact} alt="Baserate component library" className="block w-full" />
+          </div>
         </div>
 
         {/* ----- Panel 2: Scalability ----- */}

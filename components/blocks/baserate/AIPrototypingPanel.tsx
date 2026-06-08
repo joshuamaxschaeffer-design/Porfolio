@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 /**
  * AI PROTOTYPING — the closing panel of the Design Systems section.
@@ -157,20 +157,24 @@ const SIDEBAR = [
 ]
 
 const RECENTS = [
-  'Design Systems section',
-  'Baserate portfolio page',
-  'Project setup review',
-  'Build professional design portfolio',
-  'Access Google Sheets account',
-  'Scalability timeline motion',
+  'Conviction slider component',
+  'Decision modal — Create flow',
+  'Checklist scoring logic',
+  'Pre-mortem + self-contract',
+  'Ranking poll drag-to-rank',
+  'Comment threads + mentions',
   'Continue previous conversation',
-  'Convert image to text',
-  'Handoff section components',
+  'Tiptap doc editor toolbar',
+  'Supabase realtime sync',
 ]
 
 export function ClaudeUI() {
   return (
-    <div className="grid h-full w-full grid-cols-[26%_1fr_28%] bg-white text-[#1f1f1f]" style={{ fontFamily: 'ui-sans-serif, system-ui, sans-serif' }}>
+    <div
+      className="grid h-full w-full grid-cols-[26%_1fr_28%] bg-white text-[#1f1f1f] select-none"
+      style={{ fontFamily: 'ui-sans-serif, system-ui, sans-serif', WebkitUserSelect: 'none', userSelect: 'none' }}
+      onMouseDown={(e) => e.preventDefault()}
+    >
       {/* ---- Left sidebar ---- */}
       <div className="flex h-full flex-col border-r border-black/8 bg-[#f7f6f4] text-[11px] leading-tight">
         {/* tabs */}
@@ -206,61 +210,19 @@ export function ClaudeUI() {
         </div>
       </div>
 
-      {/* ---- Center chat ---- */}
-      <div className="flex h-full flex-col">
-        {/* breadcrumb */}
-        <div className="flex items-center gap-2 border-b border-black/8 px-[4%] py-[3%] text-[11px] text-black/55">
-          <span className="font-semibold text-black/80">Baserate Figma</span>
-          <span className="text-black/30">/</span>
-          <span>Scalability timeline motion</span>
-        </div>
-        {/* conversation */}
-        <div className="min-h-0 flex-1 overflow-hidden px-[5%] py-[4%] text-[11px] leading-[1.6] text-black/80">
-          <p className="text-black/60">
-            Reworked the Scalability timeline to a zoom-out: cards start clustered near the front, then dolly back and
-            blur as you scroll. The rail of dots + ticker lines sits behind the cards and recedes with the same camera.
-          </p>
-          <p className="mt-[4%]">
-            <span className="font-semibold">Geometry</span> lives in one <code className="rounded bg-black/6 px-1 text-[#b1442e]">depthProps()</code> helper —
-            position, scale, blur and darken all derive from a single effective depth, so the rail always lines up under each card.
-          </p>
-          <p className="mt-[4%] font-semibold">Deployed this round:</p>
-          <ul className="mt-[2%] space-y-[1.5%]">
-            <li className="flex gap-2"><span className="text-[#b1442e]">2f3cbd5</span><span className="text-black/55">— zoom-out dolly + future dates</span></li>
-            <li className="flex gap-2"><span className="text-[#b1442e]">322d24a</span><span className="text-black/55">— HD components + push-back tilt</span></li>
-            <li className="flex gap-2"><span className="text-[#b1442e]">2ce0087</span><span className="text-black/55">— ticker rail + opaque cards</span></li>
-          </ul>
-          <p className="mt-[4%]">
-            All live on <span className="text-[#b1442e]">https://schaeffer.design</span>. Refresh to see the changes.
-          </p>
-          <div className="mt-[3%] flex items-center gap-3 text-black/35">
-            <span>⧉</span><span>▷</span><span>↻</span><span className="text-[9px]">Just now</span>
-          </div>
-          <div className="mt-[3%] text-[#e9633b]">✳</div>
-        </div>
-        {/* composer */}
-        <div className="mx-[4%] mb-[4%] rounded-lg border border-black/12 px-[3%] py-[2.5%] text-[11px] text-black/45 shadow-sm">
-          <div>Write a message…</div>
-          <div className="mt-[3%] flex items-center gap-2 text-black/55">
-            <span className="flex h-4 w-4 items-center justify-center rounded border border-black/15">+</span>
-            <span className="flex items-center gap-1 rounded border border-black/15 px-1.5">⏵ Act ▾</span>
-            <span className="ml-auto">Opus 4.7 ▾</span>
-            <span>🎤</span>
-          </div>
-        </div>
-        <div className="pb-[2%] text-center text-[8px] text-black/30">Claude is AI and can make mistakes. Please double-check responses.</div>
-      </div>
+      {/* ---- Center chat (animated typing → send → reply loop) ---- */}
+      <ChatColumn />
 
       {/* ---- Right context panel ---- */}
       <div className="flex h-full flex-col border-l border-black/8 bg-[#fbfbfa] px-[7%] py-[5%] text-[10px] leading-tight text-black/70">
         <Row label="Progress" chevron />
         <div className="mt-[5%] font-semibold text-black/80">Working folders</div>
         <div className="mt-[2%] space-y-[2%] pl-[4%] text-black/60">
-          <div>⌄ Baserate Claude Figma Prototype</div>
+          <div>⌄ Baserate Toolkit Prototype</div>
           <div className="pl-[6%]">▤ Instructions · CLAUDE.md</div>
-          <div className="pl-[6%] truncate">▤ Baserate-Prototype-Refere…</div>
-          <div>› Baserate Claude Functional App</div>
-          <div>› Baserate Pro</div>
+          <div className="pl-[6%] truncate">▤ investor-toolkit-prototype…</div>
+          <div className="pl-[6%]">▤ sliders.tsx</div>
+          <div>› Baserate Functional App</div>
           <div>› Scratchpad</div>
         </div>
         <div className="mt-[6%] font-semibold text-black/80">Context</div>
@@ -272,10 +234,149 @@ export function ClaudeUI() {
         </div>
         <div className="mt-[5%] text-[8px] uppercase tracking-wide text-black/35">Memory</div>
         <div className="mt-[2%] space-y-[2%] text-black/60">
-          <div>▤ Portfolio build status</div>
-          <div>▤ Design Systems section</div>
+          <div>▤ Baserate design tokens</div>
+          <div>▤ Decision toolkit spec</div>
         </div>
       </div>
+    </div>
+  )
+}
+
+/* The animated center chat: types a request into the composer, "sends" it,
+ * then shows a short Claude reply — then loops. Send button replaces the mic. */
+
+type ChatMsg = { who: 'user' | 'claude'; text: string }
+
+const SEED_CHAT: ChatMsg[] = [
+  {
+    who: 'claude',
+    text:
+      'Built the Conviction slider for the Create Decision modal — 0–10 gradient track with the teardrop pin, drag + click to set, and the abstain toggle. Wired it into FeelingSlider too so they share one primitive in sliders.tsx.',
+  },
+]
+
+const PROMPT = 'Add a kill-criteria field to the decision modal that turns red when conviction drops below it.'
+const REPLY =
+  'Done — added the Kill Criteria input under Conviction; when the live value falls under the threshold the row goes red and flags the decision for revisit. Pushed to the prototype.'
+
+function ChatColumn() {
+  const [msgs, setMsgs] = useState<ChatMsg[]>(SEED_CHAT)
+  const [typed, setTyped] = useState('')
+  const [phase, setPhase] = useState<'idle' | 'typing' | 'thinking' | 'reply'>('idle')
+
+  // One loop: wait → type the prompt → send → think → reply → reset.
+  useEffect(() => {
+    let timers: ReturnType<typeof setTimeout>[] = []
+    let cancelled = false
+    const run = () => {
+      // type out the prompt char by char
+      setPhase('typing')
+      setTyped('')
+      let i = 0
+      const typeNext = () => {
+        if (cancelled) return
+        i++
+        setTyped(PROMPT.slice(0, i))
+        if (i < PROMPT.length) {
+          timers.push(setTimeout(typeNext, 28 + Math.random() * 40))
+        } else {
+          // send
+          timers.push(
+            setTimeout(() => {
+              if (cancelled) return
+              setMsgs((m) => [...m, { who: 'user', text: PROMPT }])
+              setTyped('')
+              setPhase('thinking')
+              // think, then reply
+              timers.push(
+                setTimeout(() => {
+                  if (cancelled) return
+                  setMsgs((m) => [...m, { who: 'claude', text: REPLY }])
+                  setPhase('reply')
+                  // hold, then reset back to the seed and loop
+                  timers.push(
+                    setTimeout(() => {
+                      if (cancelled) return
+                      setMsgs(SEED_CHAT)
+                      setPhase('idle')
+                      timers.push(setTimeout(run, 2600))
+                    }, 5200),
+                  )
+                }, 1400),
+              )
+            }, 650),
+          )
+        }
+      }
+      timers.push(setTimeout(typeNext, 400))
+    }
+    timers.push(setTimeout(run, 1400))
+    return () => {
+      cancelled = true
+      timers.forEach(clearTimeout)
+    }
+  }, [])
+
+  const canSend = typed.trim().length > 0
+
+  return (
+    <div className="flex h-full flex-col">
+      {/* breadcrumb */}
+      <div className="flex items-center gap-2 border-b border-black/8 px-[4%] py-[3%] text-[11px] text-black/55">
+        <span className="font-semibold text-black/80">Baserate Toolkit</span>
+        <span className="text-black/30">/</span>
+        <span>Conviction slider component</span>
+      </div>
+
+      {/* conversation */}
+      <div className="flex min-h-0 flex-1 flex-col justify-end gap-[3%] overflow-hidden px-[5%] py-[4%] text-[11px] leading-[1.55]">
+        {msgs.map((m, i) =>
+          m.who === 'claude' ? (
+            <div key={i} className="text-black/75">
+              <span className="mr-1 text-[#e9633b]">✳</span>
+              {m.text}
+            </div>
+          ) : (
+            <div key={i} className="flex justify-end">
+              <div className="max-w-[85%] rounded-2xl rounded-br-sm bg-[#f0eee9] px-3 py-2 text-black/80">{m.text}</div>
+            </div>
+          ),
+        )}
+        {phase === 'thinking' && (
+          <div className="text-[#e9633b]">
+            <span className="inline-block animate-pulse">✳ thinking…</span>
+          </div>
+        )}
+      </div>
+
+      {/* composer with live-typed text + send button (mic swapped out) */}
+      <div className="mx-[4%] mb-[4%] rounded-lg border border-black/12 px-[3%] py-[2.5%] text-[11px] shadow-sm">
+        <div className={canSend ? 'text-black/80' : 'text-black/40'}>
+          {canSend ? (
+            <>
+              {typed}
+              <span className="ml-0.5 inline-block h-3 w-px translate-y-0.5 animate-pulse bg-black/60 align-middle" />
+            </>
+          ) : (
+            'Write a message…'
+          )}
+        </div>
+        <div className="mt-[3%] flex items-center gap-2 text-black/55">
+          <span className="flex h-4 w-4 items-center justify-center rounded border border-black/15">+</span>
+          <span className="flex items-center gap-1 rounded border border-black/15 px-1.5">⏵ Act ▾</span>
+          <span className="ml-auto">Opus 4.7 ▾</span>
+          {/* send button (replaces mic) */}
+          <span
+            className="flex h-5 w-5 items-center justify-center rounded-md text-white transition-colors"
+            style={{ background: canSend ? '#cc5533' : '#d8d6d2' }}
+          >
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none">
+              <path d="M4 12L20 4L14 20L11 13L4 12Z" fill="currentColor" />
+            </svg>
+          </span>
+        </div>
+      </div>
+      <div className="pb-[2%] text-center text-[8px] text-black/30">Claude is AI and can make mistakes. Please double-check responses.</div>
     </div>
   )
 }
