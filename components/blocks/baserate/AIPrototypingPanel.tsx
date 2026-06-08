@@ -46,7 +46,7 @@ export function AIPrototypingPanel({
       <p className="br-body mt-3 text-[16px] leading-relaxed text-white/60 md:text-[18px]">{body}</p>
 
       {/* Stage: prototype video behind, Claude UI overlapping on top. */}
-      <div className="relative mt-10 hidden aspect-[1283/720] w-full md:block">
+      <div className="relative mt-10 hidden aspect-[1283/720] w-full lg:block">
         {/* ----- prototype video (top-right), protected ----- */}
         <div
           className="absolute overflow-hidden rounded-xl border border-white/10 bg-[#0d0f15] shadow-[0_30px_70px_-30px_rgba(0,0,0,0.8)]"
@@ -85,7 +85,7 @@ export function AIPrototypingPanel({
           ~358px column makes text ~4px (Baserate Mobile Spec §9) — so we show
           the representative region (the chat that builds the Pairwise feature)
           rather than shrinking the whole interface. ----- */}
-      <div className="mt-8 flex flex-col gap-4 md:hidden">
+      <div className="mt-8 flex flex-col gap-4 lg:hidden">
         <div className="overflow-hidden rounded-xl border border-white/10 bg-[#0d0f15] shadow-[0_24px_60px_-30px_rgba(0,0,0,0.8)]" style={{ aspectRatio: '16 / 9' }}>
           {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
           <video

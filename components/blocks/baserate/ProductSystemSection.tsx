@@ -78,7 +78,7 @@ function ProductStage({
     <>
       {/* Desktop / wide: the exact absolute stage. The "2 PRODUCTS" heading
           overlays the empty top band (above the first device), as in Figma. */}
-      <div className="relative mt-8 hidden w-full md:block" style={{ aspectRatio: '1283 / 689' }}>
+      <div className="relative mt-8 hidden w-full lg:block" style={{ aspectRatio: '1283 / 689' }}>
         {/* "2 PRODUCTS" heading — overlays the empty top band of the stage,
             left-aligned, exactly as in Figma (rather than a separate block above). */}
         <div className="absolute left-0 top-0 z-10 w-full">
@@ -123,7 +123,7 @@ function ProductStage({
       {/* ── Mobile: clean vertical stack, each product led by its device, no
           overlap. (Baserate Mobile Spec §4: kill the absolute overlap; stack
           led by the most relevant device; soften shadows.) ── */}
-      <div className="mt-12 flex flex-col gap-14 md:hidden">
+      <div className="mt-12 flex flex-col gap-14 lg:hidden">
         {/* "2 PRODUCTS" heading (shown above the stack on mobile, since there's
             no empty stage band to overlay) */}
         <div>

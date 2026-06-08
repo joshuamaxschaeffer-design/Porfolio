@@ -89,7 +89,7 @@ export function ScalabilityTimeline() {
       {/* ----- Desktop / tablet: the perspective stage ----- */}
       {/* taller + top padding so the front card never collides with the
           SCALABILITY header above it */}
-      <div ref={stageRef} className="relative mx-auto hidden h-[720px] w-full max-w-[1240px] pt-16 md:block lg:h-[820px]">
+      <div ref={stageRef} className="relative mx-auto hidden h-[720px] w-full max-w-[1240px] pt-16 lg:block lg:h-[820px]">
         {/* floor rail (behind everything) */}
         <Rail n={n} gap={gapMV} />
 
@@ -115,7 +115,7 @@ export function ScalabilityTimeline() {
           clamped depth cue (decreasing scale floored so text stays legible, +
           decreasing opacity, + a slight overlap) and a thin rail down the side
           echoing the desktop timeline. No live blur (GPU-cheap). ----- */}
-      <div className="relative mx-auto mt-10 max-w-md px-6 md:hidden">
+      <div className="relative mx-auto mt-10 max-w-md px-6 lg:hidden">
         {/* thin rail running down the stack */}
         <div
           aria-hidden
