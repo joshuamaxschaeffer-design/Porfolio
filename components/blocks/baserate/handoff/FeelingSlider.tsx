@@ -211,17 +211,22 @@ export function FeelingSlider({
                       <circle cx="19" cy="18" r="8" fill="none" stroke="#e3e3e3" strokeWidth="1" />
                     )}
                   </svg>
+                  {/* center the number on the teardrop's round head. The svg
+                      is 56px tall with a -4 viewBox offset, so the circle center
+                      (path y≈18) lands at ~22px from the top of this box. */}
                   <span
                     style={{
                       position: 'absolute',
-                      top: 2,
+                      top: 0,
                       left: 0,
                       right: 0,
-                      textAlign: 'center',
-                      fontSize: 20,
+                      height: 44,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 19,
                       fontWeight: 700,
                       color: pinTextColor,
-                      lineHeight: '34px',
                     }}
                   >
                     {displayValue}
