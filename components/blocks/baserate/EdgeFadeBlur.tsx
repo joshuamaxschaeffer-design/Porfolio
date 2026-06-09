@@ -77,7 +77,10 @@ export function EdgeFadeBlur({
   const fadeMask = `linear-gradient(to right, transparent 0, black ${width}px, black calc(100% - ${width}px), transparent 100%)`
 
   return (
-    <div className={`relative ${className}`}>
+    // overflow-x:clip guarantees nothing this wraps (a wide marquee / scroll
+    // track) can push the page wider, WITHOUT creating a scroll container (so
+    // inner scrollers keep working and the blur bands stay visible).
+    <div className={`relative ${className}`} style={{ overflowX: 'clip' }}>
       {/* scrolling content, edge-faded */}
       <div style={{ WebkitMaskImage: fadeMask, maskImage: fadeMask }}>{children}</div>
 
