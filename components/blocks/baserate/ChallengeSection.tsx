@@ -321,7 +321,7 @@ function ChallengeCardView({
           e.preventDefault()
         }
       }}
-      className={`relative ${card.mobileImage ? MOBILE_CARD_RATIO : CARD_RATIO[card.span]} w-[88vw] max-w-[88vw] shrink-0 snap-start rounded-2xl bg-white lg:aspect-auto lg:h-[600px] lg:w-auto lg:max-w-none`}
+      className={`relative ${card.mobileImage ? `${MOBILE_CARD_RATIO} lg:aspect-[1920/1150]` : CARD_RATIO[card.span]} w-[88vw] max-w-[88vw] shrink-0 snap-start rounded-2xl bg-white lg:h-[600px] lg:w-auto lg:max-w-none`}
     >
       {/* image clipped to the radius in its own layer. When a mobile crop exists,
           a <picture> serves it below the lg breakpoint and the wide desktop
