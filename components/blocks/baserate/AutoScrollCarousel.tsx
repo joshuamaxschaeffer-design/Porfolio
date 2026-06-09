@@ -38,19 +38,6 @@ export function AutoScrollCarousel({
   const last = useRef<number | null>(null)
   const [ready, setReady] = useState(false)
 
-  // On mobile/touch the auto-drifting marquee with tiny 617px cards reads as
-  // illegible motion (see Baserate Mobile Spec §5). There we switch to a native
-  // CSS scroll-snap carousel: ~85vw cards the user swipes, no auto-drift. We
-  // detect that mode with a media query (coarse pointer OR < lg width).
-  const [snapMode, setSnapMode] = useState(false)
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 1023px), (pointer: coarse)')
-    const apply = () => setSnapMode(mq.matches)
-    apply()
-    mq.addEventListener('change', apply)
-    return () => mq.removeEventListener('change', apply)
-  }, [])
-
   // The track renders COPIES copies of the content back-to-back. We wrap x
   // within one copy's width, so as long as there are >=3 copies the viewport is
   // always covered no matter where a (fast) drag lands — no empty edge ever.
@@ -122,14 +109,16 @@ export function AutoScrollCarousel({
   }
 
   const sequence = [...row.images]
-  // On mobile the video leads the row; on desktop it sits in the middle (the
-  // marquee is a continuous loop either way, so "first" just sets the phase).
-  const mid = snapMode ? 0 : Math.floor(sequence.length / 2)
+  // The video sits in the middle of the row. IMPORTANT: this position must NOT
+  // depend on `snapMode` (a client-only matchMedia value) — reordering the items
+  // array between the server render and the first client render caused a React
+  // #418 hydration mismatch at ≤1023px. The marquee is a continuous loop, so the
+  // video's start position is just a phase that scrolls past anyway.
+  const mid = Math.floor(sequence.length / 2)
 
   const items: React.ReactNode[] = []
-  if (mid === 0) items.push(<VideoCard key="v-0" row={row} />)
   sequence.forEach((src, i) => {
-    if (i === mid && mid !== 0) items.push(<VideoCard key={`v-${i}`} row={row} />)
+    if (i === mid) items.push(<VideoCard key={`v-${i}`} row={row} />)
     items.push(<ImageCard key={`i-${i}`} src={src} />)
   })
   if (mid >= sequence.length) items.push(<VideoCard key="v-end" row={row} />)
