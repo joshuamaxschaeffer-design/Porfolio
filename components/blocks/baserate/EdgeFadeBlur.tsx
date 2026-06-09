@@ -84,8 +84,9 @@ export function EdgeFadeBlur({
       {/* scrolling content, edge-faded */}
       <div style={{ WebkitMaskImage: fadeMask, maskImage: fadeMask }}>{children}</div>
 
-      {/* progressive blur bands — DESKTOP ONLY (mobile keeps just the fade) */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 z-10 hidden md:block">
+      {/* progressive blur bands — DESKTOP ONLY (≥lg). Mobile AND tablet keep just
+          the fade — no blur (the md breakpoint still showed blur on tablet). */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 z-10 hidden lg:block">
         {blurLayer('left', width)}
         {blurLayer('right', width)}
       </div>
