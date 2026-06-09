@@ -91,7 +91,7 @@ export function ScalabilityTimeline() {
       {/* ----- Desktop / tablet: the perspective stage ----- */}
       {/* taller + top padding so the front card never collides with the
           SCALABILITY header above it */}
-      <div ref={stageRef} className="relative mx-auto block h-[460px] w-full max-w-[1240px] pt-20 sm:h-[540px] lg:h-[680px]">
+      <div ref={stageRef} className="relative mx-auto block h-[460px] w-full max-w-[1240px] pt-4 sm:h-[540px] lg:h-[680px]">
         {/* (floor rail removed — just the receding screens) */}
 
         {/* cards far → near so nearer paint on top */}
@@ -154,11 +154,7 @@ function FrameCard({ frame, index, gap, total }: { frame: Frame; index: number; 
         top,
         width: '70%', // scaled up ~30% from 54% per request
         x: '-50%',
-        // NOT -50%: the 70%-wide front card is very tall, so a half-height
-        // upward pull lifts its top above the stage and over the header. A
-        // smaller pull keeps the front card's top below the heading. The cards
-        // recede toward the VP, so anchoring nearer the top edge is fine.
-        y: '-18%',
+        y: '-50%',
         scale,
         zIndex: total - index,
         filter: blurOuter,
