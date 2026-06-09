@@ -58,7 +58,7 @@ export function DesignSystemsSection(props: DesignSystemsProps) {
       {/* The 3D timeline bleeds full-width (outside the editorial column) so the
           frames have room to recede toward the top-right edge of the panel.
           Generous top margin so the big front card never reaches the header. */}
-      <div className="mt-16 md:mt-24">
+      <div className="mt-6 md:mt-8">
         <ScalabilityTimeline />
       </div>
 

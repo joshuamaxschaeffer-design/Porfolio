@@ -91,7 +91,7 @@ export function ScalabilityTimeline() {
       {/* ----- Desktop / tablet: the perspective stage ----- */}
       {/* taller + top padding so the front card never collides with the
           SCALABILITY header above it */}
-      <div ref={stageRef} className="relative mx-auto block h-[440px] w-full max-w-[1240px] pt-16 sm:h-[520px] sm:pt-16 lg:h-[680px] lg:pt-16">
+      <div ref={stageRef} className="relative mx-auto block h-[560px] w-full max-w-[1240px] pt-[200px] sm:h-[620px] lg:h-[760px]">
         {/* (floor rail removed — just the receding screens) */}
 
         {/* cards far → near so nearer paint on top */}
