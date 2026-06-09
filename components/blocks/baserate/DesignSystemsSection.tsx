@@ -41,10 +41,15 @@ export function DesignSystemsSection(props: DesignSystemsProps) {
                 the right so the components read at a legible size; desktop fits
                 the whole board. The DIV (not the img) carries the width so the
                 global `img{max-width:100%}` reset can't clamp it. */}
-            <div className="md:!w-full" style={{ width: 'calc(200% + 0px)' }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={components.artifact} alt="Baserate component library" className="block w-full" />
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            {/* Mobile: scale the image 2× from the left so it crops off the right
+                (transform isn't subject to width/containing-block resolution, so
+                this reliably zooms where width:200% did not). Desktop: no scale. */}
+            <img
+              src={components.artifact}
+              alt="Baserate component library"
+              className="block w-full origin-left scale-[2] md:scale-100"
+            />
           </div>
         </div>
 
