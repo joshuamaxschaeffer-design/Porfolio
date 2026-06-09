@@ -28,17 +28,25 @@ export function ProductSystemSection(props: ProductSystemProps) {
         {heading}
       </h2>
       <p className="mt-4 max-w-3xl text-lg leading-relaxed text-[var(--br-ink)] md:text-[22px]">{intro}</p>
+      </div>
 
-      <ul className="mt-6 flex flex-wrap gap-4">
+      {/* Pills: horizontal scroll on mobile so they never clip at the margin;
+          wrapped row inside the container on desktop. */}
+      <ul
+        className="br-noscrollbar mt-6 flex gap-3 overflow-x-auto px-6 md:flex-wrap md:px-[max(1.5rem,calc((100vw-1443px)/2+5rem))] md:pr-[max(1.5rem,calc((100vw-1443px)/2+5rem))]"
+        style={{ touchAction: 'pan-x' }}
+      >
         {pills.map((p) => (
           <li
             key={p}
-            className="br-data rounded-[var(--br-tag-radius)] border border-[var(--br-gold)] px-3 py-1.5 text-[14px] uppercase text-[var(--br-gold)]"
+            className="br-data shrink-0 rounded-[var(--br-tag-radius)] border border-[var(--br-gold)] px-3 py-1.5 text-[14px] uppercase text-[var(--br-gold)]"
           >
             {p}
           </li>
         ))}
       </ul>
+
+      <div className="br-container">
 
       {/* Devices + product cards — a "stage" that reproduces the Figma's exact
           1283×689 absolute placement, scaled to the column width. The "2 PRODUCTS"

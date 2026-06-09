@@ -41,9 +41,9 @@ export const formatSlug: FieldHook = ({ value, originalDoc, data }) => {
  * Field-level validate that enforces slug uniqueness *within a brand*.
  * Returns `true` when valid, or an error string when a collision is found.
  */
-export const uniqueSlugPerBrand: Validate = async (value, { req, id, data, collection }) => {
+export const uniqueSlugPerBrand: Validate = async (value, { req, id, data, collectionSlug }) => {
   if (!value || typeof value !== 'string') return 'A slug is required.'
-  if (!collection) return true // safety; should always be present on a collection field
+  if (!collectionSlug) return true // safety; should always be present on a collection field
 
   // Brands this document will live on. brandField() is hasMany → an array.
   const brands: string[] = Array.isArray(data?.brand)
@@ -57,7 +57,7 @@ export const uniqueSlugPerBrand: Validate = async (value, { req, id, data, colle
   if (brands.length === 0) return true
 
   const result = await req.payload.find({
-    collection: collection.slug as 'pages' | 'case-studies',
+    collection: collectionSlug as 'pages' | 'case-studies',
     where: {
       and: [
         { slug: { equals: value } },

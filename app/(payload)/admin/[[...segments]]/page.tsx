@@ -10,7 +10,7 @@ type Args = {
     segments: string[]
   }>
   searchParams: Promise<{
-    [key: string]: string | string[] | undefined
+    [key: string]: string | string[]
   }>
 }
 

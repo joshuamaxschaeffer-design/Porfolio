@@ -363,7 +363,6 @@ function ChatColumn({ mobile = false }: { mobile?: boolean }) {
         {msgs.map((m, i) =>
           m.who === 'claude' ? (
             <div key={i} className="text-black/75">
-              <span className="mr-1 text-[#e9633b]">✳</span>
               {m.text}
             </div>
           ) : (
@@ -375,8 +374,8 @@ function ChatColumn({ mobile = false }: { mobile?: boolean }) {
           ),
         )}
         {phase === 'thinking' && (
-          <div className="text-[#e9633b]">
-            <span className="inline-block animate-pulse">✳ thinking…</span>
+          <div className="text-black/40">
+            <span className="inline-block animate-pulse">thinking…</span>
           </div>
         )}
       </div>

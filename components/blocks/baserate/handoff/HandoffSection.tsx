@@ -127,8 +127,8 @@ export function HandoffSection({ title = 'HANDOFF', body = 'Dev handoff meetings
         <div
           ref={mTrackRef}
           onScroll={onMScroll}
-          className="br-noscrollbar absolute inset-x-0 bottom-3 z-20 flex snap-x snap-mandatory items-end gap-3 overflow-x-auto px-3"
-          style={{ touchAction: 'pan-x' }}
+          className="br-noscrollbar absolute inset-x-0 z-20 flex snap-x snap-mandatory items-end gap-3 overflow-x-auto px-3"
+          style={{ bottom: '-20px', touchAction: 'pan-x' }}
         >
           {ELEMENTS.map((el) => {
             const isComments = el.id === 'comments'
@@ -158,21 +158,6 @@ export function HandoffSection({ title = 'HANDOFF', body = 'Dev handoff meetings
           })}
         </div>
 
-        {/* dots + swipe hint, below the code box */}
-        <div className="mt-4 flex items-center justify-center gap-2">
-          {ELEMENTS.map((el, i) => (
-            <button
-              key={el.id}
-              aria-label={el.label}
-              onClick={() => scrollMTo(i)}
-              className="h-1.5 rounded-full transition-all"
-              style={{
-                width: i === mIdx ? 18 : 6,
-                background: i === mIdx ? 'var(--br-gold)' : 'rgba(255,255,255,0.25)',
-              }}
-            />
-          ))}
-        </div>
       </div>
     </div>
   )

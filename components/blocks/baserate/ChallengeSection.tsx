@@ -243,7 +243,7 @@ export function ChallengeSection(props: ChallengeProps) {
         <div
           ref={trackRef}
           className="br-noscrollbar br-grab flex gap-5 overflow-x-auto overscroll-x-contain pb-2 pl-[max(1.5rem,calc((100vw-1443px)/2+5rem))] pr-6 select-none snap-x snap-proximity scroll-smooth lg:snap-none"
-          style={{ touchAction: 'pan-y', scrollPaddingInline: '1.5rem' }}
+          style={{ touchAction: 'pan-x', scrollPaddingInline: '1.5rem' }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={endDrag}

@@ -137,7 +137,7 @@ export function AutoScrollCarousel({
   // All sizes use the continuously-drifting marquee (slow leftward motion that
   // can be dragged but never fully stopped). No scrollbar; touch can swipe it.
   return (
-    <div className="br-grab overflow-hidden" style={{ touchAction: 'pan-y' }}>
+    <div className="br-grab overflow-hidden" style={{ touchAction: 'pan-x' }}>
       <motion.div
         ref={trackRef}
         className="flex w-max gap-5 py-1 select-none"

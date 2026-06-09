@@ -14,7 +14,7 @@
     "seed": "payload run scripts/seed.ts"
   },
   "dependencies": {
-    "next": "^15.0.0",
+    "next": "15.4.11",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "payload": "^3.0.0",
@@ -42,7 +42,7 @@
     "postcss": "^8.4.49",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.0.0",
-    "eslint-config-next": "^15.0.0"
+    "eslint-config-next": "15.4.11"
   },
   "engines": {
     "node": "^18.20.2 || >=20.9.0",
