@@ -30,6 +30,8 @@ export interface ChallengeCard {
   title: { text: string; accent?: boolean }[]
   body?: { text: string; accent?: boolean }[]
   image: string
+  /** optional mobile-specific crop (near-square); shown below the lg breakpoint */
+  mobileImage?: string
   /** dark photo bg needs light text + scrim; light UI bg needs dark text */
   tone: 'dark' | 'light'
 }
@@ -43,6 +45,7 @@ export const challenge = {
       span: 'lg',
       tone: 'dark',
       image: `${IMG}/challenge/problem-1.png`,
+      mobileImage: `${IMG}/challenge/problem-1-mobile.png`,
       title: [
         { text: 'CRITICAL RESEARCH IS ' },
         { text: 'FRAGMENTED', accent: true },
@@ -65,6 +68,7 @@ export const challenge = {
       span: 'lg',
       tone: 'light',
       image: `${IMG}/challenge/problem-3.png`,
+      mobileImage: `${IMG}/challenge/problem-3-mobile.png`,
       title: [
         { text: 'TEAMS LACK A ' },
         { text: 'LIVE, SHARED VIEW', accent: true },

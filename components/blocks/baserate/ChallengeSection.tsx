@@ -19,6 +19,10 @@ const CARD_RATIO: Record<ChallengeCard['span'], string> = {
   lg: 'aspect-[1920/1150]',
 }
 
+// Cards with a dedicated mobile crop use its near-square ratio below lg so the
+// portrait image isn't letterboxed inside the wide desktop frame. (1806x1725)
+const MOBILE_CARD_RATIO = 'aspect-[1806/1725]'
+
 export function ChallengeSection(props: ChallengeProps) {
   const heading = props.heading ?? defaults.heading
   const intro = props.intro ?? defaults.intro
@@ -317,17 +321,31 @@ function ChallengeCardView({
           e.preventDefault()
         }
       }}
-      className={`relative ${CARD_RATIO[card.span]} w-[88vw] max-w-[88vw] shrink-0 snap-start rounded-2xl bg-white lg:h-[600px] lg:w-auto lg:max-w-none`}
+      className={`relative ${card.mobileImage ? MOBILE_CARD_RATIO : CARD_RATIO[card.span]} w-[88vw] max-w-[88vw] shrink-0 snap-start rounded-2xl bg-white lg:aspect-auto lg:h-[600px] lg:w-auto lg:max-w-none`}
     >
-      {/* image clipped to the radius in its own layer */}
+      {/* image clipped to the radius in its own layer. When a mobile crop exists,
+          a <picture> serves it below the lg breakpoint and the wide desktop
+          image at lg+ (matching the aspect handling on the article above). */}
       <div className="absolute inset-0 overflow-hidden rounded-2xl">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={card.image}
-          alt={`Problem ${card.problem}`}
-          draggable={false}
-          className="pointer-events-none h-full w-full object-cover"
-        />
+        {card.mobileImage ? (
+          <picture>
+            <source media="(min-width: 1024px)" srcSet={card.image} />
+            <img
+              src={card.mobileImage}
+              alt={`Problem ${card.problem}`}
+              draggable={false}
+              className="pointer-events-none h-full w-full object-cover"
+            />
+          </picture>
+        ) : (
+          <img
+            src={card.image}
+            alt={`Problem ${card.problem}`}
+            draggable={false}
+            className="pointer-events-none h-full w-full object-cover"
+          />
+        )}
       </div>
       {/* stroke is a border-only overlay (no content to bleed past the corner) */}
       <div className="pointer-events-none absolute inset-0 rounded-2xl border border-[var(--br-stroke)]" />
