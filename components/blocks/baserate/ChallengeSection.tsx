@@ -38,12 +38,13 @@ export function ChallengeSection(props: ChallengeProps) {
     moved: false,
     startX: 0,
     startScroll: 0,
-    lastX: 0,
-    lastT: 0,
-    vx: 0, // px/ms (positive = content moving so finger drags right)
+    targetScroll: 0, // where scrollLeft should be, set in pointermove
     pointerType: 'mouse' as string,
+    // ring buffer of recent {x,t} samples for time-windowed release velocity
+    samples: [] as { x: number; t: number }[],
   })
   const momentumRaf = useRef<number | null>(null)
+  const dragRaf = useRef<number | null>(null)
 
   const stopMomentum = useCallback(() => {
     if (momentumRaf.current != null) {
@@ -142,38 +143,51 @@ export function ChallengeSection(props: ChallengeProps) {
     [active, scrollToCard],
   )
 
+  // Per research (Nolan Lawson / Embla): writing scrollLeft on every pointermove
+  // forces a synchronous layout per event and the events over-fire — that's the
+  // jank. Instead we ONLY store the target scroll in pointermove (a number, no
+  // DOM read/write), then apply it to scrollLeft ONCE per frame in this rAF
+  // loop. Native scroll + the pager keep working (they read scrollLeft on the
+  // scroll event). Release velocity is a ~90ms time-windowed average, not the
+  // last two points, so flicks feel consistent.
+  const dragTick = useCallback(() => {
+    const el = trackRef.current
+    if (el && drag.current.down) {
+      el.scrollLeft = drag.current.targetScroll
+      dragRaf.current = requestAnimationFrame(dragTick)
+    } else {
+      dragRaf.current = null
+    }
+  }, [])
+
   const onPointerDown = (e: React.PointerEvent) => {
     const el = trackRef.current
     if (!el) return
-    stopMomentum() // catching a coasting carousel stops it (like grabbing a spinning wheel)
+    stopMomentum() // catching a coasting carousel stops it (grab the spinning wheel)
     const now = performance.now()
     drag.current = {
       down: true,
       moved: false,
       startX: e.clientX,
       startScroll: el.scrollLeft,
-      lastX: e.clientX,
-      lastT: now,
-      vx: 0,
+      targetScroll: el.scrollLeft,
       pointerType: e.pointerType || 'mouse',
+      samples: [{ x: e.clientX, t: now }],
     }
     el.setPointerCapture(e.pointerId)
+    if (dragRaf.current == null) dragRaf.current = requestAnimationFrame(dragTick)
   }
   const onPointerMove = (e: React.PointerEvent) => {
-    const el = trackRef.current
-    if (!el || !drag.current.down) return
+    if (!drag.current.down) return
     const dx = e.clientX - drag.current.startX
     if (Math.abs(dx) > 4) drag.current.moved = true
-    el.scrollLeft = drag.current.startScroll - dx
-    // sample velocity over the last move (px/ms), lightly smoothed
+    // store target only — no scrollLeft write here (rAF applies it)
+    drag.current.targetScroll = drag.current.startScroll - dx
+    // keep ~120ms of position samples for a stable release velocity
     const now = performance.now()
-    const dt = now - drag.current.lastT
-    if (dt > 0) {
-      const instV = (e.clientX - drag.current.lastX) / dt
-      drag.current.vx = drag.current.vx * 0.6 + instV * 0.4
-      drag.current.lastX = e.clientX
-      drag.current.lastT = now
-    }
+    const s = drag.current.samples
+    s.push({ x: e.clientX, t: now })
+    while (s.length > 2 && now - s[0].t > 120) s.shift()
   }
   const endDrag = (e: React.PointerEvent) => {
     const el = trackRef.current
@@ -184,15 +198,27 @@ export function ChallengeSection(props: ChallengeProps) {
     }
     const wasDown = drag.current.down
     drag.current.down = false
-    // Flick momentum — mouse/trackpad only (touch has native inertia). Only if
-    // the release was recent (still moving) and fast enough to count as a flick.
+    if (dragRaf.current != null) {
+      cancelAnimationFrame(dragRaf.current)
+      dragRaf.current = null
+    }
+    // Flick momentum — mouse/trackpad only (touch has native inertia). Compute
+    // velocity over the sampled window (px/ms), then coast.
     if (wasDown && el && drag.current.pointerType !== 'touch') {
-      const idle = performance.now() - drag.current.lastT
-      if (idle < 80 && Math.abs(drag.current.vx) > 0.05) {
-        startMomentum(drag.current.vx)
-      }
+      const s = drag.current.samples
+      const now = performance.now()
+      const first = s[0]
+      const last = s[s.length - 1]
+      const dt = last.t - first.t
+      const vx = dt > 0 ? (last.x - first.x) / dt : 0
+      const idle = now - last.t
+      if (idle < 90 && Math.abs(vx) > 0.05) startMomentum(vx)
     }
   }
+
+  useEffect(() => () => {
+    if (dragRaf.current != null) cancelAnimationFrame(dragRaf.current)
+  }, [])
 
   return (
     <section className="bg-[var(--br-bg-2)] py-20 md:py-[160px]">
@@ -235,13 +261,34 @@ export function ChallengeSection(props: ChallengeProps) {
       </EdgeFadeBlur>
 
       {/* Pager */}
-      <div className="br-container mt-6 flex flex-wrap gap-x-5 gap-y-2">
+      {/* Pager. Desktop: a wrapped row of plain text links. Mobile: swipeable
+          PILLS that bleed off both edges — swipe to reach Problem 7; tap to jump
+          the card carousel to that problem. */}
+      <div className="br-container mt-6 hidden flex-wrap gap-x-5 gap-y-2 md:flex">
         {cards.map((card, i) => (
           <button
             key={card.problem}
             onClick={() => scrollToCard(i)}
             className={`text-xs transition-colors ${
               i === active ? 'font-medium text-[var(--br-ink)]' : 'text-neutral-400 hover:text-neutral-600'
+            }`}
+          >
+            Problem {card.problem}
+          </button>
+        ))}
+      </div>
+      <div
+        className="br-noscrollbar mt-6 flex gap-2 overflow-x-auto pl-6 pr-6 md:hidden"
+        style={{ touchAction: 'pan-x' }}
+      >
+        {cards.map((card, i) => (
+          <button
+            key={card.problem}
+            onClick={() => scrollToCard(i)}
+            className={`shrink-0 whitespace-nowrap rounded-full border px-4 py-2 text-sm transition-colors ${
+              i === active
+                ? 'border-[var(--br-gold)] bg-[var(--br-gold)] font-medium text-white'
+                : 'border-[var(--br-stroke)] bg-white text-neutral-500'
             }`}
           >
             Problem {card.problem}

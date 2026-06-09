@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, useReducedMotion } from 'motion/react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 export interface ExplorationItem {
   title: string
@@ -17,7 +17,7 @@ export interface ExplorationItem {
  *    item slides the line to it; clicking selects it, which fades the current
  *    top image out, drops it to the back, and brings the others forward.
  */
-export function ExplorationStack({ items }: { items: ExplorationItem[] }) {
+export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag?: string }) {
   const reduce = useReducedMotion()
   const [active, setActive] = useState(0)
   const [hover, setHover] = useState<number | null>(null)
@@ -27,8 +27,28 @@ export function ExplorationStack({ items }: { items: ExplorationItem[] }) {
   // hovered item stays active after the cursor leaves.
   const current = hover ?? active
 
+  // Mobile: horizontal swipe on EITHER the image stack or the text list advances
+  // the shared `current` index, so both swap in sync (no hover on touch).
+  const swipe = useRef({ x: 0, active: false })
+  const onTouchStart = (e: React.TouchEvent) => {
+    swipe.current = { x: e.touches[0].clientX, active: true }
+  }
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (!swipe.current.active) return
+    swipe.current.active = false
+    const dx = e.changedTouches[0].clientX - swipe.current.x
+    if (Math.abs(dx) < 35) return // ignore taps / tiny moves
+    const dir = dx < 0 ? 1 : -1 // swipe left → next
+    setActive((a) => Math.max(0, Math.min(n - 1, a + dir)))
+    setHover(null)
+  }
+
   return (
-    <div className="grid items-center gap-10 md:grid-cols-2 md:gap-16">
+    <div
+      className="grid items-center gap-10 md:grid-cols-2 md:gap-16"
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+    >
       {/* Image stack — Apple "Cover Flow" perspective. The front card faces
           forward (flat); the cards behind it angle away in 3D (rotateY), getting
           the foreshortened trapezoidal look, fanning to the left. Selecting a
@@ -84,7 +104,15 @@ export function ExplorationStack({ items }: { items: ExplorationItem[] }) {
       {/* Text items with a gold indicator line (no grey track). The line is
           ~60% of an item slot tall and vertically centered on the active item's
           slot — so it lines up with the text rather than the full padded block. */}
-      <div className="relative">
+      <div>
+        {/* Exploration tag — restored above the text column (it lives here, not
+            above the whole block, so it sits beside the image stack). */}
+        {tag && (
+          <span className="br-data mb-5 inline-block rounded-md border border-[var(--br-gold)] px-2.5 py-1 text-xs font-medium text-[var(--br-gold)]">
+            {tag}
+          </span>
+        )}
+        <div className="relative">
         {/* moving gold line — height 60% of one slot, centered in that slot */}
         <motion.div
           className="absolute left-0 w-[2px] bg-[var(--br-gold)]"
@@ -105,17 +133,17 @@ export function ExplorationStack({ items }: { items: ExplorationItem[] }) {
                     setActive(i) // hover commits selection (persists on leave)
                   }}
                   onFocus={() => setActive(i)}
-                  className="block w-full py-5 pl-6 text-left md:py-6"
+                  className="block w-full py-3 pl-5 text-left md:py-6 md:pl-6"
                 >
                   <h4
-                    className={`text-base font-bold tracking-tight transition-colors md:text-lg ${
+                    className={`text-xs font-bold tracking-tight transition-colors md:text-lg ${
                       selected ? 'text-[var(--br-ink)]' : 'text-neutral-400'
                     }`}
                   >
                     {item.title}
                   </h4>
                   <motion.p
-                    className="overflow-hidden text-sm leading-snug text-neutral-600"
+                    className="overflow-hidden text-xs leading-snug text-neutral-600 md:text-sm"
                     initial={false}
                     animate={{
                       opacity: selected ? 1 : 0.5,
@@ -128,6 +156,7 @@ export function ExplorationStack({ items }: { items: ExplorationItem[] }) {
             )
           })}
         </ul>
+        </div>
       </div>
     </div>
   )

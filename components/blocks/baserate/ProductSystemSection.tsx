@@ -131,13 +131,14 @@ function ProductStage({
           <p className="mt-2 text-[15px] leading-relaxed text-[var(--br-muted)]">{productsIntro}</p>
         </div>
 
-        {/* Baserate — desktop product, so lead with the browser screenshot */}
-        <div className="flex flex-col gap-6">
-          <div className="overflow-hidden rounded-xl border border-[var(--br-line)] bg-white shadow-[0_18px_40px_-22px_rgba(0,0,0,0.3)]">
+        {/* Baserate — the browser screenshot sits BEHIND the card (the card's top
+            overlaps its bottom edge), echoing the desktop composition. */}
+        <div className="relative">
+          <div className="mx-auto w-[88%] overflow-hidden rounded-xl border border-[var(--br-line)] bg-white shadow-[0_18px_40px_-22px_rgba(0,0,0,0.3)]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={baserate.screenshot} alt="Baserate product" className="w-full" />
           </div>
-          <div className="relative mt-2 flex flex-col items-center gap-3 rounded-[8px] border-2 border-[var(--br-gold)] bg-white px-6 pb-8 pt-12 text-center">
+          <div className="relative -mt-10 flex flex-col items-center gap-3 rounded-[8px] border-2 border-[var(--br-gold)] bg-white px-6 pb-8 pt-12 text-center">
             {'badge' in baserate && baserate.badge && (
               <span className="br-body absolute left-2 top-2 rounded-[var(--br-tag-radius)] bg-[var(--br-gold)] px-3 py-1.5 text-sm text-white">
                 {baserate.badge}
@@ -150,9 +151,10 @@ function ProductStage({
           </div>
         </div>
 
-        {/* Journalytic — mobile product, so lead with the phones */}
-        <div className="flex flex-col gap-6">
-          <div className="flex justify-center gap-4">
+        {/* Journalytic — the phones sit BEHIND the card (card overlaps their
+            lower portion), as on desktop. */}
+        <div className="relative">
+          <div className="flex justify-center gap-4 pb-0">
             {journalytic.phones.map((src, i) => (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -160,11 +162,11 @@ function ProductStage({
                 src={src}
                 alt=""
                 aria-hidden
-                className={`w-[36%] max-w-[150px] [filter:drop-shadow(0_14px_22px_rgba(0,0,0,0.16))] ${i === 0 ? 'mt-4' : ''}`}
+                className={`w-[34%] max-w-[140px] [filter:drop-shadow(0_14px_22px_rgba(0,0,0,0.16))] ${i === 0 ? 'mt-5' : ''}`}
               />
             ))}
           </div>
-          <div className="relative mt-2 flex flex-col items-center gap-3 rounded-[8px] border border-[var(--br-stroke)] bg-white px-6 pb-8 pt-12 text-center">
+          <div className="relative -mt-16 flex flex-col items-center gap-3 rounded-[8px] border border-[var(--br-stroke)] bg-white px-6 pb-8 pt-12 text-center">
             <JournalyticBadge className="absolute left-1/2 top-0 h-14 w-14 -translate-x-1/2 -translate-y-1/2" />
             <JournalyticWordmark className="h-7 w-auto" />
             <p className="text-base text-[var(--br-ink)]">{journalytic.tagline}</p>

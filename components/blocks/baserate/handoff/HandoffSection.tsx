@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { FeelingSlider } from './FeelingSlider'
 import { RankingReorder } from './RankingReorder'
 import { CommentSystem } from './CommentSystem'
@@ -58,6 +58,23 @@ export function HandoffSection({ title = 'HANDOFF', body = 'Dev handoff meetings
   const [hovered, setHovered] = useState<HandoffElementId | null>(null)
   const active = hovered ?? 'feeling'
 
+  // Mobile: a single index cycles the 3 components; the active one floats in
+  // front of the bottom of the code box, and a horizontal swipe swaps it.
+  const [mIdx, setMIdx] = useState(0)
+  const mSwipe = useRef({ x: 0, on: false })
+  const onMTouchStart = (e: React.TouchEvent) => {
+    mSwipe.current = { x: e.touches[0].clientX, on: true }
+  }
+  const onMTouchEnd = (e: React.TouchEvent) => {
+    if (!mSwipe.current.on) return
+    mSwipe.current.on = false
+    const dx = e.changedTouches[0].clientX - mSwipe.current.x
+    if (Math.abs(dx) < 35) return
+    const dir = dx < 0 ? 1 : -1
+    setMIdx((i) => (i + dir + ELEMENTS.length) % ELEMENTS.length)
+  }
+  const mEl = ELEMENTS[mIdx]
+
   return (
     <div className="br-container mt-28 md:mt-40">
       <h3 className="text-[20px] font-semibold uppercase leading-tight text-white md:text-[24px]">{title}</h3>
@@ -85,17 +102,54 @@ export function HandoffSection({ title = 'HANDOFF', body = 'Dev handoff meetings
         </div>
       </div>
 
-      {/* ── Mobile: stacked pairs (element directly above its own code). ── */}
-      <div className="mt-8 flex flex-col gap-10 lg:hidden">
-        {ELEMENTS.map((el) => (
-          <div key={el.id} className="flex min-w-0 flex-col gap-3">
-            {/* the element shows its "active" (gold-ringed) state so it reads as
-                selected without a hover the device can't do */}
-            <ElementCard active>{el.render()}</ElementCard>
-            <CodeBox snippet={HANDOFF_SNIPPETS[el.id]} compact />
+      {/* ── Mobile: the code box is the back layer; the active component floats
+          in FRONT of its bottom edge (z-axis), sitting low in the box. Swiping
+          horizontally cycles the 3 components and swaps the code. ── */}
+      <div
+        className="relative mt-8 lg:hidden"
+        onTouchStart={onMTouchStart}
+        onTouchEnd={onMTouchEnd}
+        style={{ touchAction: 'pan-y' }}
+      >
+        {/* code box (back), taller so the floating component has room below it */}
+        <CodeBox snippet={HANDOFF_SNIPPETS[mEl.id]} compact />
+
+        {/* active component, overlapping the lower portion of the code box */}
+        <div className="absolute inset-x-2 bottom-3 z-10">
+          <div
+            key={mEl.id}
+            className="overflow-hidden rounded-xl p-2"
+            style={{
+              background: 'rgba(12,14,22,0.92)',
+              border: '1px solid var(--br-gold)',
+              boxShadow: '0 0 0 1px var(--br-gold), 0 20px 50px -18px rgba(0,0,0,0.8)',
+              backdropFilter: 'blur(2px)',
+              animation: 'brHandoffSwap 280ms ease',
+            }}
+          >
+            {mEl.render()}
           </div>
-        ))}
+        </div>
+
+        {/* dots + swipe hint */}
+        <div className="mt-4 flex items-center justify-center gap-2">
+          {ELEMENTS.map((el, i) => (
+            <button
+              key={el.id}
+              aria-label={el.label}
+              onClick={() => setMIdx(i)}
+              className="h-1.5 rounded-full transition-all"
+              style={{
+                width: i === mIdx ? 18 : 6,
+                background: i === mIdx ? 'var(--br-gold)' : 'rgba(255,255,255,0.25)',
+              }}
+            />
+          ))}
+        </div>
+        <p className="mt-2 text-center text-xs text-white/35">Swipe to switch component</p>
       </div>
+
+      <style>{`@keyframes brHandoffSwap { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }`}</style>
     </div>
   )
 }

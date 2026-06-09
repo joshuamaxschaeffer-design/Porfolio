@@ -78,10 +78,10 @@ export function AutoScrollCarousel({
     return w
   }
 
-  // Drift loop via rAF on the motion value. Skipped in snapMode (mobile/touch),
-  // where the user drives a native scroll-snap track instead.
+  // Drift loop via rAF on the motion value — runs on all sizes (slow leftward
+  // marquee that can be dragged/swiped but resumes drifting on release).
   useEffect(() => {
-    if (reduce || !ready || snapMode) return
+    if (reduce || !ready) return
     let raf = 0
     const tick = (t: number) => {
       if (last.current == null) last.current = t
@@ -122,38 +122,20 @@ export function AutoScrollCarousel({
   }
 
   const sequence = [...row.images]
-  // Place the labelled video roughly in the middle of the row.
-  const mid = Math.floor(sequence.length / 2)
+  // On mobile the video leads the row; on desktop it sits in the middle (the
+  // marquee is a continuous loop either way, so "first" just sets the phase).
+  const mid = snapMode ? 0 : Math.floor(sequence.length / 2)
 
   const items: React.ReactNode[] = []
+  if (mid === 0) items.push(<VideoCard key="v-0" row={row} />)
   sequence.forEach((src, i) => {
-    if (i === mid) items.push(<VideoCard key={`v-${i}`} row={row} />)
+    if (i === mid && mid !== 0) items.push(<VideoCard key={`v-${i}`} row={row} />)
     items.push(<ImageCard key={`i-${i}`} src={src} />)
   })
   if (mid >= sequence.length) items.push(<VideoCard key="v-end" row={row} />)
 
-  // Mobile / touch: native CSS scroll-snap carousel — one large ~85vw card per
-  // view with a peek of the next, user-swiped, no auto-drift. One copy of the
-  // sequence (no infinite loop needed when the user is in control).
-  if (snapMode) {
-    return (
-      <div
-        className="br-snaprow flex gap-4 overflow-x-auto overscroll-x-contain px-6 pb-2"
-        style={{
-          scrollSnapType: 'x mandatory',
-          scrollPaddingInline: '1.5rem',
-          WebkitOverflowScrolling: 'touch',
-        }}
-      >
-        {items.map((node, i) => (
-          <div key={`s-${i}`} className="shrink-0 snap-start" style={{ scrollSnapAlign: 'start' }}>
-            {node}
-          </div>
-        ))}
-      </div>
-    )
-  }
-
+  // All sizes use the continuously-drifting marquee (slow leftward motion that
+  // can be dragged but never fully stopped). No scrollbar; touch can swipe it.
   return (
     <div className="br-grab overflow-hidden" style={{ touchAction: 'pan-y' }}>
       <motion.div

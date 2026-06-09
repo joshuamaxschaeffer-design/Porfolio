@@ -38,7 +38,14 @@ export function DesignSystemsSection(props: DesignSystemsProps) {
               soften the image). Plain HD artifact on a white card. */}
           <div className="mt-10 overflow-hidden rounded-2xl bg-white shadow-[0_40px_90px_-40px_rgba(0,0,0,0.8)] md:mt-12">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={components.artifact} alt="Baserate component library" className="block w-full" />
+            {/* Mobile: zoom the artboard 2× and let it crop off the right edge so
+                the components read at a legible size (full-width shrinks them too
+                small). Desktop: fit the whole board to the card. */}
+            <img
+              src={components.artifact}
+              alt="Baserate component library"
+              className="block w-[200%] max-w-none md:w-full"
+            />
           </div>
         </div>
 

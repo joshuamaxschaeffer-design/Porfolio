@@ -17,17 +17,26 @@
  * The child is the bleeding track (it scrolls; the overlays don't).
  */
 
-const BLUR_STOPS = [2, 6, 12, 20] // px, inner → outer
+// True tilt-shift ramp: many fine layers whose blur RADIUS climbs from ~1px at
+// the inner edge of the band to the max at the outer edge. Each layer is masked
+// to a narrow band so the *effective* blur at any x is the radius assigned to
+// that x — a genuine progressive blur, not one heavy blur fading in opacity.
+const LAYERS = 8
+const MIN_BLUR = 1 // px at the inner edge of the band
+const MAX_BLUR = 18 // px at the very edge
 
 function blurLayer(side: 'left' | 'right', width: number) {
   const dir = side === 'left' ? 'to left' : 'to right'
-  // Each layer's mask reveals a progressively narrower sliver toward the edge,
-  // so deeper layers (larger blur) only paint nearest the edge.
-  return BLUR_STOPS.map((radius, i) => {
-    const n = BLUR_STOPS.length
-    const startPct = (i / n) * 100
-    const midPct = ((i + 0.6) / n) * 100
-    const mask = `linear-gradient(${dir}, transparent ${startPct}%, black ${midPct}%, black 100%)`
+  return Array.from({ length: LAYERS }, (_, i) => {
+    // radius grows with i; ease so it stays gentle near the inner edge and
+    // ramps up toward the outer edge (quadratic feels closest to a lens)
+    const t = i / (LAYERS - 1)
+    const radius = MIN_BLUR + (MAX_BLUR - MIN_BLUR) * (t * t)
+    // this layer paints from its band onward; a short feather (one band wide)
+    // hands off smoothly to the next, heavier layer
+    const bandStart = (i / LAYERS) * 100
+    const bandFeatherEnd = ((i + 1) / LAYERS) * 100
+    const mask = `linear-gradient(${dir}, transparent ${bandStart}%, black ${bandFeatherEnd}%, black 100%)`
     return (
       <div
         key={`${side}-${i}`}
@@ -38,8 +47,8 @@ function blurLayer(side: 'left' | 'right', width: number) {
           bottom: 0,
           [side]: 0,
           width,
-          backdropFilter: `blur(${radius}px)`,
-          WebkitBackdropFilter: `blur(${radius}px)`,
+          backdropFilter: `blur(${radius.toFixed(2)}px)`,
+          WebkitBackdropFilter: `blur(${radius.toFixed(2)}px)`,
           WebkitMaskImage: mask,
           maskImage: mask,
           pointerEvents: 'none',

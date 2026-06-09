@@ -79,14 +79,17 @@ export function AIPrototypingPanel({
         </div>
       </div>
 
-      {/* ----- Mobile: video leads (it's the actual deliverable); below it, a
-          single-column CHAT-ONLY recreation of the Claude UI at full width so
-          the text stays legible. Scaling the full 3-column 885px canvas to a
-          ~358px column makes text ~4px (Baserate Mobile Spec §9) — so we show
-          the representative region (the chat that builds the Pairwise feature)
-          rather than shrinking the whole interface. ----- */}
-      <div className="mt-8 flex flex-col gap-4 lg:hidden">
-        <div className="overflow-hidden rounded-xl border border-white/10 bg-[#0d0f15] shadow-[0_24px_60px_-30px_rgba(0,0,0,0.8)]" style={{ aspectRatio: '16 / 9' }}>
+      {/* ----- Mobile: mirror the desktop composition — the prototype video sits
+          BEHIND (oversized, bleeding off the right edge), the recreated Claude UI
+          overlaps in front, scaled ~30% smaller and pushed to the left. The
+          stage clips so the video crops cleanly at the right. ----- */}
+      <div className="relative mt-8 aspect-[1/1.15] w-full overflow-hidden lg:hidden">
+        {/* prototype video behind — 2× scale, anchored left so it crops off the
+            right edge of the stage */}
+        <div
+          className="absolute overflow-hidden rounded-xl border border-white/10 bg-[#0d0f15] shadow-[0_24px_60px_-30px_rgba(0,0,0,0.8)]"
+          style={{ left: '18%', top: '4%', width: '150%', aspectRatio: '16 / 9' }}
+        >
           {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
           <video
             className="pointer-events-none h-full w-full object-cover"
@@ -102,8 +105,14 @@ export function AIPrototypingPanel({
             onContextMenu={(e) => e.preventDefault()}
           />
         </div>
-        <div className="h-[460px] overflow-hidden rounded-xl border border-black/10 bg-white shadow-[0_24px_60px_-30px_rgba(0,0,0,0.6)]">
-          <ClaudeUI mobile />
+
+        {/* Claude UI in front — to the left, ~30% smaller than it would be at full
+            width (width 70% of the stage), overlapping the lower-left like desktop */}
+        <div
+          className="absolute overflow-hidden rounded-xl border border-black/10 bg-white shadow-[0_30px_70px_-30px_rgba(0,0,0,0.9)]"
+          style={{ left: '-3%', top: '34%', width: '88%', aspectRatio: '885 / 560' }}
+        >
+          <ScaledClaudeUI />
         </div>
       </div>
     </div>

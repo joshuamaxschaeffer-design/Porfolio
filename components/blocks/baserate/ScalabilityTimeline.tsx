@@ -89,9 +89,8 @@ export function ScalabilityTimeline() {
       {/* ----- Desktop / tablet: the perspective stage ----- */}
       {/* taller + top padding so the front card never collides with the
           SCALABILITY header above it */}
-      <div ref={stageRef} className="relative mx-auto hidden h-[720px] w-full max-w-[1240px] pt-16 lg:block lg:h-[820px]">
-        {/* floor rail (behind everything) */}
-        <Rail n={n} gap={gapMV} />
+      <div ref={stageRef} className="relative mx-auto block h-[380px] w-full max-w-[1240px] pt-10 sm:h-[460px] lg:h-[640px] lg:pt-16">
+        {/* (floor rail removed — just the receding screens) */}
 
         {/* cards far → near so nearer paint on top */}
         {frames.map((frame, i) => (
@@ -109,55 +108,8 @@ export function ScalabilityTimeline() {
         />
       </div>
 
-      {/* ----- Mobile: clamped depth stack. The perspective scene can't fit a
-          phone (Baserate Mobile Spec §7), so we keep the *metaphor* — scrolling
-          DOWN = moving forward in time — as a vertical sequence with a shallow,
-          clamped depth cue (decreasing scale floored so text stays legible, +
-          decreasing opacity, + a slight overlap) and a thin rail down the side
-          echoing the desktop timeline. No live blur (GPU-cheap). ----- */}
-      <div className="relative mx-auto mt-[30px] max-w-md px-6 lg:hidden">
-        {/* thin rail running down the stack, hugging the left content edge so
-            the cards stay flush-left with the SCALABILITY heading above */}
-        <div
-          aria-hidden
-          className="absolute bottom-6 left-6 top-2 w-px"
-          style={{ background: 'linear-gradient(to bottom, rgba(255,255,255,0.45), rgba(255,255,255,0.06))' }}
-        />
-        <div className="flex flex-col">
-          {frames.map((frame, i) => {
-            // clamp the falloff: scale floors at 0.78 so the deepest card's UI
-            // stays readable; opacity floors at 0.45; cards overlap slightly.
-            const scale = Math.max(0.78, 1 - i * 0.05)
-            const opacity = Math.max(0.45, 1 - i * 0.12)
-            return (
-              <div
-                key={frame.image}
-                className="relative min-w-0"
-                style={{
-                  transform: `scale(${scale})`,
-                  // scale from the LEFT edge so every card stays left-aligned
-                  // with the heading (centre origin would inset the deeper ones)
-                  transformOrigin: 'left top',
-                  opacity,
-                  marginTop: i === 0 ? 0 : -18,
-                  zIndex: frames.length - i,
-                }}
-              >
-                {/* floor dot sitting on the rail at the card's left edge */}
-                <span
-                  aria-hidden
-                  className="absolute left-0 top-5 h-2 w-2 -translate-x-1/2 rounded-full"
-                  style={{ background: '#000', border: '1.5px solid rgba(255,255,255,0.9)' }}
-                />
-                <div className="overflow-hidden rounded-xl border border-white/10 bg-white shadow-[0_20px_50px_-24px_rgba(0,0,0,0.7)]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={frame.image} alt="Baserate screen" className="w-full" />
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      </div>
+      {/* (Mobile uses the same perspective stage above, just at a smaller
+          height — no separate stacked fallback, no rail lines.) */}
     </>
   )
 }
@@ -190,42 +142,9 @@ function FrameCard({ frame, index, gap, total }: { frame: Frame; index: number; 
   const lineTop = useTransform(proj, (pr) => `${pr.y}%`)
   const lineHeight = useTransform(proj, (pr) => `${VP_Y + (FLOOR_Y - VP_Y) * pr.s - pr.y}%`)
 
+  // (Rail connector line + floor dot removed — the screens just recede on their
+  // own now, no timeline lines.)
   return (
-    <>
-      {/* connector line (card → floor dot) — matches the receding line's 1px
-          weight + lighter color */}
-      <motion.div
-        className="absolute"
-        style={{
-          left,
-          top: lineTop,
-          height: lineHeight,
-          width: '1.5px',
-          x: '-50%',
-          background: 'rgba(255,255,255,1)',
-          opacity: cueOpacity,
-          filter: cueBlur,
-          zIndex: 0,
-        }}
-      />
-      {/* floor dot — solid black fill + white stroke (not a grey fill) */}
-      <motion.div
-        className="absolute rounded-full"
-        style={{
-          left,
-          top: dotTop,
-          width: dotSize,
-          height: dotSize,
-          x: '-50%',
-          y: '-50%',
-          opacity: cueOpacity,
-          filter: cueBlur,
-          background: '#000000',
-          border: '1.5px solid rgba(255,255,255,1)',
-          zIndex: 0,
-        }}
-      />
-
     <motion.div
       className="absolute"
       style={{
@@ -251,7 +170,6 @@ function FrameCard({ frame, index, gap, total }: { frame: Frame; index: number; 
         <motion.div className="pointer-events-none absolute inset-0 bg-[#070a14]" style={{ opacity: darken }} />
       </motion.div>
     </motion.div>
-    </>
   )
 }
 
