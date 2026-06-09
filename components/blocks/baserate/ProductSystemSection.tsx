@@ -33,7 +33,7 @@ export function ProductSystemSection(props: ProductSystemProps) {
         {pills.map((p) => (
           <li
             key={p}
-            className="br-data rounded-[var(--br-tag-radius)] border border-[var(--br-gold)] px-5 py-3 text-[20px] leading-[26px] text-[var(--br-gold)]"
+            className="br-data rounded-[var(--br-tag-radius)] border border-[var(--br-gold)] px-3 py-1.5 text-[14px] uppercase text-[var(--br-gold)]"
           >
             {p}
           </li>

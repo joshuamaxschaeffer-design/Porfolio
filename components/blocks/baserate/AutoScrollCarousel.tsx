@@ -108,17 +108,28 @@ export function AutoScrollCarousel({
     // Carry a little momentum back into the drift.
   }
 
+  // Video-first on mobile, video-in-middle on desktop. CRITICAL for hydration:
+  // `videoFirst` starts FALSE so the very first client render matches the
+  // server-rendered HTML (which is also false). We only flip it to true in a
+  // useEffect — i.e. AFTER hydration completes — so React reconciles it as a
+  // normal post-mount update, never a hydration mismatch (the earlier #418 came
+  // from deriving the order from matchMedia during the first render).
+  const [videoFirst, setVideoFirst] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 1023px), (pointer: coarse)')
+    const apply = () => setVideoFirst(mq.matches)
+    apply()
+    mq.addEventListener('change', apply)
+    return () => mq.removeEventListener('change', apply)
+  }, [])
+
   const sequence = [...row.images]
-  // The video sits in the middle of the row. IMPORTANT: this position must NOT
-  // depend on `snapMode` (a client-only matchMedia value) — reordering the items
-  // array between the server render and the first client render caused a React
-  // #418 hydration mismatch at ≤1023px. The marquee is a continuous loop, so the
-  // video's start position is just a phase that scrolls past anyway.
-  const mid = Math.floor(sequence.length / 2)
+  const mid = videoFirst ? 0 : Math.floor(sequence.length / 2)
 
   const items: React.ReactNode[] = []
+  if (mid === 0) items.push(<VideoCard key="v-0" row={row} />)
   sequence.forEach((src, i) => {
-    if (i === mid) items.push(<VideoCard key={`v-${i}`} row={row} />)
+    if (i === mid && mid !== 0) items.push(<VideoCard key={`v-${i}`} row={row} />)
     items.push(<ImageCard key={`i-${i}`} src={src} />)
   })
   if (mid >= sequence.length) items.push(<VideoCard key="v-end" row={row} />)
