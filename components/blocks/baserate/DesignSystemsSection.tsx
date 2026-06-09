@@ -44,7 +44,8 @@ export function DesignSystemsSection(props: DesignSystemsProps) {
             <img
               src={components.artifact}
               alt="Baserate component library"
-              className="block w-[200%] max-w-none md:w-full"
+              className="block max-w-none md:!w-full"
+              style={{ width: '200%' }}
             />
           </div>
         </div>
