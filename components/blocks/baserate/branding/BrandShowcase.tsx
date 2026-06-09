@@ -1,112 +1,105 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-
 /**
- * BrandShowcase — a brand-identity section for one product (Journalytic or
- * Baserate). Shows the animated wordmark, the app icon, the brand palette, and
- * a framed, slowly auto-scrolling preview of the marketing site.
+ * BrandShowcase — a brand-identity BOARD for one product (Journalytic / Baserate),
+ * shown as a GRID of white cards (logos, app icons, palette + type, a UI shot)
+ * floating on the section background. No scrolling UI here.
  *
- * Configurable via props so the same component renders both brands with their
- * own colour, copy and assets.
+ * Layout mirrors the Figma brand boards:
+ *   [ wordmark on black ........ ] [ icon on black ]   [ palette + type (tall) ]
+ *   [ icon on white ] [ wordmark on white ........... ] [ ............(same).... ]
+ *   [ UI / hero shot (wide) .................................................. ]
  */
 export interface BrandShowcaseProps {
   eyebrow: string
   title: string
   blurb: string
-  /** animated wordmark video (mp4) */
-  logoVideo: string
+  /** wordmark svg (dark-on-light version) */
+  wordmark: string
   /** app icon svg */
   appIcon: string
-  /** tall marketing-site png that slowly scrolls inside the device frame */
-  siteImage: string
-  /** brand palette swatches */
+  /** wide UI / marketing shot for the bottom card */
+  uiShot: string
+  /** object-position for the UI shot crop, e.g. 'center top' */
+  uiCrop?: string
+  /** brand palette swatches (hex) */
   palette: string[]
-  /** section background + text theme */
-  theme: 'light' | 'dark'
-  /** flip the layout (logo left / preview right, or vice-versa) */
-  reverse?: boolean
+  /** section theme + background */
+  theme: 'journalytic' | 'baserate'
 }
 
 export function BrandShowcase({
-  eyebrow, title, blurb, logoVideo, appIcon, siteImage, palette, theme, reverse,
+  eyebrow, title, blurb, wordmark, appIcon, uiShot, uiCrop = 'center top', palette, theme,
 }: BrandShowcaseProps) {
-  const vref = useRef<HTMLVideoElement>(null)
+  const journalytic = theme === 'journalytic'
 
-  // Play the wordmark reveal once when it scrolls in.
-  useEffect(() => {
-    const v = vref.current
-    if (!v) return
-    const io = new IntersectionObserver((es) => {
-      for (const e of es) if (e.isIntersecting) { v.play().catch(() => {}); io.disconnect() }
-    }, { threshold: 0.5 })
-    io.observe(v)
-    return () => io.disconnect()
-  }, [])
-
-  const dark = theme === 'dark'
+  // Section background: Journalytic = blue gradient; Baserate = grey-bg image.
+  const sectionStyle = journalytic
+    ? { background: 'linear-gradient(180deg, #2f6db5 0%, #2a5e9c 100%)' }
+    : { backgroundImage: 'url(/baserate/branding/grey-bg.png)', backgroundSize: 'cover', backgroundPosition: 'center' }
 
   return (
-    <section className={dark ? 'bg-[var(--br-ink)] py-20 md:py-[120px]' : 'bg-white py-20 md:py-[120px]'}>
-      <div className={`br-container grid items-center gap-12 md:grid-cols-2 md:gap-16 ${reverse ? 'md:[&>*:first-child]:order-2' : ''}`}>
-        {/* Left: identity */}
-        <div>
-          <span
-            className="br-data mb-5 inline-block rounded-[var(--br-tag-radius)] border px-3 py-1.5 text-[14px] uppercase"
-            style={{ borderColor: 'var(--br-gold)', color: 'var(--br-gold)' }}
-          >
+    <section className="py-20 md:py-[120px]" style={sectionStyle}>
+      <div className="br-container">
+        {/* Centered heading */}
+        <div className="mb-12 text-center md:mb-16">
+          <span className="br-data mb-5 inline-block rounded-[var(--br-tag-radius)] border border-white/40 px-3 py-1.5 text-[14px] uppercase text-white">
             {eyebrow}
           </span>
-          <h3 className={`text-[28px] font-semibold uppercase tracking-tight md:text-[40px] ${dark ? 'text-white' : 'text-[var(--br-ink)]'}`}>
-            {title}
-          </h3>
-          <p className={`mt-4 max-w-md md:text-lg ${dark ? 'text-white/70' : 'text-[var(--br-muted)]'}`}>
-            {blurb}
-          </p>
-
-          {/* Animated wordmark + app icon */}
-          <div className="mt-9 flex items-center gap-5">
-            <div className={`flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl ${dark ? 'bg-white/5' : 'bg-[var(--br-bg-2)]'} md:h-20 md:w-20`}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={appIcon} alt="" className="h-9 w-9 md:h-11 md:w-11" />
-            </div>
-            <video
-              ref={vref}
-              className="h-12 w-auto md:h-16"
-              muted
-              playsInline
-              preload="auto"
-            >
-              <source src={logoVideo} type="video/mp4" />
-            </video>
-          </div>
-
-          {/* Palette */}
-          <div className="mt-8 flex gap-2.5">
-            {palette.map((c) => (
-              <span
-                key={c}
-                className="h-9 w-9 rounded-full ring-1 ring-black/10 md:h-10 md:w-10"
-                style={{ background: c }}
-                title={c}
-              />
-            ))}
-          </div>
+          <h3 className="text-[28px] font-semibold uppercase tracking-tight text-white md:text-[40px]">{title}</h3>
+          <p className="mx-auto mt-3 max-w-2xl text-white/80 md:text-lg">{blurb}</p>
         </div>
 
-        {/* Right: framed auto-scrolling site preview */}
-        <div className="relative mx-auto w-full max-w-[420px]">
-          <div
-            className={`relative aspect-[3/4] overflow-hidden rounded-3xl border ${dark ? 'border-white/10' : 'border-[var(--br-line)]'} shadow-[0_30px_60px_-30px_rgba(0,0,0,0.4)]`}
-          >
-            {/* The tall site image slides slowly up & back via CSS. */}
+        {/* Brand board grid */}
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-12 md:gap-5">
+          {/* wordmark on black — wide */}
+          <div className="col-span-2 flex aspect-[16/7] items-center justify-center rounded-xl bg-black p-8 md:col-span-5">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={siteImage}
-              alt={`${title} marketing site`}
-              className="absolute left-0 top-0 w-full"
-              style={{ animation: 'br-site-scroll 26s ease-in-out infinite' }}
-            />
+            <img src={wordmark} alt={`${title} wordmark`} className="max-h-full max-w-[80%] object-contain brightness-0 invert" />
+          </div>
+          {/* icon on black */}
+          <div className="col-span-1 flex aspect-square items-center justify-center rounded-xl bg-black p-7 md:col-span-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={appIcon} alt="" className="max-h-[55%] max-w-[55%] object-contain brightness-0 invert" />
+          </div>
+          {/* palette + type — tall, spans both rows on desktop */}
+          <div className="col-span-2 row-span-2 rounded-xl bg-white p-6 md:col-span-4 md:row-span-2">
+            <div className="flex gap-2">
+              {palette.map((c) => (
+                <span key={c} className="h-12 flex-1 rounded-md ring-1 ring-black/5" style={{ background: c }} title={c} />
+              ))}
+            </div>
+            <div className="mt-6 space-y-3">
+              <div className="flex items-baseline justify-between">
+                <span className="text-lg font-bold text-[var(--br-ink)]">Header 1</span>
+                <span className="text-sm text-[var(--br-muted)]">Paragraph 1</span>
+              </div>
+              <div className="flex items-baseline justify-between">
+                <span className="text-base font-bold text-[var(--br-ink)]">Header 2</span>
+                <span className="text-sm text-[var(--br-muted)]">Paragraph 2</span>
+              </div>
+              <div className="flex items-baseline justify-between">
+                <span className="text-sm font-bold text-[var(--br-ink)]">Header 3</span>
+                <span className="text-xs text-[var(--br-muted)]">Paragraph 3</span>
+              </div>
+            </div>
+          </div>
+          {/* icon on white */}
+          <div className="col-span-1 flex aspect-square items-center justify-center rounded-xl bg-white p-7 md:col-span-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={appIcon} alt="" className="max-h-[55%] max-w-[55%] object-contain" />
+          </div>
+          {/* wordmark on white — wide */}
+          <div className="col-span-1 flex aspect-[16/7] items-center justify-center rounded-xl bg-white p-8 md:col-span-5">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={wordmark} alt="" className="max-h-full max-w-[80%] object-contain" />
+          </div>
+          {/* UI / hero shot — full-width bottom card */}
+          <div className="col-span-2 overflow-hidden rounded-xl bg-white md:col-span-12">
+            <div className="aspect-[21/8] w-full">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={uiShot} alt={`${title} marketing`} className="h-full w-full object-cover" style={{ objectPosition: uiCrop }} />
+            </div>
           </div>
         </div>
       </div>

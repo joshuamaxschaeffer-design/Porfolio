@@ -27,24 +27,25 @@ export function MarketingContent() {
   }
 
   return (
-    <section className="bg-[var(--br-bg-2)] py-20 md:py-[120px]">
-      <div className="br-container">
-        <span className="br-data mb-5 inline-block rounded-[var(--br-tag-radius)] border border-[var(--br-gold)] px-3 py-1.5 text-[14px] uppercase text-[var(--br-gold)]">
+    <section className="bg-black py-20 md:py-[120px]">
+      <div className="br-container text-center">
+        <span className="br-data mb-5 inline-block rounded-[var(--br-tag-radius)] border border-white/40 px-3 py-1.5 text-[14px] uppercase text-white">
           Marketing Content
         </span>
-        <h3 className="text-[28px] font-semibold uppercase tracking-tight text-[var(--br-ink)] md:text-[40px]">
-          Marketing the MCP
+        <h3 className="text-[28px] font-semibold uppercase tracking-tight text-white md:text-[40px]">
+          Marketing Content
         </h3>
-        <p className="mt-3 max-w-2xl text-[var(--br-muted)] md:text-lg">
-          Produced marketing content explaining how Baserate connects to local AI and MCP.
+        <p className="mx-auto mt-3 max-w-2xl text-white/75 md:text-lg">
+          Created full web marketing pages, presentations, emails, a help center, and brand videos like the one below.
         </p>
 
-        <div className="group relative mt-10 overflow-hidden rounded-2xl border border-[var(--br-line)] bg-black shadow-[var(--br-card-shadow)]">
+        <div className="group relative mx-auto mt-10 max-w-[1100px] overflow-hidden rounded-2xl bg-black shadow-[0_30px_70px_-30px_rgba(0,0,0,0.9)]">
           <video
             ref={ref}
             className="block w-full"
             playsInline
             preload="metadata"
+            poster="/baserate/branding/mcp-cover.jpg"
             onClick={toggle}
             onPlay={() => setPlaying(true)}
             onPause={() => setPlaying(false)}
