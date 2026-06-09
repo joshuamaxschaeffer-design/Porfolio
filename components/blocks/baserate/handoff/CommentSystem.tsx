@@ -167,7 +167,7 @@ function Avatar({ src }: { src: string }) {
   return <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
 }
 
-export function CommentSystem({ title = 'Comments' }: { title?: string }) {
+export function CommentSystem({ title = '' }: { title?: string }) {
   const [comments, setComments] = useState<Comment[]>(() => buildSeed())
   const [hoveredId, setHoveredId] = useState<string | null>(null)
   // Threads are always auto-expanded (no collapse UI) — seed with every
@@ -413,7 +413,7 @@ export function CommentSystem({ title = 'Comments' }: { title?: string }) {
 
   return (
     <div style={{ fontFamily: S.fontFamily, fontVariationSettings: S.fontVar }}>
-      <h3 style={{ fontSize: 16, fontWeight: 700, color: D.text, margin: '0 0 16px 0' }}>{title}</h3>
+      {title ? <h3 style={{ fontSize: 16, fontWeight: 700, color: D.text, margin: '0 0 16px 0' }}>{title}</h3> : null}
 
       <div>
         {comments.map((c, idx) => {

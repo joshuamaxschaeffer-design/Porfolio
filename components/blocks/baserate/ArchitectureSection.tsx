@@ -44,7 +44,9 @@ export function ArchitectureSection(props: ArchitectureProps) {
           the text items; no dividers between items. */}
       <div className="mt-20 md:mt-28">
         <div className="grid gap-10 md:grid-cols-2 md:gap-16">
-          <div className="md:order-1">
+          {/* On mobile the image sits ABOVE the text (matching the Exploration
+              layout); on desktop the grid order puts text left, image right. */}
+          <div className="order-2 md:order-1">
             <Tag>{crystalization.tag}</Tag>
             <ul className="mt-6 space-y-6 md:space-y-8">
               {crystalization.items.map((item) => (
@@ -55,7 +57,7 @@ export function ArchitectureSection(props: ArchitectureProps) {
               ))}
             </ul>
           </div>
-          <div className="overflow-hidden rounded-2xl border border-[var(--br-line)] bg-white md:order-2">
+          <div className="order-1 overflow-hidden rounded-2xl border border-[var(--br-line)] bg-white md:order-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={crystalization.image} alt="Crystalization" className="w-full" />
           </div>

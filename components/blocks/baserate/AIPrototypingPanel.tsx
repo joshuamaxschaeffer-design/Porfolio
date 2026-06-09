@@ -85,15 +85,15 @@ export function AIPrototypingPanel({
           front, lower-left, as a single CHAT-ONLY column (not chopped) so its
           text stays legible. `overflowX:clip` lets the video bleed off-screen
           without adding a scrollbar. ----- */}
-      <div className="relative mt-8 h-[440px] w-full lg:hidden" style={{ overflowX: 'clip' }}>
+      <div className="relative -mr-6 mt-8 h-[440px] w-full lg:hidden" style={{ overflowX: 'clip' }}>
         {/* prototype video — left edge sits at the stage's left edge (the stage
             is gutter-to-gutter, so that's 24px from the screen edge); the box is
             much wider than the viewport so its right portion runs off-screen
             (clipped by overflowX:clip). 16:9 box + object-cover = full frame, no
             letterbox bars, never looks cropped. */}
         <div
-          className="absolute left-0 top-0 overflow-hidden rounded-l-xl border-y border-l border-white/10 bg-[#0d0f15] shadow-[0_24px_60px_-30px_rgba(0,0,0,0.8)]"
-          style={{ width: '175%', aspectRatio: '16 / 9' }}
+          className="absolute top-0 overflow-hidden rounded-l-xl border-y border-l border-white/10 bg-[#0d0f15] shadow-[0_24px_60px_-30px_rgba(0,0,0,0.8)]"
+          style={{ left: 24, width: '185%', aspectRatio: '16 / 9' }}
         >
           {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
           <video
@@ -352,7 +352,7 @@ function ChatColumn({ mobile = false }: { mobile?: boolean }) {
   return (
     <div className="flex h-full flex-col">
       {/* breadcrumb */}
-      <div className={`flex items-center gap-2 border-b border-black/8 ${mobile ? 'px-4 py-3 text-[12px]' : 'px-[4%] py-[3%] text-[11px]'} text-black/55`}>
+      <div className={`flex items-center gap-2 overflow-hidden whitespace-nowrap border-b border-black/8 ${mobile ? 'px-4 py-3 text-[12px]' : 'px-[4%] py-[3%] text-[11px]'} text-black/55`}>
         <span className="font-semibold text-black/80">Baserate Toolkit</span>
         <span className="text-black/30">/</span>
         <span>Pairwise tool — Figma import</span>
@@ -411,7 +411,6 @@ function ChatColumn({ mobile = false }: { mobile?: boolean }) {
           </span>
         </div>
       </div>
-      <div className="pb-[2%] text-center text-[8px] text-black/30">Claude is AI and can make mistakes. Please double-check responses.</div>
     </div>
   )
 }

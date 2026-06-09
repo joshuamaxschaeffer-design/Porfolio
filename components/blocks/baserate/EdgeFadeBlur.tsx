@@ -74,25 +74,24 @@ export function EdgeFadeBlur({
   // The content fade: a mask transparent at both outer edges → opaque in the
   // middle, over `width` px. Using a mask (not an overlay gradient) genuinely
   // reveals whatever is behind, over any background.
-  const fadeMask = `linear-gradient(to right, transparent 0, black ${width}px, black calc(100% - ${width}px), transparent 100%)`
 
   return (
     // overflow-x:clip guarantees nothing this wraps (a wide marquee / scroll
-    // track) can push the page wider, WITHOUT creating a scroll container (so
-    // inner scrollers keep working and the blur bands stay visible).
-    <div className={`relative ${className}`} style={{ overflowX: 'clip' }}>
-      {/* scrolling content, edge-faded */}
-      <div style={{ WebkitMaskImage: fadeMask, maskImage: fadeMask }}>{children}</div>
+    // track) can push the page wider, WITHOUT creating a scroll container.
+    // ALL edge effects (fade mask + blur + bg wash) are DESKTOP-ONLY (≥lg) — on
+    // mobile/tablet the carousels show plain, crisp edges (no blur, no fade to
+    // grey). The mask is applied via the `.br-edgefade` class which only sets
+    // mask-image at ≥1024px (see globals.css); the CSS var carries the band px.
+    <div
+      className={`br-edgefade relative ${className}`}
+      style={{ overflowX: 'clip', ['--edgefade' as string]: `${width}px` }}
+    >
+      <div className="br-edgefade-mask">{children}</div>
 
-      {/* progressive blur bands — DESKTOP ONLY (≥lg). Mobile AND tablet keep just
-          the fade — no blur (the md breakpoint still showed blur on tablet). */}
+      {/* progressive blur bands + bg wash — DESKTOP ONLY */}
       <div aria-hidden className="pointer-events-none absolute inset-0 z-10 hidden lg:block">
         {blurLayer('left', width)}
         {blurLayer('right', width)}
-      </div>
-
-      {/* bg-color wash over the edges (all sizes) so the dissolve reads cleanly */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 z-10">
         <div
           style={{
             position: 'absolute',

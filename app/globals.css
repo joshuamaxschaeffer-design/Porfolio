@@ -213,3 +213,12 @@ img {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: none; }
 }
+
+/* EdgeFadeBlur: the edge fade mask only applies on desktop (>=1024px). On mobile
+ * and tablet the carousels show plain, crisp edges — no fade to grey, no blur. */
+@media (min-width: 1024px) {
+  .br-edgefade-mask {
+    -webkit-mask-image: linear-gradient(to right, transparent 0, black var(--edgefade), black calc(100% - var(--edgefade)), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, black var(--edgefade), black calc(100% - var(--edgefade)), transparent 100%);
+  }
+}

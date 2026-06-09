@@ -46,12 +46,12 @@ const FLOOR_Y = 99
 
 // Project a depth z (>=0) → {scale, screenX%, screenY%} via the pinhole law.
 // frontX overrides the front-card X anchor (mobile centers the front card).
-function project(z: number, frontX = FRONT_X) {
+function project(z: number, frontX = FRONT_X, vpX = VP_X) {
   const s = F / (F + z) // 1 at z=0, →0 far away
   const k = 1 - s
   return {
     s,
-    x: frontX + (VP_X - frontX) * k,
+    x: frontX + (vpX - frontX) * k,
     y: FRONT_Y + (VP_Y - FRONT_Y) * k,
   }
 }
@@ -85,7 +85,10 @@ export function ScalabilityTimeline() {
     mq.addEventListener('change', apply)
     return () => mq.removeEventListener('change', apply)
   }, [])
-  const frontX = mobile ? 50 : FRONT_X
+  // Mobile: nudge the front card ~5% LEFT (≈20px on a phone) and push the
+  // vanishing point ~5% RIGHT so the farthest-back card runs further off-screen.
+  const frontX = mobile ? 45 : FRONT_X
+  const vpX = mobile ? 94 : VP_X
 
   const { scrollYProgress } = useScroll({
     target: stageRef,
@@ -109,7 +112,7 @@ export function ScalabilityTimeline() {
 
         {/* cards far → near so nearer paint on top */}
         {frames.map((frame, i) => (
-          <FrameCard key={frame.image} frame={frame} index={i} gap={gapMV} total={n} frontX={frontX} />
+          <FrameCard key={frame.image} frame={frame} index={i} gap={gapMV} total={n} frontX={frontX} vpX={vpX} />
         ))}
 
         {/* vignette: far half dissolves into the panel black */}
@@ -134,10 +137,10 @@ export function ScalabilityTimeline() {
  * on scroll the card recedes along the true perspective path. Two stacked blur
  * layers + a darkening overlay give a smooth, fast depth falloff.
  */
-function FrameCard({ frame, index, gap, total, frontX }: { frame: Frame; index: number; gap: MotionValue<number>; total: number; frontX: number }) {
+function FrameCard({ frame, index, gap, total, frontX, vpX }: { frame: Frame; index: number; gap: MotionValue<number>; total: number; frontX: number; vpX: number }) {
   // depth ratio d = z / GAP_MAX → drives the cues (front 2 stay crisp).
   const d = useTransform(gap, (g) => (index * g) / GAP_MAX)
-  const proj = useTransform(gap, (g) => project(index * g, frontX))
+  const proj = useTransform(gap, (g) => project(index * g, frontX, vpX))
   const left = useTransform(proj, (pr) => `${pr.x}%`)
   const top = useTransform(proj, (pr) => `${pr.y}%`)
   const scale = useTransform(proj, (pr) => pr.s)
