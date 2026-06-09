@@ -205,3 +205,11 @@ img {
 .br-grabbing {
   cursor: grabbing;
 }
+
+/* Handoff CodeBox fade-in — defined globally (not as an inline <style> in the
+ * component) so it's declared exactly once. Multiple inline <style> tags with
+ * the same keyframes caused a React #418 hydration mismatch. */
+@keyframes brCodeFade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
