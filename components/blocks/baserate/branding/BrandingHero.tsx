@@ -4,19 +4,17 @@ import { motion, useReducedMotion } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
 
 /**
- * Branding hero — "Brand & Marketing".
+ * Branding hero — "Brand & Marketing". Matched to Figma 224:53188.
  *
- * One 3D-feeling environment:
- *  - A soft blue→white GRADIENT field split on a GENTLE diagonal.
- *  - The two marketing SITES sit BEHIND the devices as the "surface" they float on.
- *  - TWO devices (desktop = Baserate site, phone = Journalytic site), each
- *    rotating on a matched plane while its screen scrolls. Rendered in SD Studio
- *    as transparent PNG frame sequences, played ONCE on a <canvas> when scrolled
- *    into view (canvas keeps perfect alpha everywhere — VP9/HEVC alpha video is
- *    unreliable cross-browser).
- *  - The Baserate + Journalytic LOGOS rotate in 3D with EXTRUDED depth (stacked
- *    layers) and a slow continuous spin.
- *  - Soft COLOUR ORBS float and cast shadows on the field.
+ * Composition (one 3D scene):
+ *  - White top split from the teal→blue gradient field on a GENTLE diagonal
+ *    (≈5.5°, falling left → right like the Figma frame).
+ *  - Each device floats over a white page-SHEET (the marketing site reads as
+ *    the surface BEHIND the device, not a flat field under it).
+ *  - Devices are transparent webp frame sequences played once on a <canvas>
+ *    when scrolled into view (frames-v2: background removed, tight crop).
+ *  - The Journalytic + Baserate app-icon CHIPS rotate slowly in 3D with
+ *    extruded depth; colour orbs float and cast shadows on the field.
  */
 
 const FRAME_COUNT = 120
@@ -26,12 +24,11 @@ function pad(n: number) {
   return String(n).padStart(4, '0')
 }
 
-/** Canvas frame-sequence player. Preloads PNG frames, plays once on scroll-in. */
+/** Canvas frame-sequence player. Preloads webp frames, plays once on scroll-in. */
 function DeviceCanvas({
   dir, className = '', delay = 0,
 }: { dir: 'desktop' | 'phone'; className?: string; delay?: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const framesRef = useRef<HTMLImageElement[]>([])
   const played = useRef(false)
 
   useEffect(() => {
@@ -41,11 +38,9 @@ function DeviceCanvas({
     if (!ctx) return
 
     let raf = 0
-    const base = `/baserate/branding/devices/${dir}/frames/frame_`
+    const base = `/baserate/branding/devices/${dir}/frames-v2/frame_`
     const imgs: HTMLImageElement[] = []
-    let loaded = 0
 
-    // First frame establishes canvas size + shows the poster immediately.
     const first = new Image()
     first.onload = () => {
       canvas.width = first.naturalWidth
@@ -53,16 +48,13 @@ function DeviceCanvas({
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       ctx.drawImage(first, 0, 0)
     }
-    first.src = `${base}0000.png`
+    first.src = `${base}0000.webp`
 
-    // Preload the rest.
     for (let i = 0; i < FRAME_COUNT; i++) {
       const img = new Image()
-      img.onload = () => { loaded++ }
-      img.src = `${base}${pad(i)}.png`
+      img.src = `${base}${pad(i)}.webp`
       imgs[i] = img
     }
-    framesRef.current = imgs
 
     const drawFrame = (i: number) => {
       const img = imgs[i]
@@ -92,7 +84,7 @@ function DeviceCanvas({
           }
         }
       },
-      { threshold: 0.3 },
+      { threshold: 0.25 },
     )
     io.observe(canvas)
 
@@ -102,70 +94,77 @@ function DeviceCanvas({
   return <canvas ref={canvasRef} className={className} aria-label={`${dir} device`} />
 }
 
-/** A 3D-extruded logo that slowly spins on its Y axis. Depth faked with stacked layers. */
-function ExtrudedLogo({
-  src, alt, className = '', size, depth = 10, dur = 14, delay = 0, reduce,
+/**
+ * App-icon chip rotating slowly in 3D with extruded depth (stacked layers).
+ * Outer div takes the absolute position + responsive scale; inner layers
+ * animate so the transforms never fight.
+ */
+function ExtrudedChip({
+  src, alt, size, depth = 12, dur = 22, delay = 0, reduce, className = '',
 }: {
-  src: string; alt: string; className?: string; size: number
-  depth?: number; dur?: number; delay?: number; reduce: boolean | null
+  src: string; alt: string; size: number; depth?: number
+  dur?: number; delay?: number; reduce: boolean | null; className?: string
 }) {
-  // Stack N copies translated along Z to fake extrusion; the front face is full
-  // opacity, the back layers darken to read as a side.
   const layers = Array.from({ length: depth }, (_, i) => i)
   return (
-    <motion.div
-      className={`pointer-events-none absolute ${className}`}
-      style={{ width: size, height: size, perspective: 600, transformStyle: 'preserve-3d' }}
-      initial={false}
-      animate={reduce ? {} : { y: [0, -12, 0] }}
-      transition={{ duration: dur * 0.7, repeat: Infinity, ease: 'easeInOut', delay }}
-    >
+    <div className={`pointer-events-none absolute ${className}`} style={{ width: size, height: size }}>
       <motion.div
-        className="relative h-full w-full"
-        style={{ transformStyle: 'preserve-3d' }}
+        className="h-full w-full"
+        style={{ perspective: 900 }}
         initial={false}
-        animate={reduce ? {} : { rotateY: [0, 360] }}
-        transition={{ duration: dur, repeat: Infinity, ease: 'linear', delay }}
+        animate={reduce ? {} : { y: [0, -10, 0] }}
+        transition={{ duration: dur * 0.55, repeat: Infinity, ease: 'easeInOut', delay }}
       >
-        {layers.map((i) => (
-          <img
-            key={i}
-            src={src}
-            alt={i === depth - 1 ? alt : ''}
+        <motion.div
+          className="relative h-full w-full"
+          style={{ transformStyle: 'preserve-3d' }}
+          initial={false}
+          animate={reduce ? {} : { rotateY: [0, 360] }}
+          transition={{ duration: dur, repeat: Infinity, ease: 'linear', delay }}
+        >
+          {layers.map((i) => (
             // eslint-disable-next-line @next/next/no-img-element
-            className="absolute inset-0 h-full w-full object-contain"
-            draggable={false}
-            style={{
-              transform: `translateZ(${(i - depth / 2) * 1.4}px)`,
-              filter: i === depth - 1 ? 'none' : `brightness(${0.5 + (i / depth) * 0.5})`,
-              opacity: i === depth - 1 ? 1 : 0.92,
-            }}
-          />
-        ))}
+            <img
+              key={i}
+              src={src}
+              alt={i === depth - 1 ? alt : ''}
+              draggable={false}
+              className="absolute inset-0 h-full w-full"
+              style={{
+                transform: `translateZ(${(i - (depth - 1) / 2) * 1.6}px)`,
+                filter: i === depth - 1 ? 'none' : 'brightness(0.6)',
+                borderRadius: '20%',
+              }}
+            />
+          ))}
+        </motion.div>
       </motion.div>
-    </motion.div>
+      {/* contact shadow cast onto the field below */}
+      <div className="absolute left-1/2 top-[114%] h-[16%] w-[78%] -translate-x-1/2 rounded-full bg-[#081a33]/30 blur-md" />
+    </div>
   )
 }
 
-/** A premium soft colour orb that floats and casts a shadow on the field. */
+/** Soft colour orb that floats and casts a shadow on the field. */
 function Orb({
   className = '', from, to, size, dur = 11, delay = 0, reduce,
 }: {
   className?: string; from: string; to: string; size: number; dur?: number; delay?: number; reduce: boolean | null
 }) {
   return (
-    <motion.div
-      className={`pointer-events-none absolute rounded-full ${className}`}
-      style={{
-        width: size, height: size,
-        background: `radial-gradient(circle at 34% 28%, ${from}, ${to} 74%)`,
-        // drop-shadow casts onto whatever is behind (the field) — softer + offset
-        boxShadow: `0 28px 44px -10px rgba(10,20,45,0.35), inset 0 -7px 16px rgba(0,0,0,0.22), inset 0 6px 12px rgba(255,255,255,0.4)`,
-      }}
-      initial={false}
-      animate={reduce ? {} : { y: [0, -20, 0], x: [0, size * 0.18, 0] }}
-      transition={{ duration: dur, repeat: Infinity, ease: 'easeInOut', delay }}
-    />
+    <div className={`pointer-events-none absolute ${className}`} style={{ width: size, height: size }}>
+      <motion.div
+        className="h-full w-full rounded-full"
+        style={{
+          background: `radial-gradient(circle at 32% 27%, ${from}, ${to} 72%)`,
+          boxShadow:
+            '0 30px 45px -12px rgba(7,18,40,0.4), inset 0 -8px 16px rgba(0,0,0,0.25), inset 0 8px 14px rgba(255,255,255,0.35)',
+        }}
+        initial={false}
+        animate={reduce ? {} : { y: [0, -16, 0], x: [0, size * 0.15, 0] }}
+        transition={{ duration: dur, repeat: Infinity, ease: 'easeInOut', delay }}
+      />
+    </div>
   )
 }
 
@@ -176,79 +175,119 @@ export function BrandingHero() {
 
   return (
     <section className="relative overflow-hidden">
-      {/* Blue→white field on a GENTLE diagonal, WITH a blue gradient (not flat). */}
-      <div className="absolute inset-0 bg-white" />
+      {/* White top over the gradient field — gentle diagonal, higher on the right */}
       <div
-        className="absolute inset-0"
-        style={{
-          // gentler diagonal (172deg ≈ near-horizontal); blue is a gradient.
-          background:
-            'linear-gradient(172deg, transparent 0%, transparent 52%, #2f6db5 52.3%, #3f7cc0 70%, #2a5e9c 100%)',
-        }}
+        className="absolute inset-0 bg-white"
+        style={{ clipPath: 'polygon(0 0, 100% 0, 100% 47%, 0 65%)' }}
       />
 
+      {/* Subtle white corner page, top-left (as in Figma) */}
+      <div className="absolute -left-[3%] -top-[10%] z-[3] hidden h-[200px] w-[15%] rotate-[15deg] rounded-[18px] bg-white shadow-[0_24px_50px_-22px_rgba(7,20,45,0.22)] md:block" />
+
       {/* Heading */}
-      <div className="br-container relative z-30 pt-20 text-center md:pt-28">
-        <h2 className="text-[34px] font-semibold uppercase leading-none tracking-tight text-[var(--br-ink)] md:text-[54px]">
+      <div className="relative z-30 px-6 pt-16 text-center md:pt-[132px]">
+        <h2 className="text-[30px] font-semibold uppercase leading-none tracking-tight text-[var(--br-ink)] md:text-[44px]">
           Brand &amp; Marketing
         </h2>
-        <p className="mt-4 text-lg text-[var(--br-muted)] md:text-[22px]">
+        <p className="mt-3 text-[16px] text-[#2a3050] md:text-[21px]">
           Ran in tandem with product implementation.
         </p>
       </div>
 
-      {/* The 3D stage */}
-      <div className="relative z-10 mx-auto h-[82vh] max-h-[860px] min-h-[560px] w-full max-w-[1600px]">
-        {mounted && (
-          <>
-            {/* DEVICES — big, floating, on the matched plane. PHONE left, DESKTOP right. */}
+      {/* Stage spacer — the floaters live in the absolute layer */}
+      <div className="h-[66vw] max-h-[460px] min-h-[230px] md:h-[clamp(340px,30vw,470px)]" />
+
+      {/* B2C label on the blue */}
+      <div className="relative z-30 px-6 pb-16 text-center md:pb-[88px]">
+        <h3 className="text-[19px] font-semibold uppercase tracking-[0.05em] text-white md:text-[24px]">
+          B2C Brand Exploration
+        </h3>
+        <p className="mx-auto mt-3 max-w-[560px] text-[15px] leading-relaxed text-white/90 md:text-[17px]">
+          The B2C brand Journalytic was finished first, with consumer focussed branding and messaging.
+        </p>
+      </div>
+
+      {/* ——— Floating scene ——— */}
+      {mounted && (
+        <div className="pointer-events-none absolute inset-0">
+          {/* PHONE cluster (left) — page sheet behind, device in front */}
+          <div
+            className="absolute left-[0%] top-[22%] z-[5] w-[28%] md:left-[7.5%] md:top-[8%] md:w-[20%]"
+            style={{ transform: 'perspective(1600px) rotateX(5deg) rotateY(6deg) rotate(15deg)' }}
+          >
+            <div className="aspect-[2/3] overflow-hidden rounded-[14px] bg-white shadow-[0_50px_90px_-30px_rgba(7,20,45,0.45)]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/baserate/branding/sheet-journalytic.webp"
+                alt=""
+                className="h-full w-full object-cover object-top"
+                loading="lazy"
+              />
+            </div>
+          </div>
+          <div
+            className="absolute left-[2%] top-[18%] z-10 w-[25%] md:left-[9%] md:-top-[6%] md:w-[19%]"
+            style={{ transform: 'perspective(1600px) rotateX(4deg) rotateY(7deg) rotate(16deg)' }}
+          >
             <DeviceCanvas
               dir="phone"
               delay={120}
-              className="absolute bottom-[4%] left-[1%] h-[86%] w-[46%] md:left-[4%] md:w-[38%]"
+              className="h-auto w-full [filter:drop-shadow(0_45px_55px_rgba(7,20,40,0.30))]"
             />
+          </div>
+
+          {/* DESKTOP cluster (right) — page sheet behind, device in front */}
+          <div
+            className="absolute right-[-8%] top-[26%] z-[5] w-[50%] md:right-[0%] md:top-[16%] md:w-[38%]"
+            style={{ transform: 'perspective(2000px) rotateX(6deg) rotateY(-10deg) rotate(-9deg)' }}
+          >
+            <div className="aspect-[1100/725] overflow-hidden rounded-[16px] bg-white shadow-[0_60px_100px_-32px_rgba(7,20,45,0.5)]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/baserate/branding/sheet-baserate.webp"
+                alt=""
+                className="h-full w-full object-cover object-top"
+                loading="lazy"
+              />
+            </div>
+          </div>
+          <div
+            className="absolute right-[-10%] top-[16%] z-10 w-[62%] md:right-[-4.5%] md:-top-[8%] md:w-[46%]"
+            style={{ transform: 'perspective(2000px) rotateX(5deg) rotateY(-12deg) rotate(-8deg)' }}
+          >
             <DeviceCanvas
               dir="desktop"
               delay={0}
-              className="absolute bottom-[10%] right-[0%] h-[78%] w-[66%] md:right-[2%] md:w-[58%]"
+              className="h-auto w-full [filter:drop-shadow(0_50px_60px_rgba(7,20,40,0.32))]"
             />
+          </div>
 
-            {/* 3D extruded rotating logos */}
-            <ExtrudedLogo
-              src="/baserate/branding/logos/journalytic-app.svg"
-              alt="Journalytic"
-              reduce={reduce}
-              size={64}
-              className="left-[28%] top-[12%] md:h-20 md:w-20"
-              dur={13} delay={0}
-            />
-            <ExtrudedLogo
-              src="/baserate/branding/logos/baserate-app.svg"
-              alt="Baserate"
-              reduce={reduce}
-              size={64}
-              className="right-[42%] top-[38%] md:h-20 md:w-20"
-              dur={16} delay={1.2}
-            />
+          {/* 3D extruded rotating logo chips */}
+          <ExtrudedChip
+            src="/baserate/branding/logos/journalytic-app.svg"
+            alt="Journalytic"
+            reduce={reduce}
+            size={92}
+            className="left-[36%] top-[27%] z-[15] scale-[0.55] md:left-[26%] md:top-[2%] md:scale-100"
+            dur={22}
+          />
+          <ExtrudedChip
+            src="/baserate/branding/logos/baserate-app.svg"
+            alt="Baserate"
+            reduce={reduce}
+            size={116}
+            className="left-[8%] top-[48%] z-[15] scale-[0.55] md:left-[12%] md:top-[66%] md:scale-100"
+            dur={26}
+            delay={1.4}
+          />
 
-            {/* Shadow-casting colour orbs */}
-            <Orb reduce={reduce} className="left-[19%] top-[15%]" from="#e9c46a" to="#c79016" size={26} dur={10} />
-            <Orb reduce={reduce} className="left-[40%] top-[55%]" from="#5b9bd5" to="#2f6db5" size={34} dur={12} delay={0.8} />
-            <Orb reduce={reduce} className="right-[32%] top-[22%]" from="#1b2440" to="#070e2c" size={30} dur={13} delay={1.5} />
-            <Orb reduce={reduce} className="right-[18%] bottom-[18%]" from="#3a6fb0" to="#234d80" size={42} dur={11} delay={0.4} />
-          </>
-        )}
-      </div>
-
-      {/* Sub-label over the blue */}
-      <div className="br-container relative z-30 pb-20 text-center md:pb-28">
-        <h3 className="text-[22px] font-semibold uppercase tracking-tight text-white md:text-[28px]">
-          B2C Brand Exploration
-        </h3>
-        <p className="mx-auto mt-3 max-w-xl text-white/85 md:text-lg">
-          The B2C brand Journalytic was finished first, with consumer-focussed branding and messaging.
-        </p>
-      </div>
+          {/* Shadow-casting colour orbs */}
+          <Orb reduce={reduce} className="left-[10%] top-[20%] z-[15] scale-75 md:left-[14%] md:top-[7%] md:scale-100" from="#e3cfa0" to="#a07d20" size={44} dur={10} />
+          <Orb reduce={reduce} className="left-[32.5%] top-[41%] z-[15] scale-75 md:scale-100" from="#4f9fcb" to="#1c5e8c" size={56} dur={12} delay={0.8} />
+          <Orb reduce={reduce} className="left-[69.5%] top-[14%] z-[15] scale-75 md:top-[9%] md:scale-100" from="#2a2f3a" to="#05070d" size={50} dur={13} delay={1.5} />
+          <Orb reduce={reduce} className="left-[80%] top-[52%] z-[15] scale-75 md:left-[78.5%] md:top-[64%] md:scale-100" from="#1e63c0" to="#06337a" size={64} dur={11} delay={0.4} />
+        </div>
+      )}
     </section>
   )
 }

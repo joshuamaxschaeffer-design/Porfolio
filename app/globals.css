@@ -91,10 +91,14 @@ body {
  * Combined with blur placeholders, this hides any jank.
  * ============================================================ */
 
-img {
-  /* Prevent layout shift while images load */
-  height: auto;
-  max-width: 100%;
+/* In @layer base so Tailwind utilities (h-full, w-full, …) can override it —
+   unlayered rules beat utility classes under Tailwind v4 cascade layers. */
+@layer base {
+  img {
+    /* Prevent layout shift while images load */
+    height: auto;
+    max-width: 100%;
+  }
 }
 
 /* ============================================================
@@ -214,7 +218,9 @@ img {
   to { opacity: 1; transform: none; }
 }
 
-/* Branding · B2B Exploration marquees (opposite directions, seamless via -50%). */
+/* Branding · B2B Exploration — two seamless marquee rows scrolling opposite
+ * directions. Each track is rendered twice; translating -50% loops seamlessly
+ * (the second copy lands exactly where the first started). */
 @keyframes br-marquee-left {
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
@@ -223,7 +229,10 @@ img {
   from { transform: translateX(-50%); }
   to   { transform: translateX(0); }
 }
-/* Branding · BrandShowcase site preview slow auto-scroll. */
+
+/* Branding · BrandShowcase — a tall site image slowly slides up to reveal the
+ * full page, then eases back. translateY is a % of the IMAGE height, so -72%
+ * shows the bottom while keeping the frame full. */
 @keyframes br-site-scroll {
   0%   { transform: translateY(0); }
   50%  { transform: translateY(-72%); }

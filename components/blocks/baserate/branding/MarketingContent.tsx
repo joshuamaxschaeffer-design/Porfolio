@@ -29,13 +29,10 @@ export function MarketingContent() {
   return (
     <section className="bg-black py-20 md:py-[120px]">
       <div className="br-container text-center">
-        <span className="br-data mb-5 inline-block rounded-[var(--br-tag-radius)] border border-white/40 px-3 py-1.5 text-[14px] uppercase text-white">
-          Marketing Content
-        </span>
-        <h3 className="text-[28px] font-semibold uppercase tracking-tight text-white md:text-[40px]">
+        <h3 className="text-[19px] font-semibold uppercase tracking-[0.05em] text-white md:text-[24px]">
           Marketing Content
         </h3>
-        <p className="mx-auto mt-3 max-w-2xl text-white/75 md:text-lg">
+        <p className="mx-auto mt-3 max-w-[560px] text-[15px] leading-relaxed text-white/85 md:text-[17px]">
           Created full web marketing pages, presentations, emails, a help center, and brand videos like the one below.
         </p>
 

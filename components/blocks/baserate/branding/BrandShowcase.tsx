@@ -1,106 +1,187 @@
 'use client'
 
 /**
- * BrandShowcase — a brand-identity BOARD for one product (Journalytic / Baserate),
- * shown as a GRID of white cards (logos, app icons, palette + type, a UI shot)
- * floating on the section background. No scrolling UI here.
+ * BrandShowcase — a brand-identity board, matched to the Figma boards:
  *
- * Layout mirrors the Figma brand boards:
- *   [ wordmark on black ........ ] [ icon on black ]   [ palette + type (tall) ]
- *   [ icon on white ] [ wordmark on white ........... ] [ ............(same).... ]
- *   [ UI / hero shot (wide) .................................................. ]
+ *   [ wordmark on black (395) ][ icon on black (148) ]   [ palette card ]
+ *   [ icon on white (148) ][ wordmark on white (395) ]   [ (spans rows)  ]
+ *   (baserate only) [ letter card (312) ][ R4 homepage card (652) ]
+ *
+ * Journalytic: sits directly on the parent's blue gradient, NO heading of its
+ * own (the hero's "B2C Brand Exploration" label introduces it).
+ * Baserate: "Baserate Brand" heading, on the "Grey BG" image.
  */
-export interface BrandShowcaseProps {
-  eyebrow: string
-  title: string
-  blurb: string
-  /** wordmark svg (dark-on-light version) */
-  wordmark: string
-  /** app icon svg */
-  appIcon: string
-  /** wide UI / marketing shot for the bottom card */
-  uiShot: string
-  /** object-position for the UI shot crop, e.g. 'center top' */
-  uiCrop?: string
-  /** brand palette swatches (hex) */
-  palette: string[]
-  /** section theme + background */
-  theme: 'journalytic' | 'baserate'
+
+const GAP = 'gap-3 md:gap-[26px]'
+
+function JournalyticPalette() {
+  return (
+    <div className="flex h-full flex-col p-5 md:p-[26px]">
+      {/* gradient swatch band */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/baserate/branding/palette-band-journalytic.png"
+        alt=""
+        className="h-[88px] w-full rounded-lg object-cover md:h-[31%]"
+      />
+      {/* chips */}
+      <div className="mt-5 grid grid-cols-4 gap-3 md:mt-[7%]">
+        {['#050608', '#26798F', '#E5C45C', '#F0EEEC'].map((c) => (
+          <span
+            key={c}
+            className="aspect-[78/65] rounded-lg ring-1 ring-black/5"
+            style={{ background: c }}
+            title={c}
+          />
+        ))}
+      </div>
+      {/* type scale */}
+      <div className="mt-6 flex flex-1 flex-col justify-between gap-2 pb-1 md:mt-[8%]">
+        <div className="grid grid-cols-2 items-baseline">
+          <span className="text-[19px] font-bold text-[#131722]">Header 1</span>
+          <span className="text-[16px] text-[#5c6066]">Paragraph 1</span>
+        </div>
+        <div className="grid grid-cols-2 items-baseline">
+          <span className="text-[16px] font-bold text-[#131722]">Header 2</span>
+          <span className="text-[14px] text-[#5c6066]">Paragraph 2</span>
+        </div>
+        <div className="grid grid-cols-2 items-baseline">
+          <span className="text-[14px] font-bold text-[#131722]">Header 3</span>
+          <span className="text-[12.5px] text-[#5c6066]">Paragraph 3</span>
+        </div>
+      </div>
+    </div>
+  )
 }
 
-export function BrandShowcase({
-  eyebrow, title, blurb, wordmark, appIcon, uiShot, uiCrop = 'center top', palette, theme,
-}: BrandShowcaseProps) {
-  const journalytic = theme === 'journalytic'
+function BaseratePalette() {
+  return (
+    <div className="flex h-full flex-col p-5 md:p-[26px]">
+      {/* chips */}
+      <div className="grid grid-cols-5 gap-2.5">
+        {['#070e2c', '#ae7d00', '#2f6db5', '#f1f1f4', '#3f4147'].map((c) => (
+          <span
+            key={c}
+            className="aspect-[70/58] rounded-md ring-1 ring-black/5"
+            style={{ background: c }}
+            title={c}
+          />
+        ))}
+      </div>
+      {/* serif specimen */}
+      <h4 className="mt-7 font-serif text-[26px] leading-tight text-[#16181d] md:mt-[12%]">
+        Header Text
+      </h4>
+      <p className="mt-2.5 text-[14px] leading-snug text-[#5c6066]">
+        Lorem ipsum dolor sit amet adipscing consecteteur dem elit sed euismod.
+      </p>
+    </div>
+  )
+}
 
-  // Section background: Journalytic = blue gradient; Baserate = grey-bg image.
-  const sectionStyle = journalytic
-    ? { background: 'linear-gradient(180deg, #2f6db5 0%, #2a5e9c 100%)' }
-    : { backgroundImage: 'url(/baserate/branding/grey-bg.png)', backgroundSize: 'cover', backgroundPosition: 'center' }
+export function BrandShowcase({ theme }: { theme: 'journalytic' | 'baserate' }) {
+  const j = theme === 'journalytic'
+  const wordmark = `/baserate/branding/logos/${theme}-logo.svg`
+  const glyph = `/baserate/branding/logos/${theme}-glyph.svg`
 
   return (
-    <section className="py-20 md:py-[120px]" style={sectionStyle}>
-      <div className="br-container">
-        {/* Centered heading */}
-        <div className="mb-12 text-center md:mb-16">
-          <span className="br-data mb-5 inline-block rounded-[var(--br-tag-radius)] border border-white/40 px-3 py-1.5 text-[14px] uppercase text-white">
-            {eyebrow}
-          </span>
-          <h3 className="text-[28px] font-semibold uppercase tracking-tight text-white md:text-[40px]">{title}</h3>
-          <p className="mx-auto mt-3 max-w-2xl text-white/80 md:text-lg">{blurb}</p>
+    <section
+      className={j ? 'pb-24 md:pb-[110px]' : 'py-20 md:py-[100px]'}
+      style={
+        j
+          ? undefined
+          : {
+              backgroundImage: 'url(/baserate/branding/grey-bg.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }
+      }
+    >
+      {!j && (
+        <div className="mx-auto mb-12 max-w-[760px] px-6 text-center md:mb-16">
+          <h3 className="text-[19px] font-semibold uppercase tracking-[0.05em] text-white md:text-[24px]">
+            Baserate Brand
+          </h3>
+          <p className="mt-3 text-[15px] leading-relaxed text-white/85 md:text-[17px]">
+            Our professional product, Baserate needed to communicate high value corporate software.
+          </p>
+        </div>
+      )}
+
+      <div className="mx-auto w-full max-w-[1042px] px-6">
+        {/* board: left 2×2 cluster + right palette card */}
+        <div className={`flex flex-col md:flex-row ${GAP}`}>
+          <div className={`flex flex-col ${GAP}`} style={{ flex: '569 1 0%' }}>
+            {/* row 1: wordmark on black + icon on black */}
+            <div className={`flex ${GAP}`}>
+              <div
+                className="flex aspect-[395/148] items-center justify-center rounded-xl bg-black"
+                style={{ flex: '395 1 0%' }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={wordmark} alt={`${theme} wordmark`} className="h-auto max-h-[58%] w-[70%] object-contain brightness-0 invert" />
+              </div>
+              <div
+                className="flex aspect-square items-center justify-center rounded-xl bg-black"
+                style={{ flex: '148 1 0%' }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={glyph} alt="" className={`h-[52%] w-[52%] object-contain ${j ? 'brightness-0 invert' : ''}`} />
+              </div>
+            </div>
+            {/* row 2: icon on white + wordmark on white */}
+            <div className={`flex ${GAP}`}>
+              <div
+                className="flex aspect-square items-center justify-center rounded-xl bg-white"
+                style={{ flex: '148 1 0%' }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={glyph} alt="" className={`h-[52%] w-[52%] object-contain ${j ? '' : 'brightness-0'}`} />
+              </div>
+              <div
+                className="flex aspect-[395/148] items-center justify-center rounded-xl bg-white"
+                style={{ flex: '395 1 0%' }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={wordmark} alt="" className="h-auto max-h-[58%] w-[70%] object-contain" />
+              </div>
+            </div>
+          </div>
+          {/* palette + type card (right, spans both rows) */}
+          <div className="rounded-xl bg-white" style={{ flex: '395 1 0%' }}>
+            {j ? <JournalyticPalette /> : <BaseratePalette />}
+          </div>
         </div>
 
-        {/* Brand board grid */}
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-12 md:gap-5">
-          {/* wordmark on black — wide */}
-          <div className="col-span-2 flex aspect-[16/7] items-center justify-center rounded-xl bg-black p-8 md:col-span-5">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={wordmark} alt={`${title} wordmark`} className="max-h-full max-w-[80%] object-contain brightness-0 invert" />
-          </div>
-          {/* icon on black */}
-          <div className="col-span-1 flex aspect-square items-center justify-center rounded-xl bg-black p-7 md:col-span-3">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={appIcon} alt="" className="max-h-[55%] max-w-[55%] object-contain brightness-0 invert" />
-          </div>
-          {/* palette + type — tall, spans both rows on desktop */}
-          <div className="col-span-2 row-span-2 rounded-xl bg-white p-6 md:col-span-4 md:row-span-2">
-            <div className="flex gap-2">
-              {palette.map((c) => (
-                <span key={c} className="h-12 flex-1 rounded-md ring-1 ring-black/5" style={{ background: c }} title={c} />
-              ))}
+        {/* baserate bottom row: letter card + R4 homepage */}
+        {!j && (
+          <div className={`mt-3 flex flex-col md:mt-[26px] md:flex-row ${GAP}`}>
+            <div
+              className="aspect-[312/275] overflow-hidden rounded-xl bg-white"
+              style={{ flex: '312 1 0%' }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/baserate/branding/letter-card.png"
+                alt="Baserate annual letter UI"
+                className="h-full w-full object-cover"
+                loading="lazy"
+              />
             </div>
-            <div className="mt-6 space-y-3">
-              <div className="flex items-baseline justify-between">
-                <span className="text-lg font-bold text-[var(--br-ink)]">Header 1</span>
-                <span className="text-sm text-[var(--br-muted)]">Paragraph 1</span>
-              </div>
-              <div className="flex items-baseline justify-between">
-                <span className="text-base font-bold text-[var(--br-ink)]">Header 2</span>
-                <span className="text-sm text-[var(--br-muted)]">Paragraph 2</span>
-              </div>
-              <div className="flex items-baseline justify-between">
-                <span className="text-sm font-bold text-[var(--br-ink)]">Header 3</span>
-                <span className="text-xs text-[var(--br-muted)]">Paragraph 3</span>
-              </div>
+            <div
+              className="aspect-[652/275] overflow-hidden rounded-xl bg-[#04060c]"
+              style={{ flex: '652 1 0%' }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/baserate/branding/r4-homepage.png"
+                alt="Baserate marketing homepage"
+                className="h-full w-full object-cover"
+                loading="lazy"
+              />
             </div>
           </div>
-          {/* icon on white */}
-          <div className="col-span-1 flex aspect-square items-center justify-center rounded-xl bg-white p-7 md:col-span-3">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={appIcon} alt="" className="max-h-[55%] max-w-[55%] object-contain" />
-          </div>
-          {/* wordmark on white — wide */}
-          <div className="col-span-1 flex aspect-[16/7] items-center justify-center rounded-xl bg-white p-8 md:col-span-5">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={wordmark} alt="" className="max-h-full max-w-[80%] object-contain" />
-          </div>
-          {/* UI / hero shot — full-width bottom card. Fixed height so a tall
-              source image is cropped (object-cover) rather than blowing out. */}
-          <div className="col-span-2 h-[180px] overflow-hidden rounded-xl bg-white md:col-span-12 md:h-[300px]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={uiShot} alt={`${title} marketing`} className="h-full w-full object-cover" style={{ objectPosition: uiCrop }} />
-          </div>
-        </div>
+        )}
       </div>
     </section>
   )

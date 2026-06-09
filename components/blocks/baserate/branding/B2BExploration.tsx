@@ -2,9 +2,11 @@
 
 /**
  * B2B Brand Exploration — two horizontal marquees scrolling in OPPOSITE
- * directions. NAMES row on TOP, logo concepts below. Cards float on the blue
- * field; centered heading; no border; modest corner radius; content vertically
- * centered so the names actually show. Deliberately NO edge fade / blur.
+ * directions on the continuous blue gradient (no section bg of its own).
+ * NAMES row on top, logo-concept boards below. Cards are edge-to-edge
+ * object-cover (the name pngs are tall app screenshots with the name band in
+ * the middle — covering keeps the name centered and visible). No border, no
+ * edge fade, modest radius — matched to Figma.
  */
 
 const ALT_NAMES = [
@@ -18,18 +20,24 @@ const ALT_LOGOS = ['1', '2', '3', '4', '5', '6', '7', '8', '10', '11', '12', '13
 
 /** One seamless marquee row (track duplicated, translated -50%). */
 function MarqueeRow({
-  items, dir, speed, cardClass, imgClass,
+  items, dir, speed, cardClass,
 }: {
-  items: string[]; dir: 'left' | 'right'; speed: number; cardClass: string; imgClass: string
+  items: string[]; dir: 'left' | 'right'; speed: number; cardClass: string
 }) {
   const track = [...items, ...items]
   return (
     <div className="br-noscrollbar relative w-full overflow-hidden">
-      <div className="flex w-max gap-5" style={{ animation: `br-marquee-${dir} ${speed}s linear infinite` }}>
+      <div
+        className="flex w-max gap-[18px] md:gap-[26px]"
+        style={{ animation: `br-marquee-${dir} ${speed}s linear infinite` }}
+      >
         {track.map((src, i) => (
-          <div key={i} className={`flex shrink-0 items-center justify-center ${cardClass}`}>
+          <div
+            key={i}
+            className={`shrink-0 overflow-hidden rounded-[10px] bg-white shadow-[0_22px_44px_-20px_rgba(4,16,38,0.5)] ${cardClass}`}
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={src} alt="" draggable={false} className={imgClass} loading="lazy" />
+            <img src={src} alt="" draggable={false} className="h-full w-full object-cover" style={{ objectPosition: '50% 49%' }} loading="lazy" />
           </div>
         ))}
       </div>
@@ -39,36 +47,31 @@ function MarqueeRow({
 
 export function B2BExploration() {
   return (
-    <section className="bg-[#2a5e9c] py-20 md:py-[120px]">
-      {/* Centered heading */}
-      <div className="br-container mb-12 text-center md:mb-16">
-        <span className="br-data mb-5 inline-block rounded-[var(--br-tag-radius)] border border-white/40 px-3 py-1.5 text-[14px] uppercase text-white">
-          B2B Exploration
-        </span>
-        <h3 className="text-[28px] font-semibold uppercase tracking-tight text-white md:text-[40px]">
-          Exploring the B2B Brand
+    <section className="pb-20 md:pb-24">
+      {/* Centered heading — copy per Figma */}
+      <div className="br-container mb-10 text-center md:mb-12">
+        <h3 className="text-[19px] font-semibold uppercase tracking-[0.05em] text-white md:text-[24px]">
+          B2B Brand Exploration
         </h3>
-        <p className="mx-auto mt-3 max-w-2xl text-white/80 md:text-lg">
-          A wide exploration of names and logo directions for the B2B product before landing on Baserate.
+        <p className="mx-auto mt-3 max-w-[620px] text-[15px] leading-relaxed text-white/90 md:text-[17px]">
+          Starting from 200+ names, a thorough value assessment, and countless customer branding
+          tests, one direction surfaced as a clear winner.
         </p>
       </div>
 
-      {/* NAMES on top, logos below. Opposite directions. Cards float (no border,
-          modest radius), content vertically centered. */}
-      <div className="flex flex-col gap-5">
+      {/* NAMES on top, logo boards below; opposite directions */}
+      <div className="flex flex-col gap-[18px] md:gap-[26px]">
         <MarqueeRow
           items={ALT_NAMES}
           dir="left"
           speed={52}
-          cardClass="h-[130px] w-[230px] overflow-hidden rounded-lg bg-white shadow-[0_18px_40px_-18px_rgba(0,0,0,0.45)] md:h-[160px] md:w-[290px]"
-          imgClass="max-h-full max-w-full object-contain p-5"
+          cardClass="h-[92px] w-[208px] md:h-[118px] md:w-[270px]"
         />
         <MarqueeRow
           items={ALT_LOGOS}
           dir="right"
           speed={58}
-          cardClass="h-[150px] w-[150px] overflow-hidden rounded-lg bg-white shadow-[0_18px_40px_-18px_rgba(0,0,0,0.45)] md:h-[190px] md:w-[190px]"
-          imgClass="max-h-full max-w-full object-contain p-2"
+          cardClass="h-[136px] w-[136px] md:h-[178px] md:w-[178px]"
         />
       </div>
     </section>

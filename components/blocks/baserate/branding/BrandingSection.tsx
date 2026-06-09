@@ -4,48 +4,30 @@ import { B2BExploration } from './B2BExploration'
 import { MarketingContent } from './MarketingContent'
 
 /**
- * The full Branding section of the Baserate case study, in order:
- *   1. Hero "Brand & Marketing" — devices + floating logos + orbs
- *   2. Journalytic branding (B2C) — brand board grid on the blue field
- *   3. B2B Exploration — dual opposite-scrolling carousels
- *   4. Baserate branding (B2B) — brand board grid on the grey field
- *   5. Marketing content — the MCP marketing video (sound + play/pause)
+ * The full Branding section of the Baserate case study — matched to the Figma
+ * frame 224:53188 (source of truth for layout, copy and color):
+ *   1. Hero "Brand & Marketing" — devices floating over page-sheets, 3D logo
+ *      chips, colour orbs, white→blue diagonal.
+ *   2. Journalytic brand board (B2C) — no heading of its own; the hero's
+ *      "B2C Brand Exploration" label introduces it (per Figma).
+ *   3. B2B Exploration — name/logo marquees scrolling opposite directions.
+ *   4. Baserate brand board (B2B) — on the "Grey BG" image, with the
+ *      letter-card + R4 homepage bottom row.
+ *   5. Marketing content — the MCP video on black.
+ *
+ * The hero, Journalytic board and B2B marquees all sit on ONE continuous
+ * teal→blue gradient — in Figma the gradient runs horizontally across the
+ * entire blue field (teal #18768C left → blue #2B6EB7 right).
  */
 export function BrandingSection() {
   return (
     <div className="bg-white">
-      <BrandingHero />
-
-      {/* Journalytic — the consumer (B2C) brand, on the blue gradient */}
-      <BrandShowcase
-        theme="journalytic"
-        eyebrow="Journalytic · B2C"
-        title="Journalytic Branding"
-        blurb="The consumer brand for solo investors — approachable, confident, and built around the habit of journaling every decision."
-        wordmark="/baserate/branding/logos/journalytic-logo.svg"
-        appIcon="/baserate/branding/logos/journalytic-app.svg"
-        uiShot="/baserate/branding/journalytic-site.png"
-        uiCrop="center top"
-        palette={['#2f6db5', '#0b1f3a', '#5b9bd5', '#e8eef6', '#0c1320']}
-      />
-
-      {/* B2B exploration — the wide name/logo search */}
-      <B2BExploration />
-
-      {/* Baserate — the B2B brand, on the grey background; bottom card = R4 homepage */}
-      <BrandShowcase
-        theme="baserate"
-        eyebrow="Baserate · B2B"
-        title="Baserate Branding"
-        blurb="The B2B brand for investment teams — sharper and more institutional, signalling rigor and a system of record."
-        wordmark="/baserate/branding/logos/baserate-logo.svg"
-        appIcon="/baserate/branding/logos/baserate-app.svg"
-        uiShot="/baserate/branding/r4-homepage.png"
-        uiCrop="center 30%"
-        palette={['#070e2c', '#ae7d00', '#2f6db5', '#f8f8fb', '#242627']}
-      />
-
-      {/* Marketing content — the MCP video with sound */}
+      <div style={{ background: 'linear-gradient(96deg, #18768C 0%, #2B6EB7 100%)' }}>
+        <BrandingHero />
+        <BrandShowcase theme="journalytic" />
+        <B2BExploration />
+      </div>
+      <BrandShowcase theme="baserate" />
       <MarketingContent />
     </div>
   )
