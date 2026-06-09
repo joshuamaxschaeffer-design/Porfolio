@@ -36,7 +36,9 @@ const VP_Y = 20
 // Front card anchor in stage %. Sits high so the lower band of the stage stays
 // open for the receding floor line/ticks to read clearly beneath the cards.
 const FRONT_X = 33
-const FRONT_Y = 40
+// Lowered (was 40) because the cards are now 70% wide (bigger/taller); a higher
+// anchor pushed the front card's top edge up over the SCALABILITY header.
+const FRONT_Y = 56
 // The floor baseline (near-camera) the rail line + ticks rest on — well below
 // the card stack so the timeline is never occluded by the big front card.
 // (Pushed lower so the receding ground line + dots read clearly.)
@@ -89,7 +91,7 @@ export function ScalabilityTimeline() {
       {/* ----- Desktop / tablet: the perspective stage ----- */}
       {/* taller + top padding so the front card never collides with the
           SCALABILITY header above it */}
-      <div ref={stageRef} className="relative mx-auto block h-[440px] w-full max-w-[1240px] pt-28 sm:h-[520px] sm:pt-24 lg:h-[640px] lg:pt-16">
+      <div ref={stageRef} className="relative mx-auto block h-[440px] w-full max-w-[1240px] pt-16 sm:h-[520px] sm:pt-16 lg:h-[680px] lg:pt-16">
         {/* (floor rail removed — just the receding screens) */}
 
         {/* cards far → near so nearer paint on top */}
