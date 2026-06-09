@@ -136,14 +136,14 @@ export function HandoffSection({ title = 'HANDOFF', body = 'Dev handoff meetings
               <div
                 key={el.id}
                 data-handoff-card
-                className="relative h-[190px] w-[84%] shrink-0 snap-center overflow-hidden rounded-xl p-2"
+                className={`relative h-[190px] w-[84%] shrink-0 snap-center overflow-hidden rounded-xl p-2 ${isComments ? '' : 'flex flex-col justify-center'}`}
                 style={{
                   background: 'rgba(12,14,22,0.92)',
                   border: '1px solid var(--br-gold)',
                   boxShadow: '0 0 0 1px var(--br-gold), 0 20px 50px -18px rgba(0,0,0,0.8)',
                 }}
               >
-                {el.render()}
+                <div className={isComments ? '' : 'w-full'}>{el.render()}</div>
                 {/* Comments overflows the fixed height — fade it to black at the
                     bottom instead of a hard clip. */}
                 {isComments && (
