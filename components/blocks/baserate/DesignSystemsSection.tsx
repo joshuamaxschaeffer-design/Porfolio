@@ -36,20 +36,16 @@ export function DesignSystemsSection(props: DesignSystemsProps) {
           <PanelHeader title={components.title} body={props.componentsBody ?? components.body} />
           {/* Static, pixel-perfect — no transform/animation (those rasterize and
               soften the image). Plain HD artifact on a white card. */}
-          <div className="mt-10 overflow-hidden rounded-2xl bg-white shadow-[0_40px_90px_-40px_rgba(0,0,0,0.8)] md:mt-12">
-            {/* Mobile: an inner zoom layer 2× the card width crops the board off
-                the right so the components read at a legible size; desktop fits
-                the whole board. The DIV (not the img) carries the width so the
-                global `img{max-width:100%}` reset can't clamp it. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            {/* Mobile: scale the image 2× from the left so it crops off the right
-                (transform isn't subject to width/containing-block resolution, so
-                this reliably zooms where width:200% did not). Desktop: no scale. */}
-            <img
-              src={components.artifact}
-              alt="Baserate component library"
-              className="block w-full origin-left scale-[2] md:scale-100"
-            />
+          {/* Mobile: the whole CARD is ~2× the viewport width (so it's 2× as big
+              AND its height follows naturally) and bleeds off the right edge; the
+              clip wrapper crops the overflow with no page scroll. Desktop: the
+              card fits the column. `vw` resolves reliably against the viewport
+              (unlike `%`, which wouldn't here). */}
+          <div className="mt-10 md:mt-12" style={{ overflowX: 'clip' }}>
+            <div className="w-[200vw] overflow-hidden rounded-2xl bg-white shadow-[0_40px_90px_-40px_rgba(0,0,0,0.8)] md:w-full">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={components.artifact} alt="Baserate component library" className="block w-full" />
+            </div>
           </div>
         </div>
 

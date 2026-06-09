@@ -151,10 +151,11 @@ function ProductStage({
           </div>
         </div>
 
-        {/* Journalytic — the phones sit BEHIND the card (card overlaps their
-            lower portion), as on desktop. */}
+        {/* Journalytic — the phones sit BEHIND the card; the two phones overlap
+            with the SECOND one behind the first (as on desktop), not side by
+            side. */}
         <div className="relative">
-          <div className="flex justify-center gap-4 pb-0">
+          <div className="relative mx-auto flex h-[230px] w-[60%] max-w-[260px] justify-center">
             {journalytic.phones.map((src, i) => (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -162,7 +163,12 @@ function ProductStage({
                 src={src}
                 alt=""
                 aria-hidden
-                className={`w-[34%] max-w-[140px] [filter:drop-shadow(0_14px_22px_rgba(0,0,0,0.16))] ${i === 0 ? 'mt-5' : ''}`}
+                className="absolute top-0 w-[58%] [filter:drop-shadow(0_14px_22px_rgba(0,0,0,0.16))]"
+                style={
+                  i === 0
+                    ? { left: '6%', zIndex: 2, transform: 'rotate(-4deg)' }
+                    : { right: '4%', top: '14px', zIndex: 1, transform: 'rotate(7deg)' }
+                }
               />
             ))}
           </div>

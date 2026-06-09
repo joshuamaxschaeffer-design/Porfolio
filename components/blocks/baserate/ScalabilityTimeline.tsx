@@ -150,7 +150,7 @@ function FrameCard({ frame, index, gap, total }: { frame: Frame; index: number; 
       style={{
         left,
         top,
-        width: '54%',
+        width: '70%', // scaled up ~30% from 54% per request
         x: '-50%',
         y: '-50%',
         scale,

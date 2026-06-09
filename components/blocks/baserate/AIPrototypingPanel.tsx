@@ -79,16 +79,19 @@ export function AIPrototypingPanel({
         </div>
       </div>
 
-      {/* ----- Mobile: mirror the desktop composition — the prototype video sits
-          BEHIND (oversized, bleeding off the right edge), the recreated Claude UI
-          overlaps in front, scaled ~30% smaller and pushed to the left. The
-          stage clips so the video crops cleanly at the right. ----- */}
-      <div className="relative mt-8 aspect-[1/1.15] w-full overflow-hidden lg:hidden">
-        {/* prototype video behind — 2× scale, anchored left so it crops off the
-            right edge of the stage */}
+      {/* ----- Mobile: the prototype video sits BEHIND and extends PAST the right
+          edge of the screen (you see its left/middle; the right runs off-screen,
+          not chopped inside a box — no black bars). The Claude UI overlaps in
+          front, lower-left, as a single CHAT-ONLY column (not chopped) so its
+          text stays legible. `overflowX:clip` lets the video bleed off-screen
+          without adding a scrollbar. ----- */}
+      <div className="relative mt-8 h-[440px] w-full lg:hidden" style={{ overflowX: 'clip' }}>
+        {/* prototype video — wider than the viewport, anchored at the left so its
+            right portion runs off the screen. 16:9 box so object-cover shows the
+            full frame with no letterbox bars. */}
         <div
           className="absolute overflow-hidden rounded-xl border border-white/10 bg-[#0d0f15] shadow-[0_24px_60px_-30px_rgba(0,0,0,0.8)]"
-          style={{ left: '18%', top: '4%', width: '150%', aspectRatio: '16 / 9' }}
+          style={{ left: '-4%', top: '0%', width: '168%', aspectRatio: '16 / 9' }}
         >
           {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
           <video
@@ -106,13 +109,13 @@ export function AIPrototypingPanel({
           />
         </div>
 
-        {/* Claude UI in front — to the left, ~30% smaller than it would be at full
-            width (width 70% of the stage), overlapping the lower-left like desktop */}
+        {/* Claude UI in front — chat-only column (legible), lower-left, fully on
+            screen (not chopped). */}
         <div
-          className="absolute overflow-hidden rounded-xl border border-black/10 bg-white shadow-[0_30px_70px_-30px_rgba(0,0,0,0.9)]"
-          style={{ left: '-3%', top: '34%', width: '88%', aspectRatio: '885 / 560' }}
+          className="absolute bottom-0 left-0 overflow-hidden rounded-xl border border-black/10 bg-white shadow-[0_30px_70px_-30px_rgba(0,0,0,0.9)]"
+          style={{ width: '80%', height: '300px' }}
         >
-          <ScaledClaudeUI />
+          <ClaudeUI mobile />
         </div>
       </div>
     </div>

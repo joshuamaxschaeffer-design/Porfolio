@@ -84,12 +84,14 @@ export function EdgeFadeBlur({
       {/* scrolling content, edge-faded */}
       <div style={{ WebkitMaskImage: fadeMask, maskImage: fadeMask }}>{children}</div>
 
-      {/* progressive blur bands (above content, nothing interactive) */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 z-10">
+      {/* progressive blur bands — DESKTOP ONLY (mobile keeps just the fade) */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 z-10 hidden md:block">
         {blurLayer('left', width)}
         {blurLayer('right', width)}
-        {/* a faint wash of the bg color over the very edge so the dissolve reads
-            cleanly even where content is sparse */}
+      </div>
+
+      {/* bg-color wash over the edges (all sizes) so the dissolve reads cleanly */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 z-10">
         <div
           style={{
             position: 'absolute',

@@ -108,7 +108,7 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
         {/* Exploration tag — restored above the text column (it lives here, not
             above the whole block, so it sits beside the image stack). */}
         {tag && (
-          <span className="br-data mb-5 inline-block rounded-md border border-[var(--br-gold)] px-2.5 py-1 text-xs font-medium text-[var(--br-gold)]">
+          <span className="br-data mb-5 inline-block rounded-[var(--br-tag-radius)] border border-[var(--br-gold)] px-3 py-1.5 text-[14px] uppercase text-[var(--br-gold)]">
             {tag}
           </span>
         )}

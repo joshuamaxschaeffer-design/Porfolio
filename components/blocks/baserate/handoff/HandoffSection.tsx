@@ -58,20 +58,32 @@ export function HandoffSection({ title = 'HANDOFF', body = 'Dev handoff meetings
   const [hovered, setHovered] = useState<HandoffElementId | null>(null)
   const active = hovered ?? 'feeling'
 
-  // Mobile: a single index cycles the 3 components; the active one floats in
-  // front of the bottom of the code box, and a horizontal swipe swaps it.
+  // Mobile: a horizontal scroll-snap track of the 3 components sits over the code
+  // box; the centered card's index drives which code the box shows.
   const [mIdx, setMIdx] = useState(0)
-  const mSwipe = useRef({ x: 0, on: false })
-  const onMTouchStart = (e: React.TouchEvent) => {
-    mSwipe.current = { x: e.touches[0].clientX, on: true }
+  const mTrackRef = useRef<HTMLDivElement>(null)
+  const onMScroll = () => {
+    const el = mTrackRef.current
+    if (!el) return
+    const cards = Array.from(el.querySelectorAll<HTMLElement>('[data-handoff-card]'))
+    const center = el.scrollLeft + el.clientWidth / 2
+    let nearest = 0
+    let best = Infinity
+    cards.forEach((c, i) => {
+      const cc = c.offsetLeft + c.offsetWidth / 2
+      const d = Math.abs(cc - center)
+      if (d < best) {
+        best = d
+        nearest = i
+      }
+    })
+    if (nearest !== mIdx) setMIdx(nearest)
   }
-  const onMTouchEnd = (e: React.TouchEvent) => {
-    if (!mSwipe.current.on) return
-    mSwipe.current.on = false
-    const dx = e.changedTouches[0].clientX - mSwipe.current.x
-    if (Math.abs(dx) < 35) return
-    const dir = dx < 0 ? 1 : -1
-    setMIdx((i) => (i + dir + ELEMENTS.length) % ELEMENTS.length)
+  const scrollMTo = (i: number) => {
+    const el = mTrackRef.current
+    if (!el) return
+    const card = el.querySelectorAll<HTMLElement>('[data-handoff-card]')[i]
+    if (card) el.scrollTo({ left: card.offsetLeft - 12, behavior: 'smooth' })
   }
   const mEl = ELEMENTS[mIdx]
 
@@ -102,42 +114,46 @@ export function HandoffSection({ title = 'HANDOFF', body = 'Dev handoff meetings
         </div>
       </div>
 
-      {/* ── Mobile: the code box is the back layer; the active component floats
-          in FRONT of its bottom edge (z-axis), sitting low in the box. Swiping
-          horizontally cycles the 3 components and swaps the code. ── */}
-      <div
-        className="relative mt-8 lg:hidden"
-        onTouchStart={onMTouchStart}
-        onTouchEnd={onMTouchEnd}
-        style={{ touchAction: 'pan-y' }}
-      >
-        {/* code box (back), taller so the floating component has room below it */}
+      {/* ── Mobile: the code box is the back layer; in FRONT of it (top-aligned)
+          sits a horizontal scroll-snap track of the 3 components — the active
+          one fills the width and the NEXT peeks in on the right so you know to
+          swipe. Snapping to a new component swaps the code behind it. ── */}
+      <div className="relative mt-8 lg:hidden">
+        {/* code box (back) — swaps to whatever component is centered */}
         <CodeBox snippet={HANDOFF_SNIPPETS[mEl.id]} compact />
 
-        {/* active component, overlapping the lower portion of the code box */}
-        <div className="absolute inset-x-2 bottom-3 z-10">
-          <div
-            key={mEl.id}
-            className="overflow-hidden rounded-xl p-2"
-            style={{
-              background: 'rgba(12,14,22,0.92)',
-              border: '1px solid var(--br-gold)',
-              boxShadow: '0 0 0 1px var(--br-gold), 0 20px 50px -18px rgba(0,0,0,0.8)',
-              backdropFilter: 'blur(2px)',
-              animation: 'brHandoffSwap 280ms ease',
-            }}
-          >
-            {mEl.render()}
-          </div>
+        {/* swipeable component track, overlaid on the TOP of the code box,
+            top-aligned (where the scale UI sat). Cards are ~84vw with the next
+            peeking. */}
+        <div
+          ref={mTrackRef}
+          onScroll={onMScroll}
+          className="br-noscrollbar absolute inset-x-0 top-3 z-10 flex snap-x snap-mandatory gap-3 overflow-x-auto px-3"
+          style={{ touchAction: 'pan-x' }}
+        >
+          {ELEMENTS.map((el) => (
+            <div
+              key={el.id}
+              data-handoff-card
+              className="w-[84%] shrink-0 snap-center self-start overflow-hidden rounded-xl p-2"
+              style={{
+                background: 'rgba(12,14,22,0.92)',
+                border: '1px solid var(--br-gold)',
+                boxShadow: '0 0 0 1px var(--br-gold), 0 20px 50px -18px rgba(0,0,0,0.8)',
+              }}
+            >
+              {el.render()}
+            </div>
+          ))}
         </div>
 
-        {/* dots + swipe hint */}
+        {/* dots + swipe hint, below the code box */}
         <div className="mt-4 flex items-center justify-center gap-2">
           {ELEMENTS.map((el, i) => (
             <button
               key={el.id}
               aria-label={el.label}
-              onClick={() => setMIdx(i)}
+              onClick={() => scrollMTo(i)}
               className="h-1.5 rounded-full transition-all"
               style={{
                 width: i === mIdx ? 18 : 6,
@@ -148,8 +164,6 @@ export function HandoffSection({ title = 'HANDOFF', body = 'Dev handoff meetings
         </div>
         <p className="mt-2 text-center text-xs text-white/35">Swipe to switch component</p>
       </div>
-
-      <style>{`@keyframes brHandoffSwap { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }`}</style>
     </div>
   )
 }

@@ -30,10 +30,10 @@ function FeatureColumn({ section }: { section: FeatureSection }) {
         {section.features.map((f) => (
           <li
             key={f.label}
-            className="br-data inline-flex items-center gap-2.5 rounded-[var(--br-tag-radius)] border border-[var(--br-stroke)] px-4 py-2 text-[14px] uppercase text-[var(--br-muted)]"
+            className="br-data inline-flex items-center gap-1.5 rounded-[var(--br-tag-radius)] border border-[var(--br-stroke)] px-2.5 py-1.5 text-[11px] uppercase text-[var(--br-muted)] md:gap-2.5 md:px-4 md:py-2 md:text-[14px]"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`/baserate/icons/${f.icon}.svg`} alt="" aria-hidden className="h-4 w-4 shrink-0" />
+            <img src={`/baserate/icons/${f.icon}.svg`} alt="" aria-hidden className="h-3 w-3 shrink-0 md:h-4 md:w-4" />
             {f.label}
           </li>
         ))}
