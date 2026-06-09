@@ -81,13 +81,13 @@ function PillRows({ features }: { features: Feature[] }) {
 
 function FeatureColumn({ section }: { section: FeatureSection }) {
   return (
-    <div>
+    <div className="min-w-0">
       {/* number badge (26px circle, Recursive ExtraBold 16) + title (24px Lexend SemiBold uppercase) */}
       <div className="flex items-center gap-2">
         <span className="br-data flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full bg-[var(--br-ink)] text-[16px] font-extrabold leading-none text-white">
           {section.number}
         </span>
-        <h3 className="text-[24px] font-semibold uppercase leading-[26px] text-[var(--br-ink)]">{section.title}</h3>
+        <h3 className="min-w-0 text-[24px] font-semibold uppercase leading-[26px] text-[var(--br-ink)]">{section.title}</h3>
       </div>
       <p className="mt-2 text-[16px] leading-snug text-[var(--br-muted)]">{section.body}</p>
       {/* pills: Recursive 14px UPPERCASE, border #d6d6d6, px16 py8, gap10 icon↔text */}
