@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform, type MotionValue } from 'motion/react'
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { designSystems } from './data'
 
 type Frame = (typeof designSystems.scalability.frames)[number]
@@ -45,12 +45,13 @@ const FRONT_Y = 48
 const FLOOR_Y = 99
 
 // Project a depth z (>=0) → {scale, screenX%, screenY%} via the pinhole law.
-function project(z: number) {
+// frontX overrides the front-card X anchor (mobile centers the front card).
+function project(z: number, frontX = FRONT_X) {
   const s = F / (F + z) // 1 at z=0, →0 far away
   const k = 1 - s
   return {
     s,
-    x: FRONT_X + (VP_X - FRONT_X) * k,
+    x: frontX + (VP_X - frontX) * k,
     y: FRONT_Y + (VP_Y - FRONT_Y) * k,
   }
 }
@@ -73,6 +74,19 @@ export function ScalabilityTimeline() {
   const reduce = useReducedMotion()
   const stageRef = useRef<HTMLDivElement>(null)
 
+  // Mobile: center the front card (it's the priority; the receding ones run off
+  // the right edge) and tighten the stage. Desktop keeps the left-anchored,
+  // toward-the-top-right recede.
+  const [mobile, setMobile] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)')
+    const apply = () => setMobile(mq.matches)
+    apply()
+    mq.addEventListener('change', apply)
+    return () => mq.removeEventListener('change', apply)
+  }, [])
+  const frontX = mobile ? 50 : FRONT_X
+
   const { scrollYProgress } = useScroll({
     target: stageRef,
     offset: ['start end', 'center center'],
@@ -88,15 +102,14 @@ export function ScalabilityTimeline() {
 
   return (
     <>
-      {/* ----- Desktop / tablet: the perspective stage ----- */}
-      {/* taller + top padding so the front card never collides with the
-          SCALABILITY header above it */}
-      <div ref={stageRef} className="relative mx-auto block h-[460px] w-full max-w-[1240px] pt-4 sm:h-[540px] lg:h-[680px]">
+      {/* The perspective stage. Mobile: short + centered front card. Desktop:
+          taller, front card never collides with the SCALABILITY header. */}
+      <div ref={stageRef} className="relative mx-auto block h-[340px] w-full max-w-[1240px] pt-4 sm:h-[460px] lg:h-[680px]">
         {/* (floor rail removed — just the receding screens) */}
 
         {/* cards far → near so nearer paint on top */}
         {frames.map((frame, i) => (
-          <FrameCard key={frame.image} frame={frame} index={i} gap={gapMV} total={n} />
+          <FrameCard key={frame.image} frame={frame} index={i} gap={gapMV} total={n} frontX={frontX} />
         ))}
 
         {/* vignette: far half dissolves into the panel black */}
@@ -121,10 +134,10 @@ export function ScalabilityTimeline() {
  * on scroll the card recedes along the true perspective path. Two stacked blur
  * layers + a darkening overlay give a smooth, fast depth falloff.
  */
-function FrameCard({ frame, index, gap, total }: { frame: Frame; index: number; gap: MotionValue<number>; total: number }) {
+function FrameCard({ frame, index, gap, total, frontX }: { frame: Frame; index: number; gap: MotionValue<number>; total: number; frontX: number }) {
   // depth ratio d = z / GAP_MAX → drives the cues (front 2 stay crisp).
   const d = useTransform(gap, (g) => (index * g) / GAP_MAX)
-  const proj = useTransform(gap, (g) => project(index * g))
+  const proj = useTransform(gap, (g) => project(index * g, frontX))
   const left = useTransform(proj, (pr) => `${pr.x}%`)
   const top = useTransform(proj, (pr) => `${pr.y}%`)
   const scale = useTransform(proj, (pr) => pr.s)

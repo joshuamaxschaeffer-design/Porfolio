@@ -131,14 +131,14 @@ function ProductStage({
           <p className="mt-2 text-[15px] leading-relaxed text-[var(--br-muted)]">{productsIntro}</p>
         </div>
 
-        {/* Baserate — the browser screenshot sits BEHIND the card (the card's top
-            overlaps its bottom edge), echoing the desktop composition. */}
+        {/* Baserate — the browser screenshot sits BEHIND the card (the card is in
+            FRONT and overlaps the screenshot's bottom edge), like desktop. */}
         <div className="relative">
-          <div className="mx-auto w-[88%] overflow-hidden rounded-xl border border-[var(--br-line)] bg-white shadow-[0_18px_40px_-22px_rgba(0,0,0,0.3)]">
+          <div className="relative z-0 mx-auto w-[88%] overflow-hidden rounded-xl border border-[var(--br-line)] bg-white shadow-[0_18px_40px_-22px_rgba(0,0,0,0.3)]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={baserate.screenshot} alt="Baserate product" className="w-full" />
           </div>
-          <div className="relative -mt-10 flex flex-col items-center gap-3 rounded-[8px] border-2 border-[var(--br-gold)] bg-white px-6 pb-8 pt-12 text-center">
+          <div className="relative z-10 -mt-10 flex flex-col items-center gap-3 rounded-[8px] border-2 border-[var(--br-gold)] bg-white px-6 pb-8 pt-12 text-center">
             {'badge' in baserate && baserate.badge && (
               <span className="br-body absolute left-2 top-2 rounded-[var(--br-tag-radius)] bg-[var(--br-gold)] px-3 py-1.5 text-sm text-white">
                 {baserate.badge}
@@ -155,7 +155,7 @@ function ProductStage({
             with the SECOND one behind the first (as on desktop), not side by
             side. */}
         <div className="relative">
-          <div className="relative mx-auto flex h-[230px] w-[60%] max-w-[260px] justify-center">
+          <div className="relative z-0 mx-auto flex h-[210px] w-[60%] max-w-[260px] justify-center">
             {journalytic.phones.map((src, i) => (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -172,7 +172,7 @@ function ProductStage({
               />
             ))}
           </div>
-          <div className="relative -mt-16 flex flex-col items-center gap-3 rounded-[8px] border border-[var(--br-stroke)] bg-white px-6 pb-8 pt-12 text-center">
+          <div className="relative z-10 -mt-16 flex flex-col items-center gap-3 rounded-[8px] border border-[var(--br-stroke)] bg-white px-6 pb-8 pt-12 text-center">
             <JournalyticBadge className="absolute left-1/2 top-0 h-14 w-14 -translate-x-1/2 -translate-y-1/2" />
             <JournalyticWordmark className="h-7 w-auto" />
             <p className="text-base text-[var(--br-ink)]">{journalytic.tagline}</p>

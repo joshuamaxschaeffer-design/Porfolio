@@ -114,28 +114,27 @@ export function HandoffSection({ title = 'HANDOFF', body = 'Dev handoff meetings
         </div>
       </div>
 
-      {/* ── Mobile: the code box is the back layer; in FRONT of it (top-aligned)
-          sits a horizontal scroll-snap track of the 3 components — the active
-          one fills the width and the NEXT peeks in on the right so you know to
-          swipe. Snapping to a new component swaps the code behind it. ── */}
+      {/* ── Mobile: the code box is the back layer; in FRONT of it (anchored to
+          the BOTTOM of the code card) sits a horizontal scroll-snap track of the
+          3 components — the active one fills the width and the NEXT peeks in on
+          the right. Snapping to a new component swaps the code behind it. ── */}
       <div className="relative mt-8 lg:hidden">
         {/* code box (back) — swaps to whatever component is centered */}
         <CodeBox snippet={HANDOFF_SNIPPETS[mEl.id]} compact />
 
-        {/* swipeable component track, overlaid on the TOP of the code box,
-            top-aligned (where the scale UI sat). Cards are ~84vw with the next
-            peeking. */}
+        {/* swipeable component track, overlaid on the BOTTOM of the code box.
+            Cards are ~84vw with the next peeking. */}
         <div
           ref={mTrackRef}
           onScroll={onMScroll}
-          className="br-noscrollbar absolute inset-x-0 top-3 z-10 flex snap-x snap-mandatory gap-3 overflow-x-auto px-3"
+          className="br-noscrollbar absolute inset-x-0 bottom-3 z-10 flex snap-x snap-mandatory items-end gap-3 overflow-x-auto px-3"
           style={{ touchAction: 'pan-x' }}
         >
           {ELEMENTS.map((el) => (
             <div
               key={el.id}
               data-handoff-card
-              className="w-[84%] shrink-0 snap-center self-start overflow-hidden rounded-xl p-2"
+              className="w-[84%] shrink-0 snap-center self-end overflow-hidden rounded-xl p-2"
               style={{
                 background: 'rgba(12,14,22,0.92)',
                 border: '1px solid var(--br-gold)',
@@ -162,7 +161,6 @@ export function HandoffSection({ title = 'HANDOFF', body = 'Dev handoff meetings
             />
           ))}
         </div>
-        <p className="mt-2 text-center text-xs text-white/35">Swipe to switch component</p>
       </div>
     </div>
   )

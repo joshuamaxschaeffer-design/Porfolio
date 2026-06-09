@@ -26,7 +26,7 @@ function FeatureColumn({ section }: { section: FeatureSection }) {
       </div>
       <p className="mt-2 text-[16px] leading-snug text-[var(--br-muted)]">{section.body}</p>
       {/* pills: Recursive 14px UPPERCASE, border #d6d6d6, px16 py8, gap10 icon↔text */}
-      <ul className="mt-4 flex flex-wrap gap-x-3 gap-y-4">
+      <ul className="mt-4 flex flex-wrap gap-x-1.5 gap-y-1.5 md:gap-x-3 md:gap-y-4">
         {section.features.map((f) => (
           <li
             key={f.label}

@@ -86,12 +86,14 @@ export function AIPrototypingPanel({
           text stays legible. `overflowX:clip` lets the video bleed off-screen
           without adding a scrollbar. ----- */}
       <div className="relative mt-8 h-[440px] w-full lg:hidden" style={{ overflowX: 'clip' }}>
-        {/* prototype video — wider than the viewport, anchored at the left so its
-            right portion runs off the screen. 16:9 box so object-cover shows the
-            full frame with no letterbox bars. */}
+        {/* prototype video — left edge sits at the stage's left edge (the stage
+            is gutter-to-gutter, so that's 24px from the screen edge); the box is
+            much wider than the viewport so its right portion runs off-screen
+            (clipped by overflowX:clip). 16:9 box + object-cover = full frame, no
+            letterbox bars, never looks cropped. */}
         <div
-          className="absolute overflow-hidden rounded-xl border border-white/10 bg-[#0d0f15] shadow-[0_24px_60px_-30px_rgba(0,0,0,0.8)]"
-          style={{ left: '-4%', top: '0%', width: '168%', aspectRatio: '16 / 9' }}
+          className="absolute left-0 top-0 overflow-hidden rounded-l-xl border-y border-l border-white/10 bg-[#0d0f15] shadow-[0_24px_60px_-30px_rgba(0,0,0,0.8)]"
+          style={{ width: '175%', aspectRatio: '16 / 9' }}
         >
           {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
           <video

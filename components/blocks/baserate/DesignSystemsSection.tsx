@@ -36,13 +36,13 @@ export function DesignSystemsSection(props: DesignSystemsProps) {
           <PanelHeader title={components.title} body={props.componentsBody ?? components.body} />
           {/* Static, pixel-perfect — no transform/animation (those rasterize and
               soften the image). Plain HD artifact on a white card. */}
-          {/* Mobile: the whole CARD is ~2× the viewport width (so it's 2× as big
-              AND its height follows naturally) and bleeds off the right edge; the
-              clip wrapper crops the overflow with no page scroll. Desktop: the
-              card fits the column. `vw` resolves reliably against the viewport
-              (unlike `%`, which wouldn't here). */}
-          <div className="mt-10 md:mt-12" style={{ overflowX: 'clip' }}>
-            <div className="w-[200vw] overflow-hidden rounded-2xl bg-white shadow-[0_40px_90px_-40px_rgba(0,0,0,0.8)] md:w-full">
+          {/* Mobile: the CARD is ~2× the viewport width and bleeds OFF the right
+              SCREEN edge (the -mr-6 cancels the container's right gutter so the
+              image reaches the very edge — no dark gutter "bar"). The clip wrapper
+              crops the off-screen part with no page scroll. Desktop: card fits the
+              column. `vw` resolves reliably against the viewport (unlike `%`). */}
+          <div className="-mr-6 mt-10 md:mr-0 md:mt-12" style={{ overflowX: 'clip' }}>
+            <div className="w-[200vw] overflow-hidden rounded-l-2xl bg-white shadow-[0_40px_90px_-40px_rgba(0,0,0,0.8)] md:w-full md:rounded-2xl">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={components.artifact} alt="Baserate component library" className="block w-full" />
             </div>
@@ -58,7 +58,7 @@ export function DesignSystemsSection(props: DesignSystemsProps) {
       {/* The 3D timeline bleeds full-width (outside the editorial column) so the
           frames have room to recede toward the top-right edge of the panel.
           Generous top margin so the big front card never reaches the header. */}
-      <div className="mt-28 md:mt-32">
+      <div className="mt-6 md:mt-32">
         <ScalabilityTimeline />
       </div>
 
