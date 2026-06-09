@@ -36,9 +36,9 @@ const VP_Y = 20
 // Front card anchor in stage %. Sits high so the lower band of the stage stays
 // open for the receding floor line/ticks to read clearly beneath the cards.
 const FRONT_X = 33
-// Lowered (was 40) because the cards are now 70% wide (bigger/taller); a higher
-// anchor pushed the front card's top edge up over the SCALABILITY header.
-const FRONT_Y = 56
+// Slightly lower than the original 40 to offset the taller 70%-wide cards; the
+// header also gets generous top margin so the card can't reach it.
+const FRONT_Y = 48
 // The floor baseline (near-camera) the rail line + ticks rest on — well below
 // the card stack so the timeline is never occluded by the big front card.
 // (Pushed lower so the receding ground line + dots read clearly.)
