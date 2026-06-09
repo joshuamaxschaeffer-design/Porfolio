@@ -4,6 +4,7 @@ import { ArchitectureSection } from './ArchitectureSection'
 import { ProductSystemSection } from './ProductSystemSection'
 import { FeatureEcosystemSection } from './FeatureEcosystemSection'
 import { DesignSystemsSection } from './DesignSystemsSection'
+import { BrandingSection } from './branding/BrandingSection'
 
 export interface BaserateCaseStudyProps {
   /** Overview overrides */
@@ -44,6 +45,8 @@ export function BaserateCaseStudy(props: BaserateCaseStudyProps = {}) {
       </div>
       {/* Dark closing coda — bleeds edge to edge, so no article bottom padding. */}
       <DesignSystemsSection />
+      {/* Branding & Marketing — devices, brand showcases, B2B exploration, MCP video. */}
+      <BrandingSection />
     </article>
   )
 }

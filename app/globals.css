@@ -214,6 +214,22 @@ img {
   to { opacity: 1; transform: none; }
 }
 
+/* Branding · B2B Exploration marquees (opposite directions, seamless via -50%). */
+@keyframes br-marquee-left {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes br-marquee-right {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+/* Branding · BrandShowcase site preview slow auto-scroll. */
+@keyframes br-site-scroll {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-72%); }
+  100% { transform: translateY(0); }
+}
+
 /* EdgeFadeBlur: the fade mask reveals the section bg over the --edgefade band on
  * each side. --edgefade = max(0,(100vw-1443px)/2), so below 1443px the band is 0
  * and this mask becomes fully opaque (no fade) — the effect self-disables under
