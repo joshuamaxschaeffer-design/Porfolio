@@ -61,7 +61,7 @@ export function FeatureEcosystemSection(props: FeatureEcosystemProps) {
                 native scroll-snap on mobile). EdgeFadeBlur dissolves the left &
                 right edges into the white page bg with a progressive blur. */}
             {carousel && (
-              <EdgeFadeBlur bg="#ffffff">
+              <EdgeFadeBlur bg="var(--br-bg-2)">
                 <AutoScrollCarousel row={carousel} startOffset={carousel.offset ?? 0} />
               </EdgeFadeBlur>
             )}
