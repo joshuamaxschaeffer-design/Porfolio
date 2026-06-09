@@ -214,11 +214,12 @@ img {
   to { opacity: 1; transform: none; }
 }
 
-/* EdgeFadeBlur: the edge fade mask only applies on desktop (>=1024px). On mobile
- * and tablet the carousels show plain, crisp edges — no fade to grey, no blur. */
-@media (min-width: 1024px) {
-  .br-edgefade-mask {
-    -webkit-mask-image: linear-gradient(to right, transparent 0, black var(--edgefade), black calc(100% - var(--edgefade)), transparent 100%);
-    mask-image: linear-gradient(to right, transparent 0, black var(--edgefade), black calc(100% - var(--edgefade)), transparent 100%);
-  }
+/* EdgeFadeBlur: the fade mask reveals the section bg over the --edgefade band on
+ * each side. --edgefade = max(0,(100vw-1443px)/2), so below 1443px the band is 0
+ * and this mask becomes fully opaque (no fade) — the effect self-disables under
+ * the content width with no media query. The blur layers + bg wash (set inline in
+ * the component, also --edgefade wide) vanish at the same threshold. */
+.br-edgefade-mask {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, black var(--edgefade), black calc(100% - var(--edgefade)), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, black var(--edgefade), black calc(100% - var(--edgefade)), transparent 100%);
 }

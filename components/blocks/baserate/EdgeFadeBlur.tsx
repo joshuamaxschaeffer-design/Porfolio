@@ -1,39 +1,48 @@
 'use client'
 
 /**
- * EdgeFadeBlur — wraps a full-bleed horizontal carousel and softens its left &
- * right edges so the content dissolves into the section background instead of
- * hard-cutting at the viewport edge.
+ * EdgeFadeBlur — wraps a full-bleed horizontal carousel and softens ONLY the
+ * content that overflows past the centered editorial column, dissolving it into
+ * the section background instead of hard-cutting at the viewport edge.
  *
- * Two effects, both confined to a `width`-px band on each side:
+ * BAND GEOMETRY (the important bit):
+ *  The fade/blur band on each side is exactly the gap between the viewport edge
+ *  and the centered CONTENT_WIDTH column:  max(0, (100vw - CONTENT_WIDTH)/2).
+ *  So the blur begins precisely at the column edge and covers only what sticks
+ *  out beyond it. When the viewport is <= CONTENT_WIDTH the band computes to 0,
+ *  which collapses the mask, the blur layers, and the bg wash to zero width —
+ *  i.e. the whole effect disappears below that minimum width, with no extra
+ *  media query needed. The value is published once as the CSS var --edgefade
+ *  and every layer reads it, so SSR and client agree (no JS viewport reads).
+ *
+ * Two effects, both confined to the --edgefade band on each side:
  *  1. FADE — a horizontal mask fades the scrolling content to transparent over
- *     the band, revealing the section background behind it. (Cheap, robust.)
- *  2. PROGRESSIVE BLUR — stacked `backdrop-filter` layers, each with a larger
- *     blur radius and a mask that only reveals it nearer the edge, so the blur
- *     ramps from 0 (inner) to max (outer). This is the "frosted gradient"
- *     technique; kept to a few layers + sub-20px radii for mobile GPU budget.
+ *     the band, revealing the section background behind it.
+ *  2. PROGRESSIVE BLUR — stacked backdrop-filter layers, each a larger blur
+ *     radius masked to ramp from 0 (inner/column edge) to max (viewport edge).
  *
- * Usage: <EdgeFadeBlur bg="var(--br-bg-2)">{carousel}</EdgeFadeBlur>
- * The child is the bleeding track (it scrolls; the overlays don't).
+ * Usage: <EdgeFadeBlur bg="var(--br-bg-2)">{bleedingTrack}</EdgeFadeBlur>
  */
 
-// True tilt-shift ramp: many fine layers whose blur RADIUS climbs from ~1px at
-// the inner edge of the band to the max at the outer edge. Each layer is masked
-// to a narrow band so the *effective* blur at any x is the radius assigned to
-// that x — a genuine progressive blur, not one heavy blur fading in opacity.
-const LAYERS = 8
-const MIN_BLUR = 1 // px at the inner edge of the band
-const MAX_BLUR = 18 // px at the very edge
+// The centered content column the band hugs. Matches .br-container (1443px).
+// Below this viewport width the band is 0 → no fade, no blur, no gradient.
+const CONTENT_WIDTH = 1443
 
-function blurLayer(side: 'left' | 'right', width: number) {
+// Per-side band width as a CSS expression. Clamped at 0 so it never goes
+// negative (which would otherwise flip the gradient/mask) on narrow screens.
+const BAND = `max(0px, (100vw - ${CONTENT_WIDTH}px) / 2)`
+
+// True tilt-shift ramp: many fine layers whose blur RADIUS climbs from ~1px at
+// the inner edge of the band to the max at the outer (viewport) edge.
+const LAYERS = 8
+const MIN_BLUR = 1 // px at the inner edge (column edge)
+const MAX_BLUR = 18 // px at the very edge (viewport edge)
+
+function blurLayer(side: 'left' | 'right') {
   const dir = side === 'left' ? 'to left' : 'to right'
   return Array.from({ length: LAYERS }, (_, i) => {
-    // radius grows with i; ease so it stays gentle near the inner edge and
-    // ramps up toward the outer edge (quadratic feels closest to a lens)
     const t = i / (LAYERS - 1)
     const radius = MIN_BLUR + (MAX_BLUR - MIN_BLUR) * (t * t)
-    // this layer paints from its band onward; a short feather (one band wide)
-    // hands off smoothly to the next, heavier layer
     const bandStart = (i / LAYERS) * 100
     const bandFeatherEnd = ((i + 1) / LAYERS) * 100
     const mask = `linear-gradient(${dir}, transparent ${bandStart}%, black ${bandFeatherEnd}%, black 100%)`
@@ -46,7 +55,7 @@ function blurLayer(side: 'left' | 'right', width: number) {
           top: 0,
           bottom: 0,
           [side]: 0,
-          width,
+          width: 'var(--edgefade)',
           backdropFilter: `blur(${radius.toFixed(2)}px)`,
           WebkitBackdropFilter: `blur(${radius.toFixed(2)}px)`,
           WebkitMaskImage: mask,
@@ -61,42 +70,34 @@ function blurLayer(side: 'left' | 'right', width: number) {
 export function EdgeFadeBlur({
   children,
   bg,
-  width = 200,
   className = '',
 }: {
   children: React.ReactNode
   /** the section background the edges fade INTO (e.g. 'var(--br-bg-2)' or '#fff') */
   bg: string
-  /** px width of the fade/blur band on each side */
-  width?: number
   className?: string
 }) {
-  // The content fade: a mask transparent at both outer edges → opaque in the
-  // middle, over `width` px. Using a mask (not an overlay gradient) genuinely
-  // reveals whatever is behind, over any background.
-
   return (
-    // overflow-x:clip guarantees nothing this wraps (a wide marquee / scroll
-    // track) can push the page wider, WITHOUT creating a scroll container.
-    // ALL edge effects (fade mask + blur + bg wash) are DESKTOP-ONLY (≥lg) — on
-    // mobile/tablet the carousels show plain, crisp edges (no blur, no fade to
-    // grey). The mask is applied via the `.br-edgefade` class which only sets
-    // mask-image at ≥1024px (see globals.css); the CSS var carries the band px.
+    // overflow-x:clip guarantees nothing this wraps can push the page wider,
+    // WITHOUT creating a scroll container. --edgefade carries the per-side band
+    // width; it is 0 when the viewport <= CONTENT_WIDTH, which makes the mask,
+    // the blur layers and the bg wash below all vanish (no separate breakpoint).
     <div
       className={`br-edgefade relative ${className}`}
-      style={{ overflowX: 'clip', ['--edgefade' as string]: `${width}px` }}
+      style={{ overflowX: 'clip', ['--edgefade' as string]: BAND }}
     >
       <div className="br-edgefade-mask">{children}</div>
 
-      {/* progressive blur bands + bg wash — DESKTOP ONLY */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 z-10 hidden lg:block">
-        {blurLayer('left', width)}
-        {blurLayer('right', width)}
+      {/* progressive blur bands + bg wash. Each is --edgefade wide, so all of
+          this is inert (zero width) at or below CONTENT_WIDTH. */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 z-10">
+        {blurLayer('left')}
+        {blurLayer('right')}
         <div
           style={{
             position: 'absolute',
             inset: 0,
-            background: `linear-gradient(to right, ${bg} 0, transparent ${width * 0.55}px, transparent calc(100% - ${width * 0.55}px), ${bg} 100%)`,
+            background: `linear-gradient(to right, ${bg} 0, transparent var(--edgefade), transparent calc(100% - var(--edgefade)), ${bg} 100%)`,
           }}
         />
       </div>
