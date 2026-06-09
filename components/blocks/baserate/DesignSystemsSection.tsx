@@ -37,16 +37,14 @@ export function DesignSystemsSection(props: DesignSystemsProps) {
           {/* Static, pixel-perfect — no transform/animation (those rasterize and
               soften the image). Plain HD artifact on a white card. */}
           <div className="mt-10 overflow-hidden rounded-2xl bg-white shadow-[0_40px_90px_-40px_rgba(0,0,0,0.8)] md:mt-12">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            {/* Mobile: zoom the artboard 2× and let it crop off the right edge so
-                the components read at a legible size (full-width shrinks them too
-                small). Desktop: fit the whole board to the card. */}
-            <img
-              src={components.artifact}
-              alt="Baserate component library"
-              className="block max-w-none md:!w-full"
-              style={{ width: '200%' }}
-            />
+            {/* Mobile: an inner zoom layer 2× the card width crops the board off
+                the right so the components read at a legible size; desktop fits
+                the whole board. The DIV (not the img) carries the width so the
+                global `img{max-width:100%}` reset can't clamp it. */}
+            <div className="md:!w-full" style={{ width: 'calc(200% + 0px)' }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={components.artifact} alt="Baserate component library" className="block w-full" />
+            </div>
           </div>
         </div>
 
