@@ -14,6 +14,71 @@ interface FeatureEcosystemProps {
   carousels?: CarouselRow[]
 }
 
+// Shared pill styling (desktop sizes via md: prefixes).
+const PILL_CLASS =
+  'br-data inline-flex items-center gap-2.5 rounded-[var(--br-tag-radius)] border border-[var(--br-stroke)] px-4 py-2 text-[14px] uppercase text-[var(--br-muted)]'
+// Mobile pill is smaller; same base.
+const PILL_CLASS_M =
+  'br-data inline-flex items-center gap-1.5 whitespace-nowrap rounded-[var(--br-tag-radius)] border border-[var(--br-stroke)] px-2.5 py-1.5 text-[11px] uppercase text-[var(--br-muted)] shrink-0'
+
+// Estimate a mobile pill's rendered width (px): icon(12) + gaps + h-padding(20)
+// + ~6.2px per uppercase char at 11px.
+function estWidth(label: string) {
+  return 12 + 6 + 20 + 8 + label.length * 6.2
+}
+
+// Split features into two rows so the rows' total widths are as balanced as
+// possible, preserving order. Greedy: add to whichever row is currently shorter.
+function splitRows(features: Feature[]): [Feature[], Feature[]] {
+  const r0: Feature[] = []
+  const r1: Feature[] = []
+  let w0 = 0
+  let w1 = 0
+  for (const f of features) {
+    const w = estWidth(f.label)
+    if (w0 <= w1) {
+      r0.push(f)
+      w0 += w
+    } else {
+      r1.push(f)
+      w1 += w
+    }
+  }
+  return [r0, r1]
+}
+
+function Pill({ f }: { f: Feature }) {
+  return (
+    <li className={PILL_CLASS_M}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={`/baserate/icons/${f.icon}.svg`} alt="" aria-hidden className="h-3 w-3 shrink-0" />
+      {f.label}
+    </li>
+  )
+}
+
+// Two natural-width rows inside one horizontal scroller; only this block scrolls
+// (the page never does — overflow is contained here).
+function PillRows({ features }: { features: Feature[] }) {
+  const [row0, row1] = splitRows(features)
+  return (
+    <div className="br-noscrollbar mt-4 overflow-x-auto pr-6" style={{ touchAction: 'pan-x' }}>
+      <div className="flex w-max flex-col gap-1.5">
+        <ul className="flex gap-1.5">
+          {row0.map((f) => (
+            <Pill key={f.label} f={f} />
+          ))}
+        </ul>
+        <ul className="flex gap-1.5">
+          {row1.map((f) => (
+            <Pill key={f.label} f={f} />
+          ))}
+        </ul>
+      </div>
+    </div>
+  )
+}
+
 function FeatureColumn({ section }: { section: FeatureSection }) {
   return (
     <div>
@@ -26,17 +91,18 @@ function FeatureColumn({ section }: { section: FeatureSection }) {
       </div>
       <p className="mt-2 text-[16px] leading-snug text-[var(--br-muted)]">{section.body}</p>
       {/* pills: Recursive 14px UPPERCASE, border #d6d6d6, px16 py8, gap10 icon↔text */}
-      {/* Mobile: a 2-ROW grid that flows into columns running off the RIGHT
-          screen edge; the whole block is one horizontal scroller (swipe to see
-          the rest). Desktop: the usual wrapping flow. */}
-      <ul className="br-noscrollbar -mr-6 mt-4 grid grid-flow-col grid-rows-2 auto-cols-max gap-x-1.5 gap-y-1.5 overflow-x-auto pr-6 md:mr-0 md:flex md:flex-wrap md:gap-x-3 md:gap-y-4 md:overflow-visible md:pr-0" style={{ touchAction: 'pan-x' }}>
+      {/* Mobile: TWO rows that keep each pill's natural (text-based) width and run
+          off the right edge inside a single horizontal scroller (swipe to see the
+          rest). Pills are split between the two rows by estimated width so the
+          rows are roughly balanced. Desktop: the usual wrapping flow. */}
+      <div className="md:hidden">
+        <PillRows features={section.features} />
+      </div>
+      <ul className="mt-4 hidden flex-wrap gap-x-3 gap-y-4 md:flex">
         {section.features.map((f) => (
-          <li
-            key={f.label}
-            className="br-data inline-flex items-center gap-1.5 whitespace-nowrap rounded-[var(--br-tag-radius)] border border-[var(--br-stroke)] px-2.5 py-1.5 text-[11px] uppercase text-[var(--br-muted)] md:gap-2.5 md:px-4 md:py-2 md:text-[14px]"
-          >
+          <li key={f.label} className={PILL_CLASS}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`/baserate/icons/${f.icon}.svg`} alt="" aria-hidden className="h-3 w-3 shrink-0 md:h-4 md:w-4" />
+            <img src={`/baserate/icons/${f.icon}.svg`} alt="" aria-hidden className="h-4 w-4 shrink-0" />
             {f.label}
           </li>
         ))}
