@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, useReducedMotion } from 'motion/react'
+import { animate, motion, useMotionValue, useReducedMotion, useTransform } from 'motion/react'
 import { useRef, useState } from 'react'
 
 export interface ExplorationItem {
@@ -12,10 +12,15 @@ export interface ExplorationItem {
 /**
  * The Exploration interaction:
  *  - Left: a stack of images. The selected image sits upright on top; the
- *    others fan out behind it, skewed and offset.
+ *    others fan out behind it, skewed and offset (Apple "Cover Flow").
  *  - Right: a list of text items with a vertical indicator line. Hovering an
- *    item slides the line to it; clicking selects it, which fades the current
- *    top image out, drops it to the back, and brings the others forward.
+ *    item slides the line to it; clicking selects it.
+ *
+ * TOUCH: the front card tracks the finger in real time (a motion value follows
+ * touchmove and translates the top card live). On release we commit to the
+ * next/prev card if the drag passed a distance OR velocity threshold, animating
+ * on from where the finger left off; otherwise it springs back. At the ends the
+ * drag rubber-bands so there's tactile feedback that there's nothing more.
  */
 export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag?: string }) {
   const reduce = useReducedMotion()
@@ -23,76 +28,138 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
   const [hover, setHover] = useState<number | null>(null)
 
   const n = items.length
-  // Hover drives the whole interaction (image + line + selected state); the last
-  // hovered item stays active after the cursor leaves.
   const current = hover ?? active
 
-  // Mobile: horizontal swipe on EITHER the image stack or the text list advances
-  // the shared `current` index, so both swap in sync (no hover on touch).
-  const swipe = useRef({ x: 0, active: false })
+  // Live drag offset of the FRONT card (px). Behind cards derive a gentle
+  // parallax from it so the whole stack feels connected to the finger.
+  const dragX = useMotionValue(0)
+  const behindParallax = useTransform(dragX, (v) => v * 0.25)
+
+  // Touch bookkeeping: start x + time (for velocity), and the last sample so we
+  // can compute instantaneous velocity at release.
+  const touch = useRef({ x: 0, t: 0, lastX: 0, lastT: 0, dragging: false, width: 320 })
+
+  const clampIndex = (i: number) => Math.max(0, Math.min(n - 1, i))
+
+  // Resistance curve for rubber-banding past the ends (diminishing returns).
+  const rubber = (overshoot: number) => Math.sign(overshoot) * Math.sqrt(Math.abs(overshoot)) * 6
+
   const onTouchStart = (e: React.TouchEvent) => {
-    swipe.current = { x: e.touches[0].clientX, active: true }
-  }
-  const onTouchEnd = (e: React.TouchEvent) => {
-    if (!swipe.current.active) return
-    swipe.current.active = false
-    const dx = e.changedTouches[0].clientX - swipe.current.x
-    if (Math.abs(dx) < 35) return // ignore taps / tiny moves
-    const dir = dx < 0 ? 1 : -1 // swipe left → next
-    setActive((a) => Math.max(0, Math.min(n - 1, a + dir)))
+    const t = e.touches[0]
+    const width = (e.currentTarget as HTMLElement).getBoundingClientRect().width || 320
+    touch.current = { x: t.clientX, t: performance.now(), lastX: t.clientX, lastT: performance.now(), dragging: true, width }
     setHover(null)
+    dragX.stop()
+  }
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (!touch.current.dragging) return
+    const t = e.touches[0]
+    let dx = t.clientX - touch.current.x
+    // At the ends, dragging further into the void resists.
+    const atStart = current === 0 && dx > 0
+    const atEnd = current === n - 1 && dx < 0
+    if (atStart || atEnd) dx = rubber(dx)
+    dragX.set(dx)
+    touch.current.lastX = t.clientX
+    touch.current.lastT = performance.now()
+  }
+
+  const settle = (to: number) =>
+    animate(dragX, to, reduce ? { duration: 0 } : { type: 'spring', stiffness: 320, damping: 34 })
+
+  const onTouchEnd = () => {
+    if (!touch.current.dragging) return
+    touch.current.dragging = false
+    const dx = touch.current.lastX - touch.current.x
+    const dt = Math.max(1, touch.current.lastT - touch.current.t)
+    const velocity = (touch.current.lastX - touch.current.x) / dt // px/ms
+    const width = touch.current.width
+    const distanceCommit = Math.abs(dx) > width * 0.22
+    const velocityCommit = Math.abs(velocity) > 0.45
+
+    if ((distanceCommit || velocityCommit) && Math.abs(dx) > 8) {
+      const dir = dx < 0 ? 1 : -1 // drag left → next
+      const next = clampIndex(current + dir)
+      if (next !== current) {
+        // Fling the card the rest of the way out, then swap index and reset.
+        const exitTo = dir < 0 ? width * 0.6 : -width * 0.6
+        animate(dragX, exitTo, {
+          type: 'spring',
+          stiffness: 340,
+          damping: 38,
+          velocity: velocity * 1000,
+        }).then(() => {
+          setActive(next)
+          dragX.set(0) // new front card starts centered (it was behind, off-stage)
+        })
+        return
+      }
+    }
+    // No commit → spring back to center.
+    settle(0)
   }
 
   return (
     <div
       className="grid items-center gap-10 md:grid-cols-2 md:gap-16"
       onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
+      onTouchCancel={onTouchEnd}
+      style={{ touchAction: 'pan-y' }}
     >
-      {/* Image stack — Apple "Cover Flow" perspective. The front card faces
-          forward (flat); the cards behind it angle away in 3D (rotateY), getting
-          the foreshortened trapezoidal look, fanning to the left. Selecting a
-          card brings it to the front and pushes the others back. */}
+      {/* Image stack — Cover Flow perspective. Front card faces forward; cards
+          behind angle away (rotateY), fanning left. */}
       <div className="relative mx-auto aspect-[874/932] w-full max-w-[440px] pl-8 md:pl-20" style={{ perspective: '1200px' }}>
         {items.map((item, i) => {
-          // depth = how far behind the front this card is (0 = front)
           const depth = (i - current + n) % n
           const isFront = depth === 0
-          // Behind cards: shifted left, angled away (rotateY), pushed back in Z, smaller.
           const x = isFront ? 0 : -64 * depth
-          const rotateY = isFront ? 0 : 38 // degrees — Cover Flow tilt
-          const z = isFront ? 0 : -120 * depth // pushed back in 3D space
+          const rotateY = isFront ? 0 : 38
+          const z = isFront ? 0 : -120 * depth
           const scale = isFront ? 1 : 1 - depth * 0.02
           return (
             <motion.button
               key={item.title}
               type="button"
-              onClick={() => setActive(i)}
+              onClick={() => {
+                // a click that wasn't a drag selects (desktop + tap)
+                if (Math.abs(dragX.get()) < 6) setActive(i)
+              }}
               aria-label={`Show ${item.title}`}
               className="absolute inset-0 origin-left overflow-hidden rounded-2xl border border-[var(--br-line)] bg-white shadow-[0_24px_50px_-26px_rgba(0,0,0,0.35)] focus:outline-none"
-              style={{ zIndex: n - depth, transformStyle: 'preserve-3d' }}
+              style={{
+                zIndex: n - depth,
+                transformStyle: 'preserve-3d',
+                // Live finger tracking: front card follows dragX; the cards
+                // behind get a fraction of it for a connected parallax.
+                x: isFront ? dragX : behindParallax,
+              }}
               initial={false}
               animate={
                 reduce
                   ? { opacity: isFront ? 1 : 0 }
                   : {
-                      x,
+                      // NOTE: x is intentionally omitted here for the front card
+                      // so the motion value (dragX) owns its horizontal position
+                      // during/after drag. Behind cards' base x is applied via
+                      // translateX in the keyframes below.
                       rotateY,
                       z,
                       scale,
                       opacity: depth > 2 ? 0 : 1,
+                      translateX: isFront ? 0 : x,
                     }
               }
               transition={{ type: 'spring', stiffness: 220, damping: 28 }}
             >
-              {/* Front card shows the image; cards behind read as blank angled panels. */}
               {isFront ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={item.image} alt={item.title} draggable={false} className="h-full w-full object-contain" />
               ) : (
                 <>
                   <span className="absolute inset-0 bg-white" />
-                  {/* subtle shading on the receding face for depth */}
                   <span className="absolute inset-0 bg-gradient-to-l from-black/0 to-black/[0.06]" />
                 </>
               )}
@@ -101,19 +168,14 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
         })}
       </div>
 
-      {/* Text items with a gold indicator line (no grey track). The line is
-          ~60% of an item slot tall and vertically centered on the active item's
-          slot — so it lines up with the text rather than the full padded block. */}
+      {/* Text items with a gold indicator line. */}
       <div>
-        {/* Exploration tag — restored above the text column (it lives here, not
-            above the whole block, so it sits beside the image stack). */}
         {tag && (
           <span className="br-data mb-5 inline-block rounded-[var(--br-tag-radius)] border border-[var(--br-gold)] px-3 py-1.5 text-[14px] uppercase text-[var(--br-gold)]">
             {tag}
           </span>
         )}
         <div className="relative">
-        {/* moving gold line — height 60% of one slot, centered in that slot */}
         <motion.div
           className="absolute left-0 w-[2px] bg-[var(--br-gold)]"
           initial={false}
@@ -130,7 +192,7 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
                   type="button"
                   onMouseEnter={() => {
                     setHover(i)
-                    setActive(i) // hover commits selection (persists on leave)
+                    setActive(i)
                   }}
                   onFocus={() => setActive(i)}
                   className="block w-full py-3 pl-5 text-left md:py-6 md:pl-6"
@@ -145,9 +207,7 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
                   <motion.p
                     className="overflow-hidden text-xs leading-snug text-neutral-600 md:text-sm"
                     initial={false}
-                    animate={{
-                      opacity: selected ? 1 : 0.5,
-                    }}
+                    animate={{ opacity: selected ? 1 : 0.5 }}
                   >
                     {item.body}
                   </motion.p>

@@ -367,7 +367,15 @@ function ChatColumn({ mobile = false }: { mobile?: boolean }) {
             </div>
           ) : (
             <div key={i} className="flex justify-end">
-              <div className="max-h-[150px] max-w-[88%] overflow-hidden rounded-2xl rounded-br-sm bg-[#f0eee9] px-3 py-2 leading-[1.5] text-black/80">
+              <div
+                className="max-h-[150px] max-w-[88%] overflow-hidden rounded-2xl rounded-br-sm bg-[#f0eee9] px-3 pt-2 pb-3 leading-[1.5] text-black/80"
+                style={{
+                  WebkitMaskImage:
+                    'linear-gradient(to bottom, black calc(100% - 28px), transparent 100%)',
+                  maskImage:
+                    'linear-gradient(to bottom, black calc(100% - 28px), transparent 100%)',
+                }}
+              >
                 {m.text}
               </div>
             </div>
