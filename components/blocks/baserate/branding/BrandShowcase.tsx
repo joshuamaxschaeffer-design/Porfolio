@@ -94,12 +94,11 @@ export function BrandShowcase({
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={wordmark} alt="" className="max-h-full max-w-[80%] object-contain" />
           </div>
-          {/* UI / hero shot — full-width bottom card */}
-          <div className="col-span-2 overflow-hidden rounded-xl bg-white md:col-span-12">
-            <div className="aspect-[21/8] w-full">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={uiShot} alt={`${title} marketing`} className="h-full w-full object-cover" style={{ objectPosition: uiCrop }} />
-            </div>
+          {/* UI / hero shot — full-width bottom card. Fixed height so a tall
+              source image is cropped (object-cover) rather than blowing out. */}
+          <div className="col-span-2 h-[180px] overflow-hidden rounded-xl bg-white md:col-span-12 md:h-[300px]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={uiShot} alt={`${title} marketing`} className="h-full w-full object-cover" style={{ objectPosition: uiCrop }} />
           </div>
         </div>
       </div>
