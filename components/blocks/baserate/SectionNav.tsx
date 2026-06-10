@@ -21,7 +21,7 @@ export interface SectionNavItem {
  *   line   1px #D6D6D6 connector spanning only consecutive visited circles
  *   tip    34px white tooltip, 1px #DCDCE1, 8px radius, 14px #585B6B body
  *          text, 12px gap from pill, 8px rotated-square tail on the left
- * Desktop-only by request: hidden below 1920px viewports.
+ * Desktop-only by request: hidden below 1280px viewports.
  */
 export function SectionNav({ items }: { items: SectionNavItem[] }) {
   const [active, setActive] = useState(0)
@@ -65,7 +65,7 @@ export function SectionNav({ items }: { items: SectionNavItem[] }) {
   return (
     <nav
       aria-label="Case study sections"
-      className="fixed left-[42px] top-1/2 z-40 hidden -translate-y-1/2 min-[1920px]:block"
+      className="fixed left-3 top-1/2 z-40 hidden -translate-y-1/2 min-[1280px]:block min-[1536px]:left-[42px]"
     >
       <ol
         className="flex w-[42px] list-none flex-col items-center rounded-full border border-[rgba(7,14,44,0.05)] bg-[rgba(242,242,245,0.24)] py-[17px] backdrop-blur-[10px] [box-shadow:0_8px_22px_rgba(7,14,44,0.09),0_2px_6px_rgba(7,14,44,0.05)]"
