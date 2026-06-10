@@ -16,6 +16,7 @@ import { MarqueeLogos } from './MarqueeLogos'
 import { BaserateCaseStudy } from './BaserateCaseStudy'
 import { PandaCaseStudy } from './PandaCaseStudy'
 import { WingstopCaseStudy } from './WingstopCaseStudy'
+import { SamsungCaseStudy } from './SamsungCaseStudy'
 
 export const allBlocks = [
   Hero,
@@ -37,6 +38,7 @@ export const allBlocks = [
   BaserateCaseStudy,
   PandaCaseStudy,
   WingstopCaseStudy,
+  SamsungCaseStudy,
 ]
 
 export {
@@ -58,4 +60,5 @@ export {
   BaserateCaseStudy,
   PandaCaseStudy,
   WingstopCaseStudy,
+  SamsungCaseStudy,
 }
