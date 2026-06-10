@@ -5,6 +5,7 @@ import { ProductSystemSection } from './ProductSystemSection'
 import { FeatureEcosystemSection } from './FeatureEcosystemSection'
 import { DesignSystemsSection } from './DesignSystemsSection'
 import { BrandingSection } from './branding/BrandingSection'
+import { OutcomesSection } from './OutcomesSection'
 
 export interface BaserateCaseStudyProps {
   /** Overview overrides */
@@ -47,6 +48,8 @@ export function BaserateCaseStudy(props: BaserateCaseStudyProps = {}) {
       <DesignSystemsSection />
       {/* Branding & Marketing — devices, brand showcases, B2B exploration, MCP video. */}
       <BrandingSection />
+      {/* Outcomes — count-up stat grid, testimonials, trusted-by logos. */}
+      <OutcomesSection />
     </article>
   )
 }

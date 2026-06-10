@@ -377,3 +377,82 @@ export const designSystems = {
     ],
   },
 }
+
+/* ------------------------------------------------------------------ */
+/*  Outcomes — final section (Figma 91:44565), real metrics via Gemini */
+/* ------------------------------------------------------------------ */
+
+export interface OutcomeStat {
+  /** numeric target the count-up animates to */
+  value: number
+  prefix?: string
+  /** rendered in gold after the number, e.g. "B+" / "+" */
+  suffix?: string
+  label: string
+  description: string
+}
+
+export const outcomes = {
+  heading: 'OUTCOMES',
+  lead: 'By designing an ecosystem that simplifies complex data and seamlessly integrates into intense, daily financial workflows, the products achieved massive market validation.',
+  stats: [
+    {
+      value: 50,
+      prefix: '$',
+      suffix: 'B+',
+      label: 'Total AUM',
+      description: 'Enterprise interfaces trusted daily by firms managing billions across 6 countries.',
+    },
+    {
+      value: 10000,
+      suffix: '+',
+      label: 'Investors',
+      description: 'Low-friction UX that scaled the B2C platform to a global investor base.',
+    },
+    {
+      value: 50,
+      suffix: '+',
+      label: 'Countries',
+      description: 'Investors onboarded across every major market worldwide.',
+    },
+    {
+      value: 40,
+      suffix: '+',
+      label: 'Pre-Launch Firms',
+      description: 'A high-utility enterprise OS that closed major institutional clients before public launch.',
+    },
+    {
+      value: 112,
+      label: 'Features Shipped',
+      description: 'Completed GitHub features — with 388 more on the roadmap.',
+    },
+  ] as OutcomeStat[],
+  testimonialsHeading: 'TESTIMONIALS',
+  testimonials: [
+    {
+      quote:
+        '“Baserate is the one system we couldn’t replace. It’s the infrastructure for how we think, communicate, and make decisions.”',
+      role: 'Chief Investment Officer',
+      org: 'Family Office',
+    },
+    {
+      quote:
+        '“What we value most is the intellectual honesty it creates. We can look back and see what people actually believed at the time, not a revised story.”',
+      role: 'Lead Portfolio Manager',
+      org: 'Hedge Fund',
+    },
+    {
+      quote:
+        '“We’ve used expensive RMS and research systems and this has been more useful in practice. It changes how the work actually gets done.”',
+      role: 'Portfolio Manager',
+      org: 'Multi-PM Hedge Fund',
+    },
+  ],
+  trustedByHeading: 'TRUSTED BY',
+  logos: [
+    { src: `${IMG}/logos/clients/gryphon-wealth.png`, alt: 'Gryphon Wealth' },
+    { src: `${IMG}/logos/clients/edgeworth-capital.png`, alt: 'Edgeworth Capital' },
+    { src: `${IMG}/logos/clients/enhancing-capital.png`, alt: 'Enhancing Capital' },
+    { src: `${IMG}/logos/clients/saber-capital.png`, alt: 'Saber Capital Management' },
+  ],
+}
