@@ -58,11 +58,14 @@ function Pill({ f }: { f: Feature }) {
 }
 
 // Two natural-width rows inside one horizontal scroller; only this block scrolls
-// (the page never does — overflow is contained here).
+// (the page never does — overflow is contained here). The scroller FULL-BLEEDS
+// to the screen edges: -mx-6 cancels the .br-container 1.5rem gutter so pills
+// clip at the physical edge of the screen, while px-6 keeps the resting
+// content aligned with the column text.
 function PillRows({ features }: { features: Feature[] }) {
   const [row0, row1] = splitRows(features)
   return (
-    <div className="br-noscrollbar mt-4 overflow-x-auto pr-6" style={{ touchAction: 'pan-x' }}>
+    <div className="br-noscrollbar -mx-6 mt-4 overflow-x-auto px-6" style={{ touchAction: 'pan-x pan-y' }}>
       <div className="flex w-max flex-col gap-1.5">
         <ul className="flex gap-1.5">
           {row0.map((f) => (

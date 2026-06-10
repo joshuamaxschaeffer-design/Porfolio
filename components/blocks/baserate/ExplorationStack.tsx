@@ -18,9 +18,11 @@ export interface ExplorationItem {
  *
  * TOUCH: the front card tracks the finger in real time (a motion value follows
  * touchmove and translates the top card live). On release we commit to the
- * next/prev card if the drag passed a distance OR velocity threshold, animating
- * on from where the finger left off; otherwise it springs back. At the ends the
- * drag rubber-bands so there's tactile feedback that there's nothing more.
+ * next/prev card if the drag passed a (deliberately small) distance OR velocity
+ * threshold, animating on from where the finger left off; otherwise it springs
+ * back. The stack is INFINITE: it wraps modulo n in both directions, so you can
+ * keep swiping forever and the items just cycle. A BIG swipe (long pull or hard
+ * flick) flings through TWO cards back-to-back.
  */
 export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag?: string }) {
   const reduce = useReducedMotion()
@@ -39,10 +41,8 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
   // can compute instantaneous velocity at release.
   const touch = useRef({ x: 0, t: 0, lastX: 0, lastT: 0, dragging: false, width: 320 })
 
-  const clampIndex = (i: number) => Math.max(0, Math.min(n - 1, i))
-
-  // Resistance curve for rubber-banding past the ends (diminishing returns).
-  const rubber = (overshoot: number) => Math.sign(overshoot) * Math.sqrt(Math.abs(overshoot)) * 6
+  // Infinite cycling: indices wrap modulo n in both directions (no ends).
+  const wrapIndex = (i: number) => ((i % n) + n) % n
 
   const onTouchStart = (e: React.TouchEvent) => {
     const t = e.touches[0]
@@ -55,12 +55,8 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
   const onTouchMove = (e: React.TouchEvent) => {
     if (!touch.current.dragging) return
     const t = e.touches[0]
-    let dx = t.clientX - touch.current.x
-    // At the ends, dragging further into the void resists.
-    const atStart = current === 0 && dx > 0
-    const atEnd = current === n - 1 && dx < 0
-    if (atStart || atEnd) dx = rubber(dx)
-    dragX.set(dx)
+    // 1:1 finger tracking — no rubber-banding: the stack has no ends now.
+    dragX.set(t.clientX - touch.current.x)
     touch.current.lastX = t.clientX
     touch.current.lastT = performance.now()
   }
@@ -68,33 +64,42 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
   const settle = (to: number) =>
     animate(dragX, to, reduce ? { duration: 0 } : { type: 'spring', stiffness: 320, damping: 34 })
 
+  // Fling the front card out, advance (wrapping), and for big swipes chain a
+  // second, snappier fling so the motion visibly passes through two cards.
+  const flingThrough = (dir: 1 | -1, steps: number, velocity: number) => {
+    const width = touch.current.width
+    const exitTo = dir > 0 ? -width * 0.6 : width * 0.6
+    animate(
+      dragX,
+      exitTo,
+      reduce
+        ? { duration: 0 }
+        : { type: 'spring', stiffness: steps > 1 ? 460 : 340, damping: 38, velocity: velocity * 1000 },
+    ).then(() => {
+      setActive((a) => wrapIndex(a + dir))
+      dragX.set(0) // new front card starts centered (it was behind, off-stage)
+      if (steps > 1) requestAnimationFrame(() => flingThrough(dir, steps - 1, velocity * 0.6))
+    })
+  }
+
   const onTouchEnd = () => {
     if (!touch.current.dragging) return
     touch.current.dragging = false
     const dx = touch.current.lastX - touch.current.x
     const dt = Math.max(1, touch.current.lastT - touch.current.t)
-    const velocity = (touch.current.lastX - touch.current.x) / dt // px/ms
+    const velocity = dx / dt // px/ms
     const width = touch.current.width
-    const distanceCommit = Math.abs(dx) > width * 0.22
-    const velocityCommit = Math.abs(velocity) > 0.45
+    // Commit threshold is deliberately SMALL (~10% of the card) so the next
+    // card is easy to reach; a gentle flick commits too.
+    const distanceCommit = Math.abs(dx) > width * 0.1
+    const velocityCommit = Math.abs(velocity) > 0.3
+    // A BIG swipe — long pull or hard flick — jumps TWO cards.
+    const big = Math.abs(dx) > width * 0.5 || Math.abs(velocity) > 1.2
 
     if ((distanceCommit || velocityCommit) && Math.abs(dx) > 8) {
-      const dir = dx < 0 ? 1 : -1 // drag left → next
-      const next = clampIndex(current + dir)
-      if (next !== current) {
-        // Fling the card the rest of the way out, then swap index and reset.
-        const exitTo = dir < 0 ? width * 0.6 : -width * 0.6
-        animate(dragX, exitTo, {
-          type: 'spring',
-          stiffness: 340,
-          damping: 38,
-          velocity: velocity * 1000,
-        }).then(() => {
-          setActive(next)
-          dragX.set(0) // new front card starts centered (it was behind, off-stage)
-        })
-        return
-      }
+      const dir: 1 | -1 = dx < 0 ? 1 : -1 // drag left → next
+      flingThrough(dir, big ? 2 : 1, velocity)
+      return
     }
     // No commit → spring back to center.
     settle(0)

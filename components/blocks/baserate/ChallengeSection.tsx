@@ -35,8 +35,9 @@ export function ChallengeSection(props: ChallengeProps) {
 
   // Drag-to-scroll (pointer) with flick momentum. Distinguishes a drag from a
   // click so card taps still work. We sample pointer velocity during the drag
-  // and, on release, coast with exponential decay (mouse/trackpad only — touch
-  // devices already get native inertial scrolling, so we don't double it).
+  // and, on release, coast with exponential decay. JS owns the horizontal
+  // gesture for BOTH mouse and touch (touch-action: pan-y on the track), so
+  // desktop and mobile get the identical 1:1 follow + coast-and-slow feel.
   const drag = useRef({
     down: false,
     moved: false,
@@ -206,9 +207,9 @@ export function ChallengeSection(props: ChallengeProps) {
       cancelAnimationFrame(dragRaf.current)
       dragRaf.current = null
     }
-    // Flick momentum — mouse/trackpad only (touch has native inertia). Compute
-    // velocity over the sampled window (px/ms), then coast.
-    if (wasDown && el && drag.current.pointerType !== 'touch') {
+    // Flick momentum for ALL pointer types: velocity over the sampled window
+    // (px/ms), then coast with exponential decay.
+    if (wasDown && el) {
       const s = drag.current.samples
       const now = performance.now()
       const first = s[0]
@@ -239,15 +240,17 @@ export function ChallengeSection(props: ChallengeProps) {
         </div>
       </div>
 
-      {/* Draggable track, bleeds to both edges. On mobile it's a scroll-snap
-          carousel (one ~88vw card per view with a peek); on desktop it stays a
-          free drag track with flick momentum. EdgeFadeBlur dissolves the left &
-          right edges into the grey section bg with a progressive blur. */}
+      {/* Draggable track, bleeds to both edges. ALL sizes: free 1:1 drag with
+          flick momentum. No scroll-snap and no scroll-smooth — CSS smooth
+          behavior animates every programmatic scrollLeft write, so it fought
+          the rAF drag/momentum loops and made dragging feel mushy; snap then
+          yanked the coast. touch-action: pan-y hands horizontal gestures to
+          JS while vertical swipes still scroll the page. */}
       <EdgeFadeBlur bg="var(--br-bg-2)" className="mt-8">
         <div
           ref={trackRef}
-          className="br-noscrollbar br-grab flex gap-5 overflow-x-auto overscroll-x-contain pb-2 pl-[max(1.5rem,calc((100vw-1443px)/2+5rem))] pr-6 select-none snap-x snap-proximity scroll-smooth lg:snap-none"
-          style={{ touchAction: 'pan-x', scrollPaddingInline: '1.5rem' }}
+          className="br-noscrollbar br-grab flex gap-5 overflow-x-auto overscroll-x-contain pb-2 pl-[max(1.5rem,calc((100vw-1443px)/2+5rem))] pr-6 select-none"
+          style={{ touchAction: 'pan-y' }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={endDrag}
@@ -283,7 +286,7 @@ export function ChallengeSection(props: ChallengeProps) {
       </div>
       <div
         className="br-noscrollbar mt-6 flex gap-2 overflow-x-auto pl-6 pr-6 md:hidden"
-        style={{ touchAction: 'pan-x' }}
+        style={{ touchAction: 'pan-x pan-y' }}
       >
         {cards.map((card, i) => (
           <button
@@ -321,7 +324,7 @@ function ChallengeCardView({
           e.preventDefault()
         }
       }}
-      className={`relative ${card.mobileImage ? `${MOBILE_CARD_RATIO} lg:aspect-[1920/1150]` : CARD_RATIO[card.span]} w-[88vw] max-w-[88vw] shrink-0 snap-start rounded-2xl bg-white lg:h-[600px] lg:w-auto lg:max-w-none`}
+      className={`relative ${card.mobileImage ? `${MOBILE_CARD_RATIO} lg:aspect-[1920/1150]` : CARD_RATIO[card.span]} w-[88vw] max-w-[88vw] shrink-0 rounded-2xl bg-white lg:h-[600px] lg:w-auto lg:max-w-none`}
     >
       {/* image clipped to the radius in its own layer. When a mobile crop exists,
           a <picture> serves it below the lg breakpoint and the wide desktop

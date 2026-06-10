@@ -83,7 +83,7 @@ export function HandoffSection({ title = 'HANDOFF', body = 'Dev handoff meetings
     const el = mTrackRef.current
     if (!el) return
     const card = el.querySelectorAll<HTMLElement>('[data-handoff-card]')[i]
-    if (card) el.scrollTo({ left: card.offsetLeft - 12, behavior: 'smooth' })
+    if (card) el.scrollTo({ left: card.offsetLeft - 24, behavior: 'smooth' })
   }
   const mEl = ELEMENTS[mIdx]
 
@@ -123,12 +123,14 @@ export function HandoffSection({ title = 'HANDOFF', body = 'Dev handoff meetings
         <CodeBox snippet={HANDOFF_SNIPPETS[mEl.id]} compact />
 
         {/* swipeable component track, overlaid on the BOTTOM of the code box.
-            Cards are ~84vw with the next peeking. */}
+            Cards are ~84vw with the next peeking. -inset-x-6 cancels the
+            .br-container gutter so the track scrolls to the true screen edge
+            (no 24px clip); px-6 keeps resting cards aligned with the code box. */}
         <div
           ref={mTrackRef}
           onScroll={onMScroll}
-          className="br-noscrollbar absolute inset-x-0 z-20 flex snap-x snap-mandatory items-end gap-3 overflow-x-auto px-3"
-          style={{ bottom: '-20px', touchAction: 'pan-x' }}
+          className="br-noscrollbar absolute -inset-x-6 z-20 flex snap-x snap-mandatory items-end gap-3 overflow-x-auto px-6"
+          style={{ bottom: '-20px', touchAction: 'pan-x pan-y' }}
         >
           {ELEMENTS.map((el) => {
             const isComments = el.id === 'comments'

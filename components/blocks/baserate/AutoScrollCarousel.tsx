@@ -65,6 +65,11 @@ export function AutoScrollCarousel({
     return w
   }
 
+  // Release velocity (px/s) from a flick. It decays exponentially inside the
+  // drift loop, so a swipe coasts on from the finger/mouse and slowly settles
+  // back into the ambient marquee drift — in either direction.
+  const flingV = useRef(0)
+
   // Drift loop via rAF on the motion value — runs on all sizes (slow leftward
   // marquee that can be dragged/swiped but resumes drifting on release).
   useEffect(() => {
@@ -72,10 +77,16 @@ export function AutoScrollCarousel({
     let raf = 0
     const tick = (t: number) => {
       if (last.current == null) last.current = t
-      const dt = (t - last.current) / 1000
+      const dt = Math.min(0.05, (t - last.current) / 1000) // clamp post-stall jumps
       last.current = t
       if (!dragging.current) {
-        x.set(wrap(x.get() - speed * dt))
+        let v = flingV.current
+        if (v !== 0) {
+          v *= Math.exp(-2.4 * dt) // ~2s coast from a firm flick
+          if (Math.abs(v) < 8) v = 0
+          flingV.current = v
+        }
+        x.set(wrap(x.get() + (v - speed) * dt))
       }
       raf = requestAnimationFrame(tick)
     }
@@ -87,16 +98,27 @@ export function AutoScrollCarousel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reduce, ready, speed, x])
 
-  const drag = useRef({ down: false, startX: 0, startVal: 0 })
+  const drag = useRef({ down: false, startX: 0, startVal: 0, samples: [] as { x: number; t: number }[] })
   const onPointerDown = (e: React.PointerEvent) => {
     dragging.current = true
-    drag.current = { down: true, startX: e.clientX, startVal: x.get() }
+    flingV.current = 0 // grabbing a coasting track stops it
+    drag.current = {
+      down: true,
+      startX: e.clientX,
+      startVal: x.get(),
+      samples: [{ x: e.clientX, t: performance.now() }],
+    }
     ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
   }
   const onPointerMove = (e: React.PointerEvent) => {
     if (!drag.current.down) return
     // Wrap while dragging so dragging right never reveals an empty left edge.
     x.set(wrap(drag.current.startVal + (e.clientX - drag.current.startX)))
+    // keep ~120ms of samples for a stable, time-windowed release velocity
+    const now = performance.now()
+    const s = drag.current.samples
+    s.push({ x: e.clientX, t: now })
+    while (s.length > 2 && now - s[0].t > 120) s.shift()
   }
   const onPointerUp = (e: React.PointerEvent) => {
     drag.current.down = false
@@ -105,7 +127,19 @@ export function AutoScrollCarousel({
     try {
       ;(e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId)
     } catch {}
-    // Carry a little momentum back into the drift.
+    // Carry the flick into the drift loop: it coasts on and slowly decays.
+    const s = drag.current.samples
+    const now = performance.now()
+    if (s.length >= 2) {
+      const first = s[0]
+      const lastS = s[s.length - 1]
+      const dt = lastS.t - first.t
+      const vx = dt > 0 ? (lastS.x - first.x) / dt : 0 // px/ms
+      const idle = now - lastS.t
+      if (idle < 90 && Math.abs(vx) > 0.05) {
+        flingV.current = Math.max(-3500, Math.min(3500, vx * 1000)) // px/s
+      }
+    }
   }
 
   // Video-first on mobile, video-in-middle on desktop. CRITICAL for hydration:
@@ -135,9 +169,11 @@ export function AutoScrollCarousel({
   if (mid >= sequence.length) items.push(<VideoCard key="v-end" row={row} />)
 
   // All sizes use the continuously-drifting marquee (slow leftward motion that
-  // can be dragged but never fully stopped). No scrollbar; touch can swipe it.
+  // can be dragged but never fully stopped). No scrollbar. touch-action: pan-y
+  // hands horizontal touch gestures to the JS drag (pan-x let the browser
+  // claim them and cancel the pointer stream) while vertical swipes scroll.
   return (
-    <div className="br-grab overflow-hidden" style={{ touchAction: 'pan-x' }}>
+    <div className="br-grab overflow-hidden" style={{ touchAction: 'pan-y' }}>
       <motion.div
         ref={trackRef}
         className="flex w-max gap-5 py-1 select-none"

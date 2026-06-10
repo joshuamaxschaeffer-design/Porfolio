@@ -34,7 +34,7 @@ export function ProductSystemSection(props: ProductSystemProps) {
           wrapped row inside the container on desktop. */}
       <ul
         className="br-noscrollbar mt-6 flex gap-3 overflow-x-auto px-6 md:flex-wrap md:px-[max(1.5rem,calc((100vw-1443px)/2+5rem))] md:pr-[max(1.5rem,calc((100vw-1443px)/2+5rem))]"
-        style={{ touchAction: 'pan-x' }}
+        style={{ touchAction: 'pan-x pan-y' }}
       >
         {pills.map((p) => (
           <li
