@@ -159,13 +159,14 @@ function DraggableMarquee({
 }
 
 /**
- * White nameplate card. The image is a TIGHT logo crop (altnames-crop/);
- * the card supplies exactly 12px of white padding on every side, and the
- * logo renders at 1/3 of the previous size (94px -> ~31px tall at md).
+ * White nameplate card. The image is a TIGHT logo crop (altnames-crop/).
+ * Joshua (2026-06-10): logo shrunk another ~50% (md ~31px -> ~16px tall) and
+ * 3x more white around it (p-3 12px -> p-9 36px). The card height is sized
+ * so logo + padding fit: ~16px logo + 72px vertical padding ≈ 88px at md.
  */
 function NameCard({ src }: { src: string }) {
   return (
-    <div className="flex h-[47px] shrink-0 items-center overflow-hidden rounded-[2px] bg-white p-3 shadow-[0_22px_44px_-20px_rgba(4,16,38,0.5)] md:h-[55px]">
+    <div className="flex h-[78px] shrink-0 items-center justify-center overflow-hidden rounded-[2px] bg-white p-9 shadow-[0_22px_44px_-20px_rgba(4,16,38,0.5)] md:h-[88px]">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
