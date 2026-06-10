@@ -65,10 +65,21 @@ function DeviceCanvas({
     const tmp = document.createElement('canvas')
     const tmpCtx = tmp.getContext('2d')!
 
-    fetch(`/baserate/branding/devices/${dir}/shadow-v1.json`)
+    // v2: physically calibrated against the SD Studio PCSS render — exact
+    // affine shadow shape + blur/opacity that grow with each point's height
+    // above the surface (σ(h), α(h) fitted to the studio). Falls back to v1.
+    fetch(`/baserate/branding/devices/${dir}/shadow-v2.json`)
       .then((r) => (r.ok ? r.json() : null))
-      .then((j) => { trackRef.current = j?.frames || null })
-      .catch(() => {})
+      .then((j) => {
+        if (j?.version === 2) { trackRef.current = { v2: true, calib: j.calib, frames: j.frames } }
+        else throw new Error('no v2')
+      })
+      .catch(() =>
+        fetch(`/baserate/branding/devices/${dir}/shadow-v1.json`)
+          .then((r) => (r.ok ? r.json() : null))
+          .then((j) => { trackRef.current = j?.frames ? { v2: false, frames: j.frames } : null })
+          .catch(() => {}),
+      )
 
     const drawShadow = (img: HTMLImageElement, frameIdx: number) => {
       const W = canvas.width, H = canvas.height
@@ -82,7 +93,54 @@ function DeviceCanvas({
       silCtx.fillRect(0, 0, W, H)
       silCtx.globalCompositeOperation = 'source-over'
       sctx.clearRect(0, 0, shadow.width, shadow.height)
-      const fr = trackRef.current?.[frameIdx]
+      const track = trackRef.current
+      const fr = track?.frames?.[frameIdx]
+
+      if (track?.v2 && fr) {
+        // ── v2: studio-mirrored shadow ──
+        // Shape: the silhouette warped by the per-frame affine (device-screen →
+        // shadow-screen, solved from the device's corners cast along the key
+        // light onto the surface). Blur + opacity: banded along the height
+        // gradient from the corner CLOSEST to the surface (sharp, dense) to
+        // the FURTHEST (soft, faint), using σ(h)/α(h) calibrated against the
+        // actual SD Studio PCSS render.
+        const { sigma_base_px: s0, sigma_per_h_px: s1, alpha_base: a0, alpha_per_h: a1 } = track.calib
+        const [a, b, cc, dd, e, f] = fr.af
+        const pnx = fr.pn[0] + padX, pny = fr.pn[1] + padY
+        const pfx = fr.pf[0] + padX, pfy = fr.pf[1] + padY
+        const h0 = fr.h0, h1 = Math.max(fr.h1, h0 + 0.001)
+        const BANDS = 5, F = 0.12
+        tmp.width = shadow.width; tmp.height = shadow.height
+        for (let j = 0; j < BANDS; j++) {
+          const t0 = j / BANDS, t1 = (j + 1) / BANDS
+          const hMid = h0 + (h1 - h0) * ((t0 + t1) / 2)
+          const alpha = Math.max(0, a0 + a1 * hMid)
+          if (alpha <= 0.004) continue
+          const blur = Math.max(0.5, s0 + s1 * hMid)
+          tmpCtx.clearRect(0, 0, tmp.width, tmp.height)
+          tmpCtx.save()
+          tmpCtx.filter = `blur(${blur.toFixed(1)}px)`
+          tmpCtx.setTransform(a, b, cc, dd, e + padX, f + padY)
+          tmpCtx.drawImage(sil, 0, 0)
+          tmpCtx.restore()
+          // band mask along the height gradient (near → far corner)
+          const g = tmpCtx.createLinearGradient(pnx, pny, pfx, pfy)
+          const stop = (v: number) => Math.max(0, Math.min(1, v))
+          if (j === 0) { g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(stop(t1), 'rgba(0,0,0,1)'); g.addColorStop(stop(t1 + F), 'rgba(0,0,0,0)') }
+          else if (j === BANDS - 1) { g.addColorStop(stop(t0 - F), 'rgba(0,0,0,0)'); g.addColorStop(stop(t0), 'rgba(0,0,0,1)'); g.addColorStop(1, 'rgba(0,0,0,1)') }
+          else { g.addColorStop(stop(t0 - F), 'rgba(0,0,0,0)'); g.addColorStop(stop(t0), 'rgba(0,0,0,1)'); g.addColorStop(stop(t1), 'rgba(0,0,0,1)'); g.addColorStop(stop(t1 + F), 'rgba(0,0,0,0)') }
+          tmpCtx.save()
+          tmpCtx.globalCompositeOperation = 'destination-in'
+          tmpCtx.fillStyle = g
+          tmpCtx.fillRect(0, 0, tmp.width, tmp.height)
+          tmpCtx.restore()
+          sctx.save()
+          sctx.globalAlpha = alpha
+          sctx.drawImage(tmp, 0, 0)
+          sctx.restore()
+        }
+        return
+      }
 
       if (fr) {
         // ── track-driven: place silhouette at the projected shadow position,
@@ -309,7 +367,7 @@ export function BrandingHero() {
       {/* Heading */}
       <div className="relative z-30 px-6 pt-16 text-center md:pt-[132px]">
         <h2 className="text-[30px] font-semibold uppercase leading-none tracking-tight text-[var(--br-ink)] md:text-[44px]">
-          6. Brand &amp; Marketing
+          Brand &amp; Marketing
         </h2>
         <p className="mt-3 text-[16px] text-[#2a3050] md:text-[21px]">
           Ran in tandem with product implementation.
