@@ -572,7 +572,7 @@ export function BrandingHero() {
     <section ref={stageRef} className="relative overflow-hidden">
       {/* White top over the gradient field — gentle diagonal, higher on the
           right (Figma 243:54723 boundary mapped to the new section height). */}
-      <div className="absolute inset-0 bg-white [clip-path:polygon(0_0,100%_0,100%_57%,0_78%)] md:[clip-path:polygon(0_0,100%_0,100%_35.5%,0_50%)] min-[2080px]:[clip-path:polygon(0_0,100%_0,100%_38%,0_51.5%)]" />
+      <div className="absolute inset-0 bg-white [clip-path:polygon(0_0,100%_0,100%_60.5%,0_83%)] md:max-[1799px]:[clip-path:polygon(0_0,100%_0,100%_44.5%,0_59.5%)] min-[1800px]:[clip-path:polygon(0_0,100%_0,100%_47%,0_63.5%)]" />
 
       {/* STAGE — a centered max-w-[1443px] frame mirroring the Figma artboard
           (1443×893). Every md+ percentage below is a literal Figma coordinate,
@@ -649,8 +649,11 @@ export function BrandingHero() {
         )}
       </div>
 
-      {/* B2C label on the blue */}
-      <div className="relative z-30 px-6 pb-16 text-center md:pb-[88px]">
+      {/* B2C label on the blue — pulled UP into the stage's empty lower band
+          (the scene ends ~75% down the frame) to tighten the gap; the pull
+          grows with the large-display zoom steps so the visual gap stays
+          consistent. */}
+      <div className="relative z-30 -mt-10 px-6 pb-16 text-center md:mt-[clamp(-285px,calc(-200px_-_(100vw_-_1443px)_*_0.076),-200px)] md:pb-[88px]">
         <h3 className="text-[19px] font-semibold uppercase tracking-[0.05em] text-white md:text-[24px]">
           B2C Brand Exploration
         </h3>
