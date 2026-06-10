@@ -158,10 +158,14 @@ function DraggableMarquee({
   )
 }
 
-/** White nameplate card — cropped to the white panel + logo, natural width. */
+/**
+ * White nameplate card. The image is a TIGHT logo crop (altnames-crop/);
+ * the card supplies exactly 12px of white padding on every side, and the
+ * logo renders at 1/3 of the previous size (94px -> ~31px tall at md).
+ */
 function NameCard({ src }: { src: string }) {
   return (
-    <div className="h-[88px] shrink-0 overflow-hidden rounded-[2px] bg-white shadow-[0_22px_44px_-20px_rgba(4,16,38,0.5)] md:h-[118px]">
+    <div className="flex h-[47px] shrink-0 items-center overflow-hidden rounded-[2px] bg-white p-3 shadow-[0_22px_44px_-20px_rgba(4,16,38,0.5)] md:h-[55px]">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
