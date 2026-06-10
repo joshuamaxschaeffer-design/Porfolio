@@ -21,6 +21,11 @@ import { useEffect, useRef, useState } from 'react'
 
 const FRAME_COUNT = 120
 const FPS = 30
+/** Shadow canvases render at this fraction of the device resolution — their
+ *  content is blurry by definition, so after CSS upscale it's
+ *  indistinguishable, but each redraw is ~9x cheaper (the big win for Safari,
+ *  where the no-ctx.filter blur fallback does many resample passes). */
+const SHADOW_RES = 0.34
 
 function pad(n: number) {
   return String(n).padStart(4, '0')
@@ -244,6 +249,8 @@ function DeviceCanvas({
     const drawShadow = (img: HTMLImageElement, frameIdx: number) => {
       const W = canvas.width, H = canvas.height
       const padX = Math.round(W * PAD), padY = Math.round(H * PAD)
+      // shadow canvas runs at reduced internal res — scale ALL geometry by k
+      const k = W > 0 ? shadow.width / (W * (1 + PAD * 2)) : SHADOW_RES
       // dark silhouette of THIS frame
       sil.width = W; sil.height = H
       silCtx.clearRect(0, 0, W, H)
@@ -267,10 +274,10 @@ function DeviceCanvas({
         const h0 = fr.h0, h1 = Math.max(fr.h1, h0 + 0.001)
         const hAt = (t: number) => h0 + (h1 - h0) * t
         bandedShadow(
-          (c) => { c.setTransform(a, b, cc, dd, e + padX, f + padY); c.drawImage(sil, 0, 0) },
-          { x0: fr.pn[0] + padX, y0: fr.pn[1] + padY, x1: fr.pf[0] + padX, y1: fr.pf[1] + padY },
+          (c) => { c.setTransform(a * k, b * k, cc * k, dd * k, (e + padX) * k, (f + padY) * k); c.drawImage(sil, 0, 0) },
+          { x0: (fr.pn[0] + padX) * k, y0: (fr.pn[1] + padY) * k, x1: (fr.pf[0] + padX) * k, y1: (fr.pf[1] + padY) * k },
           6,
-          (t) => s0 + s1 * hAt(t),
+          (t) => (s0 + s1 * hAt(t)) * k,
           (t) => Math.max(0, a0 + a1 * hAt(t)),
         )
         return
@@ -287,10 +294,10 @@ function DeviceCanvas({
         const dirx = Math.cos(rad), diry = Math.sin(rad)
         const ext = (Math.abs(dirx) * fr.dw * fr.sx + Math.abs(diry) * fr.dh * fr.sy) / 2 + 4
         bandedShadow(
-          (c) => c.drawImage(sil, ox, oy, W * fr.sx, H * fr.sy),
-          { x0: cx - dirx * ext, y0: cy - diry * ext, x1: cx + dirx * ext, y1: cy + diry * ext },
+          (c) => c.drawImage(sil, ox * k, oy * k, W * fr.sx * k, H * fr.sy * k),
+          { x0: (cx - dirx * ext) * k, y0: (cy - diry * ext) * k, x1: (cx + dirx * ext) * k, y1: (cy + diry * ext) * k },
           4,
-          (t) => fr.bn + (fr.bf - fr.bn) * t,
+          (t) => (fr.bn + (fr.bf - fr.bn) * t) * k,
           () => fr.a,
         )
       } else {
@@ -302,19 +309,20 @@ function DeviceCanvas({
           { blur: unit * 4.6, alpha: 0.15, dx: unit * 2.8, dy: unit * 4.2, s: 1.05 },
         ]
         for (const p of passes) {
-          const dw = W * p.s, dh = H * p.s
-          const ox2 = padX + p.dx - (dw - W) / 2
-          const oy2 = padY + p.dy - (dh - H) / 2
+          const dw = W * p.s * k, dh = H * p.s * k
+          const ox2 = (padX + p.dx - (W * p.s - W) / 2) * k
+          const oy2 = (padY + p.dy - (H * p.s - H) / 2) * k
+          const blurK = p.blur * k
           tmpCtx.clearRect(0, 0, tmp.width, tmp.height)
           if (ctxFilterSupported()) {
             tmpCtx.save()
-            tmpCtx.filter = `blur(${p.blur.toFixed(1)}px)`
+            tmpCtx.filter = `blur(${blurK.toFixed(1)}px)`
             tmpCtx.drawImage(sil, ox2, oy2, dw, dh)
             tmpCtx.restore()
           } else {
             sharpCtx.clearRect(0, 0, sharp.width, sharp.height)
             sharpCtx.drawImage(sil, ox2, oy2, dw, dh)
-            drawBlurred(tmpCtx, sharp, p.blur, scrA, scrB)
+            drawBlurred(tmpCtx, sharp, blurK, scrA, scrB)
           }
           sctx.save()
           sctx.globalAlpha = p.alpha
@@ -337,8 +345,8 @@ function DeviceCanvas({
     first.onload = () => {
       canvas.width = first.naturalWidth
       canvas.height = first.naturalHeight
-      shadow.width = Math.round(first.naturalWidth * (1 + PAD * 2))
-      shadow.height = Math.round(first.naturalHeight * (1 + PAD * 2))
+      shadow.width = Math.round(first.naturalWidth * (1 + PAD * 2) * SHADOW_RES)
+      shadow.height = Math.round(first.naturalHeight * (1 + PAD * 2) * SHADOW_RES)
       for (const c of [tmp, sharp, acc, scrA, scrB]) {
         c.width = shadow.width
         c.height = shadow.height
@@ -349,11 +357,44 @@ function DeviceCanvas({
     }
     first.src = `${base}0000.webp`
 
-    for (let i = 0; i < FRAME_COUNT; i++) {
-      const img = new Image()
-      img.src = `${base}${pad(i)}.webp`
-      imgs[i] = img
+    // ── Frame preload: starts at PAGE LOAD (long before the section scrolls
+    // in) but politely — limited concurrency instead of 120 parallel
+    // requests, and fetchpriority=low so the rest of the page wins the
+    // bandwidth race (the request storm was what made Safari crawl).
+    // Playback is GATED on the full sequence being cached: when the user
+    // arrives it either just plays, or waits and starts the moment the last
+    // frame lands — never half-loaded frame-skipping.
+    let disposed = false
+    let loadedCount = 0
+    let framesReady = false
+    let pendingPlay = false
+    let nextIdx = 0
+    const CONCURRENCY = 8
+    const onAllLoaded = () => {
+      framesReady = true
+      if (pendingPlay && !played.current) {
+        played.current = true
+        setTimeout(play, delay)
+      }
     }
+    const loadWorker = () => {
+      if (disposed) return
+      const i = nextIdx++
+      if (i >= FRAME_COUNT) return
+      const img = new Image()
+      img.decoding = 'async'
+      img.setAttribute('fetchpriority', 'low')
+      const done = () => {
+        imgs[i] = img
+        loadedCount++
+        if (loadedCount >= FRAME_COUNT) onAllLoaded()
+        else loadWorker()
+      }
+      img.onload = done
+      img.onerror = done
+      img.src = `${base}${pad(i)}.webp`
+    }
+    for (let w = 0; w < CONCURRENCY; w++) loadWorker()
 
     const play = () => {
       const start = performance.now()
@@ -370,8 +411,13 @@ function DeviceCanvas({
       (entries) => {
         for (const e of entries) {
           if (e.isIntersecting && !played.current) {
-            played.current = true
-            setTimeout(play, delay)
+            if (framesReady) {
+              played.current = true
+              setTimeout(play, delay)
+            } else {
+              // arrived before the cache finished — play fires in onAllLoaded
+              pendingPlay = true
+            }
           }
         }
       },
@@ -379,7 +425,7 @@ function DeviceCanvas({
     )
     io.observe(canvas)
 
-    return () => { io.disconnect(); cancelAnimationFrame(raf) }
+    return () => { disposed = true; io.disconnect(); cancelAnimationFrame(raf) }
   }, [dir, delay])
 
   const padPct = `${(PAD * 100).toFixed(0)}%`
@@ -442,21 +488,29 @@ function ExtrudedChip({
             animate={reduce ? { rotateY: endY } : (inView ? { rotateY: endY } : { rotateY: endY - 360 })}
             transition={{ duration: dur, ease: [0.16, 0.8, 0.3, 1], delay }}
           >
-            {layers.map((i) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                key={i}
-                src={src}
-                alt={i === depth - 1 ? alt : ''}
-                draggable={false}
-                className="absolute inset-0 h-full w-full"
-                style={{
-                  transform: `translateZ(${(i - (depth - 1) / 2) * 1.6}px)`,
-                  filter: i === depth - 1 ? 'none' : 'brightness(0.6)',
-                  borderRadius: '20%',
-                }}
-              />
-            ))}
+            {layers.map((i) => {
+              const isFront = i === depth - 1
+              const isBack = i === 0
+              return (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={i}
+                  src={src}
+                  alt={isFront ? alt : ''}
+                  draggable={false}
+                  className="absolute inset-0 h-full w-full"
+                  style={{
+                    // The BACK layer is flipped in place (rotateY 180) so the
+                    // reverse of the chip shows the same un-mirrored, full-
+                    // colour logo as the front while it spins; only the
+                    // in-between layers darken to read as the extruded edge.
+                    transform: `translateZ(${(i - (depth - 1) / 2) * 1.6}px)${isBack ? ' rotateY(180deg)' : ''}`,
+                    filter: isFront || isBack ? 'none' : 'brightness(0.6)',
+                    borderRadius: '20%',
+                  }}
+                />
+              )
+            })}
           </motion.div>
         </div>
       </motion.div>
@@ -518,13 +572,17 @@ export function BrandingHero() {
     <section ref={stageRef} className="relative overflow-hidden">
       {/* White top over the gradient field — gentle diagonal, higher on the
           right (Figma 243:54723 boundary mapped to the new section height). */}
-      <div className="absolute inset-0 bg-white [clip-path:polygon(0_0,100%_0,100%_57%,0_78%)] md:[clip-path:polygon(0_0,100%_0,100%_35.5%,0_50%)]" />
+      <div className="absolute inset-0 bg-white [clip-path:polygon(0_0,100%_0,100%_57%,0_78%)] md:[clip-path:polygon(0_0,100%_0,100%_35.5%,0_50%)] min-[2080px]:[clip-path:polygon(0_0,100%_0,100%_38%,0_51.5%)]" />
 
       {/* STAGE — a centered max-w-[1443px] frame mirroring the Figma artboard
           (1443×893). Every md+ percentage below is a literal Figma coordinate,
           so the whole composition clusters around the frame's center instead
-          of spreading to the viewport edges on wide screens. */}
-      <div className="relative mx-auto w-full max-w-[1443px]">
+          of spreading to the viewport edges on wide screens.
+          On LARGE displays (Studio Display etc.) the whole frame zooms up in
+          steps — zoom scales layout too, so the section grows taller with it.
+          Capped at 1.42: device frames stay below their native 2x resolution,
+          chips are SVG and the card text is vector, so nothing goes pixelly. */}
+      <div className="relative mx-auto w-full max-w-[1443px] min-[1800px]:[zoom:1.2] min-[2080px]:[zoom:1.32] min-[2400px]:[zoom:1.42]">
         {/* height: phone-friendly tall block on mobile, Figma aspect at md+ */}
         <div className="h-[124vw] max-h-[700px] min-h-[320px] md:h-auto md:max-h-none md:aspect-[1443/893]" />
 
