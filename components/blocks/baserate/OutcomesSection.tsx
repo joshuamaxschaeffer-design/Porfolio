@@ -94,10 +94,10 @@ export function OutcomesSection({ intro }: { intro?: string } = {}) {
   const lead = intro ?? data.lead
 
   return (
-    <section className="bg-white">
+    <section id="outcomes" className="bg-white">
       <div className="br-container pt-16 pb-20 md:pt-24 md:pb-[140px]">
         <h2 className="text-[32px] font-medium uppercase leading-none text-[var(--br-ink)] md:text-[40px]">
-          {data.heading}
+          7. {data.heading}
         </h2>
         <p className="mt-3 max-w-3xl text-lg text-[var(--br-muted)] md:text-[22px]">{lead}</p>
 

@@ -309,7 +309,7 @@ export function BrandingHero() {
       {/* Heading */}
       <div className="relative z-30 px-6 pt-16 text-center md:pt-[132px]">
         <h2 className="text-[30px] font-semibold uppercase leading-none tracking-tight text-[var(--br-ink)] md:text-[44px]">
-          Brand &amp; Marketing
+          6. Brand &amp; Marketing
         </h2>
         <p className="mt-3 text-[16px] text-[#2a3050] md:text-[21px]">
           Ran in tandem with product implementation.

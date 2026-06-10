@@ -17,7 +17,7 @@ export function OverviewSection(props: OverviewProps) {
   const scope = props.scope ?? defaults.scope
 
   return (
-    <section className="br-container pt-16 pb-20 md:pt-24 md:pb-[160px]">
+    <section id="overview" className="br-container pt-16 pb-20 md:pt-24 md:pb-[160px]">
       <BaserateLogo className="text-[var(--br-ink)]" />
 
       <p className="br-data mt-3 flex items-center gap-2 text-sm text-[var(--br-muted)]">
@@ -27,7 +27,7 @@ export function OverviewSection(props: OverviewProps) {
       </p>
 
       <h2 className="mt-10 text-[32px] font-medium uppercase leading-none text-[var(--br-ink)] md:text-[40px]">
-        OVERVIEW
+        1. OVERVIEW
       </h2>
       <p className="mt-3 max-w-3xl text-lg text-[var(--br-muted)] md:text-[22px]">{lead}</p>
 

@@ -226,10 +226,10 @@ export function ChallengeSection(props: ChallengeProps) {
   }, [])
 
   return (
-    <section className="bg-[var(--br-bg-2)] py-20 md:py-[160px]">
+    <section id="challenge" className="bg-[var(--br-bg-2)] py-20 md:py-[160px]">
       <div className="br-container">
         <h2 className="text-[32px] font-medium uppercase leading-none text-[var(--br-ink)] md:text-[40px]">
-          {heading}
+          2. {heading}
         </h2>
         <div className="mt-4 flex items-end justify-between gap-4">
           <p className="max-w-2xl text-lg text-[var(--br-muted)] md:text-[22px]">{intro}</p>

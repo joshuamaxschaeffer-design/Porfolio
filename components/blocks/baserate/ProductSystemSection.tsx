@@ -25,7 +25,7 @@ export function ProductSystemSection(props: ProductSystemProps) {
     <section className="pt-20 md:pt-[160px]">
       <div className="br-container">
       <h2 className="text-[32px] font-medium uppercase leading-none text-[var(--br-ink)] md:text-[40px]">
-        {heading}
+        4. {heading}
       </h2>
       <p className="mt-4 max-w-3xl text-lg leading-relaxed text-[var(--br-ink)] md:text-[22px]">{intro}</p>
       </div>
