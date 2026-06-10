@@ -14,6 +14,7 @@ import { MotionImageBlockRenderer } from './blocks/MotionImageBlockRenderer'
 import { LottieBlockRenderer } from './blocks/LottieBlockRenderer'
 import { MarqueeLogosBlockRenderer } from './blocks/MarqueeLogosBlockRenderer'
 import { BaserateCaseStudyBlock } from './blocks/BaserateCaseStudyBlock'
+import { PandaCaseStudyBlock } from './blocks/PandaCaseStudyBlock'
 
 const blockComponents: Record<string, React.ComponentType<any>> = {
   hero: HeroBlock,
@@ -33,6 +34,7 @@ const blockComponents: Record<string, React.ComponentType<any>> = {
   lottie: LottieBlockRenderer,
   marqueeLogos: MarqueeLogosBlockRenderer,
   baserateCaseStudy: BaserateCaseStudyBlock,
+  pandaCaseStudy: PandaCaseStudyBlock,
 }
 
 interface BlockRendererProps {
