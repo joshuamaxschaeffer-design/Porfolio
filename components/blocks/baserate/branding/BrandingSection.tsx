@@ -21,7 +21,7 @@ import { MarketingContent } from './MarketingContent'
  */
 export function BrandingSection() {
   return (
-    <div className="bg-white">
+    <div id="branding" className="bg-white">
       <div style={{ background: 'linear-gradient(96deg, #18768C 0%, #2B6EB7 100%)' }}>
         <BrandingHero />
         <BrandShowcase theme="journalytic" />
