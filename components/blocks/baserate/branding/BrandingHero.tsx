@@ -27,13 +27,16 @@ function pad(n: number) {
 }
 
 /**
- * Canvas frame-sequence player with a LIVE SILHOUETTE DROP SHADOW.
+ * Canvas frame-sequence player with a PHYSICALLY-DERIVED drop shadow.
  *
- * The shadow is a second canvas BEHIND the device that redraws the current
- * frame's own alpha silhouette — tinted dark, blurred in three passes of
- * increasing radius/offset (progressively softer with distance, like a card
- * drop-shadow). Because it's derived from the frame itself, the shadow moves
- * with the device and morphs as the silhouette rotates.
+ * SD Studio exports a per-frame shadow track (shadow-v1.json): the device's
+ * bbox corners cast along the key light onto the surface plane, reduced to
+ * offset / scale / blur-near / blur-far / gradient direction / opacity in
+ * frame pixels. The shadow canvas redraws the current frame's silhouette with
+ * those parameters — three blur bands along the height gradient, so the parts
+ * of the device farther from the surface cast a softer, lighter shadow,
+ * exactly like a real 3D shadow. Falls back to a generic soft shadow until
+ * the track loads.
  */
 function DeviceCanvas({
   dir, className = '', delay = 0,
@@ -41,9 +44,10 @@ function DeviceCanvas({
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const shadowRef = useRef<HTMLCanvasElement>(null)
   const played = useRef(false)
+  const trackRef = useRef<any>(null)
 
   // Shadow canvas oversizes the device by PAD on every side so blur can spill.
-  const PAD = 0.24
+  const PAD = 0.3
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -58,8 +62,15 @@ function DeviceCanvas({
     const imgs: HTMLImageElement[] = []
     const sil = document.createElement('canvas')
     const silCtx = sil.getContext('2d')!
+    const tmp = document.createElement('canvas')
+    const tmpCtx = tmp.getContext('2d')!
 
-    const drawShadow = (img: HTMLImageElement) => {
+    fetch(`/baserate/branding/devices/${dir}/shadow-v1.json`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => { trackRef.current = j?.frames || null })
+      .catch(() => {})
+
+    const drawShadow = (img: HTMLImageElement, frameIdx: number) => {
       const W = canvas.width, H = canvas.height
       const padX = Math.round(W * PAD), padY = Math.round(H * PAD)
       // dark silhouette of THIS frame
@@ -70,21 +81,61 @@ function DeviceCanvas({
       silCtx.fillStyle = '#07112b'
       silCtx.fillRect(0, 0, W, H)
       silCtx.globalCompositeOperation = 'source-over'
-      // three passes: near = tighter/darker, far = wider/softer/more offset
       sctx.clearRect(0, 0, shadow.width, shadow.height)
-      const unit = Math.max(6, W * 0.012)
-      const passes = [
-        { blur: unit * 1.0, alpha: 0.30, dx: unit * 0.7, dy: unit * 1.1, s: 1.0 },
-        { blur: unit * 2.4, alpha: 0.22, dx: unit * 1.6, dy: unit * 2.4, s: 1.02 },
-        { blur: unit * 4.6, alpha: 0.15, dx: unit * 2.8, dy: unit * 4.2, s: 1.05 },
-      ]
-      for (const p of passes) {
-        sctx.save()
-        sctx.filter = `blur(${p.blur.toFixed(1)}px)`
-        sctx.globalAlpha = p.alpha
-        const dw = W * p.s, dh = H * p.s
-        sctx.drawImage(sil, padX + p.dx - (dw - W) / 2, padY + p.dy - (dh - H) / 2, dw, dh)
-        sctx.restore()
+      const fr = trackRef.current?.[frameIdx]
+
+      if (fr) {
+        // ── track-driven: place silhouette at the projected shadow position,
+        //    blur banded along the height gradient (near=sharp, far=soft) ──
+        const cx = padX + fr.dcx + fr.dx
+        const cy = padY + fr.dcy + fr.dy
+        const ox = cx - fr.dcx * fr.sx
+        const oy = cy - fr.dcy * fr.sy
+        const rad = (fr.ang * Math.PI) / 180
+        const dirx = Math.cos(rad), diry = Math.sin(rad)
+        const ext = (Math.abs(dirx) * fr.dw * fr.sx + Math.abs(diry) * fr.dh * fr.sy) / 2 + 4
+        const BANDS = 3, F = 0.14
+        tmp.width = shadow.width; tmp.height = shadow.height
+        for (let j = 0; j < BANDS; j++) {
+          const t0 = j / BANDS, t1 = (j + 1) / BANDS
+          const blur = fr.bn + (fr.bf - fr.bn) * ((t0 + t1) / 2)
+          tmpCtx.clearRect(0, 0, tmp.width, tmp.height)
+          tmpCtx.save()
+          tmpCtx.filter = `blur(${blur.toFixed(1)}px)`
+          tmpCtx.drawImage(sil, ox, oy, W * fr.sx, H * fr.sy)
+          tmpCtx.restore()
+          // band mask along the gradient direction
+          const g = tmpCtx.createLinearGradient(cx - dirx * ext, cy - diry * ext, cx + dirx * ext, cy + diry * ext)
+          const stop = (v: number) => Math.max(0, Math.min(1, v))
+          if (j === 0) { g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(stop(t1), 'rgba(0,0,0,1)'); g.addColorStop(stop(t1 + F), 'rgba(0,0,0,0)') }
+          else if (j === BANDS - 1) { g.addColorStop(stop(t0 - F), 'rgba(0,0,0,0)'); g.addColorStop(stop(t0), 'rgba(0,0,0,1)'); g.addColorStop(1, 'rgba(0,0,0,1)') }
+          else { g.addColorStop(stop(t0 - F), 'rgba(0,0,0,0)'); g.addColorStop(stop(t0), 'rgba(0,0,0,1)'); g.addColorStop(stop(t1), 'rgba(0,0,0,1)'); g.addColorStop(stop(t1 + F), 'rgba(0,0,0,0)') }
+          tmpCtx.save()
+          tmpCtx.globalCompositeOperation = 'destination-in'
+          tmpCtx.fillStyle = g
+          tmpCtx.fillRect(0, 0, tmp.width, tmp.height)
+          tmpCtx.restore()
+          sctx.save()
+          sctx.globalAlpha = fr.a
+          sctx.drawImage(tmp, 0, 0)
+          sctx.restore()
+        }
+      } else {
+        // ── fallback: generic 3-pass soft shadow ──
+        const unit = Math.max(6, W * 0.012)
+        const passes = [
+          { blur: unit * 1.0, alpha: 0.3, dx: unit * 0.7, dy: unit * 1.1, s: 1.0 },
+          { blur: unit * 2.4, alpha: 0.22, dx: unit * 1.6, dy: unit * 2.4, s: 1.02 },
+          { blur: unit * 4.6, alpha: 0.15, dx: unit * 2.8, dy: unit * 4.2, s: 1.05 },
+        ]
+        for (const p of passes) {
+          sctx.save()
+          sctx.filter = `blur(${p.blur.toFixed(1)}px)`
+          sctx.globalAlpha = p.alpha
+          const dw = W * p.s, dh = H * p.s
+          sctx.drawImage(sil, padX + p.dx - (dw - W) / 2, padY + p.dy - (dh - H) / 2, dw, dh)
+          sctx.restore()
+        }
       }
     }
 
@@ -93,7 +144,7 @@ function DeviceCanvas({
       if (img && img.complete && img.naturalWidth) {
         ctx.clearRect(0, 0, canvas.width, canvas.height)
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-        drawShadow(img)
+        drawShadow(img, i)
       }
     }
 
@@ -105,7 +156,7 @@ function DeviceCanvas({
       shadow.height = Math.round(first.naturalHeight * (1 + PAD * 2))
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       ctx.drawImage(first, 0, 0)
-      drawShadow(first)
+      drawShadow(first, 0)
     }
     first.src = `${base}0000.webp`
 
@@ -282,12 +333,12 @@ export function BrandingHero() {
       {mounted && (
         <div className="pointer-events-none absolute inset-0">
           {/* PHONE — render carries the Figma pose; silhouette drop-shadow lives in the canvas */}
-          <div className="absolute left-[2%] top-[15%] z-10 w-[30%] md:left-[5.5%] md:-top-[5%] md:w-[24%]">
+          <div className="absolute left-[0%] top-[14%] z-10 w-[42%] md:left-[5.5%] md:-top-[5%] md:w-[24%]">
             <DeviceCanvas dir="phone" delay={120} className="w-full" />
           </div>
 
           {/* DESKTOP — render carries the Figma pose; silhouette drop-shadow lives in the canvas */}
-          <div className="absolute right-[-9%] top-[14%] z-10 w-[62%] md:right-[-2.5%] md:-top-[7%] md:w-[47%]">
+          <div className="absolute right-[-7%] top-[15%] z-10 w-[58%] md:right-[-4%] md:-top-[8%] md:w-[46%]">
             <DeviceCanvas dir="desktop" delay={0} className="w-full" />
           </div>
 
