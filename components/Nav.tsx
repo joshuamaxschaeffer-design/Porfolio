@@ -66,7 +66,7 @@ export function Nav({ nav, settings, brand }: NavProps) {
             </Link>
           </li>
           <li className="flex h-full">
-            <WorkNavGlass items={WORK_PILLS} />
+            <WorkNavGlass items={WORK_PILLS} brand={brand} />
           </li>
           <li>
             <Link
