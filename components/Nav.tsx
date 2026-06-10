@@ -8,7 +8,7 @@ interface NavProps {
   brand: Brand
 }
 
-/** Work case-study sections shown as liquid-glass pills under the Work tab.
+/** Work case-study sections shown as a vertical glass pill dropdown.
  *  Capabilities is the catch-all. */
 const WORK_PILLS: WorkPill[] = [
   { label: 'Baserate', href: '/work/baserate' },
@@ -19,51 +19,64 @@ const WORK_PILLS: WorkPill[] = [
 ]
 
 export function Nav({ nav, settings, brand }: NavProps) {
-  const siteName =
-    settings?.siteName || (brand === 'practice' ? 'Schaeffer Practice' : 'Joshua Schaeffer')
-  const items = nav?.items || []
+  // Wordmark per Figma (Frame 3109). Practice brand keeps its own name.
+  const siteName = brand === 'practice' ? 'Schaeffer Practice' : 'Schaeffer Solutions'
 
   return (
-    <div className="container flex justify-center px-6 py-5">
-      {/* Glass capsule — same recipe as the left SectionNav rail
-          (Figma 234:53845): neutral glass fill + 10px backdrop blur,
-          hairline border, shadow biased downward. */}
-      <nav className="flex items-center gap-2 rounded-full border border-[rgba(7,14,44,0.05)] bg-[rgba(242,242,245,0.24)] py-1.5 pl-4 pr-2 backdrop-blur-[10px] [box-shadow:0_8px_22px_rgba(7,14,44,0.09),0_2px_6px_rgba(7,14,44,0.05)]">
+    <header
+      className="sticky top-0 z-50 w-full border-b border-[rgba(7,14,44,0.06)] bg-[rgba(242,242,245,0.24)] backdrop-blur-[10px] [box-shadow:0_1px_0_rgba(255,255,255,0.4)_inset,0_6px_18px_rgba(7,14,44,0.05)]"
+      style={
+        {
+          // Navy on the light personal brand; light on the dark practice brand.
+          '--nav-fg': brand === 'practice' ? '#d4d4d8' : '#070E2C',
+          '--nav-fg-hover': brand === 'practice' ? '#ffffff' : '#000000',
+        } as React.CSSProperties
+      }
+    >
+      <nav className="mx-auto flex h-[52px] w-full max-w-[1443px] items-center justify-between px-6 md:px-20">
+        {/* Wordmark — Lexend Deca Medium, uppercase, tracked (Figma P-Header). */}
         <Link
           href="/"
-          className="text-sm font-semibold tracking-tight text-neutral-900 dark:text-neutral-100"
+          className="uppercase tracking-[0.08em] text-[var(--nav-fg)]"
+          style={{ fontFamily: 'var(--font-heading)', fontWeight: 500, fontSize: '18px' }}
         >
           {siteName}
         </Link>
 
-        <span aria-hidden className="mx-1 h-4 w-px bg-[rgba(7,14,44,0.1)]" />
-
-        <ul className="flex items-center gap-1 text-sm">
+        {/* Right links — Lexend Deca ~14px, uppercase, tracked. */}
+        <ul className="flex items-center gap-7 md:gap-9">
+          <li>
+            <Link
+              href="/"
+              className="uppercase tracking-[0.08em] text-[var(--nav-fg)] transition-colors hover:text-[var(--nav-fg-hover)]"
+              style={{ fontFamily: 'var(--font-heading)', fontWeight: 500, fontSize: '14px' }}
+            >
+              Home
+            </Link>
+          </li>
           <li>
             <WorkNavGlass items={WORK_PILLS} />
           </li>
-          {items.map((item: any, i: number) => {
-            const href =
-              item.type === 'external'
-                ? item.externalUrl
-                : item.page && typeof item.page === 'object'
-                  ? item.page.slug === 'home'
-                    ? '/'
-                    : `/${item.page.slug}`
-                  : '#'
-            return (
-              <li key={i}>
-                <Link
-                  href={href}
-                  className="rounded-full px-3 py-1.5 text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
-                >
-                  {item.label}
-                </Link>
-              </li>
-            )
-          })}
+          <li>
+            <Link
+              href="/about"
+              className="uppercase tracking-[0.08em] text-[var(--nav-fg)] transition-colors hover:text-[var(--nav-fg-hover)]"
+              style={{ fontFamily: 'var(--font-heading)', fontWeight: 500, fontSize: '14px' }}
+            >
+              About
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/contact"
+              className="uppercase tracking-[0.08em] text-[var(--nav-fg)] transition-colors hover:text-[var(--nav-fg-hover)]"
+              style={{ fontFamily: 'var(--font-heading)', fontWeight: 500, fontSize: '14px' }}
+            >
+              Contact
+            </Link>
+          </li>
         </ul>
       </nav>
-    </div>
+    </header>
   )
 }
