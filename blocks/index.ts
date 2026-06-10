@@ -15,6 +15,7 @@ import { LottieBlock } from './LottieBlock'
 import { MarqueeLogos } from './MarqueeLogos'
 import { BaserateCaseStudy } from './BaserateCaseStudy'
 import { PandaCaseStudy } from './PandaCaseStudy'
+import { WingstopCaseStudy } from './WingstopCaseStudy'
 
 export const allBlocks = [
   Hero,
@@ -35,6 +36,7 @@ export const allBlocks = [
   MarqueeLogos,
   BaserateCaseStudy,
   PandaCaseStudy,
+  WingstopCaseStudy,
 ]
 
 export {
@@ -55,4 +57,5 @@ export {
   MarqueeLogos,
   BaserateCaseStudy,
   PandaCaseStudy,
+  WingstopCaseStudy,
 }
