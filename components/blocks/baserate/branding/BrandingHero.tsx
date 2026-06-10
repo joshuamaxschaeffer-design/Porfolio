@@ -358,10 +358,12 @@ export function BrandingHero() {
 
   return (
     <section ref={stageRef} className="relative overflow-hidden">
-      {/* White top over the gradient field — gentle diagonal, higher on the right */}
+      {/* White top over the gradient field — gentle diagonal, higher on the right.
+          Figma 243:54723: the boundary crosses the left edge at ~59% of the hero
+          frame and the right edge at ~44% — mapped here onto the taller stage. */}
       <div
         className="absolute inset-0 bg-white"
-        style={{ clipPath: 'polygon(0 0, 100% 0, 100% 47%, 0 65%)' }}
+        style={{ clipPath: 'polygon(0 0, 100% 0, 100% 53%, 0 72%)' }}
       />
 
       {/* Heading */}
@@ -374,8 +376,9 @@ export function BrandingHero() {
         </p>
       </div>
 
-      {/* Stage spacer — the floaters live in the absolute layer */}
-      <div className="h-[66vw] max-h-[460px] min-h-[230px] md:h-[clamp(340px,30vw,470px)]" />
+      {/* Stage spacer — the floaters live in the absolute layer.
+          ~2x the previous height so the scene never clips top or bottom. */}
+      <div className="h-[100vw] max-h-[640px] min-h-[320px] md:h-[clamp(640px,56vw,920px)]" />
 
       {/* B2C label on the blue */}
       <div className="relative z-30 px-6 pb-16 text-center md:pb-[88px]">
@@ -390,27 +393,30 @@ export function BrandingHero() {
       {/* ——— Floating scene ——— */}
       {mounted && (
         <div className="pointer-events-none absolute inset-0">
-          {/* PHONE — render carries the Figma pose; silhouette drop-shadow lives in the canvas */}
-          <div className="absolute left-[0%] top-[14%] z-10 w-[42%] md:left-[5.5%] md:-top-[5%] md:w-[24%]">
+          {/* PHONE — render carries the Figma pose; silhouette drop-shadow lives in the canvas.
+              Sizes are −30% vs the previous pass; tops are POSITIVE so nothing clips. */}
+          <div className="absolute left-[0%] top-[14%] z-10 w-[42%] md:left-[6%] md:top-[7%] md:w-[17%]">
             <DeviceCanvas dir="phone" delay={120} className="w-full" />
           </div>
 
           {/* DESKTOP — render carries the Figma pose; silhouette drop-shadow lives in the canvas */}
-          <div className="absolute right-[-7%] top-[15%] z-10 w-[58%] md:right-[-4%] md:-top-[8%] md:w-[46%]">
+          <div className="absolute right-[-7%] top-[15%] z-10 w-[58%] md:right-[-3%] md:top-[9%] md:w-[32%]">
             <DeviceCanvas dir="desktop" delay={0} className="w-full" />
           </div>
 
-          {/* 3D extruded chips — rotate in once, SETTLE at the Figma pose */}
+          {/* 3D extruded chips — rotate in once, SETTLE at the Figma pose.
+              Positions measured from Figma 243:54723 (chip boxes ÷ 1443×893,
+              y mapped to the section by ×0.7 since the frame covers ~70% of it). */}
           <ExtrudedChip
             src="/baserate/branding/logos/journalytic-app.svg"
             alt="Journalytic"
             reduce={reduce}
             inView={inView}
-            size={92}
+            size={124}
             endX={7}
             endY={16}
             endZ={-9}
-            className="left-[36%] top-[27%] z-[15] scale-[0.55] md:left-[26%] md:top-[2%] md:scale-100"
+            className="left-[36%] top-[27%] z-[15] scale-[0.55] md:left-[21.5%] md:top-[3%] md:scale-100"
             dur={2.8}
           />
           <ExtrudedChip
@@ -418,20 +424,20 @@ export function BrandingHero() {
             alt="Baserate"
             reduce={reduce}
             inView={inView}
-            size={116}
+            size={94}
             endX={5}
             endY={-20}
             endZ={10}
-            className="left-[8%] top-[48%] z-[15] scale-[0.55] md:left-[10.5%] md:top-[71%] md:scale-100"
+            className="left-[8%] top-[48%] z-[15] scale-[0.55] md:left-[61.5%] md:top-[21%] md:scale-100"
             dur={3.2}
             delay={0.25}
           />
 
-          {/* Shadow-casting colour orbs on slow drifts */}
-          <Orb reduce={reduce} className="left-[10%] top-[20%] z-[15] scale-75 md:left-[14%] md:top-[7%] md:scale-100" from="#e3cfa0" to="#a07d20" size={44} dur={15} />
-          <Orb reduce={reduce} className="left-[32.5%] top-[41%] z-[15] scale-75 md:scale-100" from="#4f9fcb" to="#1c5e8c" size={56} dur={18} delay={1.2} />
-          <Orb reduce={reduce} className="left-[69.5%] top-[14%] z-[15] scale-75 md:top-[9%] md:scale-100" from="#2a2f3a" to="#05070d" size={50} dur={17} delay={2.2} />
-          <Orb reduce={reduce} className="left-[80%] top-[52%] z-[15] scale-75 md:left-[78.5%] md:top-[64%] md:scale-100" from="#1e63c0" to="#06337a" size={64} dur={14} delay={0.6} />
+          {/* Shadow-casting colour orbs on slow drifts — Figma-exact spots, all 45px (28 for the gold) */}
+          <Orb reduce={reduce} className="left-[10%] top-[20%] z-[15] scale-75 md:left-[15%] md:top-[5%] md:scale-100" from="#e3cfa0" to="#a07d20" size={30} dur={15} />
+          <Orb reduce={reduce} className="left-[32.5%] top-[41%] z-[15] scale-75 md:left-[33%] md:top-[25.5%] md:scale-100" from="#4f9fcb" to="#1c5e8c" size={46} dur={18} delay={1.2} />
+          <Orb reduce={reduce} className="left-[69.5%] top-[14%] z-[15] scale-75 md:top-[6.5%] md:scale-100" from="#2a2f3a" to="#05070d" size={46} dur={17} delay={2.2} />
+          <Orb reduce={reduce} className="left-[80%] top-[52%] z-[15] scale-75 md:left-[79%] md:top-[41%] md:scale-100" from="#1e63c0" to="#06337a" size={46} dur={14} delay={0.6} />
         </div>
       )}
     </section>
