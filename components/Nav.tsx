@@ -24,12 +24,22 @@ export function Nav({ nav, settings, brand }: NavProps) {
 
   return (
     <header
-      className="sticky top-0 z-50 w-full border-b border-[rgba(7,14,44,0.06)] bg-[rgba(242,242,245,0.24)] backdrop-blur-[10px] [box-shadow:0_1px_0_rgba(255,255,255,0.4)_inset,0_6px_18px_rgba(7,14,44,0.05)]"
+      className="sticky top-0 z-50 w-full border-b border-[var(--glass-border)] bg-[var(--glass-bar)] backdrop-blur-[12px] backdrop-saturate-150 [box-shadow:0_1px_0_rgba(255,255,255,0.5)_inset,0_6px_18px_rgba(7,14,44,0.06)]"
       style={
         {
           // Navy on the light personal brand; light on the dark practice brand.
-          '--nav-fg': brand === 'practice' ? '#d4d4d8' : '#070E2C',
+          '--nav-fg': brand === 'practice' ? '#e7e7ea' : '#070E2C',
           '--nav-fg-hover': brand === 'practice' ? '#ffffff' : '#000000',
+          // Whiter glass so pills + bar read on dark backgrounds too. On the
+          // dark practice brand the white is pushed more opaque for contrast.
+          '--glass-bar':
+            brand === 'practice' ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0.55)',
+          '--glass-fill':
+            brand === 'practice' ? 'rgba(255,255,255,0.16)' : 'rgba(255,255,255,0.55)',
+          '--glass-fill-hover':
+            brand === 'practice' ? 'rgba(255,255,255,0.28)' : 'rgba(255,255,255,0.78)',
+          '--glass-border':
+            brand === 'practice' ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.7)',
         } as React.CSSProperties
       }
     >
@@ -43,8 +53,9 @@ export function Nav({ nav, settings, brand }: NavProps) {
           {siteName}
         </Link>
 
-        {/* Right links — Lexend Deca ~14px, uppercase, tracked. */}
-        <ul className="flex items-center gap-7 md:gap-9">
+        {/* Right links — Lexend Deca ~14px, uppercase, tracked. h-full so the
+            Work trigger's hover zone spans the whole bar height. */}
+        <ul className="flex h-full items-center gap-7 md:gap-9">
           <li>
             <Link
               href="/"
@@ -54,7 +65,7 @@ export function Nav({ nav, settings, brand }: NavProps) {
               Home
             </Link>
           </li>
-          <li>
+          <li className="flex h-full">
             <WorkNavGlass items={WORK_PILLS} />
           </li>
           <li>
