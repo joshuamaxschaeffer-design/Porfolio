@@ -60,8 +60,8 @@ export function Nav({ nav, settings, brand }: NavProps) {
           {siteName}
         </Link>
 
-        {/* Desktop: icon nav (labels expand inline on hover). Hidden on mobile.
-            Generous gap so an expanding label barely nudges its neighbors. */}
+        {/* Desktop: equal fixed-width icon boxes (NAV_BOX); hover swaps the
+            icon for the label instantly in place — nothing moves. */}
         <ul className="hidden h-full items-center gap-5 md:flex lg:gap-7">
           <li>
             <NavIconLink href="/" label="Home" icon={<HomeIcon />} />

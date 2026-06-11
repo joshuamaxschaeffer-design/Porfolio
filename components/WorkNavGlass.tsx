@@ -4,6 +4,7 @@ import Link from 'next/link'
 import type { Brand } from '@/lib/brand'
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { NAV_BOX } from './NavIconLink'
 import { WorkIcon } from './nav-icons'
 
 export interface WorkPill {
@@ -32,10 +33,10 @@ function glassVars(brand: Brand) {
  *
  * The flyout is PORTALED to <body> (not nested in the header) so each pill's
  * backdrop-filter blurs the real page, not the header's already-blurred layer.
- * Its position is measured from the trigger when it opens — and because the
- * trigger doesn't animate, that single measurement is stable. Pills' text is
- * aligned under the "Work" text: trigger has px-3 (12px), pills have px-4
- * (16px), so portal left = triggerLeft + 12 − 16 = triggerLeft − 4.
+ * Its position is measured from the trigger when it opens — the trigger is a
+ * fixed-width box (NAV_BOX, same as every nav item) that never changes size,
+ * so the measurement is stable. The pill stack is left-aligned to the trigger
+ * box's left edge and expands downward.
  */
 export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand }) {
   const [open, setOpen] = useState(false)
@@ -52,22 +53,18 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
     const el = triggerRef.current
     if (!el) return
     const r = el.getBoundingClientRect()
-    setPos({ left: Math.round(r.left + 12 - 16), top: Math.round(r.bottom) })
+    setPos({ left: Math.round(r.left), top: Math.round(r.bottom) })
   }
 
   useEffect(() => {
     if (!open) return
     place()
-    // The trigger swaps icon→text on open, which widens it and shifts its left
-    // edge; re-measure after that paint so the pills anchor to the final spot.
-    const raf = requestAnimationFrame(place)
     const onMove = () => place()
     window.addEventListener('scroll', onMove, { passive: true })
     window.addEventListener('resize', onMove)
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
     window.addEventListener('keydown', onKey)
     return () => {
-      cancelAnimationFrame(raf)
       window.removeEventListener('scroll', onMove)
       window.removeEventListener('resize', onMove)
       window.removeEventListener('keydown', onKey)
@@ -103,7 +100,7 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
         aria-expanded={open}
         aria-label="Work"
         onClick={() => setOpen((v) => !v)}
-        className="flex h-9 items-center justify-center rounded-full border px-3 transition-colors duration-150"
+        className={`flex h-9 ${NAV_BOX} items-center justify-center rounded-full border`}
         style={{
           color: open ? g.fgHover : g.fg,
           backgroundColor: open ? g.fill : 'transparent',

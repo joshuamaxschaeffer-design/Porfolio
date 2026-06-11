@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import type { Brand } from '@/lib/brand'
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { AboutIcon, CloseIcon, ContactIcon, HomeIcon, MenuIcon, WorkIcon } from './nav-icons'
 import type { WorkPill } from './WorkNavGlass'
 
@@ -11,9 +12,18 @@ import type { WorkPill } from './WorkNavGlass'
  * spring out from under the bar. There is no Work page — instead the Work pill
  * is a TALL glass pill that is itself a labeled container holding the project
  * links inside it. Home/About/Contact are single big pills.
+ *
+ * The scrim + pill stack are PORTALED to <body>: a backdrop-filter on a
+ * descendant of the (already backdrop-filtered) header samples the header's
+ * backdrop root instead of the page — on iOS Safari the pills rendered fully
+ * clear. Same fix as the desktop Work flyout. Because the portal escapes the
+ * header, the per-brand vars are re-declared on the portal root.
  */
 export function MobileNav({ workItems, brand }: { workItems: WorkPill[]; brand: Brand }) {
   const [open, setOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => setMounted(true), [])
 
   useEffect(() => {
     if (!open) return
@@ -47,6 +57,17 @@ export function MobileNav({ workItems, brand }: { workItems: WorkPill[]; brand: 
   const link =
     'flex items-center gap-3 px-5 text-[17px] uppercase tracking-[0.06em] text-[var(--nav-fg)]'
 
+  // Mirrors the vars set on <header> in Nav.tsx (they don't reach the portal).
+  const practice = brand === 'practice'
+  const portalVars = {
+    '--nav-fg': practice ? '#e7e7ea' : '#070E2C',
+    '--nav-fg-hover': practice ? '#ffffff' : '#000000',
+    '--nav-muted': practice ? '#9a9aa3' : '#7e7f88',
+    '--glass-fill': practice ? 'rgba(255,255,255,0.16)' : 'rgba(255,255,255,0.55)',
+    '--glass-fill-hover': practice ? 'rgba(255,255,255,0.28)' : 'rgba(255,255,255,0.78)',
+    '--glass-border': practice ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.7)',
+  } as React.CSSProperties
+
   return (
     <div className="md:hidden">
       <button
@@ -59,6 +80,9 @@ export function MobileNav({ workItems, brand }: { workItems: WorkPill[]; brand: 
         {open ? <CloseIcon /> : <MenuIcon />}
       </button>
 
+      {mounted &&
+        createPortal(
+          <div className="md:hidden" style={portalVars}>
       {/* Scrim — blurs the page behind the floating pills. */}
       <button
         aria-hidden
@@ -127,6 +151,9 @@ export function MobileNav({ workItems, brand }: { workItems: WorkPill[]; brand: 
           <ContactIcon width={20} height={20} /> Contact
         </Link>
       </div>
+          </div>,
+          document.body,
+        )}
     </div>
   )
 }
