@@ -31,10 +31,11 @@ function glassVars(brand: Brand) {
  * hover/open the icon CROSSFADES to the "Work" text (250ms opacity, stacked
  * grid cell — same recipe as NavIconLink). A vertical stack of glass pills
  * drops beneath it. The trigger is a full-bar-height hover target; the portal
- * starts EXACTLY at the bar's bottom edge (no overlap, no bridge) — if the
- * flyout overlapped the trigger, opening it under a stationary cursor made
- * the browser retarget hover to the portal, firing pointerleave on the
- * trigger and instantly closing it (the "activates then deactivates" bug).
+ * starts EXACTLY at the bar's bottom edge (no overlap, no bridge), and the
+ * pills animate with OPACITY ONLY — anything that puts flyout geometry inside
+ * the trigger's hover area (static padding OR a transform mid-animation)
+ * makes the browser retarget hover to the portal, fire pointerleave on the
+ * trigger, and instantly close it (the "activates then deactivates" flicker).
  *
  * The flyout is PORTALED to <body> (not nested in the header) so each pill's
  * backdrop-filter blurs the real page, not the header's already-blurred layer.
@@ -48,6 +49,7 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
   const [pos, setPos] = useState<{ left: number; top: number } | null>(null)
   const [mounted, setMounted] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
+  const portalRef = useRef<HTMLDivElement>(null)
   const closeTimer = useRef<number | null>(null)
   const g = glassVars(brand)
 
@@ -69,11 +71,38 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
     window.addEventListener('resize', onMove)
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
     window.addEventListener('keydown', onKey)
+
+    // GEOMETRIC containment instead of pointerleave pairing. Entering
+    // diagonally from below skims the seam where the portal materializes;
+    // if the pointer is sampled there during the frame before the portal is
+    // interactive, a leave fires with no matching enter and the close timer
+    // wins (the diagonal flicker). So while open we track pointermove and
+    // decide by POSITION: inside trigger rect or portal rect (±6px) → stay
+    // open; outside both → arm the 200ms close once (not reset per move).
+    const PAD = 6
+    const within = (r: DOMRect, x: number, y: number) =>
+      x >= r.left - PAD && x <= r.right + PAD && y >= r.top - PAD && y <= r.bottom + PAD
+    const onPointerMove = (e: PointerEvent) => {
+      if (e.pointerType === 'touch') return
+      const t = triggerRef.current?.getBoundingClientRect()
+      const p = portalRef.current?.getBoundingClientRect()
+      const inside =
+        (t ? within(t, e.clientX, e.clientY) : false) ||
+        (p ? within(p, e.clientX, e.clientY) : false)
+      if (inside) clearClose()
+      else if (closeTimer.current === null) scheduleHide()
+    }
+    window.addEventListener('pointermove', onPointerMove, { passive: true })
+    const onDocLeave = () => scheduleHide()
+    document.documentElement.addEventListener('mouseleave', onDocLeave)
     return () => {
       window.removeEventListener('scroll', onMove)
       window.removeEventListener('resize', onMove)
       window.removeEventListener('keydown', onKey)
+      window.removeEventListener('pointermove', onPointerMove)
+      document.documentElement.removeEventListener('mouseleave', onDocLeave)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
 
   const clearClose = () => {
@@ -88,7 +117,10 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
   }
   const scheduleHide = () => {
     clearClose()
-    closeTimer.current = window.setTimeout(() => setOpen(false), 200)
+    closeTimer.current = window.setTimeout(() => {
+      closeTimer.current = null
+      setOpen(false)
+    }, 200)
   }
   const notTouch = (e: React.PointerEvent) => e.pointerType !== 'touch'
 
@@ -96,7 +128,8 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
     <div
       className="flex h-full items-center"
       onPointerEnter={(e) => notTouch(e) && show()}
-      onPointerLeave={(e) => notTouch(e) && scheduleHide()}
+      // No onPointerLeave: closing is decided by the geometric pointermove
+      // check while open (leave events mis-pair at the portal seam).
     >
       <button
         ref={triggerRef}
@@ -119,7 +152,7 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
           {/* icon ⇄ text crossfade (250ms), stacked in one grid cell */}
           <span
             className="col-start-1 row-start-1 grid place-items-center [&>svg]:block"
-            style={{ opacity: open ? 0 : 1, transition: 'opacity 250ms' }}
+            style={{ opacity: open ? 0 : 1, transition: 'opacity 700ms' }}
           >
             <WorkIcon />
           </span>
@@ -129,7 +162,7 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
               fontFamily: 'var(--font-heading)',
               fontWeight: 500,
               opacity: open ? 1 : 0,
-              transition: 'opacity 250ms',
+              transition: 'opacity 700ms',
             }}
           >
             Work
@@ -140,8 +173,8 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
       {mounted &&
         createPortal(
           <div
+            ref={portalRef}
             onPointerEnter={(e) => notTouch(e) && show()}
-            onPointerLeave={(e) => notTouch(e) && scheduleHide()}
             style={{
               position: 'fixed',
               left: pos?.left ?? -9999,
@@ -164,7 +197,12 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
                 href={it.href}
                 tabIndex={open ? 0 : -1}
                 onClick={() => setOpen(false)}
-                className="flex h-9 items-center whitespace-nowrap rounded-full px-4 text-[14px] uppercase tracking-[0.06em] backdrop-blur-[14px] backdrop-saturate-150 transition-[transform,opacity,background-color,color]"
+                // NO transform on entrance! Hit-testing follows transforms:
+                // the old translateY(-6px) start poked the first pill ABOVE
+                // the container into the trigger's hover strip mid-animation,
+                // stealing hover and closing the menu (the flicker). The
+                // top-to-bottom stagger alone reads as "expanding downward".
+                className="flex h-9 items-center whitespace-nowrap rounded-full px-4 text-[14px] uppercase tracking-[0.06em] backdrop-blur-[14px] backdrop-saturate-150 transition-[opacity,background-color,color]"
                 style={{
                   fontFamily: 'var(--font-heading)',
                   fontWeight: 500,
@@ -173,9 +211,8 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
                   border: `1px solid ${g.border}`,
                   boxShadow:
                     '0 8px 22px rgba(7,14,44,0.12), 0 2px 6px rgba(7,14,44,0.06), inset 0 1px 0 rgba(255,255,255,0.55)',
-                  transitionDuration: '300ms',
+                  transitionDuration: '250ms',
                   transitionDelay: `${open ? i * 40 : 0}ms`,
-                  transform: open ? 'translateY(0)' : 'translateY(-6px)',
                   opacity: open ? 1 : 0,
                 }}
                 onMouseEnter={(e) => {

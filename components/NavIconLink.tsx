@@ -30,12 +30,12 @@ export function NavIconLink({
         className={`grid h-9 ${NAV_BOX} place-items-center rounded-full border border-transparent text-[var(--nav-fg)] transition-colors duration-[250ms] group-hover/icon:border-[var(--glass-border)] group-hover/icon:bg-[var(--glass-fill)] group-hover/icon:text-[var(--nav-fg-hover)] group-focus-visible/icon:border-[var(--glass-border)] group-focus-visible/icon:bg-[var(--glass-fill)]`}
       >
         {/* icon — fades out on hover/focus */}
-        <span className="col-start-1 row-start-1 grid place-items-center transition-opacity duration-[250ms] [&>svg]:block group-hover/icon:opacity-0 group-focus-visible/icon:opacity-0">
+        <span className="col-start-1 row-start-1 grid place-items-center transition-opacity duration-[700ms] [&>svg]:block group-hover/icon:opacity-0 group-focus-visible/icon:opacity-0">
           {icon}
         </span>
         {/* label — fades in on hover/focus */}
         <span
-          className="col-start-1 row-start-1 whitespace-nowrap text-[13px] uppercase tracking-[0.08em] opacity-0 transition-opacity duration-[250ms] group-hover/icon:opacity-100 group-focus-visible/icon:opacity-100"
+          className="col-start-1 row-start-1 whitespace-nowrap text-[13px] uppercase tracking-[0.08em] opacity-0 transition-opacity duration-[700ms] group-hover/icon:opacity-100 group-focus-visible/icon:opacity-100"
           style={{ fontFamily: 'var(--font-heading)', fontWeight: 500 }}
         >
           {label}
