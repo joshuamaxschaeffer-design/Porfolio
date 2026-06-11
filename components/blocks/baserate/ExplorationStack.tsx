@@ -16,13 +16,13 @@ export interface ExplorationItem {
  *  - Right: a list of text items with a vertical indicator line. Hovering an
  *    item slides the line to it; clicking selects it.
  *
- * TOUCH: the front card tracks the finger in real time (a motion value follows
- * touchmove and translates the top card live). On release we commit to the
- * next/prev card if the drag passed a (deliberately small) distance OR velocity
- * threshold, animating on from where the finger left off; otherwise it springs
- * back. The stack is INFINITE: it wraps modulo n in both directions, so you can
- * keep swiping forever and the items just cycle. A BIG swipe (long pull or hard
- * flick) flings through TWO cards back-to-back.
+ * TOUCH (Joshua 2026-06-10): ONE card per swipe. The front card tracks the
+ * finger 1:1; on release past a small distance/velocity threshold it flings
+ * off in the swipe direction and — REGARDLESS of direction — the card
+ * UNDERNEATH (next in the fan) becomes the front; the swiped card loops to
+ * the back. Below md the under-cards render their real IMAGES (lightly
+ * washed) so the card underneath is never blank while dragging; at md+ they
+ * keep the clean white card-back look.
  */
 export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag?: string }) {
   const reduce = useReducedMotion()
@@ -64,9 +64,9 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
   const settle = (to: number) =>
     animate(dragX, to, reduce ? { duration: 0 } : { type: 'spring', stiffness: 320, damping: 34 })
 
-  // Fling the front card out, advance (wrapping), and for big swipes chain a
-  // second, snappier fling so the motion visibly passes through two cards.
-  const flingThrough = (dir: 1 | -1, steps: number, velocity: number) => {
+  // Fling the front card out in the SWIPE direction, then ALWAYS advance to
+  // the card underneath (wrapping). One card per swipe — no chained flings.
+  const flingOut = (dir: 1 | -1, velocity: number) => {
     const width = touch.current.width
     const exitTo = dir > 0 ? -width * 0.6 : width * 0.6
     animate(
@@ -74,11 +74,12 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
       exitTo,
       reduce
         ? { duration: 0 }
-        : { type: 'spring', stiffness: steps > 1 ? 460 : 340, damping: 38, velocity: velocity * 1000 },
+        : { type: 'spring', stiffness: 340, damping: 38, velocity: velocity * 1000 },
     ).then(() => {
-      setActive((a) => wrapIndex(a + dir))
+      // Either direction reveals the SAME next card — the one that was
+      // visibly underneath; the swiped card loops to the back of the fan.
+      setActive((a) => wrapIndex(a + 1))
       dragX.set(0) // new front card starts centered (it was behind, off-stage)
-      if (steps > 1) requestAnimationFrame(() => flingThrough(dir, steps - 1, velocity * 0.6))
     })
   }
 
@@ -93,12 +94,10 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
     // card is easy to reach; a gentle flick commits too.
     const distanceCommit = Math.abs(dx) > width * 0.1
     const velocityCommit = Math.abs(velocity) > 0.3
-    // A BIG swipe — long pull or hard flick — jumps TWO cards.
-    const big = Math.abs(dx) > width * 0.5 || Math.abs(velocity) > 1.2
 
     if ((distanceCommit || velocityCommit) && Math.abs(dx) > 8) {
-      const dir: 1 | -1 = dx < 0 ? 1 : -1 // drag left → next
-      flingThrough(dir, big ? 2 : 1, velocity)
+      const dir: 1 | -1 = dx < 0 ? 1 : -1 // exit follows the finger
+      flingOut(dir, velocity)
       return
     }
     // No commit → spring back to center.
@@ -164,7 +163,19 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
                 <img src={item.image} alt={item.title} draggable={false} className="h-full w-full object-contain" />
               ) : (
                 <>
-                  <span className="absolute inset-0 bg-white" />
+                  {/* MOBILE: the under-card shows its REAL image (lightly
+                      washed) so dragging the top card never reveals a blank
+                      white panel. md+: clean white card-backs, as designed. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={item.image}
+                    alt=""
+                    aria-hidden
+                    draggable={false}
+                    className="h-full w-full object-contain md:hidden"
+                  />
+                  <span aria-hidden className="absolute inset-0 bg-white/40 md:hidden" />
+                  <span aria-hidden className="absolute inset-0 hidden bg-white md:block" />
                   <span className="absolute inset-0 bg-gradient-to-l from-black/0 to-black/[0.06]" />
                 </>
               )}
