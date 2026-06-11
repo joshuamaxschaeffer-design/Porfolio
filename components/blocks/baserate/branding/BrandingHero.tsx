@@ -168,8 +168,11 @@ export function BrandingHero() {
 
         {/* Heading — SOLID white card stacked above the whole scene, so
             devices/chips/orbs can pass behind it without colliding with the
-            text (per Figma: white fill, hairline border, soft lift). */}
-        <div className="absolute left-1/2 top-[3%] z-40 w-[92%] -translate-x-1/2 rounded-[10px] border border-[#e7e9f1] bg-white px-5 py-6 text-center shadow-[0_24px_48px_-24px_rgba(10,23,48,0.28)] md:top-[15.7%] md:w-[41.3%] md:px-8 md:py-[34px]">
+            text (per Figma: white fill, hairline border, soft lift).
+            MOBILE (Joshua 2026-06-10): devices sit ABOVE the card vertically
+            and the card overlaps their lower halves — same device-behind-card
+            treatment as the Journalytic 2-Products stack. */}
+        <div className="absolute left-1/2 top-[32%] z-40 w-[92%] -translate-x-1/2 rounded-[10px] border border-[#e7e9f1] bg-white px-5 py-6 text-center shadow-[0_24px_48px_-24px_rgba(10,23,48,0.28)] md:top-[15.7%] md:w-[41.3%] md:px-8 md:py-[34px]">
           <h2 className="text-[30px] font-semibold uppercase leading-none tracking-tight text-[var(--br-ink)] md:text-[44px]">
             Brand &amp; Marketing
           </h2>
@@ -182,12 +185,12 @@ export function BrandingHero() {
         {mounted && (
           <div className="pointer-events-none absolute inset-0">
             {/* PHONE — render carries the Figma pose; silhouette drop-shadow lives in the canvas */}
-            <div className="absolute left-[0%] top-[26%] z-10 w-[42%] md:left-[11%] md:top-[18.5%] md:w-[18%]">
+            <div className="absolute left-[0%] top-[3%] z-10 w-[42%] md:left-[11%] md:top-[18.5%] md:w-[18%]">
               <StudioObject base="/baserate/branding/devices/phone" frameCount={FRAME_COUNT} fps={FPS} delay={120} className="w-full" alt="phone device" />
             </div>
 
             {/* DESKTOP — pulled fully inside the frame, toward the center */}
-            <div className="absolute right-[-7%] top-[27%] z-10 w-[58%] md:left-[63.5%] md:right-auto md:top-[17%] md:w-[33%]">
+            <div className="absolute right-[-7%] top-[4%] z-10 w-[58%] md:left-[63.5%] md:right-auto md:top-[17%] md:w-[33%]">
               <StudioObject base="/baserate/branding/devices/desktop" frameCount={FRAME_COUNT} fps={FPS} delay={0} className="w-full" alt="desktop device" />
             </div>
 
@@ -202,7 +205,7 @@ export function BrandingHero() {
               endX={7}
               endY={16}
               endZ={-9}
-              className="left-[36%] top-[40%] z-[15] scale-[0.55] md:left-[21.5%] md:top-[4.5%] md:scale-100"
+              className="left-[36%] top-[6%] z-[15] scale-[0.55] md:left-[21.5%] md:top-[4.5%] md:scale-100"
               dur={2.8}
             />
             <ExtrudedChip
@@ -221,8 +224,8 @@ export function BrandingHero() {
 
             {/* Colour orbs on slow drifts — Figma spots; the navy one is moved
                 LEFT of the desktop so it floats in clean space */}
-            <Orb reduce={reduce} className="left-[10%] top-[32%] z-[15] scale-75 md:left-[15.1%] md:top-[7.5%] md:scale-100" from="#e3cfa0" to="#a07d20" size={30} dur={15} />
-            <Orb reduce={reduce} className="left-[32.5%] top-[53%] z-[15] scale-75 md:left-[33.2%] md:top-[36.4%] md:scale-100" from="#4f9fcb" to="#1c5e8c" size={46} dur={18} delay={1.2} />
+            <Orb reduce={reduce} className="left-[10%] top-[8%] z-[15] scale-75 md:left-[15.1%] md:top-[7.5%] md:scale-100" from="#e3cfa0" to="#a07d20" size={30} dur={15} />
+            <Orb reduce={reduce} className="left-[32.5%] top-[60%] z-[15] scale-75 md:left-[33.2%] md:top-[36.4%] md:scale-100" from="#4f9fcb" to="#1c5e8c" size={46} dur={18} delay={1.2} />
             <Orb reduce={reduce} className="left-[69.5%] top-[26%] z-[15] scale-75 md:left-[69.6%] md:top-[9%] md:scale-100" from="#2a2f3a" to="#05070d" size={46} dur={17} delay={2.2} />
             <Orb reduce={reduce} className="left-[64%] top-[64%] z-[15] scale-75 md:left-[55.5%] md:top-[57.5%] md:scale-100" from="#1e63c0" to="#06337a" size={46} dur={14} delay={0.6} />
           </div>

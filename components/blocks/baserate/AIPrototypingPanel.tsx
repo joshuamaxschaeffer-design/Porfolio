@@ -93,7 +93,7 @@ export function AIPrototypingPanel({
             letterbox bars, never looks cropped. */}
         <div
           className="absolute top-0 overflow-hidden rounded-l-xl border-y border-l border-white/10 bg-[#0d0f15] shadow-[0_24px_60px_-30px_rgba(0,0,0,0.8)]"
-          style={{ left: 24, width: 720, maxWidth: 'none', aspectRatio: '16 / 9' }}
+          style={{ left: 44, width: 720, maxWidth: 'none', aspectRatio: '16 / 9' }}
         >
           {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
           <video
@@ -114,7 +114,7 @@ export function AIPrototypingPanel({
         {/* Claude UI in front — chat-only column (legible), lower-left, fully on
             screen (not chopped). */}
         <div
-          className="absolute bottom-0 left-0 overflow-hidden rounded-xl border border-black/10 bg-white shadow-[0_30px_70px_-30px_rgba(0,0,0,0.9)]"
+          className="absolute bottom-0 left-5 overflow-hidden rounded-xl border border-black/10 bg-white shadow-[0_30px_70px_-30px_rgba(0,0,0,0.9)]"
           style={{ width: '80%', height: '300px' }}
         >
           <ClaudeUI mobile />

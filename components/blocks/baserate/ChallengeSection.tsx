@@ -240,13 +240,16 @@ export function ChallengeSection(props: ChallengeProps) {
         </div>
       </div>
 
-      {/* Draggable track, bleeds to both edges. ALL sizes: free 1:1 drag with
+      {/* Draggable track, bleeds to both edges — md+ ONLY. (Mobile gets the
+          one-at-a-time swipe stack below; the track's edge fade was also why
+          the next card looked BLANK while swiping on a phone — an 88vw card's
+          peek sat entirely inside the 200px fade wash.) Free 1:1 drag with
           flick momentum. No scroll-snap and no scroll-smooth — CSS smooth
           behavior animates every programmatic scrollLeft write, so it fought
           the rAF drag/momentum loops and made dragging feel mushy; snap then
           yanked the coast. touch-action: pan-y hands horizontal gestures to
           JS while vertical swipes still scroll the page. */}
-      <EdgeFadeBlur bg="var(--br-bg-2)" className="mt-8">
+      <EdgeFadeBlur bg="var(--br-bg-2)" className="mt-8 hidden md:block">
         <div
           ref={trackRef}
           className="br-noscrollbar br-grab flex gap-5 overflow-x-auto overscroll-x-contain pb-2 pl-[max(1.5rem,calc((100vw-1443px)/2+5rem))] pr-6 select-none"
@@ -284,16 +287,213 @@ export function ChallengeSection(props: ChallengeProps) {
           </button>
         ))}
       </div>
+      {/* Mobile: one-card-at-a-time swipe stack (own pills inside) */}
+      <ChallengeStack cards={cards} />
+    </section>
+  )
+}
+
+/* ------------------------------------------------------------------------
+ * ChallengeStack — MOBILE (<md) replacement for the scroll track.
+ *
+ * A deck of cards: the top card follows the finger 1:1; release past the
+ * threshold (or a flick) sends it off-screen in the swipe direction and it
+ * loops to the BACK of the deck — EITHER direction advances to the same next
+ * card. While dragging, the card underneath is fully visible (every card
+ * stays mounted, so its image is decoded long before it surfaces — no blank
+ * card behind the one you're moving).
+ * ---------------------------------------------------------------------- */
+
+// One shared transition string. IMPORTANT: direct DOM writes (drag/settle)
+// must restore EXACTLY this value — React skips re-writing style keys it
+// thinks are unchanged, so leaving a different inline value behind would
+// permanently kill the deck animation for that card.
+const STACK_TRANS = 'transform 0.3s cubic-bezier(0.2, 0.7, 0.3, 1), opacity 0.3s ease'
+const POSE_TOP = 'translate3d(0,0,0) scale(1)'
+const POSE_NEXT = 'translate3d(0,14px,0) scale(0.955)'
+const POSE_BACK = 'translate3d(0,26px,0) scale(0.91)'
+
+function ChallengeStack({ cards }: { cards: ChallengeCard[] }) {
+  const n = cards.length
+  const [index, setIndex] = useState(0)
+  // The card that just flew off and looped to the back must NOT animate from
+  // its off-screen spot back across the deck — it snaps (transition: none).
+  const [lastSwiped, setLastSwiped] = useState(-1)
+  const wrapRef = useRef<HTMLDivElement>(null)
+  const els = useRef<(HTMLDivElement | null)[]>([])
+  const busy = useRef(false) // commit animation in flight
+  const stackDrag = useRef({
+    down: false,
+    dx: 0,
+    startX: 0,
+    raf: null as number | null,
+    samples: [] as { x: number; t: number }[],
+  })
+
+  const pose = (d: number) =>
+    d === 0
+      ? { transform: POSE_TOP, opacity: 1, zIndex: 30 }
+      : d === 1
+        ? { transform: POSE_NEXT, opacity: 1, zIndex: 20 }
+        : { transform: POSE_BACK, opacity: d === 2 ? 1 : 0, zIndex: d === 2 ? 10 : 0 }
+
+  // Drag writes happen once per FRAME (rAF), not per pointer event — same
+  // jank fix as the desktop track. Only the top + next cards move.
+  const applyDrag = useCallback(() => {
+    const { dx, down } = stackDrag.current
+    const w = wrapRef.current?.clientWidth || 1
+    const top = els.current[index]
+    const next = els.current[(index + 1) % n]
+    if (top) top.style.transform = `translate3d(${dx}px,0,0) rotate(${((dx / w) * 4).toFixed(2)}deg)`
+    if (next) {
+      // the under-card eases up to full size as the top card moves away
+      const p = Math.min(1, Math.abs(dx) / (w * 0.55))
+      next.style.transform = `translate3d(0,${(14 * (1 - p)).toFixed(1)}px,0) scale(${(0.955 + 0.045 * p).toFixed(3)})`
+    }
+    stackDrag.current.raf = down ? requestAnimationFrame(applyDrag) : null
+  }, [index, n])
+
+  const settle = useCallback(
+    (commit: boolean, dir: 1 | -1) => {
+      const w = wrapRef.current?.clientWidth || 320
+      const top = els.current[index]
+      const next = els.current[(index + 1) % n]
+      if (top) top.style.transition = STACK_TRANS
+      if (next) next.style.transition = STACK_TRANS
+      if (commit) {
+        busy.current = true
+        if (top) top.style.transform = `translate3d(${dir * (w + 80)}px,0,0) rotate(${dir * 6}deg)`
+        if (next) next.style.transform = POSE_TOP
+        window.setTimeout(() => {
+          busy.current = false
+          setLastSwiped(index)
+          setIndex((i) => (i + 1) % n)
+        }, 300)
+      } else {
+        if (top) top.style.transform = POSE_TOP
+        if (next) next.style.transform = POSE_NEXT
+      }
+    },
+    [index, n],
+  )
+
+  const onStackDown = (e: React.PointerEvent) => {
+    if (busy.current) return
+    const top = els.current[index]
+    const next = els.current[(index + 1) % n]
+    if (top) top.style.transition = 'none'
+    if (next) next.style.transition = 'none'
+    stackDrag.current = {
+      down: true,
+      dx: 0,
+      startX: e.clientX,
+      raf: stackDrag.current.raf,
+      samples: [{ x: e.clientX, t: performance.now() }],
+    }
+    ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+    if (stackDrag.current.raf == null) stackDrag.current.raf = requestAnimationFrame(applyDrag)
+  }
+  const onStackMove = (e: React.PointerEvent) => {
+    if (!stackDrag.current.down) return
+    stackDrag.current.dx = e.clientX - stackDrag.current.startX
+    const now = performance.now()
+    const s = stackDrag.current.samples
+    s.push({ x: e.clientX, t: now })
+    while (s.length > 2 && now - s[0].t > 120) s.shift()
+  }
+  const onStackUp = (e: React.PointerEvent) => {
+    if (!stackDrag.current.down) return
+    stackDrag.current.down = false
+    try {
+      ;(e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId)
+    } catch {}
+    const { dx, samples } = stackDrag.current
+    const w = wrapRef.current?.clientWidth || 320
+    const now = performance.now()
+    const first = samples[0]
+    const last = samples[samples.length - 1]
+    const dt = last.t - first.t
+    const vx = dt > 0 ? (last.x - first.x) / dt : 0 // px/ms
+    const flick = now - last.t < 90 && Math.abs(vx) > 0.45
+    const dir = (dx !== 0 ? Math.sign(dx) : Math.sign(vx)) as 1 | -1 | 0
+    const commit = dir !== 0 && (Math.abs(dx) > w * 0.3 || flick)
+    settle(commit, dir === 0 ? 1 : dir)
+    stackDrag.current.dx = 0
+  }
+
+  useEffect(
+    () => () => {
+      if (stackDrag.current.raf != null) cancelAnimationFrame(stackDrag.current.raf)
+    },
+    [],
+  )
+
+  return (
+    <div className="md:hidden">
+      <div className="mt-8 px-6">
+        <div
+          ref={wrapRef}
+          className="br-grab relative mx-auto aspect-[1204/1150] w-full max-w-[480px] select-none"
+          style={{ touchAction: 'pan-y' }}
+          onPointerDown={onStackDown}
+          onPointerMove={onStackMove}
+          onPointerUp={onStackUp}
+          onPointerCancel={onStackUp}
+        >
+          {cards.map((card, i) => {
+            const d = (i - index + n) % n
+            const p = pose(d)
+            return (
+              <div
+                key={card.problem}
+                ref={(el) => {
+                  els.current[i] = el
+                }}
+                className="absolute inset-0"
+                style={{
+                  transform: p.transform,
+                  opacity: p.opacity,
+                  zIndex: p.zIndex,
+                  transition: i === lastSwiped ? 'none' : STACK_TRANS,
+                  willChange: 'transform',
+                }}
+              >
+                <article className="relative h-full w-full rounded-2xl bg-white shadow-[0_18px_40px_-18px_rgba(7,14,44,0.35)]">
+                  <div className="absolute inset-0 overflow-hidden rounded-2xl">
+                    {/* mobile crop when it exists; both crops share the same
+                        ~1.047 ratio as the wrapper so nothing letterboxes */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={card.mobileImage ?? card.image}
+                      alt={`Problem ${card.problem}`}
+                      draggable={false}
+                      className="pointer-events-none h-full w-full object-cover"
+                    />
+                  </div>
+                  <div className="pointer-events-none absolute inset-0 rounded-2xl border border-[var(--br-stroke)]" />
+                </article>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* pills — tap to jump the deck */}
       <div
-        className="br-noscrollbar mt-6 flex gap-2 overflow-x-auto pl-6 pr-6 md:hidden"
+        className="br-noscrollbar mt-7 flex gap-2 overflow-x-auto pl-6 pr-6"
         style={{ touchAction: 'pan-x pan-y' }}
       >
         {cards.map((card, i) => (
           <button
             key={card.problem}
-            onClick={() => scrollToCard(i)}
+            onClick={() => {
+              if (!busy.current) {
+                setLastSwiped(-1)
+                setIndex(i)
+              }
+            }}
             className={`shrink-0 whitespace-nowrap rounded-full border px-4 py-2 text-sm transition-colors ${
-              i === active
+              i === index
                 ? 'border-[var(--br-gold)] bg-[var(--br-gold)] font-medium text-white'
                 : 'border-[var(--br-stroke)] bg-white text-neutral-500'
             }`}
@@ -302,7 +502,7 @@ export function ChallengeSection(props: ChallengeProps) {
           </button>
         ))}
       </div>
-    </section>
+    </div>
   )
 }
 

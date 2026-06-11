@@ -164,7 +164,9 @@ export function BrandShowcase({ theme }: { theme: 'journalytic' | 'baserate' }) 
 
         {/* baserate bottom row: letter card + R4 homepage */}
         {!j && (
-          <div className={`mt-3 flex flex-col md:mt-[26px] md:flex-row ${GAP}`}>
+          /* stays a ROW on mobile too — small square left, long rectangle
+             right, mirroring the black-on-white logo row above */
+          <div className={`mt-3 flex md:mt-[26px] ${GAP}`}>
             <div
               className="aspect-[312/275] overflow-hidden bg-white"
               style={{ flex: '312 1 0%' }}

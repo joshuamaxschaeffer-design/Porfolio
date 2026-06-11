@@ -57,7 +57,7 @@ export function MarketingContent() {
               type="button"
               onClick={toggle}
               aria-label="Play video"
-              className="absolute inset-0 flex items-center justify-center bg-black/15 transition-colors hover:bg-black/25"
+              className="absolute inset-0 flex items-start justify-start bg-black/15 p-4 transition-colors hover:bg-black/25 md:p-6"
             >
               <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/95 shadow-lg md:h-20 md:w-20">
                 <svg viewBox="0 0 24 24" className="ml-1 h-7 w-7 fill-[var(--br-ink)] md:h-9 md:w-9">

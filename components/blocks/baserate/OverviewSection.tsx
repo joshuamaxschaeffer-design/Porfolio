@@ -18,7 +18,8 @@ export function OverviewSection(props: OverviewProps) {
 
   return (
     <section id="overview" className="br-container pt-16 pb-20 md:pt-24 md:pb-[160px]">
-      <BaserateLogo className="text-[var(--br-ink)]" />
+      {/* 2.5x at desktop (h-8 -> h-20); unchanged on mobile/tablet */}
+      <BaserateLogo className="text-[var(--br-ink)] lg:h-20" />
 
       <p className="br-data mt-3 flex items-center gap-2 text-sm text-[var(--br-muted)]">
         {/* eslint-disable-next-line @next/next/no-img-element */}

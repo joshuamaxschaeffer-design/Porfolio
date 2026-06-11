@@ -165,8 +165,11 @@ function DraggableMarquee({
  * so logo + padding fit: ~16px logo + 72px vertical padding ≈ 88px at md.
  */
 function NameCard({ src }: { src: string }) {
+  // Mobile (Joshua 2026-06-10): the md sizing gave phones a 78px-tall card with
+  // 36px padding all round — a 6px logo. Mobile now uses p-6 in a 60px card =
+  // 12px logo (exactly 2x, in a SHORTER card). md keeps 36px pad / 16px logo.
   return (
-    <div className="flex h-[78px] shrink-0 items-center justify-center overflow-hidden rounded-[2px] bg-white p-9 shadow-[0_22px_44px_-20px_rgba(4,16,38,0.5)] md:h-[88px]">
+    <div className="flex h-[60px] shrink-0 items-center justify-center overflow-hidden rounded-[2px] bg-white p-6 shadow-[0_22px_44px_-20px_rgba(4,16,38,0.5)] md:h-[88px] md:p-9">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
