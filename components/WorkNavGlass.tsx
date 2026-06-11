@@ -56,12 +56,16 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
 
   useEffect(() => setMounted(true), [])
 
+  // Align the pills' TEXT with the "Work" TEXT.
+  // Trigger box → "Work" glyphs: px-2.5 (10) + icon (18) + label pl-2 (8) = 36px.
+  // Pill box → its text: px-4 = 16px. So portal.left = trigger.left + 36 − 16 = +20.
+  const PILL_TEXT_OFFSET = 36 - 16
+
   const measure = useCallback(() => {
-    const el = triggerRef.current
-    if (!el) return
-    const r = el.getBoundingClientRect()
-    // Anchor the pill stack's left edge to the trigger's left, just below the bar.
-    setRect({ left: Math.round(r.left), top: Math.round(r.bottom) })
+    const trigger = triggerRef.current
+    if (!trigger) return
+    const tr = trigger.getBoundingClientRect()
+    setRect({ left: Math.round(tr.left + PILL_TEXT_OFFSET), top: Math.round(tr.bottom) })
   }, [])
 
   useLayoutEffect(() => {
