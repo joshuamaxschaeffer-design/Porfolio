@@ -56,24 +56,34 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
 
   useEffect(() => setMounted(true), [])
 
-  // Align the pills' TEXT with the "Work" TEXT.
-  // Trigger box → "Work" glyphs: px-2.5 (10) + icon (18) + label pl-2 (8) = 36px.
-  // Pill box → its text: px-4 = 16px. So portal.left = trigger.left + 36 − 16 = +20.
-  const PILL_TEXT_OFFSET = 36 - 16
+  // Pill horizontal text inset (px-4 = 16px on the pill <Link>).
+  const PILL_TEXT_INSET = 16
 
+  // Align the pills' TEXT with the "Work" TEXT. Rather than assume the trigger's
+  // box model, MEASURE where the "Work" glyphs actually start (measureRef is the
+  // label's inner span; its content starts after its own pl-2). Its left edge is
+  // stable whether the label is expanded or clipped, so this is timing-safe.
   const measure = useCallback(() => {
     const trigger = triggerRef.current
-    if (!trigger) return
+    const label = measureRef.current
+    if (!trigger || !label) return
     const tr = trigger.getBoundingClientRect()
-    setRect({ left: Math.round(tr.left + PILL_TEXT_OFFSET), top: Math.round(tr.bottom) })
+    const lr = label.getBoundingClientRect()
+    const labelPadLeft = parseFloat(getComputedStyle(label).paddingLeft) || 0
+    const workGlyphLeft = lr.left + labelPadLeft
+    // pill box left so its text (after PILL_TEXT_INSET) lands on the Work glyphs
+    setRect({ left: Math.round(workGlyphLeft - PILL_TEXT_INSET), top: Math.round(tr.bottom) })
   }, [])
 
   useLayoutEffect(() => {
     if (!open) return
     measure()
+    // Re-measure after paint in case fonts/layout settle the trigger width.
+    const raf = requestAnimationFrame(measure)
     window.addEventListener('scroll', measure, { passive: true })
     window.addEventListener('resize', measure)
     return () => {
+      cancelAnimationFrame(raf)
       window.removeEventListener('scroll', measure)
       window.removeEventListener('resize', measure)
     }
@@ -105,12 +115,13 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
 
   return (
     <div
-      className="group/work flex h-full items-center"
+      className="group/work relative grid h-9 w-9 place-items-center"
       onPointerEnter={(e) => notTouch(e) && show()}
       onPointerLeave={(e) => notTouch(e) && scheduleHide()}
     >
-      {/* Trigger: briefcase icon, with the "Work" label + chevron expanding
-          inline (pill grows right) on hover or while the menu is open. */}
+      {/* Trigger sits in a fixed-width slot and is absolutely centered, so the
+          "Work" label expands the pill OUTWARD FROM CENTER (both directions),
+          floating above neighbors — they don't move. */}
       <button
         ref={triggerRef}
         type="button"
@@ -118,11 +129,12 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
         aria-expanded={open}
         aria-label="Work"
         onClick={() => setOpen((v) => !v)}
-        className="flex h-9 items-center rounded-full border border-transparent px-2.5 transition-[background-color,border-color,color] duration-300"
+        className="absolute left-1/2 top-1/2 z-10 flex h-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-transparent px-2.5 transition-[background-color,border-color,color] duration-300"
         style={{
           color: open ? g.fgHover : g.fg,
           backgroundColor: open ? g.fill : 'transparent',
           borderColor: open ? g.border : 'transparent',
+          zIndex: open ? 20 : 10,
         }}
       >
         <span className="grid place-items-center [&>svg]:block">
