@@ -60,9 +60,10 @@ export function Nav({ nav, settings, brand }: NavProps) {
           {siteName}
         </Link>
 
-        {/* Desktop: equal fixed-width icon boxes (NAV_BOX); hover swaps the
-            icon for the label instantly in place — nothing moves. */}
-        <ul className="hidden h-full items-center gap-5 md:flex lg:gap-7">
+        {/* Desktop: equal fixed-width icon boxes (NAV_BOX) tiled flush, NO
+            gap; every item is a full-bar-height hover target; hover
+            crossfades icon→label (250ms) in place — nothing moves. */}
+        <ul className="hidden h-full items-stretch md:flex">
           <li>
             <NavIconLink href="/" label="Home" icon={<HomeIcon />} />
           </li>

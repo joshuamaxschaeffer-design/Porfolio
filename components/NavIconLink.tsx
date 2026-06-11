@@ -2,12 +2,15 @@ import Link from 'next/link'
 import type { ReactNode } from 'react'
 
 /**
- * Desktop nav item: a FIXED-WIDTH invisible box (same width for every item,
- * see NAV_BOX) with the icon dead-center. On hover/focus the icon is swapped
- * for the text label instantly — no transitions, no motion, nothing moves.
+ * Desktop nav item: a full-bar-height hover target containing the visible
+ * pill — a FIXED-WIDTH box (same width for every item, see NAV_BOX) with the
+ * icon dead-center. Hover/focus CROSSFADES icon → label (250ms opacity, both
+ * stacked in the same grid cell); the pill bg/border fade on the same clock.
+ * Boxes sit flush in the bar (no gap) so the hover targets tile edge-to-edge.
  * Colors inherit the per-brand --nav-* / --glass-* vars set on the header.
  */
 export const NAV_BOX = 'w-[104px]'
+
 export function NavIconLink({
   href,
   label,
@@ -21,18 +24,22 @@ export function NavIconLink({
     <Link
       href={href}
       aria-label={label}
-      className={`group/icon flex h-9 ${NAV_BOX} items-center justify-center rounded-full border border-transparent text-[var(--nav-fg)] hover:border-[var(--glass-border)] hover:bg-[var(--glass-fill)] hover:text-[var(--nav-fg-hover)] focus-visible:border-[var(--glass-border)] focus-visible:bg-[var(--glass-fill)]`}
+      className="group/icon flex h-full items-center justify-center"
     >
-      {/* icon: shown by default, hidden on hover/focus */}
-      <span className="grid place-items-center [&>svg]:block group-hover/icon:hidden group-focus-visible/icon:hidden">
-        {icon}
-      </span>
-      {/* label: hidden by default, shown on hover/focus (swap, no animation) */}
       <span
-        className="hidden whitespace-nowrap text-[13px] uppercase tracking-[0.08em] group-hover/icon:inline group-focus-visible/icon:inline"
-        style={{ fontFamily: 'var(--font-heading)', fontWeight: 500 }}
+        className={`grid h-9 ${NAV_BOX} place-items-center rounded-full border border-transparent text-[var(--nav-fg)] transition-colors duration-[250ms] group-hover/icon:border-[var(--glass-border)] group-hover/icon:bg-[var(--glass-fill)] group-hover/icon:text-[var(--nav-fg-hover)] group-focus-visible/icon:border-[var(--glass-border)] group-focus-visible/icon:bg-[var(--glass-fill)]`}
       >
-        {label}
+        {/* icon — fades out on hover/focus */}
+        <span className="col-start-1 row-start-1 grid place-items-center transition-opacity duration-[250ms] [&>svg]:block group-hover/icon:opacity-0 group-focus-visible/icon:opacity-0">
+          {icon}
+        </span>
+        {/* label — fades in on hover/focus */}
+        <span
+          className="col-start-1 row-start-1 whitespace-nowrap text-[13px] uppercase tracking-[0.08em] opacity-0 transition-opacity duration-[250ms] group-hover/icon:opacity-100 group-focus-visible/icon:opacity-100"
+          style={{ fontFamily: 'var(--font-heading)', fontWeight: 500 }}
+        >
+          {label}
+        </span>
       </span>
     </Link>
   )

@@ -27,9 +27,14 @@ function glassVars(brand: Brand) {
 }
 
 /**
- * "Work" nav item. Like the other items it's just the icon by default; on
- * hover/open the icon is swapped for the "Work" text (simple swap, no
- * animation). A vertical stack of glass pills drops beneath it.
+ * "Work" nav item. Like the other items it's the icon by default; on
+ * hover/open the icon CROSSFADES to the "Work" text (250ms opacity, stacked
+ * grid cell — same recipe as NavIconLink). A vertical stack of glass pills
+ * drops beneath it. The trigger is a full-bar-height hover target; the portal
+ * starts EXACTLY at the bar's bottom edge (no overlap, no bridge) — if the
+ * flyout overlapped the trigger, opening it under a stationary cursor made
+ * the browser retarget hover to the portal, firing pointerleave on the
+ * trigger and instantly closing it (the "activates then deactivates" bug).
  *
  * The flyout is PORTALED to <body> (not nested in the header) so each pill's
  * backdrop-filter blurs the real page, not the header's already-blurred layer.
@@ -100,23 +105,36 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
         aria-expanded={open}
         aria-label="Work"
         onClick={() => setOpen((v) => !v)}
-        className={`flex h-9 ${NAV_BOX} items-center justify-center rounded-full border`}
-        style={{
-          color: open ? g.fgHover : g.fg,
-          backgroundColor: open ? g.fill : 'transparent',
-          borderColor: open ? g.border : 'transparent',
-        }}
+        className={`flex h-full ${NAV_BOX} items-center justify-center`}
       >
-        {/* icon by default; swapped for the text when open (simple swap) */}
-        {open ? (
-          <span className="whitespace-nowrap text-[13px] uppercase tracking-[0.08em]" style={{ fontFamily: 'var(--font-heading)', fontWeight: 500 }}>
-            Work
-          </span>
-        ) : (
-          <span className="grid place-items-center [&>svg]:block">
+        <span
+          className="grid h-9 w-full place-items-center rounded-full border"
+          style={{
+            color: open ? g.fgHover : g.fg,
+            backgroundColor: open ? g.fill : 'transparent',
+            borderColor: open ? g.border : 'transparent',
+            transition: 'background-color 250ms, border-color 250ms, color 250ms',
+          }}
+        >
+          {/* icon ⇄ text crossfade (250ms), stacked in one grid cell */}
+          <span
+            className="col-start-1 row-start-1 grid place-items-center [&>svg]:block"
+            style={{ opacity: open ? 0 : 1, transition: 'opacity 250ms' }}
+          >
             <WorkIcon />
           </span>
-        )}
+          <span
+            className="col-start-1 row-start-1 whitespace-nowrap text-[13px] uppercase tracking-[0.08em]"
+            style={{
+              fontFamily: 'var(--font-heading)',
+              fontWeight: 500,
+              opacity: open ? 1 : 0,
+              transition: 'opacity 250ms',
+            }}
+          >
+            Work
+          </span>
+        </span>
       </button>
 
       {mounted &&
@@ -129,7 +147,10 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
               left: pos?.left ?? -9999,
               top: pos?.top ?? -9999,
               zIndex: 60,
-              paddingTop: 8, // invisible bridge over the bar→pill gap
+              // No bridge padding: the full-height trigger's bottom IS the
+              // bar's bottom, so the portal starts flush at the seam. Any
+              // overlap with the trigger re-triggers the hover-retarget bug.
+              paddingTop: 0,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'flex-start',
