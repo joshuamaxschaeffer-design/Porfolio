@@ -137,26 +137,20 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
           zIndex: open ? 20 : 10,
         }}
       >
-        <span className="grid place-items-center [&>svg]:block">
-          <WorkIcon />
-        </span>
-        {/* label + chevron — width animates 0 → measured, driven by open state */}
+        {/* Icon shows ONLY when closed; the moment the menu opens it's gone and
+            the "Work" text takes its place (instant swap, no icon animation).
+            No chevron (per request). */}
+        {!open && (
+          <span className="grid place-items-center [&>svg]:block">
+            <WorkIcon />
+          </span>
+        )}
         <span
           className="overflow-hidden whitespace-nowrap transition-[max-width] duration-300 ease-out"
           style={{ maxWidth: open ? labelWidth : 0 }}
         >
-          <span ref={measureRef} className="inline-flex items-center gap-1 pl-2 pr-0.5 text-[13px] uppercase tracking-[0.08em]" style={{ fontFamily: 'var(--font-heading)', fontWeight: 500 }}>
+          <span ref={measureRef} className="inline-block px-0.5 text-[13px] uppercase tracking-[0.08em]" style={{ fontFamily: 'var(--font-heading)', fontWeight: 500 }}>
             Work
-            <svg
-              width="9"
-              height="9"
-              viewBox="0 0 10 10"
-              aria-hidden
-              className="transition-transform duration-300"
-              style={{ transform: open ? 'rotate(180deg)' : 'none' }}
-            >
-              <path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
           </span>
         </span>
       </button>

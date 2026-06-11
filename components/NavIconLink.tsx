@@ -33,12 +33,16 @@ export function NavIconLink({
         className="group/icon absolute left-1/2 top-1/2 z-10 flex h-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-transparent px-2.5 transition-[background-color,border-color,color] duration-300 hover:z-20 hover:border-[var(--glass-border)] hover:bg-[var(--glass-fill)] hover:text-[var(--nav-fg-hover)] focus-visible:z-20 focus-visible:border-[var(--glass-border)] focus-visible:bg-[var(--glass-fill)]"
         style={{ color: 'var(--nav-fg)' }}
       >
-        <span className="grid place-items-center [&>svg]:block">{icon}</span>
+        {/* Icon shows only when not hovered; the moment the pill opens it's gone
+            and the label takes its place (instant swap, no icon animation). */}
+        <span className="grid place-items-center [&>svg]:block group-hover/icon:hidden group-focus-visible/icon:hidden">
+          {icon}
+        </span>
         {/* Label reveals via max-width 0 → its natural width (group-hover). The
             centered pill therefore grows equally to both sides. */}
-        <span className="ml-0 max-w-0 overflow-hidden whitespace-nowrap transition-[max-width,margin] duration-300 ease-out group-hover/icon:ml-1.5 group-hover/icon:max-w-[160px] group-focus-visible/icon:ml-1.5 group-focus-visible/icon:max-w-[160px]">
+        <span className="max-w-0 overflow-hidden whitespace-nowrap transition-[max-width] duration-300 ease-out group-hover/icon:max-w-[160px] group-focus-visible/icon:max-w-[160px]">
           <span
-            className="inline-block pr-0.5 text-[13px] uppercase tracking-[0.08em]"
+            className="inline-block px-0.5 text-[13px] uppercase tracking-[0.08em]"
             style={{ fontFamily: 'var(--font-heading)', fontWeight: 500 }}
           >
             {label}
