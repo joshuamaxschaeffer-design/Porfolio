@@ -4,6 +4,7 @@ import Link from 'next/link'
 import type { Brand } from '@/lib/brand'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { WorkIcon } from './nav-icons'
 
 export interface WorkPill {
   label: string
@@ -44,8 +45,14 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
   const [rect, setRect] = useState<{ left: number; top: number } | null>(null)
   const [mounted, setMounted] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
+  const measureRef = useRef<HTMLSpanElement>(null)
   const closeTimer = useRef<number | null>(null)
+  const [labelWidth, setLabelWidth] = useState(0)
   const g = glassVars(brand)
+
+  useEffect(() => {
+    if (measureRef.current) setLabelWidth(measureRef.current.scrollWidth)
+  }, [])
 
   useEffect(() => setMounted(true), [])
 
@@ -94,30 +101,48 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
 
   return (
     <div
-      className="flex h-full items-center"
+      className="group/work flex h-full items-center"
       onPointerEnter={(e) => notTouch(e) && show()}
       onPointerLeave={(e) => notTouch(e) && scheduleHide()}
     >
+      {/* Trigger: briefcase icon, with the "Work" label + chevron expanding
+          inline (pill grows right) on hover or while the menu is open. */}
       <button
         ref={triggerRef}
         type="button"
         aria-haspopup="true"
         aria-expanded={open}
+        aria-label="Work"
         onClick={() => setOpen((v) => !v)}
-        className="flex h-full items-center gap-1 uppercase tracking-[0.08em] transition-colors"
-        style={{ fontFamily: 'var(--font-heading)', fontWeight: 500, fontSize: '14px', color: open ? g.fgHover : g.fg }}
+        className="flex h-9 items-center rounded-full border border-transparent px-2.5 transition-[background-color,border-color,color] duration-300"
+        style={{
+          color: open ? g.fgHover : g.fg,
+          backgroundColor: open ? g.fill : 'transparent',
+          borderColor: open ? g.border : 'transparent',
+        }}
       >
-        Work
-        <svg
-          width="9"
-          height="9"
-          viewBox="0 0 10 10"
-          aria-hidden
-          className="mt-px transition-transform duration-300"
-          style={{ transform: open ? 'rotate(180deg)' : 'none' }}
+        <span className="grid place-items-center [&>svg]:block">
+          <WorkIcon />
+        </span>
+        {/* label + chevron — width animates 0 → measured, driven by open state */}
+        <span
+          className="overflow-hidden whitespace-nowrap transition-[max-width] duration-300 ease-out"
+          style={{ maxWidth: open ? labelWidth : 0 }}
         >
-          <path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
+          <span ref={measureRef} className="inline-flex items-center gap-1 pl-2 pr-0.5 text-[13px] uppercase tracking-[0.08em]" style={{ fontFamily: 'var(--font-heading)', fontWeight: 500 }}>
+            Work
+            <svg
+              width="9"
+              height="9"
+              viewBox="0 0 10 10"
+              aria-hidden
+              className="transition-transform duration-300"
+              style={{ transform: open ? 'rotate(180deg)' : 'none' }}
+            >
+              <path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </span>
+        </span>
       </button>
 
       {/* Portaled flyout — lives on <body>, fixed under the trigger, so its
