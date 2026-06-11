@@ -149,10 +149,15 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
             transition: 'background-color 250ms, border-color 250ms, color 250ms',
           }}
         >
-          {/* icon ⇄ text crossfade (250ms), stacked in one grid cell */}
+          {/* icon ⇄ text asymmetric crossfade, stacked in one grid cell:
+              outgoing glyph 100ms, incoming glyph 600ms after a 75ms delay
+              (mirrors NavIconLink) */}
           <span
             className="col-start-1 row-start-1 grid place-items-center [&>svg]:block"
-            style={{ opacity: open ? 0 : 1, transition: 'opacity 700ms' }}
+            style={{
+              opacity: open ? 0 : 1,
+              transition: open ? 'opacity 100ms' : 'opacity 600ms 75ms',
+            }}
           >
             <WorkIcon />
           </span>
@@ -162,7 +167,7 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
               fontFamily: 'var(--font-heading)',
               fontWeight: 500,
               opacity: open ? 1 : 0,
-              transition: 'opacity 700ms',
+              transition: open ? 'opacity 600ms 75ms' : 'opacity 100ms',
             }}
           >
             Work
