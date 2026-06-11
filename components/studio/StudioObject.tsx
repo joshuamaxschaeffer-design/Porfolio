@@ -108,6 +108,11 @@ export function StudioObject({
 
     // ── sequence: polite preload + gated play-once-in-view ──
     const play = () => {
+      // prefers-reduced-motion: settle straight at the final pose
+      if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+        drawFrame(frameCount - 1)
+        return
+      }
       const start = performance.now()
       const tick = (now: number) => {
         const elapsed = (now - start) / 1000

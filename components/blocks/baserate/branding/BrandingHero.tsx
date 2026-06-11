@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, useInView, useReducedMotion } from 'motion/react'
+import { motion, useReducedMotion } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
 
 import { KEY_SHADOW } from '@/components/studio/keyShadow'
@@ -26,73 +26,34 @@ const FRAME_COUNT = 120
 const FPS = 30
 
 /**
- * App-icon chip: extruded 3D tile that rotates in ONCE and settles at its
- * Figma pose (rotation stops exactly where the mockup has it). A gentle
- * float continues on the wrapper so it still feels alive.
+ * Baked logo chip — an SD Studio icon-kind export (transparent webp spin +
+ * per-frame physical shadow-v2) rendered through StudioObject. The shadow
+ * rotates and squashes WITH the chip and matches the device family exactly
+ * (same rig, same key light, bottom-right fall). Replaces the old CSS
+ * 12-layer chip whose static CSS shadow ignored the spin.
+ *
+ * `size` = on-screen width of the SETTLED chip face (the old chip box, so
+ * all Figma positions are unchanged). The baked crop is wider than the
+ * face (spin sweep + pad), so the render is scaled up to `scaleW` and
+ * nudged by `ml`/`mt` margins to land the settled face exactly on that
+ * box — numbers measured from each export's last-frame alpha bbox.
  */
-function ExtrudedChip({
-  src, alt, size, endX, endY, endZ, depth = 12, dur = 2.8, delay = 0, reduce, inView, className = '',
+function BakedChip({
+  base, frameCount, size, scaleW, ml, mt, delay = 0, reduce, className = '', alt,
 }: {
-  src: string; alt: string; size: number
-  endX: number; endY: number; endZ: number
-  depth?: number; dur?: number; delay?: number
-  reduce: boolean | null; inView: boolean; className?: string
+  base: string; frameCount: number; size: number; scaleW: number; ml: number; mt: number
+  delay?: number; reduce: boolean | null; className?: string; alt: string
 }) {
-  const layers = Array.from({ length: depth }, (_, i) => i)
   return (
     <div className={`pointer-events-none absolute ${className}`} style={{ width: size, height: size }}>
       <motion.div
-        className="relative h-full w-full"
+        className="relative"
+        style={{ width: scaleW, marginLeft: ml, marginTop: mt }}
         initial={false}
         animate={reduce ? {} : { y: [0, -8, 0] }}
-        transition={{ duration: 7.5, repeat: Infinity, ease: 'easeInOut', delay }}
+        transition={{ duration: 7.5, repeat: Infinity, ease: 'easeInOut', delay: delay / 1000 }}
       >
-        {/* cast shadow — same tile shape (rounded square at the settle pose),
-            offset along the global key light so it sits BEHIND the chip.
-            CSS filter blur (not ctx.filter) — works in Safari. */}
-        <div
-          aria-hidden
-          className="absolute inset-0"
-          style={{
-            transform: `translate(${(KEY_SHADOW.x * size).toFixed(1)}px, ${(KEY_SHADOW.y * size).toFixed(1)}px) rotateX(${endX}deg) rotateZ(${endZ}deg) scale(${KEY_SHADOW.scale})`,
-            borderRadius: '20%',
-            background: KEY_SHADOW.color,
-            filter: `blur(${KEY_SHADOW.blur(size).toFixed(1)}px)`,
-          }}
-        />
-        <div className="h-full w-full" style={{ perspective: 900 }}>
-          <motion.div
-            className="relative h-full w-full"
-            style={{ transformStyle: 'preserve-3d', rotateX: endX, rotateZ: endZ }}
-            initial={{ rotateY: endY - 360 }}
-            animate={reduce ? { rotateY: endY } : (inView ? { rotateY: endY } : { rotateY: endY - 360 })}
-            transition={{ duration: dur, ease: [0.16, 0.8, 0.3, 1], delay }}
-          >
-            {layers.map((i) => {
-              const isFront = i === depth - 1
-              const isBack = i === 0
-              return (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  key={i}
-                  src={src}
-                  alt={isFront ? alt : ''}
-                  draggable={false}
-                  className="absolute inset-0 h-full w-full"
-                  style={{
-                    // The BACK layer is flipped in place (rotateY 180) so the
-                    // reverse of the chip shows the same un-mirrored, full-
-                    // colour logo as the front while it spins; only the
-                    // in-between layers darken to read as the extruded edge.
-                    transform: `translateZ(${(i - (depth - 1) / 2) * 1.6}px)${isBack ? ' rotateY(180deg)' : ''}`,
-                    filter: isFront || isBack ? 'none' : 'brightness(0.6)',
-                    borderRadius: '20%',
-                  }}
-                />
-              )
-            })}
-          </motion.div>
-        </div>
+        <StudioObject base={base} frameCount={frameCount} fps={30} delay={delay} className="w-full" alt={alt} />
       </motion.div>
     </div>
   )
@@ -145,7 +106,6 @@ export function BrandingHero() {
   const reduce = useReducedMotion()
   const [mounted, setMounted] = useState(false)
   const stageRef = useRef<HTMLDivElement>(null)
-  const inView = useInView(stageRef, { once: true, amount: 0.25 })
   useEffect(() => setMounted(true), [])
 
   return (
@@ -198,32 +158,33 @@ export function BrandingHero() {
               <StudioObject base="/baserate/branding/devices/desktop" frameCount={FRAME_COUNT} fps={FPS} delay={0} className="w-full" alt="desktop device" />
             </div>
 
-            {/* 3D extruded chips — rotate in once, SETTLE at the Figma pose.
-                md positions are literal Figma 243:54723 coordinates (box ÷ 1443×893). */}
-            <ExtrudedChip
-              src="/baserate/branding/logos/journalytic-app.svg"
+            {/* Baked 3D chips — SD Studio icon exports: spin in once with
+                physically-cast rotating shadows, SETTLE at the Figma pose.
+                Same tilts as before (J: x7 z-9 y16 · B: x5 z10 y-20), spun
+                about the local Y. md positions stay literal Figma 243:54723
+                coordinates (box ÷ 1443×893). */}
+            <BakedChip
+              base="/baserate/branding/chips/journalytic"
               alt="Journalytic"
               reduce={reduce}
-              inView={inView}
+              frameCount={84}
               size={124}
-              endX={7}
-              endY={16}
-              endZ={-9}
+              scaleW={153.5}
+              ml={-13.8}
+              mt={-12.8}
               className="left-[36%] top-[6%] z-[15] scale-[0.55] md:left-[21.5%] md:top-[4.5%] md:scale-100"
-              dur={2.8}
             />
-            <ExtrudedChip
-              src="/baserate/branding/logos/baserate-app.svg"
+            <BakedChip
+              base="/baserate/branding/chips/baserate"
               alt="Baserate"
               reduce={reduce}
-              inView={inView}
+              frameCount={96}
               size={94}
-              endX={5}
-              endY={-20}
-              endZ={10}
+              scaleW={109.6}
+              ml={-9.4}
+              mt={-6.5}
               className="left-[7%] top-[66%] z-[15] scale-[0.55] md:left-[58%] md:top-[38.5%] md:scale-100"
-              dur={3.2}
-              delay={0.25}
+              delay={250}
             />
 
             {/* Colour orbs on slow drifts — Figma spots; the navy one is moved

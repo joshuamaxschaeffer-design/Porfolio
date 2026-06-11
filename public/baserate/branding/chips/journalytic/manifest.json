@@ -1,0 +1,45 @@
+{
+  "kind": "icon",
+  "mode": "sequence",
+  "frame_count": 84,
+  "fps": 30,
+  "width": 832,
+  "height": 832,
+  "crop": {
+    "x": 138,
+    "y": 138,
+    "w": 832,
+    "h": 832
+  },
+  "export_width": 1080,
+  "export_height": 1080,
+  "rig": {
+    "defined": true,
+    "matches": true,
+    "saved_at": 1781135731132,
+    "cam": {
+      "yaw": -150,
+      "pitch": 85,
+      "roll": 45,
+      "fov": 28,
+      "tgtX": 0,
+      "tgtY": 0,
+      "tgtZ": 0
+    },
+    "key_light": {
+      "pos": [
+        0,
+        14,
+        6
+      ],
+      "intensity": 1.1
+    },
+    "ground_y": -8,
+    "calib": {
+      "sigma_base_px_1920": 11,
+      "sigma_per_h_px_1920": 10,
+      "alpha_base": 0.28,
+      "alpha_per_h": -0.0145
+    }
+  }
+}

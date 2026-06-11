@@ -1,21 +1,22 @@
 /**
  * ONE global key light for every CSS-shadowed floating element on the site
- * (chips, orbs, cards) — derived from the SD Studio Site Rig so cheap CSS
- * shadows agree with the physically-rendered device/object shadows.
+ * (chips, orbs, cards) — agrees with the physically-rendered SD Studio
+ * shadows so cheap CSS shadows and baked exports read as one scene.
  *
- * Provenance: rig key light sits high front-right of the scene
- * (`__siteRig__` in sd-image-gen/projects/device-studio-projects.json;
- * default key pos (0, 14, 6)) → shadows fall slightly down-left and sit
- * BEHIND the object rather than under it. Offsets/blur are proportional to
- * the element's size so every element reads as lit by the same source.
- * If Joshua re-saves the rig with a different key light, refresh x/y here:
- * x ≈ -lightDir.x * 0.2, y ≈ +lightDir.z * 0.2 (screen-space approximation
- * at the rig's top-down camera family).
+ * Direction: BOTTOM-RIGHT (Joshua's spec, 2026-06-10) — and it matches the
+ * baked device shadow-v2 data (phone end-frame offset ≈ +176,+377 px;
+ * desktop ≈ +60,+520 px → down, leaning right). The earlier down-LEFT
+ * derivation had a sign error; do not revert.
+ *
+ * Blur: applied via CSS `filter: blur(σ)` which is a true Gaussian σ —
+ * it reads ~2× softer than a box-shadow radius of the same number. The
+ * factors below are σ values, already halved to compensate (his "2× too
+ * blurry" fix). If this ever moves to box-shadow, double them back.
  */
 export const KEY_SHADOW = {
-  x: -0.07, // offset, fraction of element size (negative = left)
+  x: 0.07, // offset, fraction of element size (positive = right)
   y: 0.09, //  fraction of element size (positive = down)
   scale: 1.04,
   color: 'rgba(8,20,44,0.32)',
-  blur: (s: number) => Math.max(10, s * 0.13),
+  blur: (s: number) => Math.max(5, s * 0.065),
 }
