@@ -151,8 +151,12 @@ export function BrandingHero() {
   return (
     <section ref={stageRef} className="relative overflow-hidden">
       {/* White top over the gradient field — gentle diagonal, higher on the
-          right (Figma 243:54723 boundary mapped to the new section height). */}
-      <div className="absolute inset-0 bg-white [clip-path:polygon(0_0,100%_0,100%_60.5%,0_83%)] md:max-[1799px]:[clip-path:polygon(0_0,100%_0,100%_44.5%,0_59.5%)] min-[1800px]:[clip-path:polygon(0_0,100%_0,100%_47%,0_63.5%)]" />
+          right (Figma 243:54723 boundary mapped to the new section height).
+          MOBILE: boundary raised 60.5/83 -> 45/67 (same slope) so the
+          "B2C Brand Exploration" heading (~70% of section at 390w) sits fully
+          on BLUE — at 60.5/83 its left half landed white-on-white. Devices/
+          card/chips all end by ~58%, so they stay on the white field. */}
+      <div className="absolute inset-0 bg-white [clip-path:polygon(0_0,100%_0,100%_45%,0_67%)] md:max-[1799px]:[clip-path:polygon(0_0,100%_0,100%_44.5%,0_59.5%)] min-[1800px]:[clip-path:polygon(0_0,100%_0,100%_47%,0_63.5%)]" />
 
       {/* STAGE — a centered max-w-[1443px] frame mirroring the Figma artboard
           (1443×893). Every md+ percentage below is a literal Figma coordinate,
