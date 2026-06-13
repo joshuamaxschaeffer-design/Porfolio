@@ -209,7 +209,10 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
   // (0 -> TOP_OFFSET) so the liquid still appears to start at the bar edge.
   const topOffset = TOP_OFFSET * progress
   const lastTop = topOffset + (items.length - 1) * stride
-  const fullHeight = lastTop + PILL_H // visible reveal height grows with progress
+  const fullHeight = lastTop + PILL_H // full stack height at current stride
+  // The blob REVEAL line grows downward (slightly faster than the stack so the
+  // last blob is fully out by the end). Drives the blob mask gradient.
+  const revealHeight = Math.round((fullHeight + SHADOW_BLEED) * Math.min(1, progress * 1.15))
   // Blob layer fades OUT as pills finish separating, so only glass shows at rest.
   const blobOpacity = progress < 0.55 ? 1 : Math.max(0, 1 - (progress - 0.55) / 0.45)
   // Glass pills fade IN once the blobs have begun to separate.
@@ -283,6 +286,8 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
               zIndex: 60,
               // Full-size hit region (matches where the pills END UP), so the
               // geometric "stay open" check is correct throughout the anim.
+              // Height = pill stack only (NOT the shadow bleed) so hovering the
+              // empty shadow area below the last pill doesn't keep it open.
               width: PILL_W + PAD_X * 2,
               height: restHeight,
               pointerEvents: open || progress > 0.01 ? 'auto' : 'none',
@@ -310,30 +315,21 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
               </defs>
             </svg>
 
-            {/* CLIPPED emergence wrapper: grows downward from the bar's bottom
-                edge so the liquid appears to bleed out of the bar. We clip ONLY
-                the TOP edge (the growing reveal line) via clip-path inset; the
-                left/right/bottom insets are NEGATIVE so pill SHADOWS bleed out
-                freely instead of being sliced (the old `overflow:hidden` cut
-                them off — that was the "weirdly cut off / odd shadows" bug).
-                clip-path (not pill transforms) keeps hit-testing out of the
-                trigger strip. The reveal line is the BOTTOM of the visible area;
-                everything above it (toward the bar) shows as it grows. */}
+            {/* Positioning wrapper for the pill stack. IMPORTANT: NO clip-path
+                and NO overflow:hidden here. A clip-path / overflow clip on an
+                ancestor SILENTLY DISABLES backdrop-filter on descendants — that
+                made the frosted pills go fully transparent. So the wrapper does
+                no clipping at all; the glass pills are free to blur the page.
+                The "emerge from the bar" reveal is done with a MASK on the BLOB
+                layer only (the blob has no backdrop-filter, so masking it is
+                safe), plus the pills' own opacity/position easing. */}
             <div
               style={{
                 position: 'absolute',
                 left: PAD_X,
                 top: 0,
                 width: PILL_W,
-                height: restHeight,
-                // inset(top right bottom left): clip the bottom to the current
-                // reveal height; bleed -SHADOW_BLEED on the other three sides.
-                clipPath: reduce
-                  ? `inset(${-SHADOW_BLEED}px ${-SHADOW_BLEED}px ${-SHADOW_BLEED}px ${-SHADOW_BLEED}px)`
-                  : `inset(${-SHADOW_BLEED}px ${-SHADOW_BLEED}px ${Math.max(
-                      0,
-                      restHeight - Math.round(fullHeight * Math.min(1, progress * 1.15)),
-                    )}px ${-SHADOW_BLEED}px)`,
+                height: restHeight + SHADOW_BLEED,
                 pointerEvents: 'none',
               }}
             >
@@ -347,6 +343,18 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
                     filter: `url(#${filterId})`,
                     opacity: blobOpacity,
                     pointerEvents: 'none',
+                    // REVEAL mask (blob only — masks DON'T break backdrop-filter
+                    // the way clip-path does, and the blob has no backdrop-filter
+                    // anyway). Opaque from the top down to the current reveal
+                    // line, then a soft 14px meniscus, then transparent — so the
+                    // liquid appears to bleed out of the bar and grow downward.
+                    // At rest the line is past the full height → all visible.
+                    WebkitMaskImage: reduce
+                      ? 'none'
+                      : `linear-gradient(to bottom, #000 0, #000 ${revealHeight}px, transparent ${revealHeight + 14}px)`,
+                    maskImage: reduce
+                      ? 'none'
+                      : `linear-gradient(to bottom, #000 0, #000 ${revealHeight}px, transparent ${revealHeight + 14}px)`,
                   }}
                   aria-hidden
                 >
