@@ -10,7 +10,6 @@ import {
 } from 'motion/react'
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 
-import { KEY_SHADOW } from '@/components/studio/keyShadow'
 import { StudioObject } from '@/components/studio/StudioObject'
 
 /**
@@ -31,6 +30,11 @@ import { StudioObject } from '@/components/studio/StudioObject'
 
 const FRAME_COUNT = 120
 const FPS = 30
+
+/** Orb still crop: the sphere body fills ~95.7% of the exported frame (the
+ *  +14px alpha-crop pad), so scale the render by (1 + 2·ORB_PAD) to land the
+ *  visible body at the requested on-screen diameter. */
+const ORB_PAD = 0.0224
 
 /**
  * Scroll parallax + physics for the floating hero elements.
@@ -120,16 +124,26 @@ function BakedChip({
   )
 }
 
-/** Soft colour orb on a slow multi-axis drift, casting a soft shadow. */
+/**
+ * Glossy pearlescent orb — an SD Studio shape-kind sphere render (transparent
+ * still webp + shadow-v2) drawn through StudioObject, so it carries the same
+ * rig + bottom-right physical shadow as the devices/chips. Replaces the old
+ * flat CSS radial-gradient sphere. Still slow-drifts on its multi-axis path.
+ * `size` = on-screen diameter of the orb body; the render crop is padded, so
+ * it's scaled to `scaleW` (crop ÷ body) and the wrapper centered on the box.
+ */
 function Orb({
-  className = '', from, to, size, dur = 16, delay = 0, reduce,
+  className = '', base, size, dur = 16, delay = 0, reduce,
 }: {
-  className?: string; from: string; to: string; size: number; dur?: number; delay?: number; reduce: boolean | null
+  className?: string; base: string; size: number; dur?: number; delay?: number; reduce: boolean | null
 }) {
+  const scaleW = size * (1 + ORB_PAD * 2)
+  const off = -(scaleW - size) / 2
   return (
     <div className={`pointer-events-none ${className}`} style={{ width: size, height: size }}>
       <motion.div
-        className="relative h-full w-full"
+        className="relative"
+        style={{ width: scaleW, marginLeft: off, marginTop: off }}
         initial={false}
         animate={reduce ? {} : {
           x: [0, size * 0.34, -size * 0.18, size * 0.1, 0],
@@ -138,26 +152,7 @@ function Orb({
         }}
         transition={{ duration: dur, repeat: Infinity, ease: 'easeInOut', delay, times: [0, 0.3, 0.55, 0.8, 1] }}
       >
-        {/* cast shadow — circle matching the orb, offset along the global key
-            light so it peeks out BEHIND the sphere (same blur/direction/
-            darkness rules as the chips). */}
-        <div
-          aria-hidden
-          className="absolute inset-0 rounded-full"
-          style={{
-            transform: `translate(${(KEY_SHADOW.x * size).toFixed(1)}px, ${(KEY_SHADOW.y * size).toFixed(1)}px) scale(${KEY_SHADOW.scale})`,
-            background: KEY_SHADOW.color,
-            filter: `blur(${KEY_SHADOW.blur(size).toFixed(1)}px)`,
-          }}
-        />
-        <div
-          className="absolute inset-0 rounded-full"
-          style={{
-            background: `radial-gradient(circle at 32% 27%, ${from}, ${to} 72%)`,
-            boxShadow:
-              'inset 0 -8px 16px rgba(0,0,0,0.25), inset 0 8px 14px rgba(255,255,255,0.35)',
-          }}
-        />
+        <StudioObject base={base} className="w-full" alt="" />
       </motion.div>
     </div>
   )
@@ -273,16 +268,16 @@ export function BrandingHero() {
                 each gets a slightly different depth so they don't drift in
                 lockstep — that subtle desync sells the 3D. */}
             <Parallax z={PZ.orbNear} className="absolute left-[10%] top-[8%] z-[15] md:left-[15.1%] md:top-[7.5%]">
-              <Orb reduce={reduce} className="scale-75 md:scale-100" from="#e3cfa0" to="#a07d20" size={30} dur={15} />
+              <Orb reduce={reduce} className="scale-75 md:scale-100" base="/baserate/branding/orbs/gold" size={30} dur={15} />
             </Parallax>
             <Parallax z={PZ.orbFar} className="absolute left-[32.5%] top-[60%] z-[15] md:left-[33.2%] md:top-[36.4%]">
-              <Orb reduce={reduce} className="scale-75 md:scale-100" from="#4f9fcb" to="#1c5e8c" size={46} dur={18} delay={1.2} />
+              <Orb reduce={reduce} className="scale-75 md:scale-100" base="/baserate/branding/orbs/ltblue" size={46} dur={18} delay={1.2} />
             </Parallax>
             <Parallax z={PZ.orbNear} className="absolute left-[69.5%] top-[26%] z-[15] md:left-[69.6%] md:top-[9%]">
-              <Orb reduce={reduce} className="scale-75 md:scale-100" from="#2a2f3a" to="#05070d" size={46} dur={17} delay={2.2} />
+              <Orb reduce={reduce} className="scale-75 md:scale-100" base="/baserate/branding/orbs/dark" size={46} dur={17} delay={2.2} />
             </Parallax>
             <Parallax z={PZ.orbMid} className="absolute left-[64%] top-[64%] z-[15] md:left-[55.5%] md:top-[57.5%]">
-              <Orb reduce={reduce} className="scale-75 md:scale-100" from="#1e63c0" to="#06337a" size={46} dur={14} delay={0.6} />
+              <Orb reduce={reduce} className="scale-75 md:scale-100" base="/baserate/branding/orbs/blue" size={46} dur={14} delay={0.6} />
             </Parallax>
           </div>
           </ParallaxContext.Provider>
