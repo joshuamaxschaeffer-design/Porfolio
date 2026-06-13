@@ -1,44 +1,47 @@
 import Link from 'next/link'
-import { Reveal } from '@/components/animation/Reveal'
+import { Appear } from './Appear'
 import { Timeline } from './Timeline'
 import { intro, differentiators, outro } from './data'
 
 /**
  * About page — minimal, modern, four movements.
  *
- * Rebuilt 2026-06-13 (per Joshua): the old page was a scattered checklist of
- * everything the strategy doc lists. This is the opposite — one claim, three
- * differentiators, an animated proof timeline, one close. Nothing else.
+ * Rebuilt 2026-06-13 (per Joshua): the old page was a scattered checklist. This
+ * is one claim, three differentiators, an animated proof timeline, one close.
  *
- *   1. Hero    — the single claim + one short paragraph
+ *   1. Hero    — the single claim + one short paragraph  (animates on mount)
  *   2. Three   — the differentiators (the spine of the page)
  *   3. Path    — animated vertical timeline (line + dots, draws on scroll)
  *   4. Close   — availability + one CTA → /contact
  *
+ * Entrance polish via <Appear>, which never hides content (resting state is
+ * visible; motion only adds an entrance). The hero animates on mount — reliable
+ * for above-the-fold content — while lower sections animate on scroll-in.
+ *
  * No headshot, no capability matrix, no separate principles, no CV/side-project
- * links. Still on the br-* system so it reads as the same site as the case
- * studies; entrance polish via the shared <Reveal> primitive.
+ * links. Built on the br-* system so it reads as the same site as the case
+ * studies.
  */
 export function AboutPage() {
   return (
     <article className="br-article bg-white">
       {/* ── 1. Hero ────────────────────────────────────────────── */}
       <header className="br-container pt-24 pb-16 md:pt-36 md:pb-24">
-        <Reveal direction="up">
+        <Appear>
           <p className="br-data text-xs font-semibold uppercase tracking-[0.2em] text-[var(--br-gold)] md:text-sm">
             {intro.eyebrow}
           </p>
-        </Reveal>
-        <Reveal direction="up" delay={60}>
+        </Appear>
+        <Appear delay={80}>
           <h1 className="mt-5 max-w-4xl whitespace-pre-line text-[44px] font-medium leading-[1.0] tracking-[-0.02em] text-[var(--br-ink)] md:text-[80px]">
             {intro.heading}
           </h1>
-        </Reveal>
-        <Reveal direction="up" delay={140}>
+        </Appear>
+        <Appear delay={160}>
           <p className="mt-7 max-w-2xl text-lg leading-relaxed text-[var(--br-muted)] md:text-[22px]">
             {intro.lead}
           </p>
-        </Reveal>
+        </Appear>
       </header>
 
       {/* ── 2. Three differentiators ───────────────────────────── */}
@@ -48,7 +51,7 @@ export function AboutPage() {
       >
         <div className="grid grid-cols-1 gap-x-12 gap-y-12 md:grid-cols-3 md:gap-y-0">
           {differentiators.map((d, i) => (
-            <Reveal key={d.num} direction="up" delay={i * 90}>
+            <Appear key={d.num} onView delay={i * 90}>
               <div className="flex h-full flex-col">
                 <span className="br-data text-sm font-semibold text-[var(--br-gold)]">
                   {d.num}
@@ -60,7 +63,7 @@ export function AboutPage() {
                   {d.body}
                 </p>
               </div>
-            </Reveal>
+            </Appear>
           ))}
         </div>
       </section>
@@ -71,18 +74,18 @@ export function AboutPage() {
         className="br-container border-t border-[var(--br-line)] py-16 md:py-24"
       >
         <div className="grid grid-cols-1 gap-y-10 lg:grid-cols-[0.36fr_1fr] lg:gap-x-16">
-          <Reveal direction="up">
+          <Appear onView>
             <h2 className="br-data text-xs font-semibold uppercase tracking-[0.2em] text-[var(--br-muted-2)] md:text-sm">
               The path
             </h2>
-          </Reveal>
+          </Appear>
           <Timeline />
         </div>
       </section>
 
       {/* ── 4. Close ───────────────────────────────────────────── */}
       <section className="br-container border-t border-[var(--br-line)] py-20 md:py-28">
-        <Reveal direction="up">
+        <Appear onView>
           <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
             <p className="max-w-xl text-[28px] font-medium leading-snug tracking-[-0.015em] text-[var(--br-ink)] md:text-[38px]">
               {outro.line}
@@ -95,7 +98,7 @@ export function AboutPage() {
               <span aria-hidden>→</span>
             </Link>
           </div>
-        </Reveal>
+        </Appear>
       </section>
     </article>
   )
