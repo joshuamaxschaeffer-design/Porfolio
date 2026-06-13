@@ -1,15 +1,5 @@
 import { releases as defaults } from './data'
-
-/** Media scaffold — neutral frame holding the spot for real app imagery. */
-function PlaceholderFrame({ label }: { label: string }) {
-  return (
-    <div className="flex aspect-[16/10] w-full items-center justify-center rounded-[var(--br-card-radius)] border border-dashed border-[var(--br-divider)] bg-[var(--br-grey-card)]">
-      <p className="br-data px-6 text-center text-[12px] uppercase tracking-[0.14em] text-[var(--br-muted-2)]">
-        {label}
-      </p>
-    </div>
-  )
-}
+import { PerspectiveDeviceGrid } from '../shared/PerspectiveDeviceGrid'
 
 /** Section 3 — Phase 01 COVID sprint · Phase 02 full app + rewards. */
 export function ReleasesSection({ intro }: { intro?: string } = {}) {
@@ -23,27 +13,28 @@ export function ReleasesSection({ intro }: { intro?: string } = {}) {
           {intro ?? defaults.intro}
         </p>
 
-        <div className="mt-12 flex flex-col gap-14 md:mt-16 md:gap-20">
-          {defaults.phases.map((phase, i) => (
-            <div
-              key={phase.tag}
-              className="grid grid-cols-1 items-center gap-7 md:grid-cols-2 md:gap-[60px]"
-            >
-              {/* Copy column — alternates sides on desktop */}
-              <div className={i % 2 === 1 ? 'md:order-2' : undefined}>
-                <p className="br-data text-[14px] uppercase tracking-[0.12em] text-[var(--px-red)]">
-                  {phase.tag}
-                </p>
-                <h3 className="mt-3 text-[24px] font-semibold leading-tight text-[var(--br-ink)] md:text-[28px]">
-                  {phase.title}
-                </h3>
-                <p className="mt-3 max-w-[52ch] text-[15px] leading-normal text-[var(--br-muted)] md:text-base">
-                  {phase.body}
-                </p>
-              </div>
-              <div className={i % 2 === 1 ? 'md:order-1' : undefined}>
-                <PlaceholderFrame label={phase.placeholder} />
-              </div>
+        {/* Phase 01 + 02 app screens, laid down in perspective. Real
+            screenshots drop in later via the `screens` prop. */}
+        <div className="mt-12 md:mt-16">
+          <PerspectiveDeviceGrid
+            accent="#D02B2E"
+            caption="Mobile app screens — in progress"
+          />
+        </div>
+
+        {/* Two phases — copy (media now lives in the grid above). */}
+        <div className="mt-14 grid grid-cols-1 gap-10 md:mt-20 md:grid-cols-2 md:gap-[60px]">
+          {defaults.phases.map((phase) => (
+            <div key={phase.tag}>
+              <p className="br-data text-[14px] uppercase tracking-[0.12em] text-[var(--px-red)]">
+                {phase.tag}
+              </p>
+              <h3 className="mt-3 text-[24px] font-semibold leading-tight text-[var(--br-ink)] md:text-[28px]">
+                {phase.title}
+              </h3>
+              <p className="mt-3 max-w-[52ch] text-[15px] leading-normal text-[var(--br-muted)] md:text-base">
+                {phase.body}
+              </p>
             </div>
           ))}
         </div>
