@@ -234,7 +234,7 @@ export function BrandingHero() {
                 Same tilts as before (J: x7 z-9 y16 · B: x5 z10 y-20), spun
                 about the local Y. md positions stay literal Figma 243:54723
                 coordinates (box ÷ 1443×893). */}
-            <Parallax z={PZ.chip} className="absolute left-[36%] top-[6%] z-[15] md:left-[21.5%] md:top-[4.5%]">
+            <Parallax z={PZ.chip} className="absolute left-[36%] top-[6%] z-30 md:left-[21.5%] md:top-[4.5%]">
               <BakedChip
                 base="/baserate/branding/chips/journalytic"
                 alt="Journalytic"
@@ -247,7 +247,7 @@ export function BrandingHero() {
                 className="scale-[0.55] md:scale-100"
               />
             </Parallax>
-            <Parallax z={PZ.chip} className="absolute left-[7%] top-[66%] z-[15] md:left-[58%] md:top-[38.5%]">
+            <Parallax z={PZ.chip} className="absolute left-[7%] top-[66%] z-30 md:left-[58%] md:top-[38.5%]">
               <BakedChip
                 base="/baserate/branding/chips/baserate"
                 alt="Baserate"
