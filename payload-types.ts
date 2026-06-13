@@ -456,6 +456,168 @@ export interface Page {
             blockName?: string | null;
             blockType: 'baserateCaseStudy';
           }
+        | {
+            /**
+             * e.g. "2020 — 2022"
+             */
+            dateRange?: string | null;
+            lead?: string | null;
+            role?: string | null;
+            scope?:
+              | {
+                  label: string;
+                  id?: string | null;
+                }[]
+              | null;
+            challengeIntro?: string | null;
+            releasesIntro?: string | null;
+            outcomesIntro?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'pandaCaseStudy';
+          }
+        | {
+            /**
+             * e.g. "2019 — 2022"
+             */
+            dateRange?: string | null;
+            lead?: string | null;
+            role?: string | null;
+            scope?:
+              | {
+                  label: string;
+                  id?: string | null;
+                }[]
+              | null;
+            challengeIntro?: string | null;
+            redesignIntro?: string | null;
+            outcomesIntro?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'wingstopCaseStudy';
+          }
+        | {
+            /**
+             * e.g. "2013 — 2017"
+             */
+            dateRange?: string | null;
+            lead?: string | null;
+            role?: string | null;
+            scope?:
+              | {
+                  label: string;
+                  id?: string | null;
+                }[]
+              | null;
+            briefIntro?: string | null;
+            workIntro?: string | null;
+            outcomesIntro?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'samsungCaseStudy';
+          }
+        | {
+            eyebrow?: string | null;
+            /**
+             * Page title. Line breaks are preserved.
+             */
+            heading?: string | null;
+            lead?: string | null;
+            /**
+             * Small print under the lead
+             */
+            note?: string | null;
+            sections?:
+              | {
+                  /**
+                   * Anchor id, e.g. "brand"
+                   */
+                  id: string;
+                  /**
+                   * e.g. "03"
+                   */
+                  num: string;
+                  title: string;
+                  intro: string;
+                  layout?: ('mediaRight' | 'mediaLeft' | 'stack' | 'trio') | null;
+                  clients?:
+                    | {
+                        name: string;
+                        id?: string | null;
+                      }[]
+                    | null;
+                  media?:
+                    | {
+                        label: string;
+                        ratio?: ('wide' | 'video' | 'square' | 'portrait' | 'tall') | null;
+                        id?: string | null;
+                      }[]
+                    | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'capabilitiesPage';
+          }
+        | {
+            /**
+             * e.g. "01 — Investor Systems". Blank = default.
+             */
+            kicker?: string | null;
+            title?: string | null;
+            oneLine?: string | null;
+            /**
+             * Role · dates line.
+             */
+            meta?: string | null;
+            /**
+             * Case study link, e.g. /work/baserate
+             */
+            href?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'homeFlagshipBaserate';
+          }
+        | {
+            /**
+             * e.g. "01 — Investor Systems". Blank = default.
+             */
+            kicker?: string | null;
+            title?: string | null;
+            oneLine?: string | null;
+            /**
+             * Role · dates line.
+             */
+            meta?: string | null;
+            /**
+             * Case study link, e.g. /work/baserate
+             */
+            href?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'homeFlagshipPanda';
+          }
+        | {
+            /**
+             * Optional. Default "More work".
+             */
+            heading?: string | null;
+            /**
+             * Leave empty to use the default Wingstop / Samsung / Capabilities cards.
+             */
+            items?:
+              | {
+                  title?: string | null;
+                  blurb?: string | null;
+                  meta?: string | null;
+                  href?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'homeSecondaryRow';
+          }
       )[]
     | null;
   publishedAt?: string | null;
@@ -842,6 +1004,168 @@ export interface CaseStudy {
             id?: string | null;
             blockName?: string | null;
             blockType: 'baserateCaseStudy';
+          }
+        | {
+            /**
+             * e.g. "2020 — 2022"
+             */
+            dateRange?: string | null;
+            lead?: string | null;
+            role?: string | null;
+            scope?:
+              | {
+                  label: string;
+                  id?: string | null;
+                }[]
+              | null;
+            challengeIntro?: string | null;
+            releasesIntro?: string | null;
+            outcomesIntro?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'pandaCaseStudy';
+          }
+        | {
+            /**
+             * e.g. "2019 — 2022"
+             */
+            dateRange?: string | null;
+            lead?: string | null;
+            role?: string | null;
+            scope?:
+              | {
+                  label: string;
+                  id?: string | null;
+                }[]
+              | null;
+            challengeIntro?: string | null;
+            redesignIntro?: string | null;
+            outcomesIntro?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'wingstopCaseStudy';
+          }
+        | {
+            /**
+             * e.g. "2013 — 2017"
+             */
+            dateRange?: string | null;
+            lead?: string | null;
+            role?: string | null;
+            scope?:
+              | {
+                  label: string;
+                  id?: string | null;
+                }[]
+              | null;
+            briefIntro?: string | null;
+            workIntro?: string | null;
+            outcomesIntro?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'samsungCaseStudy';
+          }
+        | {
+            eyebrow?: string | null;
+            /**
+             * Page title. Line breaks are preserved.
+             */
+            heading?: string | null;
+            lead?: string | null;
+            /**
+             * Small print under the lead
+             */
+            note?: string | null;
+            sections?:
+              | {
+                  /**
+                   * Anchor id, e.g. "brand"
+                   */
+                  id: string;
+                  /**
+                   * e.g. "03"
+                   */
+                  num: string;
+                  title: string;
+                  intro: string;
+                  layout?: ('mediaRight' | 'mediaLeft' | 'stack' | 'trio') | null;
+                  clients?:
+                    | {
+                        name: string;
+                        id?: string | null;
+                      }[]
+                    | null;
+                  media?:
+                    | {
+                        label: string;
+                        ratio?: ('wide' | 'video' | 'square' | 'portrait' | 'tall') | null;
+                        id?: string | null;
+                      }[]
+                    | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'capabilitiesPage';
+          }
+        | {
+            /**
+             * e.g. "01 — Investor Systems". Blank = default.
+             */
+            kicker?: string | null;
+            title?: string | null;
+            oneLine?: string | null;
+            /**
+             * Role · dates line.
+             */
+            meta?: string | null;
+            /**
+             * Case study link, e.g. /work/baserate
+             */
+            href?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'homeFlagshipBaserate';
+          }
+        | {
+            /**
+             * e.g. "01 — Investor Systems". Blank = default.
+             */
+            kicker?: string | null;
+            title?: string | null;
+            oneLine?: string | null;
+            /**
+             * Role · dates line.
+             */
+            meta?: string | null;
+            /**
+             * Case study link, e.g. /work/baserate
+             */
+            href?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'homeFlagshipPanda';
+          }
+        | {
+            /**
+             * Optional. Default "More work".
+             */
+            heading?: string | null;
+            /**
+             * Leave empty to use the default Wingstop / Samsung / Capabilities cards.
+             */
+            items?:
+              | {
+                  title?: string | null;
+                  blurb?: string | null;
+                  meta?: string | null;
+                  href?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'homeSecondaryRow';
           }
       )[]
     | null;
@@ -1375,6 +1699,130 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        pandaCaseStudy?:
+          | T
+          | {
+              dateRange?: T;
+              lead?: T;
+              role?: T;
+              scope?:
+                | T
+                | {
+                    label?: T;
+                    id?: T;
+                  };
+              challengeIntro?: T;
+              releasesIntro?: T;
+              outcomesIntro?: T;
+              id?: T;
+              blockName?: T;
+            };
+        wingstopCaseStudy?:
+          | T
+          | {
+              dateRange?: T;
+              lead?: T;
+              role?: T;
+              scope?:
+                | T
+                | {
+                    label?: T;
+                    id?: T;
+                  };
+              challengeIntro?: T;
+              redesignIntro?: T;
+              outcomesIntro?: T;
+              id?: T;
+              blockName?: T;
+            };
+        samsungCaseStudy?:
+          | T
+          | {
+              dateRange?: T;
+              lead?: T;
+              role?: T;
+              scope?:
+                | T
+                | {
+                    label?: T;
+                    id?: T;
+                  };
+              briefIntro?: T;
+              workIntro?: T;
+              outcomesIntro?: T;
+              id?: T;
+              blockName?: T;
+            };
+        capabilitiesPage?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              lead?: T;
+              note?: T;
+              sections?:
+                | T
+                | {
+                    id?: T;
+                    num?: T;
+                    title?: T;
+                    intro?: T;
+                    layout?: T;
+                    clients?:
+                      | T
+                      | {
+                          name?: T;
+                          id?: T;
+                        };
+                    media?:
+                      | T
+                      | {
+                          label?: T;
+                          ratio?: T;
+                          id?: T;
+                        };
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        homeFlagshipBaserate?:
+          | T
+          | {
+              kicker?: T;
+              title?: T;
+              oneLine?: T;
+              meta?: T;
+              href?: T;
+              id?: T;
+              blockName?: T;
+            };
+        homeFlagshipPanda?:
+          | T
+          | {
+              kicker?: T;
+              title?: T;
+              oneLine?: T;
+              meta?: T;
+              href?: T;
+              id?: T;
+              blockName?: T;
+            };
+        homeSecondaryRow?:
+          | T
+          | {
+              heading?: T;
+              items?:
+                | T
+                | {
+                    title?: T;
+                    blurb?: T;
+                    meta?: T;
+                    href?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
       };
   publishedAt?: T;
   updatedAt?: T;
@@ -1613,6 +2061,130 @@ export interface CaseStudiesSelect<T extends boolean = true> {
               challengeIntro?: T;
               architectureIntro?: T;
               productSystemIntro?: T;
+              id?: T;
+              blockName?: T;
+            };
+        pandaCaseStudy?:
+          | T
+          | {
+              dateRange?: T;
+              lead?: T;
+              role?: T;
+              scope?:
+                | T
+                | {
+                    label?: T;
+                    id?: T;
+                  };
+              challengeIntro?: T;
+              releasesIntro?: T;
+              outcomesIntro?: T;
+              id?: T;
+              blockName?: T;
+            };
+        wingstopCaseStudy?:
+          | T
+          | {
+              dateRange?: T;
+              lead?: T;
+              role?: T;
+              scope?:
+                | T
+                | {
+                    label?: T;
+                    id?: T;
+                  };
+              challengeIntro?: T;
+              redesignIntro?: T;
+              outcomesIntro?: T;
+              id?: T;
+              blockName?: T;
+            };
+        samsungCaseStudy?:
+          | T
+          | {
+              dateRange?: T;
+              lead?: T;
+              role?: T;
+              scope?:
+                | T
+                | {
+                    label?: T;
+                    id?: T;
+                  };
+              briefIntro?: T;
+              workIntro?: T;
+              outcomesIntro?: T;
+              id?: T;
+              blockName?: T;
+            };
+        capabilitiesPage?:
+          | T
+          | {
+              eyebrow?: T;
+              heading?: T;
+              lead?: T;
+              note?: T;
+              sections?:
+                | T
+                | {
+                    id?: T;
+                    num?: T;
+                    title?: T;
+                    intro?: T;
+                    layout?: T;
+                    clients?:
+                      | T
+                      | {
+                          name?: T;
+                          id?: T;
+                        };
+                    media?:
+                      | T
+                      | {
+                          label?: T;
+                          ratio?: T;
+                          id?: T;
+                        };
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        homeFlagshipBaserate?:
+          | T
+          | {
+              kicker?: T;
+              title?: T;
+              oneLine?: T;
+              meta?: T;
+              href?: T;
+              id?: T;
+              blockName?: T;
+            };
+        homeFlagshipPanda?:
+          | T
+          | {
+              kicker?: T;
+              title?: T;
+              oneLine?: T;
+              meta?: T;
+              href?: T;
+              id?: T;
+              blockName?: T;
+            };
+        homeSecondaryRow?:
+          | T
+          | {
+              heading?: T;
+              items?:
+                | T
+                | {
+                    title?: T;
+                    blurb?: T;
+                    meta?: T;
+                    href?: T;
+                    id?: T;
+                  };
               id?: T;
               blockName?: T;
             };
