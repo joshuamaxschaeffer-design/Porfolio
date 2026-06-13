@@ -19,7 +19,7 @@ const ALT_NAMES = [
 ].map((n) => `/baserate/branding/altnames-crop/${n}.png`)
 
 const ALT_LOGOS = ['1', '2', '3', '4', '5', '6', '7', '8', '10', '11', '12', '13', '14'].map(
-  (n) => `/baserate/branding/altlogos/${n}.png`,
+  (n) => `/baserate/branding/altlogos/${n}.webp`,
 )
 
 /**

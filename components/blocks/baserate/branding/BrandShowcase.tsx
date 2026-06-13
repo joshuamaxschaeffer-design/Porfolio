@@ -100,7 +100,7 @@ export function BrandShowcase({ theme }: { theme: 'journalytic' | 'baserate' }) 
         j
           ? undefined
           : {
-              backgroundImage: 'url(/baserate/branding/grey-bg.png)',
+              backgroundImage: 'url(/baserate/branding/grey-bg.webp)',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             }

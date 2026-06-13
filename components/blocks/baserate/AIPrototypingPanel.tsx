@@ -26,7 +26,10 @@ export function AIPrototypingPanel({
 }) {
   const ref = useRef<HTMLVideoElement>(null)
 
-  // Force muted autoplay (browsers are unreliable with the attribute alone).
+  // PERF: don't eagerly download/play the prototype video on page load (it's
+  // far down the page). Start loading + playing only when it nears the
+  // viewport, and pause when it leaves. `preload="none"` keeps it off the
+  // initial network until then.
   useEffect(() => {
     const v = ref.current
     if (!v) return
@@ -35,9 +38,25 @@ export function AIPrototypingPanel({
       const p = v.play()
       if (p && typeof p.catch === 'function') p.catch(() => {})
     }
-    play()
-    v.addEventListener('canplay', play)
-    return () => v.removeEventListener('canplay', play)
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            v.preload = 'auto'
+            if (v.readyState >= 2) play()
+            else {
+              v.load()
+              v.addEventListener('canplay', play, { once: true })
+            }
+          } else {
+            v.pause()
+          }
+        }
+      },
+      { rootMargin: '300px 0px' }, // start a bit before it scrolls in
+    )
+    io.observe(v)
+    return () => io.disconnect()
   }, [])
 
   return (
@@ -60,10 +79,9 @@ export function AIPrototypingPanel({
             className="pointer-events-none h-full w-full object-cover select-none"
             src={video}
             muted
-            autoPlay
             loop
             playsInline
-            preload="auto"
+            preload="none"
             controls={false}
             disablePictureInPicture
             controlsList="nodownload noplaybackrate noremoteplayback"

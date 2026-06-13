@@ -300,7 +300,10 @@ function VideoCard({ row }: { row: CarouselRow }) {
         muted
         autoPlay
         playsInline
-        preload="auto"
+        // metadata (not auto): don't fully download every demo video on page
+        // load. The play logic + IntersectionObserver above fetch the rest when
+        // the card is on/near screen. Keeps muted-autoplay intact.
+        preload="metadata"
       />
     </div>
   )
