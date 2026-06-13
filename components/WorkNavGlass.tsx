@@ -82,6 +82,11 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
   const [pos, setPos] = useState<{ left: number; top: number } | null>(null)
   const [mounted, setMounted] = useState(false)
   const [reduce, setReduce] = useState(false)
+  // `active` = the flyout DOM should exist (open, or still animating closed).
+  // When false the entire flyout (incl. its backdrop-filter pills + the gooey
+  // SVG filter) is UNMOUNTED — so a closed menu costs nothing and can't leave a
+  // blurred blob artifact under the bar.
+  const [active, setActive] = useState(false)
 
   const triggerRef = useRef<HTMLButtonElement>(null)
   const triggerLabelRef = useRef<HTMLSpanElement>(null)
@@ -128,7 +133,10 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
     const lastTop = topOffset + (items.length - 1) * stride
     const fullHeight = lastTop + PILL_H
     const revealHeight = Math.round((fullHeight + SHADOW_BLEED) * Math.min(1, p * 1.15))
-    const blobOpacity = p < 0.55 ? 1 : Math.max(0, 1 - (p - 0.55) / 0.45)
+    // Blob is invisible at rest-closed (p≈0), full while merged, fades out as
+    // pills separate. The `p < 0.04` guard kills the 1px mask sliver that
+    // otherwise shows as a blurred lump under the bar when closed.
+    const blobOpacity = p < 0.04 ? 0 : p < 0.55 ? 1 : Math.max(0, 1 - (p - 0.55) / 0.45)
     const glassBase = Math.max(0, (p - 0.35) / 0.65)
     const pillTop = (i: number) => Math.round(topOffset + i * stride)
 
@@ -179,21 +187,36 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
       const eased = easeOut(raw)
       progressRef.current = from + (target - from) * eased
       paint(progressRef.current)
-      if (raw < 1) rafRef.current = requestAnimationFrame(tick)
+      if (raw < 1) {
+        rafRef.current = requestAnimationFrame(tick)
+      } else if (target === 0) {
+        // Close finished → unmount the flyout entirely (no idle backdrop-filter
+        // / SVG filter cost, no artifact).
+        setActive(false)
+      }
     }
     rafRef.current = requestAnimationFrame(tick)
   }
 
-  // Kick the animation whenever open flips.
+  // Opening must MOUNT the flyout first (so refs exist), then animate.
+  useEffect(() => {
+    if (open) {
+      place()
+      setActive(true)
+    }
+    // closing is handled by animateTo → setActive(false) at the end
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
+
+  // Run the animation once the flyout is mounted (active) or on close.
   useEffect(() => {
     if (!mounted) return
-    if (open) place()
-    animateTo(open ? 1 : 0)
+    if (active || !open) animateTo(open ? 1 : 0)
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, mounted, reduce])
+  }, [open, active, mounted, reduce])
 
   // Crossfade the trigger glyph (icon <-> "Work") via refs, no re-render needed.
   useEffect(() => {
@@ -311,6 +334,7 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
       </button>
 
       {mounted &&
+        active &&
         createPortal(
           <div
             ref={portalRef}
