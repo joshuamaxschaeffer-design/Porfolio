@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { LockIcon } from './LockIcon'
 
 export interface SectionNavItem {
   /** DOM id of the section to track / jump to */
@@ -23,9 +24,21 @@ export interface SectionNavItem {
  *          text, 12px gap from pill, 8px rotated-square tail on the left
  * Desktop-only by request: hidden below 1280px viewports.
  */
-export function SectionNav({ items }: { items: SectionNavItem[] }) {
+export function SectionNav({
+  items,
+  /**
+   * Index of the first NDA-locked section. Items at or after this index show a
+   * padlock instead of their number and can't be jumped to. Omit (or pass null)
+   * once the viewer has unlocked — then every stop behaves normally.
+   */
+  lockedFrom,
+}: {
+  items: SectionNavItem[]
+  lockedFrom?: number | null
+}) {
   const [active, setActive] = useState(0)
   const raf = useRef<number | null>(null)
+  const isLocked = (i: number) => lockedFrom != null && i >= lockedFrom
 
   useEffect(() => {
     const compute = () => {
@@ -40,6 +53,9 @@ export function SectionNav({ items }: { items: SectionNavItem[] }) {
       // pinned to the very bottom → always light up the last stop
       const doc = document.documentElement
       if (window.innerHeight + window.scrollY >= doc.scrollHeight - 2) current = items.length - 1
+      // When locked, the gated sections aren't in the DOM, so the highlight must
+      // never run past the last visible (unlocked) stop.
+      if (lockedFrom != null) current = Math.min(current, lockedFrom - 1)
       setActive(current)
     }
     const queue = () => {
@@ -53,7 +69,7 @@ export function SectionNav({ items }: { items: SectionNavItem[] }) {
       window.removeEventListener('resize', queue)
       if (raf.current != null) cancelAnimationFrame(raf.current)
     }
-  }, [items])
+  }, [items, lockedFrom])
 
   const jump = (id: string) => {
     const el = document.getElementById(id)
@@ -71,42 +87,53 @@ export function SectionNav({ items }: { items: SectionNavItem[] }) {
         className="flex w-[42px] list-none flex-col items-center rounded-full border border-[rgba(7,14,44,0.05)] bg-[rgba(242,242,245,0.24)] py-[17px] backdrop-blur-[10px] [box-shadow:0_8px_22px_rgba(7,14,44,0.09),0_2px_6px_rgba(7,14,44,0.05)]"
       >
         {items.map((item, i) => {
-          const visited = i <= active
+          const locked = isLocked(i)
+          const visited = !locked && i <= active
+          // A locked stop's connector (the segment entering it from above) never
+          // fills, so the visited line stops at the last unlocked circle.
+          const connectorVisited = visited && !isLocked(i - 1)
           return (
             <li key={item.id} className={`relative ${i > 0 ? 'mt-[39px]' : ''}`}>
-              {/* connector — only between consecutive visited circles */}
+              {/* connector — only between consecutive visited (unlocked) circles */}
               {i > 0 && (
                 <span
                   aria-hidden
                   className={`absolute -top-[39px] left-1/2 h-[39px] w-px origin-top -translate-x-1/2 bg-[#D6D6D6] transition-[transform,opacity] duration-300 ${
-                    visited ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0'
+                    connectorVisited ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0'
                   }`}
                 />
               )}
               <button
                 type="button"
-                onClick={() => jump(item.id)}
-                aria-label={`Jump to ${item.title}`}
-                aria-current={i === active ? 'true' : undefined}
-                className="group relative grid h-5 w-5 cursor-pointer place-items-center"
+                onClick={() => !locked && jump(item.id)}
+                aria-label={locked ? `${item.title} — locked` : `Jump to ${item.title}`}
+                aria-current={!locked && i === active ? 'true' : undefined}
+                aria-disabled={locked || undefined}
+                className={`group relative grid h-5 w-5 place-items-center ${
+                  locked ? 'cursor-default' : 'cursor-pointer'
+                }`}
               >
                 {/* generous hit area around the 20px circle */}
                 <span aria-hidden className="absolute -inset-[10px]" />
-                {/* white circle + ring, fades/scales in once visited */}
+                {/* white circle + ring, fades/scales in once visited (never for locked) */}
                 <span
                   aria-hidden
                   className={`absolute inset-0 rounded-full border border-[#D6D6D6] bg-white transition-[transform,opacity] duration-300 ${
                     visited ? 'scale-100 opacity-100' : 'scale-50 opacity-0'
                   }`}
                 />
-                <span
-                  className={`relative text-[13px] font-medium leading-none transition-colors duration-300 ${
-                    visited ? 'text-[#585B6B]' : 'text-[#AAAAAA]'
-                  }`}
-                  style={{ fontFamily: 'var(--font-heading)' }}
-                >
-                  {i + 1}
-                </span>
+                {locked ? (
+                  <LockIcon className="relative h-[14px] w-[14px] text-[#AAAAAA]" />
+                ) : (
+                  <span
+                    className={`relative text-[13px] font-medium leading-none transition-colors duration-300 ${
+                      visited ? 'text-[#585B6B]' : 'text-[#AAAAAA]'
+                    }`}
+                    style={{ fontFamily: 'var(--font-heading)' }}
+                  >
+                    {i + 1}
+                  </span>
+                )}
                 {/* tooltip — 12px right of the pill edge, tail pointing at the circle */}
                 <span
                   role="tooltip"
