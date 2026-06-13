@@ -270,3 +270,144 @@ export function createShadowPipeline(canvas: HTMLCanvasElement, shadow: HTMLCanv
 
   return { size, draw }
 }
+
+// ───────────────────────────────────────────────────────────────────────────
+// SHADOW V3 (alternative renderer — does NOT replace createShadowPipeline).
+//
+// Instead of recompositing a multi-band blurred canvas every frame, v3 draws
+// ONE SVG polygon (the object's footprint run through the per-frame affine),
+// filled with an opacity gradient along the near→far axis, under a Gaussian
+// blur whose strength is the height-graded σ. A few stacked, gradient-masked
+// blurred copies approximate the blur-INCREASE along the axis (sharp at the
+// contact/near edge, soft at the far edge) — the same look the canvas version
+// builds with bands, but as cheap GPU-composited SVG (no per-frame raster of a
+// big bitmap). Reads the SAME shadow-v2 data; no new SD Studio export needed.
+//
+// Build with createSvgShadow(svgEl); call size(w,h) then draw(frameIdx, track).
+// Toggle between this and the canvas pipeline via StudioObject `shadowMode`.
+// ───────────────────────────────────────────────────────────────────────────
+
+const SVGNS = 'http://www.w3.org/2000/svg'
+// how many blur layers approximate the near→far blur ramp (3 = sharp/mid/soft)
+const SVG_BLUR_LAYERS = 3
+
+export function createSvgShadow(svg: SVGSVGElement) {
+  let W = 0
+  let H = 0
+  let uid = Math.random().toString(36).slice(2, 8)
+  // lazily-built reusable nodes
+  let defs: SVGDefsElement | null = null
+  const layers: { g: SVGGElement; poly: SVGPolygonElement; blur: SVGFEGaussianBlurElement; grad: SVGLinearGradientElement; stopA: SVGStopElement; stopM: SVGStopElement; stopB: SVGStopElement }[] = []
+
+  const size = (firstW: number, firstH: number) => {
+    W = firstW
+    H = firstH
+    // viewBox spans the padded box (same geometry as the shadow canvas):
+    // from -pad..(1+pad) of the object in each axis, in OBJECT pixels.
+    const padX = W * STUDIO_PAD
+    const padY = H * STUDIO_PAD
+    const vbW = W * (1 + STUDIO_PAD * 2)
+    const vbH = H * (1 + STUDIO_PAD * 2)
+    svg.setAttribute('viewBox', `${-padX} ${-padY} ${vbW} ${vbH}`)
+    svg.setAttribute('preserveAspectRatio', 'none')
+    // (re)build the layer stack
+    svg.innerHTML = ''
+    layers.length = 0
+    defs = document.createElementNS(SVGNS, 'defs') as SVGDefsElement
+    svg.appendChild(defs)
+    for (let i = 0; i < SVG_BLUR_LAYERS; i++) {
+      const filter = document.createElementNS(SVGNS, 'filter')
+      const fid = `sh3f_${uid}_${i}`
+      filter.setAttribute('id', fid)
+      // generous region so the blur isn't clipped
+      filter.setAttribute('x', '-50%'); filter.setAttribute('y', '-50%')
+      filter.setAttribute('width', '200%'); filter.setAttribute('height', '200%')
+      const blur = document.createElementNS(SVGNS, 'feGaussianBlur') as SVGFEGaussianBlurElement
+      blur.setAttribute('stdDeviation', '4')
+      filter.appendChild(blur)
+      defs.appendChild(filter)
+
+      const grad = document.createElementNS(SVGNS, 'linearGradient') as SVGLinearGradientElement
+      const gid = `sh3g_${uid}_${i}`
+      grad.setAttribute('id', gid)
+      grad.setAttribute('gradientUnits', 'userSpaceOnUse')
+      // 3 stops: 0 (transparent) → mid (opaque) → 1 (transparent) — a soft band
+      // along the near→far axis so stacked layers crossfade into a smooth ramp.
+      const stopA = document.createElementNS(SVGNS, 'stop') as SVGStopElement
+      const stopM = document.createElementNS(SVGNS, 'stop') as SVGStopElement
+      const stopB = document.createElementNS(SVGNS, 'stop') as SVGStopElement
+      for (const s of [stopA, stopM, stopB]) s.setAttribute('stop-color', '#07112b')
+      grad.appendChild(stopA); grad.appendChild(stopM); grad.appendChild(stopB)
+      defs.appendChild(grad)
+
+      const g = document.createElementNS(SVGNS, 'g') as SVGGElement
+      g.setAttribute('filter', `url(#${fid})`)
+      const poly = document.createElementNS(SVGNS, 'polygon') as SVGPolygonElement
+      poly.setAttribute('fill', `url(#${gid})`)
+      g.appendChild(poly)
+      svg.appendChild(g)
+      layers.push({ g, poly, blur, grad, stopA, stopM, stopB })
+    }
+  }
+
+  // affine helper: map an object-space point through af [a,b,c,d,e,f]
+  const ap = (af: number[], x: number, y: number) => [af[0] * x + af[2] * y + af[4], af[1] * x + af[3] * y + af[5]]
+
+  const draw = (frameIdx: number, track: ShadowTrack) => {
+    if (!W || !layers.length) return
+    const fr: any = track?.frames?.[frameIdx]
+    if (!(track && (track as any).v2 && fr && fr.af)) {
+      // v3 only supports v2 data; hide if unavailable (canvas mode covers the rest)
+      for (const L of layers) L.g.style.display = 'none'
+      return
+    }
+    const { sigma_base_px: s0, sigma_per_h_px: s1, alpha_base: a0, alpha_per_h: a1 } = (track as any).calib
+    const af = fr.af as number[]
+    // object footprint corners (full object bbox) → shadow space via af
+    const c = [ap(af, 0, 0), ap(af, W, 0), ap(af, W, H), ap(af, 0, H)]
+    const polyStr = c.map((p) => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ')
+    const h0 = fr.h0
+    const h1 = Math.max(fr.h1, h0 + 0.001)
+    // near (sharp/low) → far (soft/high) axis from the calibrated anchor points
+    const near = fr.pn as number[]
+    const far = fr.pf as number[]
+    // split the near→far span across the layers: layer i covers its slab with
+    // its own blur (σ at that height) and an opacity gradient that fades it in
+    // over the slab so the layers sum to a smooth ramp.
+    const cl = (v: number) => Math.max(0, Math.min(1, v))
+    const F = 0.15 // slab feather (fraction of the near→far span)
+    for (let i = 0; i < layers.length; i++) {
+      const L = layers[i]
+      const t0 = i / layers.length
+      const t1 = (i + 1) / layers.length
+      const tm = (t0 + t1) / 2
+      const hMid = h0 + (h1 - h0) * tm
+      // v3 tuning: the polygon is the full object footprint (larger than the
+      // calibrated silhouette the canvas bands warp), so push blur + opacity up
+      // a bit to land near the canvas look. SVG feGaussianBlur stdDeviation also
+      // reads slightly tighter than the canvas chain at the same number.
+      const sigma = Math.max(0.6, (s0 + s1 * hMid) * 1.6)
+      const alpha = Math.max(0, (a0 + a1 * hMid) * 1.7)
+      if (alpha <= 0.004) { L.g.style.display = 'none'; continue }
+      L.g.style.display = ''
+      L.g.style.opacity = String(Math.min(1, alpha))
+      L.blur.setAttribute('stdDeviation', sigma.toFixed(2))
+      L.poly.setAttribute('points', polyStr)
+      // gradient runs along the near→far axis (userSpace), so its 0..1 offsets
+      // map onto t along that axis. This layer is opaque across its slab [t0,t1]
+      // and feathers to 0 just outside → stacked slabs sum to a smooth ramp.
+      L.grad.setAttribute('x1', near[0].toFixed(1)); L.grad.setAttribute('y1', near[1].toFixed(1))
+      L.grad.setAttribute('x2', far[0].toFixed(1)); L.grad.setAttribute('y2', far[1].toFixed(1))
+      const oA = i === 0 ? 0 : cl(t0 - F)            // first layer is opaque from the contact edge
+      const oM = tm
+      const oB = i === layers.length - 1 ? 1 : cl(t1 + F) // last layer opaque to the far edge
+      L.stopA.setAttribute('offset', `${(oA * 100).toFixed(1)}%`); L.stopA.setAttribute('stop-opacity', i === 0 ? '1' : '0')
+      L.stopM.setAttribute('offset', `${(oM * 100).toFixed(1)}%`); L.stopM.setAttribute('stop-opacity', '1')
+      L.stopB.setAttribute('offset', `${(oB * 100).toFixed(1)}%`); L.stopB.setAttribute('stop-opacity', i === layers.length - 1 ? '1' : '0')
+    }
+  }
+
+  const clear = () => { for (const L of layers) L.g.style.display = 'none' }
+
+  return { size, draw, clear }
+}

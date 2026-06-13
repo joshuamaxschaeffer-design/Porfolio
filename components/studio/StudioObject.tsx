@@ -2,7 +2,7 @@
 
 import { type MotionValue } from 'motion/react'
 import { useEffect, useRef } from 'react'
-import { STUDIO_PAD, createShadowPipeline, type ShadowTrack } from './studioShadow'
+import { STUDIO_PAD, createShadowPipeline, createSvgShadow, type ShadowTrack } from './studioShadow'
 
 function pad4(n: number) {
   return String(n).padStart(4, '0')
@@ -36,6 +36,7 @@ export function StudioObject({
   alt = '',
   scrub,
   staticFrame,
+  shadowMode = 'canvas',
 }: {
   base: string
   frameCount?: number
@@ -48,9 +49,13 @@ export function StudioObject({
    *  no sequence preload, no scroll subscription, no per-scroll canvas work.
    *  Use the settled-pose index for a fast static hero. -1 = last frame. */
   staticFrame?: number
+  /** Shadow renderer: 'canvas' (default, the multi-band recompose) or 'svg'
+   *  (v3 — a cheap blurred gradient polygon; far lighter, animatable). */
+  shadowMode?: 'canvas' | 'svg'
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const shadowRef = useRef<HTMLCanvasElement>(null)
+  const svgRef = useRef<SVGSVGElement>(null)
   const played = useRef(false)
   const trackRef = useRef<ShadowTrack>(null)
 
@@ -62,7 +67,9 @@ export function StudioObject({
     if (!ctx) return
 
     const isSeq = frameCount > 1
+    const useSvg = shadowMode === 'svg' && !!svgRef.current
     const pipe = createShadowPipeline(canvas, shadow)
+    const svgShadow = useSvg ? createSvgShadow(svgRef.current!) : null
     let raf = 0
     let disposed = false
     const imgs: HTMLImageElement[] = []
@@ -97,9 +104,13 @@ export function StudioObject({
         lastDrawn = i
         ctx.clearRect(0, 0, canvas.width, canvas.height)
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-        // The shadow recomposite (multi-band blur warp) is the expensive part;
-        // skip it for cheap per-scrub image updates and refresh it lazily.
-        if (withShadow) pipe.draw(img, i, trackRef.current)
+        if (withShadow) {
+          // v3 SVG shadow is cheap enough to update every frame; the canvas
+          // recomposite (multi-band blur warp) is the expensive path skipped
+          // during scrub and refreshed lazily.
+          if (svgShadow) svgShadow.draw(i, trackRef.current)
+          else pipe.draw(img, i, trackRef.current)
+        }
       }
     }
     // re-render the current frame when the shadow track arrives late
@@ -114,6 +125,7 @@ export function StudioObject({
       first.onload = () => {
         if (disposed) return
         pipe.size(first.naturalWidth, first.naturalHeight)
+        svgShadow?.size(first.naturalWidth, first.naturalHeight)
         imgs[0] = first
         drawFrame(0)
       }
@@ -134,6 +146,7 @@ export function StudioObject({
       img.onload = () => {
         if (disposed) return
         if (!canvas.width) pipe.size(img.naturalWidth, img.naturalHeight)
+        svgShadow?.size(img.naturalWidth, img.naturalHeight)
         imgs[idx] = img
         drawFrame(idx, true)
       }
@@ -272,21 +285,32 @@ export function StudioObject({
       io.disconnect()
       cancelAnimationFrame(raf)
     }
-  }, [base, frameCount, fps, delay, scrub])
+  }, [base, frameCount, fps, delay, scrub, staticFrame, shadowMode])
 
   const padPct = `${(STUDIO_PAD * 100).toFixed(0)}%`
+  const padBox = {
+    left: `-${padPct}`,
+    top: `-${padPct}`,
+    width: `${100 + STUDIO_PAD * 200}%`,
+    height: `${100 + STUDIO_PAD * 200}%`,
+  } as const
+  const svgMode = shadowMode === 'svg'
   return (
     <div className={`relative ${className}`}>
+      {/* v3 SVG shadow overlay (only when shadowMode==='svg'); same padded box
+          as the canvas shadow so geometry matches. */}
+      <svg
+        ref={svgRef}
+        aria-hidden
+        className="pointer-events-none absolute"
+        style={{ ...padBox, display: svgMode ? 'block' : 'none', overflow: 'visible' }}
+      />
+      {/* canvas shadow (default renderer); hidden in svg mode */}
       <canvas
         ref={shadowRef}
         aria-hidden
         className="pointer-events-none absolute"
-        style={{
-          left: `-${padPct}`,
-          top: `-${padPct}`,
-          width: `${100 + STUDIO_PAD * 200}%`,
-          height: `${100 + STUDIO_PAD * 200}%`,
-        }}
+        style={{ ...padBox, display: svgMode ? 'none' : 'block' }}
       />
       <canvas ref={canvasRef} className="relative h-auto w-full" aria-label={alt} />
     </div>
