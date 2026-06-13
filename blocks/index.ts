@@ -17,6 +17,7 @@ import { BaserateCaseStudy } from './BaserateCaseStudy'
 import { PandaCaseStudy } from './PandaCaseStudy'
 import { WingstopCaseStudy } from './WingstopCaseStudy'
 import { SamsungCaseStudy } from './SamsungCaseStudy'
+import { CapabilitiesPage } from './CapabilitiesPage'
 
 export const allBlocks = [
   Hero,
@@ -39,6 +40,7 @@ export const allBlocks = [
   PandaCaseStudy,
   WingstopCaseStudy,
   SamsungCaseStudy,
+  CapabilitiesPage,
 ]
 
 export {
@@ -61,4 +63,5 @@ export {
   PandaCaseStudy,
   WingstopCaseStudy,
   SamsungCaseStudy,
+  CapabilitiesPage,
 }
