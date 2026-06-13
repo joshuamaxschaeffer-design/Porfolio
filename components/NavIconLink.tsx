@@ -27,7 +27,7 @@ export function NavIconLink({
       className="group/icon flex h-full items-center justify-center"
     >
       <span
-        className={`grid h-9 ${NAV_BOX} place-items-center rounded-full border border-transparent text-[var(--nav-fg)] transition-colors duration-[250ms] group-hover/icon:border-[var(--glass-border)] group-hover/icon:bg-[var(--glass-fill)] group-hover/icon:text-[var(--nav-fg-hover)] group-focus-visible/icon:border-[var(--glass-border)] group-focus-visible/icon:bg-[var(--glass-fill)]`}
+        className={`grid h-9 ${NAV_BOX} place-items-center text-[var(--nav-fg)] transition-colors duration-[250ms] group-hover/icon:text-[var(--nav-fg-hover)] group-focus-visible/icon:text-[var(--nav-fg-hover)]`}
       >
         {/* Asymmetric crossfade: the OUTGOING glyph exits fast (100ms), the
             INCOMING one eases in slow (600ms after a 75ms head start) — in

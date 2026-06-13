@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import type { Brand } from '@/lib/brand'
 import { useEffect, useId, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
@@ -23,13 +24,15 @@ function glassVars(brand: Brand) {
     fill: practice ? 'rgba(255,255,255,0.16)' : 'rgba(255,255,255,0.55)',
     fillHover: practice ? 'rgba(255,255,255,0.30)' : 'rgba(255,255,255,0.80)',
     border: practice ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.70)',
-    // Near-solid fill for the gooey BLOB layer (the liquid). The gooey
-    // alpha-contrast filter needs mostly-opaque shapes to merge cleanly; the
-    // frosted glass pills ride on top. White on both brands - lighter on the
-    // dark practice brand so it doesn't glare.
+    // Near-solid fill for the gooey BLOB layer (the liquid).
     blob: practice ? 'rgba(236,236,240,0.85)' : 'rgba(255,255,255,0.92)',
   }
 }
+
+const SHADOW_REST =
+  '0 8px 22px rgba(7,14,44,0.12), 0 2px 6px rgba(7,14,44,0.06), inset 0 1px 0 rgba(255,255,255,0.55)'
+const SHADOW_HOVER =
+  '0 12px 30px rgba(7,14,44,0.18), 0 3px 8px rgba(7,14,44,0.08), inset 0 1px 0 rgba(255,255,255,0.6)'
 
 // Liquid emergence timing + geometry.
 const PILL_H = 36 // glass pill height (h-9)
@@ -38,67 +41,69 @@ const STEP = PILL_H + GAP // resting vertical stride
 const CLUSTER = 7 // tiny stride while "merged" at the bar (blobs overlap -> one mass)
 const GOO_MAX = 9 // stdDeviation while merged (heavy merge)
 const GOO_MIN = 0.5 // stdDeviation at rest (crisp, fully separate)
-const DURATION = 540 // ms, open
-const DURATION_OUT = 240 // ms, close (snaps back up faster)
+const DURATION = 460 // ms, open
+const DURATION_OUT = 200 // ms, close (snaps back up faster)
 const PILL_W = 200 // blob + glass pill width
 const TOP_OFFSET = 10 // gap below the bar before the first (Baserate) pill
 const PAD_X = 16 // left/right inset inside the portal so pill SHADOWS aren't clipped
-const SHADOW_BLEED = 50 // how far the clip-path lets shadows bleed past L/R/bottom
+const SHADOW_BLEED = 50 // canvas below the last pill for its shadow
 
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3)
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 
 /**
- * "Work" nav item with a LIQUID GLASS flyout. On hover/open the icon
- * crossfades to "Work" (unchanged) and a stack of glass pills emerges from the
- * bar's bottom edge like liquid: they start fused into one blob bulging out of
- * the bar, then necks stretch and pinch off into separate frosted pills as they
- * spread downward.
+ * "Work" nav item with a LIQUID GLASS flyout. On hover/open the pills emerge
+ * from the bar's bottom edge like liquid: fused into one gooey blob, then they
+ * pinch off into separate frosted pills as they spread down.
  *
- * HOW THE LIQUID WORKS (two layers, one clock):
- *  - A rAF-driven `progress` 0->1 (eased) is the single source of truth.
- *  - BLOB layer: near-solid white pills under an SVG gooey filter
- *    (feGaussianBlur -> feColorMatrix alpha-contrast). While progress is low the
- *    blobs sit nearly on top of each other (CLUSTER stride) and the blur is
- *    high (GOO_MAX) so they read as ONE merged mass. As progress -> 1 the stride
- *    grows to STEP and the blur drops to GOO_MIN, so they separate into crisp
- *    shapes. The blob layer fades out near the end so only glass shows at rest.
- *  - GLASS layer: the real frosted pills with text, NOT gooey-filtered, fade in
- *    on top as each blob separates.
- *  - SVG filter <defs> lives INSIDE the portal with a per-instance id (useId),
- *    so the header is never touched -> top-item hover states are unaffected.
+ * PERFORMANCE (why this is ref-driven, not React state):
+ *  The animation is driven by a single rAF loop that writes styles DIRECTLY to
+ *  DOM nodes (stdDeviation on the filter, the blob mask + opacity, each pill's
+ *  top + opacity). It does NOT call setState per frame — re-rendering React +
+ *  re-deriving the tree 60x/sec while an SVG gooey filter re-rasterizes the
+ *  backdrop was what made the menu feel slow and delayed clicks. Now React only
+ *  renders on open/close (twice), and the per-frame work is plain style writes
+ *  the compositor can handle. The gooey blob layer is also `contain:strict` +
+ *  `isolation:isolate` so its filter repaint stays inside the flyout instead of
+ *  invalidating the whole page.
  *
- * WHY IT DOESN'T BREAK THE HOVER (the documented flicker):
- *  - The flyout is PORTALED to <body> (its backdrop-filter blurs the real page,
- *    not the header's already-blurred layer).
- *  - Emergence is done by animating a CLIPPED wrapper that grows downward from
- *    the bar's bottom edge; the pills are positioned by `top` inside it. We do
- *    NOT translateY the pills into the trigger's hover strip - hit-testing
- *    follows transforms and the old translate poked the first pill up into the
- *    trigger, stealing hover and closing the menu.
- *  - Closing is decided by a GEOMETRIC pointermove check (inside trigger rect or
- *    portal rect +/-6px -> stay open), not pointerleave pairing, because leave
- *    events mis-pair at the portal seam. portalRef wraps the full-size fixed
- *    container so that hit region matches where the pills end up.
+ * NEVER CLIP THE GLASS: a clip-path / overflow:hidden on an ancestor silently
+ *  disables backdrop-filter on descendants (pills went transparent). The reveal
+ *  is a MASK on the blob layer only (masks don't break backdrop-filter; the
+ *  blob has none anyway). Glass pills are never clipped.
+ *
+ * HOVER STABILITY: flyout portaled to <body>; closing decided by a geometric
+ *  pointermove check (cursor inside trigger rect ∪ portal rect ±6px → stay
+ *  open), never pointerleave pairing (mis-pairs at the portal seam).
  */
 export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand }) {
+  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [pos, setPos] = useState<{ left: number; top: number } | null>(null)
   const [mounted, setMounted] = useState(false)
-  const [progress, setProgress] = useState(0) // 0 closed -> 1 fully open
   const [reduce, setReduce] = useState(false)
+
   const triggerRef = useRef<HTMLButtonElement>(null)
+  const triggerLabelRef = useRef<HTMLSpanElement>(null)
+  const triggerIconRef = useRef<HTMLSpanElement>(null)
   const portalRef = useRef<HTMLDivElement>(null)
+  const blobLayerRef = useRef<HTMLDivElement>(null)
+  const blobRefs = useRef<(HTMLDivElement | null)[]>([])
+  const pillRefs = useRef<(HTMLAnchorElement | null)[]>([])
+  const gooRef = useRef<SVGFEGaussianBlurElement>(null)
+
   const closeTimer = useRef<number | null>(null)
   const rafRef = useRef<number | null>(null)
   const progressRef = useRef(0)
+  const hoveredRef = useRef<number | null>(null) // which pill is hover-grown
+
   const rawFilterId = useId()
-  const filterId = `goo-${rawFilterId.replace(/:/g, '')}` // valid in url(#...)
+  const filterId = `goo-${rawFilterId.replace(/:/g, '')}`
   const g = glassVars(brand)
+  const restHeight = TOP_OFFSET + (items.length - 1) * STEP + PILL_H
 
   useEffect(() => setMounted(true), [])
 
-  // Respect reduced motion: skip the goo, just fade pills in at rest positions.
   useEffect(() => {
     const m = window.matchMedia('(prefers-reduced-motion: reduce)')
     const set = () => setReduce(m.matches)
@@ -115,31 +120,94 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
     setPos({ left: Math.round(r.left), top: Math.round(r.bottom) })
   }
 
-  // rAF progress driver toward 0 or 1. One clock for blur + geometry + fades.
-  useEffect(() => {
+  /** Write all animated styles for a given progress (0..1) straight to the DOM.
+   *  No React state — this runs every rAF frame cheaply. */
+  const paint = (p: number) => {
+    const stride = lerp(CLUSTER, STEP, p)
+    const topOffset = TOP_OFFSET * p
+    const lastTop = topOffset + (items.length - 1) * stride
+    const fullHeight = lastTop + PILL_H
+    const revealHeight = Math.round((fullHeight + SHADOW_BLEED) * Math.min(1, p * 1.15))
+    const blobOpacity = p < 0.55 ? 1 : Math.max(0, 1 - (p - 0.55) / 0.45)
+    const glassBase = Math.max(0, (p - 0.35) / 0.65)
+    const pillTop = (i: number) => Math.round(topOffset + i * stride)
+
+    // gooey blur strength
+    if (gooRef.current) gooRef.current.setAttribute('stdDeviation', String(lerp(GOO_MAX, GOO_MIN, p)))
+
+    // blob layer: opacity + reveal mask
+    const bl = blobLayerRef.current
+    if (bl) {
+      bl.style.opacity = String(blobOpacity)
+      const mask = `linear-gradient(to bottom, #000 0, #000 ${revealHeight}px, transparent ${revealHeight + 14}px)`
+      bl.style.maskImage = mask
+      bl.style.webkitMaskImage = mask
+    }
+    // blob shapes: vertical position
+    blobRefs.current.forEach((el, i) => {
+      if (el) el.style.top = `${pillTop(i)}px`
+    })
+    // glass pills: position + fade-in (skip transform — that's hover-owned)
+    pillRefs.current.forEach((el, i) => {
+      if (!el) return
+      el.style.top = `${pillTop(i)}px`
+      const appear = Math.max(0, Math.min(1, (glassBase - i * 0.06) / 0.5))
+      el.style.opacity = String(appear)
+      el.style.pointerEvents = p > 0.5 ? 'auto' : 'none'
+    })
+
+    // portal hit-region interactivity
+    if (portalRef.current) {
+      portalRef.current.style.pointerEvents = p > 0.01 ? 'auto' : 'none'
+    }
+  }
+
+  // rAF driver: animate progress toward target, painting DOM each frame.
+  const animateTo = (target: number) => {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current)
     if (reduce) {
-      progressRef.current = open ? 1 : 0
-      setProgress(open ? 1 : 0)
+      progressRef.current = target
+      paint(target)
       return
     }
-    const target = open ? 1 : 0
-    const dur = open ? DURATION : DURATION_OUT
     const from = progressRef.current
+    const dur = target > from ? DURATION : DURATION_OUT
     let start: number | null = null
     const tick = (ts: number) => {
       if (start === null) start = ts
       const raw = Math.min(1, (ts - start) / dur)
       const eased = easeOut(raw)
-      const value = from + (target - from) * eased
-      progressRef.current = value
-      setProgress(value)
+      progressRef.current = from + (target - from) * eased
+      paint(progressRef.current)
       if (raw < 1) rafRef.current = requestAnimationFrame(tick)
     }
     rafRef.current = requestAnimationFrame(tick)
+  }
+
+  // Kick the animation whenever open flips.
+  useEffect(() => {
+    if (!mounted) return
+    if (open) place()
+    animateTo(open ? 1 : 0)
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current)
     }
-  }, [open, reduce])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, mounted, reduce])
+
+  // Crossfade the trigger glyph (icon <-> "Work") via refs, no re-render needed.
+  useEffect(() => {
+    const icon = triggerIconRef.current
+    const label = triggerLabelRef.current
+    if (icon) {
+      icon.style.opacity = open ? '0' : '1'
+      icon.style.transition = open ? 'opacity 100ms' : 'opacity 600ms 75ms'
+    }
+    if (label) {
+      label.style.opacity = open ? '1' : '0'
+      label.style.transition = open ? 'opacity 600ms 75ms' : 'opacity 100ms'
+    }
+  }, [open])
 
   useEffect(() => {
     if (!open) return
@@ -150,13 +218,7 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
     window.addEventListener('keydown', onKey)
 
-    // GEOMETRIC containment instead of pointerleave pairing. Entering
-    // diagonally from below skims the seam where the portal materializes;
-    // if the pointer is sampled there during the frame before the portal is
-    // interactive, a leave fires with no matching enter and the close timer
-    // wins (the diagonal flicker). So while open we track pointermove and
-    // decide by POSITION: inside trigger rect or portal rect (+/-6px) -> stay
-    // open; outside both -> arm the 200ms close once (not reset per move).
+    // GEOMETRIC containment (not pointerleave pairing — mis-pairs at the seam).
     const PAD = 6
     const within = (r: DOMRect, x: number, y: number) =>
       x >= r.left - PAD && x <= r.right + PAD && y >= r.top - PAD && y <= r.bottom + PAD
@@ -202,32 +264,19 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
   }
   const notTouch = (e: React.PointerEvent) => e.pointerType !== 'touch'
 
-  // Derived animation values.
-  const stride = lerp(CLUSTER, STEP, progress) // px between pill tops
-  const goo = lerp(GOO_MAX, GOO_MIN, progress) // current feGaussianBlur stdDev
-  // The whole stack sits TOP_OFFSET below the bar; the offset itself eases in
-  // (0 -> TOP_OFFSET) so the liquid still appears to start at the bar edge.
-  const topOffset = TOP_OFFSET * progress
-  const lastTop = topOffset + (items.length - 1) * stride
-  const fullHeight = lastTop + PILL_H // full stack height at current stride
-  // The blob REVEAL line grows downward (slightly faster than the stack so the
-  // last blob is fully out by the end). Drives the blob mask gradient.
-  const revealHeight = Math.round((fullHeight + SHADOW_BLEED) * Math.min(1, progress * 1.15))
-  // Blob layer fades OUT as pills finish separating, so only glass shows at rest.
-  const blobOpacity = progress < 0.55 ? 1 : Math.max(0, 1 - (progress - 0.55) / 0.45)
-  // Glass pills fade IN once the blobs have begun to separate.
-  const glassBase = Math.max(0, (progress - 0.35) / 0.65)
-
-  const pillTop = (i: number) => Math.round(topOffset + i * stride)
-  const restHeight = TOP_OFFSET + (items.length - 1) * STEP + PILL_H
+  // Click a pill: navigate IMMEDIATELY (don't wait on the close animation), then
+  // let the menu close in the background. router.push + default Link prefetch
+  // make this feel instant.
+  const goTo = (href: string) => (e: React.MouseEvent) => {
+    // allow modifier-clicks / middle-click to use the browser's native behavior
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || (e as any).button === 1) return
+    e.preventDefault()
+    router.push(href)
+    setOpen(false)
+  }
 
   return (
-    <div
-      className="flex h-full items-center"
-      onPointerEnter={(e) => notTouch(e) && show()}
-      // No onPointerLeave: closing is decided by the geometric pointermove
-      // check while open (leave events mis-pair at the portal seam).
-    >
+    <div className="flex h-full items-center" onPointerEnter={(e) => notTouch(e) && show()}>
       <button
         ref={triggerRef}
         type="button"
@@ -238,34 +287,23 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
         className={`flex h-full ${NAV_BOX} items-center justify-center`}
       >
         <span
-          className="grid h-9 w-full place-items-center rounded-full border"
+          className="grid h-9 w-full place-items-center"
           style={{
             color: open ? g.fgHover : g.fg,
-            backgroundColor: open ? g.fill : 'transparent',
-            borderColor: open ? g.border : 'transparent',
-            transition: 'background-color 250ms, border-color 250ms, color 250ms',
+            transition: 'color 250ms',
           }}
         >
-          {/* icon <-> text asymmetric crossfade, stacked in one grid cell:
-              outgoing glyph 100ms, incoming glyph 600ms after a 75ms delay
-              (mirrors NavIconLink) */}
           <span
+            ref={triggerIconRef}
             className="col-start-1 row-start-1 grid place-items-center [&>svg]:block"
-            style={{
-              opacity: open ? 0 : 1,
-              transition: open ? 'opacity 100ms' : 'opacity 600ms 75ms',
-            }}
+            style={{ opacity: 1 }}
           >
             <WorkIcon />
           </span>
           <span
+            ref={triggerLabelRef}
             className="col-start-1 row-start-1 whitespace-nowrap text-[13px] uppercase tracking-[0.08em]"
-            style={{
-              fontFamily: 'var(--font-heading)',
-              fontWeight: 500,
-              opacity: open ? 1 : 0,
-              transition: open ? 'opacity 600ms 75ms' : 'opacity 100ms',
-            }}
+            style={{ fontFamily: 'var(--font-heading)', fontWeight: 500, opacity: 0 }}
           >
             Work
           </span>
@@ -279,18 +317,12 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
             onPointerEnter={(e) => notTouch(e) && show()}
             style={{
               position: 'fixed',
-              // Shift left by PAD_X so the inset pills still line up under the
-              // trigger; the extra width on both sides gives shadows room.
               left: (pos?.left ?? -9999) - PAD_X,
               top: pos?.top ?? -9999,
               zIndex: 60,
-              // Full-size hit region (matches where the pills END UP), so the
-              // geometric "stay open" check is correct throughout the anim.
-              // Height = pill stack only (NOT the shadow bleed) so hovering the
-              // empty shadow area below the last pill doesn't keep it open.
               width: PILL_W + PAD_X * 2,
               height: restHeight,
-              pointerEvents: open || progress > 0.01 ? 'auto' : 'none',
+              pointerEvents: 'none',
             }}
             aria-hidden={!open}
           >
@@ -305,7 +337,7 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
                   height="200%"
                   colorInterpolationFilters="sRGB"
                 >
-                  <feGaussianBlur in="SourceGraphic" stdDeviation={goo} result="blur" />
+                  <feGaussianBlur ref={gooRef} in="SourceGraphic" stdDeviation={GOO_MIN} result="blur" />
                   <feColorMatrix
                     in="blur"
                     mode="matrix"
@@ -315,14 +347,8 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
               </defs>
             </svg>
 
-            {/* Positioning wrapper for the pill stack. IMPORTANT: NO clip-path
-                and NO overflow:hidden here. A clip-path / overflow clip on an
-                ancestor SILENTLY DISABLES backdrop-filter on descendants — that
-                made the frosted pills go fully transparent. So the wrapper does
-                no clipping at all; the glass pills are free to blur the page.
-                The "emerge from the bar" reveal is done with a MASK on the BLOB
-                layer only (the blob has no backdrop-filter, so masking it is
-                safe), plus the pills' own opacity/position easing. */}
+            {/* Positioning wrapper. NO clip-path / overflow (would kill the
+                pills' backdrop-filter). */}
             <div
               style={{
                 position: 'absolute',
@@ -333,38 +359,35 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
                 pointerEvents: 'none',
               }}
             >
-              {/* BLOB layer - the liquid. Gooey-filtered near-solid shapes that
-                  merge while clustered and pinch apart as they spread. */}
+              {/* BLOB layer - the liquid. contain+isolate so the gooey filter's
+                  repaint stays local (perf). Masked reveal grows downward. */}
               {!reduce && (
                 <div
+                  ref={blobLayerRef}
                   style={{
                     position: 'absolute',
                     inset: 0,
                     filter: `url(#${filterId})`,
-                    opacity: blobOpacity,
+                    opacity: 0,
                     pointerEvents: 'none',
-                    // REVEAL mask (blob only — masks DON'T break backdrop-filter
-                    // the way clip-path does, and the blob has no backdrop-filter
-                    // anyway). Opaque from the top down to the current reveal
-                    // line, then a soft 14px meniscus, then transparent — so the
-                    // liquid appears to bleed out of the bar and grow downward.
-                    // At rest the line is past the full height → all visible.
-                    WebkitMaskImage: reduce
-                      ? 'none'
-                      : `linear-gradient(to bottom, #000 0, #000 ${revealHeight}px, transparent ${revealHeight + 14}px)`,
-                    maskImage: reduce
-                      ? 'none'
-                      : `linear-gradient(to bottom, #000 0, #000 ${revealHeight}px, transparent ${revealHeight + 14}px)`,
+                    isolation: 'isolate',
+                    // layout+paint containment isolates the gooey filter's
+                    // repaint to this box WITHOUT size containment (size would
+                    // collapse the inset:0 box to 0x0).
+                    contain: 'layout paint',
                   }}
                   aria-hidden
                 >
                   {items.map((it, i) => (
                     <div
                       key={it.label}
+                      ref={(el) => {
+                        blobRefs.current[i] = el
+                      }}
                       style={{
                         position: 'absolute',
                         left: 0,
-                        top: pillTop(i),
+                        top: 0,
                         width: PILL_W,
                         height: PILL_H,
                         borderRadius: PILL_H / 2,
@@ -375,49 +398,51 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
                 </div>
               )}
 
-              {/* GLASS layer - the real frosted pills with text, on top, not
-                  gooey-filtered. They fade in as the blobs separate. */}
-              {items.map((it, i) => {
-                const appear = reduce
-                  ? open
-                    ? 1
-                    : 0
-                  : Math.max(0, Math.min(1, (glassBase - i * 0.06) / 0.5))
-                return (
-                  <Link
-                    key={it.label}
-                    href={it.href}
-                    tabIndex={open ? 0 : -1}
-                    onClick={() => setOpen(false)}
-                    className="absolute flex h-9 items-center whitespace-nowrap rounded-full px-4 text-[14px] uppercase tracking-[0.06em] backdrop-blur-[14px] backdrop-saturate-150"
-                    style={{
-                      left: 0,
-                      top: pillTop(i),
-                      width: PILL_W,
-                      fontFamily: 'var(--font-heading)',
-                      fontWeight: 500,
-                      color: g.fg,
-                      backgroundColor: g.fill,
-                      border: `1px solid ${g.border}`,
-                      boxShadow:
-                        '0 8px 22px rgba(7,14,44,0.12), 0 2px 6px rgba(7,14,44,0.06), inset 0 1px 0 rgba(255,255,255,0.55)',
-                      opacity: appear,
-                      pointerEvents: open ? 'auto' : 'none',
-                      transition: 'background-color 200ms, color 200ms',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = g.fillHover
-                      e.currentTarget.style.color = g.fgHover
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = g.fill
-                      e.currentTarget.style.color = g.fg
-                    }}
-                  >
-                    {it.label}
-                  </Link>
-                )
-              })}
+              {/* GLASS layer - real frosted pills, never clipped/masked. */}
+              {items.map((it, i) => (
+                <Link
+                  key={it.label}
+                  href={it.href}
+                  prefetch
+                  tabIndex={open ? 0 : -1}
+                  onClick={goTo(it.href)}
+                  ref={(el) => {
+                    pillRefs.current[i] = el
+                  }}
+                  className="absolute flex h-9 items-center whitespace-nowrap rounded-full px-4 text-[14px] uppercase tracking-[0.06em] backdrop-blur-[14px] backdrop-saturate-150"
+                  style={{
+                    left: 0,
+                    top: 0,
+                    width: PILL_W,
+                    fontFamily: 'var(--font-heading)',
+                    fontWeight: 500,
+                    color: g.fg,
+                    backgroundColor: g.fill,
+                    border: `1px solid ${g.border}`,
+                    boxShadow: SHADOW_REST,
+                    opacity: 0,
+                    pointerEvents: 'none',
+                    transform: 'scale(1)',
+                    transformOrigin: 'center',
+                    transition:
+                      'background-color 200ms, color 200ms, transform 200ms cubic-bezier(0.34,1.56,0.64,1), box-shadow 200ms',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = g.fillHover
+                    e.currentTarget.style.color = g.fgHover
+                    e.currentTarget.style.transform = 'scale(1.045)'
+                    e.currentTarget.style.boxShadow = SHADOW_HOVER
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = g.fill
+                    e.currentTarget.style.color = g.fg
+                    e.currentTarget.style.transform = 'scale(1)'
+                    e.currentTarget.style.boxShadow = SHADOW_REST
+                  }}
+                >
+                  {it.label}
+                </Link>
+              ))}
             </div>
           </div>,
           document.body,
