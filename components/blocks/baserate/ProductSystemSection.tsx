@@ -33,7 +33,7 @@ export function ProductSystemSection(props: ProductSystemProps) {
       {/* Pills: horizontal scroll on mobile so they never clip at the margin;
           wrapped row inside the container on desktop. */}
       <ul
-        className="br-noscrollbar mt-6 flex gap-3 overflow-x-auto px-6 md:flex-wrap md:px-[max(1.5rem,calc((100vw-1443px)/2+5rem))] md:pr-[max(1.5rem,calc((100vw-1443px)/2+5rem))]"
+        className="br-noscrollbar mt-6 flex gap-3 overflow-x-auto px-6 md:flex-wrap md:px-[calc(max(0px,(100vw-1443px)/2)+5rem)] md:pr-[calc(max(0px,(100vw-1443px)/2)+5rem)]"
         style={{ touchAction: 'pan-x pan-y' }}
       >
         {pills.map((p) => (

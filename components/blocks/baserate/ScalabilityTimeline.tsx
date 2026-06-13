@@ -74,12 +74,15 @@ export function ScalabilityTimeline() {
   const reduce = useReducedMotion()
   const stageRef = useRef<HTMLDivElement>(null)
 
-  // Mobile: center the front card (it's the priority; the receding ones run off
-  // the right edge) and tighten the stage. Desktop keeps the left-anchored,
-  // toward-the-top-right recede.
+  // Mobile + tablet: center the front card (it's the priority; the receding ones
+  // run off the right edge) and tighten the stage. The desktop projection anchors
+  // the 70%-wide front card at 33% (left edge ≈ −2% of the stage) — fine on a wide
+  // desktop stage, but on the narrower tablet band that bleed clips the card's
+  // left content (the X / Transaction fields). So the centered-front treatment
+  // now runs through the whole tablet band; only ≥1024 gets the desktop recede.
   const [mobile, setMobile] = useState(false)
   useEffect(() => {
-    const mq = window.matchMedia('(max-width: 767px)')
+    const mq = window.matchMedia('(max-width: 1023px)')
     const apply = () => setMobile(mq.matches)
     apply()
     mq.addEventListener('change', apply)

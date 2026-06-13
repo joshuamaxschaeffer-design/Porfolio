@@ -255,7 +255,7 @@ export function ChallengeSection(props: ChallengeProps) {
       <EdgeFadeBlur bg="var(--br-bg-2)" className="mt-8">
         <div
           ref={trackRef}
-          className="br-noscrollbar br-grab flex snap-x snap-mandatory gap-5 overflow-x-auto overscroll-x-contain scroll-pl-6 pb-2 pl-[max(1.5rem,calc((100vw-1443px)/2+5rem))] pr-6 select-none lg:snap-none lg:scroll-pl-0"
+          className="br-noscrollbar br-grab flex snap-x snap-mandatory gap-5 overflow-x-auto overscroll-x-contain scroll-pl-6 pb-2 pl-6 pr-6 select-none md:scroll-pl-[calc(max(0px,(100vw-1443px)/2)+5rem)] md:pl-[calc(max(0px,(100vw-1443px)/2)+5rem)] lg:snap-none"
           style={{ touchAction: 'pan-x pan-y' }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}

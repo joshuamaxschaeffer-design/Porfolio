@@ -95,7 +95,7 @@ export function AIPrototypingPanel({
             (clipped by overflowX:clip). 16:9 box + object-cover = full frame, no
             letterbox bars, never looks cropped. */}
         <div
-          className="absolute left-[44px] top-0 w-[720px] overflow-hidden rounded-l-xl border-y border-l border-white/10 bg-[#0d0f15] shadow-[0_24px_60px_-30px_rgba(0,0,0,0.8)] md:w-[1040px] lg:w-[1240px]"
+          className="absolute left-[44px] top-0 w-[720px] overflow-hidden rounded-l-xl border-y border-l border-white/10 bg-[#0d0f15] shadow-[0_24px_60px_-30px_rgba(0,0,0,0.8)] md:left-[calc(max(24px,(100vw-1443px)/2)+5rem)] md:w-[1040px] lg:w-[1240px]"
           style={{ maxWidth: 'none', aspectRatio: '16 / 9' }}
         >
           {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
@@ -117,7 +117,7 @@ export function AIPrototypingPanel({
         {/* Claude UI in front — chat-only column (legible), lower-left, fully on
             screen (not chopped). */}
         <div
-          className="absolute bottom-0 left-5 h-[300px] w-[80%] max-w-[560px] overflow-hidden rounded-xl border border-black/10 bg-white shadow-[0_30px_70px_-30px_rgba(0,0,0,0.9)] md:h-[420px] md:max-w-[600px] lg:h-[500px]"
+          className="absolute bottom-0 left-5 h-[300px] w-[80%] max-w-[560px] overflow-hidden rounded-xl border border-black/10 bg-white shadow-[0_30px_70px_-30px_rgba(0,0,0,0.9)] md:left-[calc(max(24px,(100vw-1443px)/2)+5rem)] md:h-[420px] md:w-[64%] md:max-w-[600px] lg:h-[500px]"
         >
           <ClaudeUI mobile />
         </div>
