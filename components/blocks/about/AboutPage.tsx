@@ -6,15 +6,14 @@ import { intro, differentiators, outro } from './data'
 /**
  * About page — minimal, modern, value-first. Four movements.
  *
- *   1. Hero    — the positioning claim + one short paragraph  (animates on mount)
+ *   1. Hero    — the positioning claim + one short paragraph  (renders plainly)
  *   2. Three   — the differentiators, framed as value to the buyer
- *   3. Path    — card timeline (dots centered to cards, metric per card)
+ *   3. Path    — card timeline (dots centered to cards, caret per card)
  *   4. Close   — availability + one CTA → /contact
  *
  * Voice is value-first and near-pronoun-less (not a personal blog). Entrance
- * polish via <Appear>, which never hides content: the hero animates on mount
- * (reliable above the fold) and lower sections animate on scroll-in. Built on
- * the br-* system so it reads as the same site as the case studies.
+ * polish via <Appear> (never hides content); the hero is plain so the first
+ * paint is unconditional. Built on the br-* system to match the case studies.
  */
 export function AboutPage() {
   return (
@@ -68,16 +67,12 @@ export function AboutPage() {
         className="br-container border-t border-[var(--br-line)] py-16 md:py-24"
       >
         <Appear onView>
-          <div className="mb-10 flex items-baseline justify-between gap-6 md:mb-14">
-            <h2 className="text-[26px] font-medium leading-tight tracking-[-0.01em] text-[var(--br-ink)] md:text-[34px]">
-              Thirteen years, four chapters.
-            </h2>
-            <span className="br-data hidden text-xs uppercase tracking-[0.18em] text-[var(--br-muted-2)] sm:block">
-              2013 — Now
-            </span>
-          </div>
+          <h2 className="mb-10 text-[26px] font-medium leading-tight tracking-[-0.01em] text-[var(--br-ink)] md:mb-14 md:text-[34px]">
+            Thirteen years, four chapters.
+          </h2>
         </Appear>
-        <div className="mx-auto max-w-4xl">
+        {/* Left-aligned to the header (no mx-auto). */}
+        <div className="max-w-3xl">
           <Timeline />
         </div>
       </section>
