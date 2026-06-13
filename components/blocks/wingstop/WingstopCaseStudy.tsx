@@ -2,6 +2,15 @@ import { OverviewSection } from './OverviewSection'
 import { ChallengeSection } from './ChallengeSection'
 import { RedesignSection } from './RedesignSection'
 import { OutcomesSection } from './OutcomesSection'
+import { SectionNav, type SectionNavItem } from '../baserate/SectionNav'
+
+/** The 4 major sections — ids live on each section's root element. */
+const NAV_ITEMS: SectionNavItem[] = [
+  { id: 'overview', title: 'Overview' },
+  { id: 'challenge', title: 'The Challenge' },
+  { id: 'redesign', title: 'The Flavor-First Redesign' },
+  { id: 'outcomes', title: 'Outcomes' },
+]
 
 export interface WingstopCaseStudyProps {
   /** Overview overrides */
@@ -28,6 +37,8 @@ export function WingstopCaseStudy(props: WingstopCaseStudyProps = {}) {
       className="br-article bg-white"
       style={{ '--ws-green': '#00843D' } as React.CSSProperties}
     >
+      {/* Floating numbered rail — scroll-spy + jump-to-section (≥1280px only). */}
+      <SectionNav items={NAV_ITEMS} />
       <OverviewSection
         dateRange={props.dateRange}
         lead={props.lead}

@@ -2,6 +2,15 @@ import { OverviewSection } from './OverviewSection'
 import { BriefSection } from './BriefSection'
 import { WorkSection } from './WorkSection'
 import { OutcomesSection } from './OutcomesSection'
+import { SectionNav, type SectionNavItem } from '../baserate/SectionNav'
+
+/** The 4 major sections — ids live on each section's root element. */
+const NAV_ITEMS: SectionNavItem[] = [
+  { id: 'overview', title: 'Overview' },
+  { id: 'brief', title: 'The Brief' },
+  { id: 'work', title: 'The Work' },
+  { id: 'outcomes', title: 'Outcomes' },
+]
 
 export interface SamsungCaseStudyProps {
   /** Overview overrides */
@@ -29,6 +38,8 @@ export function SamsungCaseStudy(props: SamsungCaseStudyProps = {}) {
       className="br-article bg-white"
       style={{ '--sg-blue': '#1428A0' } as React.CSSProperties}
     >
+      {/* Floating numbered rail — scroll-spy + jump-to-section (≥1280px only). */}
+      <SectionNav items={NAV_ITEMS} />
       <OverviewSection
         dateRange={props.dateRange}
         lead={props.lead}
