@@ -32,11 +32,16 @@ const CONTENT_WIDTH = 1443
 // negative (which would otherwise flip the gradient/mask) on narrow screens.
 const BAND = `max(0px, (100vw - ${CONTENT_WIDTH}px) / 2)`
 
-// True tilt-shift ramp: many fine layers whose blur RADIUS climbs from ~1px at
-// the inner edge of the band to the max at the outer (viewport) edge.
-const LAYERS = 8
-const MIN_BLUR = 1 // px at the inner edge (column edge)
-const MAX_BLUR = 18 // px at the very edge (viewport edge)
+// Tilt-shift ramp: a FEW layers whose blur RADIUS climbs from ~1px at the inner
+// edge of the band to the max at the outer (viewport) edge.
+// PERF: backdrop-filter is the single most expensive thing to composite on
+// scroll. 8 layers ×2 edges × several carousels = ~64 backdrop-filters that the
+// GPU re-samples every scroll frame → the page dragged to ~3fps on wide
+// displays (where the band is non-zero). Dropped 8→3: the quadratic radius ramp
+// still reads as a smooth tilt-shift, at ~⅜ the compositing cost.
+const LAYERS = 3
+const MIN_BLUR = 2 // px at the inner edge (column edge)
+const MAX_BLUR = 16 // px at the very edge (viewport edge)
 
 function blurLayer(side: 'left' | 'right') {
   const dir = side === 'left' ? 'to left' : 'to right'

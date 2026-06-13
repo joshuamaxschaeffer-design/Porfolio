@@ -250,44 +250,38 @@ function VideoCard({ row }: { row: CarouselRow }) {
     v.addEventListener('ended', onEnded)
 
     let stop = false
+    // PERF: only play WHILE ON-SCREEN, and PAUSE when off-screen. Previously
+    // every demo video autoplayed on mount and never paused, so ~9 videos
+    // decoded simultaneously off-screen — that pegged the GPU/compositor and
+    // froze the whole page on scroll. The IntersectionObserver is now the sole
+    // play/pause driver; `tryPlay` only fires when the card is actually visible.
+    let onScreen = false
     const tryPlay = () => {
-      if (stop || !v.paused) return
+      if (stop || !onScreen || !v.paused) return
       const p = v.play()
       if (p && typeof p.catch === 'function') p.catch(() => {})
     }
-
-    // Fire on every event that signals the video can advance.
-    const evts = ['loadedmetadata', 'loadeddata', 'canplay', 'canplaythrough', 'stalled', 'suspend']
+    // Re-attempt play on readiness events, but ONLY when on-screen (tryPlay guards).
+    const evts = ['loadedmetadata', 'loadeddata', 'canplay', 'canplaythrough']
     evts.forEach((e) => v.addEventListener(e, tryPlay))
 
-    // Poll for the first ~6s in case all events fire before React attaches.
-    const poll = setInterval(tryPlay, 400)
-    setTimeout(() => clearInterval(poll), 6000)
-
-    // Resume when scrolled into view.
-    const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && tryPlay()), {
-      threshold: 0.05,
-    })
+    const io = new IntersectionObserver(
+      (es) => es.forEach((e) => {
+        onScreen = e.isIntersecting
+        if (onScreen) tryPlay()
+        else if (!v.paused) v.pause() // free the decoder when scrolled away
+      }),
+      { threshold: 0.05 },
+    )
     io.observe(v)
 
-    // Last-resort: kick all paused videos on the first user gesture.
-    const onGesture = () => tryPlay()
-    window.addEventListener('pointerdown', onGesture, { once: true, passive: true })
-    window.addEventListener('keydown', onGesture, { once: true })
-    window.addEventListener('scroll', onGesture, { once: true, passive: true })
-
     if (v.readyState >= 1) onMeta()
-    tryPlay()
     return () => {
       stop = true
-      clearInterval(poll)
       evts.forEach((e) => v.removeEventListener(e, tryPlay))
       v.removeEventListener('loadedmetadata', onMeta)
       v.removeEventListener('ended', onEnded)
       io.disconnect()
-      window.removeEventListener('pointerdown', onGesture)
-      window.removeEventListener('keydown', onGesture)
-      window.removeEventListener('scroll', onGesture)
     }
   }, [start])
 
@@ -298,7 +292,6 @@ function VideoCard({ row }: { row: CarouselRow }) {
         className="pointer-events-none h-full w-full object-contain"
         src={row.video}
         muted
-        autoPlay
         playsInline
         // metadata (not auto): don't fully download every demo video on page
         // load. The play logic + IntersectionObserver above fetch the rest when

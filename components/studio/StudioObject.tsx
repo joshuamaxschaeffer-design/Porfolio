@@ -35,6 +35,7 @@ export function StudioObject({
   className = '',
   alt = '',
   scrub,
+  staticFrame,
 }: {
   base: string
   frameCount?: number
@@ -43,6 +44,10 @@ export function StudioObject({
   className?: string
   alt?: string
   scrub?: MotionValue<number>
+  /** Render exactly ONE frame (its image + shadow) once, then nothing else —
+   *  no sequence preload, no scroll subscription, no per-scroll canvas work.
+   *  Use the settled-pose index for a fast static hero. -1 = last frame. */
+  staticFrame?: number
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const shadowRef = useRef<HTMLCanvasElement>(null)
@@ -86,13 +91,15 @@ export function StudioObject({
       )
 
     let lastDrawn = 0
-    const drawFrame = (i: number) => {
+    const drawFrame = (i: number, withShadow = true) => {
       const img = imgs[i]
       if (img && img.complete && img.naturalWidth) {
         lastDrawn = i
         ctx.clearRect(0, 0, canvas.width, canvas.height)
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-        pipe.draw(img, i, trackRef.current)
+        // The shadow recomposite (multi-band blur warp) is the expensive part;
+        // skip it for cheap per-scrub image updates and refresh it lazily.
+        if (withShadow) pipe.draw(img, i, trackRef.current)
       }
     }
     // re-render the current frame when the shadow track arrives late
@@ -100,19 +107,38 @@ export function StudioObject({
       if (!disposed && canvas.width) drawFrame(lastDrawn)
     }
 
-    const first = new Image()
-    first.onload = () => {
-      if (disposed) return
-      pipe.size(first.naturalWidth, first.naturalHeight)
-      imgs[0] = first
-      drawFrame(0)
+    // Static mode draws its own single frame below — don't preload/draw frame 0
+    // first (avoids a flash of the start pose before the settled frame).
+    if (staticFrame === undefined) {
+      const first = new Image()
+      first.onload = () => {
+        if (disposed) return
+        pipe.size(first.naturalWidth, first.naturalHeight)
+        imgs[0] = first
+        drawFrame(0)
+      }
+      first.src = srcFor(0)
     }
-    first.src = srcFor(0)
 
     if (!isSeq) {
       return () => {
         disposed = true
       }
+    }
+
+    // ── STATIC FRAME: render ONE frame once (image + shadow), no scroll work ──
+    if (staticFrame !== undefined) {
+      const idx = staticFrame < 0 ? frameCount - 1 : Math.min(frameCount - 1, staticFrame)
+      const img = new Image()
+      img.decoding = 'async'
+      img.onload = () => {
+        if (disposed) return
+        if (!canvas.width) pipe.size(img.naturalWidth, img.naturalHeight)
+        imgs[idx] = img
+        drawFrame(idx, true)
+      }
+      img.src = srcFor(idx)
+      return () => { disposed = true }
     }
 
     // ── SCRUB MODE: frame index driven by the `scrub` MotionValue ──
@@ -122,16 +148,29 @@ export function StudioObject({
       let nextIdx = 0
       let loaded = 0
       let curIdx = -1
+      let shadowTimer = 0
       const CONC = 8
       const clampIdx = (p: number) =>
         Math.max(0, Math.min(frameCount - 1, Math.round(p * (frameCount - 1))))
+      // The cast shadow barely changes across this short scrub range (devices
+      // tilt 1/3, chips spin 45°), but recompositing it (multi-band blur warp)
+      // every scrub frame across 4 objects tanked the page to ~3fps. So during
+      // scroll we redraw ONLY the cheap device image; the shadow is refreshed
+      // lazily ~120ms after scrubbing settles. Result: smooth scroll, shadow
+      // still correct at rest.
+      const refreshShadowSoon = () => {
+        if (reduce) return
+        clearTimeout(shadowTimer)
+        shadowTimer = window.setTimeout(() => { if (!disposed) drawFrame(curIdx, true) }, 120)
+      }
       const renderAt = (p: number) => {
         if (disposed) return
         const i = reduce ? frameCount - 1 : clampIdx(p)
         if (i === curIdx) return // redraw only on index change
         if (imgs[i] && imgs[i].complete) {
           curIdx = i
-          drawFrame(i)
+          drawFrame(i, false) // cheap: image only, no shadow recomposite
+          refreshShadowSoon()
         }
       }
       const loadWorker = () => {
@@ -145,7 +184,8 @@ export function StudioObject({
           loaded++
           // once enough frames exist, reflect the current scrub position
           renderAt(scrub.get())
-          if (loaded < frameCount) loadWorker()
+          if (loaded >= frameCount) { if (!disposed) drawFrame(curIdx < 0 ? frameCount - 1 : curIdx, true) }
+          else loadWorker()
         }
         img.onload = done
         img.onerror = done
@@ -157,6 +197,7 @@ export function StudioObject({
       renderAt(scrub.get())
       return () => {
         disposed = true
+        clearTimeout(shadowTimer)
         unsub?.()
       }
     }
