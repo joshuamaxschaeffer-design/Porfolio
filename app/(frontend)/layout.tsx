@@ -18,16 +18,21 @@ const inter = Inter({
 // headings = Lexend Deca, body = Noto Sans, data/pills = Recursive.
 // Lexend + Recursive are self-hosted from the exact variable font files.
 const lexend = localFont({
-  src: '../fonts/LexendDeca.ttf',
+  src: '../fonts/LexendDeca.woff2',
   display: 'swap',
   variable: '--font-heading',
   weight: '100 900',
 })
 const recursive = localFont({
-  src: '../fonts/Recursive.ttf',
+  src: '../fonts/Recursive.woff2',
   display: 'swap',
   variable: '--font-data',
   weight: '300 1000',
+  // Recursive is only used by the Baserate case study's ported product UI
+  // (Handoff code/comments). Don't preload it on every page — it loaded ~407KB
+  // on the home page for nothing. With preload:false it fetches on demand when
+  // those glyphs actually render (display:swap keeps text visible meanwhile).
+  preload: false,
 })
 const notoSans = Noto_Sans({
   subsets: ['latin'],
@@ -42,6 +47,8 @@ const roboto = Roboto({
   display: 'swap',
   variable: '--font-roboto',
   weight: ['400', '500', '700'],
+  // Baserate-only (Handoff product UI). Don't preload site-wide.
+  preload: false,
 })
 
 export const viewport: Viewport = {
