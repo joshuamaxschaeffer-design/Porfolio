@@ -2,38 +2,46 @@ import {
   CapabilitiesPage,
   type CapabilitiesPageProps,
 } from './capabilities/CapabilitiesPage'
-import type { CapabilityCategory } from './capabilities/data'
+import type { CapabilitySection, MediaSlot } from './capabilities/data'
 
 /**
  * Payload renderer for the `capabilitiesPage` block. Forwards CMS header
- * overrides into the composed page; blank fields fall back to the defaults in
- * capabilities/data.ts.
+ * overrides into the composed case-study page; blank fields fall back to the
+ * defaults in capabilities/data.ts.
  *
- * The CMS stores each discipline's clients as an array of `{ name }` rows, so we
- * flatten those into the `string[]` the layout component expects. An empty
- * categories array means "use the built-in list".
+ * The CMS stores clients as `{ name }` rows and media as `{ label, ratio }`
+ * rows; we flatten clients into the `string[]` the layout expects. An empty
+ * sections array means "use the built-in sections + FPO placeholders".
  */
-interface RawCategory {
+interface RawSection {
+  id?: string
   num?: string
   title?: string
-  blurb?: string
+  intro?: string
+  layout?: CapabilitySection['layout']
   clients?: { name?: string }[]
+  media?: { label?: string; ratio?: MediaSlot['ratio'] }[]
 }
 
 interface CapabilitiesPageBlockProps
-  extends Omit<CapabilitiesPageProps, 'categories'> {
-  categories?: RawCategory[]
+  extends Omit<CapabilitiesPageProps, 'sections'> {
+  sections?: RawSection[]
 }
 
 export function CapabilitiesPageBlock(props: CapabilitiesPageBlockProps) {
-  const categories: CapabilityCategory[] | undefined = props.categories?.length
-    ? props.categories.map((c, i) => ({
-        num: c.num ?? String(i + 1).padStart(2, '0'),
-        title: c.title ?? '',
-        blurb: c.blurb ?? '',
-        clients: (c.clients ?? [])
-          .map((cl) => cl?.name)
+  const sections: CapabilitySection[] | undefined = props.sections?.length
+    ? props.sections.map((s, i) => ({
+        id: s.id ?? `section-${i + 1}`,
+        num: s.num ?? String(i + 1).padStart(2, '0'),
+        title: s.title ?? '',
+        intro: s.intro ?? '',
+        layout: s.layout ?? 'mediaRight',
+        clients: (s.clients ?? [])
+          .map((c) => c?.name)
           .filter((n): n is string => Boolean(n)),
+        media: (s.media ?? [])
+          .filter((m) => m?.label)
+          .map((m) => ({ label: m.label as string, ratio: m.ratio ?? 'video' })),
       }))
     : undefined
 
@@ -43,7 +51,7 @@ export function CapabilitiesPageBlock(props: CapabilitiesPageBlockProps) {
       heading={props.heading}
       lead={props.lead}
       note={props.note}
-      categories={categories}
+      sections={sections}
     />
   )
 }
