@@ -35,6 +35,10 @@ html {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  /* Reserve the scrollbar's space at all times so centered content (the nav
+     wordmark, nav icons, page headers) never shifts horizontally between a
+     short page (no scrollbar) and a tall one (scrollbar present). */
+  scrollbar-gutter: stable;
 }
 
 body {

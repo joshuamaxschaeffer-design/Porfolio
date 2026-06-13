@@ -14,14 +14,14 @@ import { ContactForm } from './ContactForm'
 export function ContactPage() {
   return (
     <article className="br-article bg-white">
-      <header className="br-container pt-16 pb-10 md:pt-24 md:pb-14">
-        <p className="br-data text-xs font-semibold uppercase tracking-[0.18em] text-[var(--br-gold)] md:text-sm">
+      <header className="br-container pt-24 pb-16 md:pt-36 md:pb-24">
+        <p className="br-data text-xs font-semibold uppercase tracking-[0.2em] text-[var(--br-gold)] md:text-sm">
           {intro.eyebrow}
         </p>
-        <h1 className="mt-4 max-w-3xl whitespace-pre-line text-[40px] font-medium leading-[1.03] tracking-[-0.01em] text-[var(--br-ink)] md:text-[68px]">
+        <h1 className="mt-5 max-w-4xl whitespace-pre-line text-[44px] font-medium leading-[1.0] tracking-[-0.02em] text-[var(--br-ink)] md:text-[78px]">
           {intro.heading}
         </h1>
-        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-[var(--br-muted)] md:text-[22px]">
+        <p className="mt-7 max-w-2xl text-lg leading-relaxed text-[var(--br-muted)] md:text-[22px]">
           {intro.lead}
         </p>
       </header>
