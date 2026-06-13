@@ -45,8 +45,11 @@ export function AIPrototypingPanel({
       <h3 className="text-[20px] font-semibold uppercase leading-tight text-white md:text-[24px]">{title}</h3>
       <p className="br-body mt-3 text-[16px] leading-relaxed text-white/60 md:text-[18px]">{body}</p>
 
-      {/* Stage: prototype video behind, Claude UI overlapping on top. */}
-      <div className="relative mt-10 hidden aspect-[1283/720] w-full lg:block">
+      {/* Stage: prototype video behind, Claude UI overlapping on top.
+          Desktop 3-pane Claude UI needs real width to stay legible, so it only
+          turns on at xl: (1280). Tablets (≤1279, incl. iPad Pro 1024) get the
+          chat-only mobile treatment below — its text stays readable. */}
+      <div className="relative mt-10 hidden aspect-[1283/720] w-full xl:block">
         {/* ----- prototype video (top-right), protected ----- */}
         <div
           className="absolute overflow-hidden rounded-xl border border-white/10 bg-[#0d0f15] shadow-[0_30px_70px_-30px_rgba(0,0,0,0.8)]"
@@ -85,15 +88,15 @@ export function AIPrototypingPanel({
           front, lower-left, as a single CHAT-ONLY column (not chopped) so its
           text stays legible. `overflowX:clip` lets the video bleed off-screen
           without adding a scrollbar. ----- */}
-      <div className="relative mt-8 h-[440px] lg:hidden" style={{ overflowX: 'clip', width: '100vw', marginLeft: 'calc(50% - 50vw)' }}>
+      <div className="relative mt-8 h-[440px] md:h-[560px] lg:h-[640px] xl:hidden" style={{ overflowX: 'clip', width: '100vw', marginLeft: 'calc(50% - 50vw)' }}>
         {/* prototype video — left edge sits at the stage's left edge (the stage
             is gutter-to-gutter, so that's 24px from the screen edge); the box is
             much wider than the viewport so its right portion runs off-screen
             (clipped by overflowX:clip). 16:9 box + object-cover = full frame, no
             letterbox bars, never looks cropped. */}
         <div
-          className="absolute top-0 overflow-hidden rounded-l-xl border-y border-l border-white/10 bg-[#0d0f15] shadow-[0_24px_60px_-30px_rgba(0,0,0,0.8)]"
-          style={{ left: 44, width: 720, maxWidth: 'none', aspectRatio: '16 / 9' }}
+          className="absolute left-[44px] top-0 w-[720px] overflow-hidden rounded-l-xl border-y border-l border-white/10 bg-[#0d0f15] shadow-[0_24px_60px_-30px_rgba(0,0,0,0.8)] md:w-[1040px] lg:w-[1240px]"
+          style={{ maxWidth: 'none', aspectRatio: '16 / 9' }}
         >
           {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
           <video
@@ -114,8 +117,7 @@ export function AIPrototypingPanel({
         {/* Claude UI in front — chat-only column (legible), lower-left, fully on
             screen (not chopped). */}
         <div
-          className="absolute bottom-0 left-5 overflow-hidden rounded-xl border border-black/10 bg-white shadow-[0_30px_70px_-30px_rgba(0,0,0,0.9)]"
-          style={{ width: '80%', height: '300px' }}
+          className="absolute bottom-0 left-5 h-[300px] w-[80%] max-w-[560px] overflow-hidden rounded-xl border border-black/10 bg-white shadow-[0_30px_70px_-30px_rgba(0,0,0,0.9)] md:h-[420px] md:max-w-[600px] lg:h-[500px]"
         >
           <ClaudeUI mobile />
         </div>

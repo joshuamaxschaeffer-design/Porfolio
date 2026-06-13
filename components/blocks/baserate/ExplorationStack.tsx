@@ -106,7 +106,7 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
 
   return (
     <div
-      className="grid items-center gap-10 md:grid-cols-2 md:gap-16"
+      className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16"
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
@@ -115,7 +115,7 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
     >
       {/* Image stack — Cover Flow perspective. Front card faces forward; cards
           behind angle away (rotateY), fanning left. */}
-      <div className="relative mx-auto aspect-[874/932] w-full max-w-[440px] pl-8 md:pl-20" style={{ perspective: '1200px' }}>
+      <div className="relative mx-auto aspect-[874/932] w-full max-w-[440px] pl-8 lg:pl-20" style={{ perspective: '1200px' }}>
         {items.map((item, i) => {
           const depth = (i - current + n) % n
           const isFront = depth === 0
@@ -172,10 +172,10 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
                     alt=""
                     aria-hidden
                     draggable={false}
-                    className="h-full w-full object-contain md:hidden"
+                    className="h-full w-full object-contain lg:hidden"
                   />
-                  <span aria-hidden className="absolute inset-0 bg-white/40 md:hidden" />
-                  <span aria-hidden className="absolute inset-0 hidden bg-white md:block" />
+                  <span aria-hidden className="absolute inset-0 bg-white/40 lg:hidden" />
+                  <span aria-hidden className="absolute inset-0 hidden bg-white lg:block" />
                   <span className="absolute inset-0 bg-gradient-to-l from-black/0 to-black/[0.06]" />
                 </>
               )}

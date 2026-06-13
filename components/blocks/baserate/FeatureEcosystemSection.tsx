@@ -140,7 +140,7 @@ export function FeatureEcosystemSection(props: FeatureEcosystemProps) {
             {/* Feature columns. Figma: outer gutters 80px, inner gutter ~40px
                 (left col pr-20 + right col pl-20). br-container already pads 80px. */}
             <div className="br-container mt-12">
-              <div className="grid gap-x-10 gap-y-14 md:grid-cols-2">
+              <div className="grid gap-x-10 gap-y-14 lg:grid-cols-2">
                 {pair.map((section) => (
                   <FeatureColumn key={section.number} section={section} />
                 ))}

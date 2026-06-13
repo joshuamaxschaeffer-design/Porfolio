@@ -277,7 +277,7 @@ export function ChallengeSection(props: ChallengeProps) {
       {/* Pager. Desktop: a wrapped row of plain text links. Mobile: swipeable
           PILLS that bleed off both edges — swipe to reach Problem 7; tap to jump
           the card carousel to that problem. */}
-      <div className="br-container mt-6 hidden flex-wrap gap-x-5 gap-y-2 md:flex">
+      <div className="br-container mt-6 hidden flex-wrap gap-x-5 gap-y-2 lg:flex">
         {cards.map((card, i) => (
           <button
             key={card.problem}
@@ -293,7 +293,7 @@ export function ChallengeSection(props: ChallengeProps) {
       {/* Mobile pills — swipeable, bleed off the edges; tap to jump the
           carousel to that problem. Highlight follows scroll position. */}
       <div
-        className="br-noscrollbar mt-6 flex gap-2 overflow-x-auto pl-6 pr-6 md:hidden"
+        className="br-noscrollbar mt-6 flex gap-2 overflow-x-auto pl-6 pr-6 lg:hidden"
         style={{ touchAction: 'pan-x pan-y' }}
       >
         {cards.map((card, i) => (

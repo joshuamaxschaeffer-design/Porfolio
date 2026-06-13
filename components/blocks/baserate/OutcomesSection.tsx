@@ -72,7 +72,7 @@ function StatCell({ stat, index }: { stat: OutcomeStat; index: number }) {
       }}
     >
       <p
-        className="whitespace-nowrap text-[56px] font-medium leading-none tracking-[-0.01em] text-[var(--br-ink)] md:text-[72px] lg:text-[80px]"
+        className="whitespace-nowrap text-[52px] font-medium leading-none tracking-[-0.01em] text-[var(--br-ink)] sm:text-[56px] lg:text-[80px]"
         style={{ fontFamily: 'var(--br-font-heading)' }}
       >
         {stat.prefix}
@@ -102,7 +102,7 @@ export function OutcomesSection({ intro }: { intro?: string } = {}) {
         <p className="mt-3 max-w-3xl text-lg text-[var(--br-muted)] md:text-[22px]">{lead}</p>
 
         {/* Stat grid — big count-up numbers */}
-        <div className="mt-12 grid grid-cols-1 gap-x-10 gap-y-10 sm:grid-cols-2 md:mt-16 md:grid-cols-3 md:gap-y-14">
+        <div className="mt-12 grid grid-cols-1 gap-x-10 gap-y-10 sm:grid-cols-2 md:mt-16 lg:grid-cols-3 lg:gap-y-14">
           {data.stats.map((stat, i) => (
             <StatCell key={stat.label} stat={stat} index={i} />
           ))}
@@ -113,7 +113,7 @@ export function OutcomesSection({ intro }: { intro?: string } = {}) {
           {data.testimonialsHeading}
         </h3>
 
-        <div className="mt-5 grid grid-cols-1 gap-5 md:mt-6 md:grid-cols-3 md:gap-[30px]">
+        <div className="mt-5 grid grid-cols-1 gap-5 md:mt-6 md:grid-cols-2 md:gap-[30px] lg:grid-cols-3">
           {data.testimonials.map((t) => (
             <figure
               key={t.role}
@@ -141,7 +141,7 @@ export function OutcomesSection({ intro }: { intro?: string } = {}) {
         <h3 className="mt-16 text-[18px] font-medium uppercase leading-none text-[var(--br-ink)] md:mt-20 md:text-[22px]">
           {data.trustedByHeading}
         </h3>
-        <div className="mt-4 grid grid-cols-2 gap-4 md:mt-5 md:grid-cols-4">
+        <div className="mt-4 grid grid-cols-2 gap-4 md:mt-5 lg:grid-cols-4">
           {data.logos.map((logo) => (
             <div
               key={logo.alt}

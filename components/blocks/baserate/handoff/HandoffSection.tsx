@@ -92,8 +92,10 @@ export function HandoffSection({ title = 'HANDOFF', body = 'Dev handoff meetings
       <h3 className="text-[20px] font-semibold uppercase leading-tight text-white md:text-[24px]">{title}</h3>
       <p className="br-body mt-3 text-[16px] leading-relaxed text-white/60 md:text-[18px]">{body}</p>
 
-      {/* ── Desktop / wide: two columns with hover-swap. Hidden < lg. ── */}
-      <div className="mt-10 hidden gap-10 lg:grid lg:grid-cols-2">
+      {/* ── Desktop / wide: two columns with hover-swap. The code box needs real
+          width to keep the code legible, so this only turns on at xl: (1280).
+          Tablets (≤1279, incl. iPad Pro 1024) get the stacked-pairs layout below. ── */}
+      <div className="mt-10 hidden gap-10 xl:grid xl:grid-cols-2">
         {/* Left: working UI elements */}
         <div className="flex min-w-0 flex-col gap-5">
           {ELEMENTS.map((el) => (
@@ -109,7 +111,7 @@ export function HandoffSection({ title = 'HANDOFF', body = 'Dev handoff meetings
         </div>
 
         {/* Right: single code box that follows the hovered element */}
-        <div className="min-w-0 lg:sticky lg:top-24 lg:self-start">
+        <div className="min-w-0 xl:sticky xl:top-24 xl:self-start">
           <CodeBox snippet={HANDOFF_SNIPPETS[active]} />
         </div>
       </div>
@@ -118,7 +120,7 @@ export function HandoffSection({ title = 'HANDOFF', body = 'Dev handoff meetings
           the BOTTOM of the code card) sits a horizontal scroll-snap track of the
           3 components — the active one fills the width and the NEXT peeks in on
           the right. Snapping to a new component swaps the code behind it. ── */}
-      <div className="relative mt-8 lg:hidden">
+      <div className="relative mt-8 xl:hidden">
         {/* code box (back) — swaps to whatever component is centered */}
         <CodeBox snippet={HANDOFF_SNIPPETS[mEl.id]} compact />
 

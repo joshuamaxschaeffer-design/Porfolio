@@ -59,8 +59,10 @@ export function ProductSystemSection(props: ProductSystemProps) {
         productsHeading={productsHeading}
         productsIntro={productsIntro}
       />
-      {/* 150px of breathing room below the 2 PRODUCTS block for impact */}
-      <div aria-hidden className="h-[75px] md:h-[150px]" />
+      {/* Breathing room below the 2 PRODUCTS block for impact. Held smaller
+          through the tablet band (the stacked mobile layout is already tall);
+          full 150px only at lg+ where the absolute stage is used. */}
+      <div aria-hidden className="h-[75px] lg:h-[150px]" />
       </div>
     </section>
   )
