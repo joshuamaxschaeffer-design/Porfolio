@@ -5,31 +5,34 @@ import type { ReactNode } from 'react'
 
 interface AppearProps {
   children: ReactNode
-  /** ms delay before the entrance */
+  /** ms delay before the entrance (scroll-in case only) */
   delay?: number
   /** translate distance (px) */
   distance?: number
   className?: string
   /**
-   * When true, animate as the element enters the viewport (for below-the-fold
-   * content). When false (default), animate on mount — the reliable choice for
-   * above-the-fold content, which a whileInView observer can miss.
+   * true  → animate as the element scrolls into view (below-the-fold sections).
+   * false → render immediately, no animation (above-the-fold / hero). Default false.
    */
   onView?: boolean
 }
 
 /**
- * Entrance wrapper that NEVER hides content.
+ * Entrance wrapper.
  *
- * The resting (target) state is the visible one. With motion enabled we add an
- * entrance from a faded/offset start; with reduced-motion (or SSR before
- * hydration) the child is simply visible — no opacity:0 that could get stuck.
+ * Deliberate split:
+ *  - onView=false (hero / above the fold): renders the child PLAINLY, no entrance
+ *    animation. The hero is the first paint and the site's first impression — it
+ *    must be visible instantly and unconditionally. (We tried JS- and CSS-mount
+ *    animations; both can leave content faded when the tab is backgrounded/
+ *    throttled, since the browser suspends animations + rAF on hidden tabs. Not
+ *    worth risking a blank hero for a fade.)
+ *  - onView=true (below the fold): motion's whileInView fade-up — reliable,
+ *    because these sit below the hero and only animate once a (focused) user
+ *    scrolls them into view. Never hides content for reduced-motion users.
  *
- * `onView=false` (default) animates on mount, which is reliable for hero/above-
- * the-fold content. `onView=true` uses whileInView for below-the-fold sections.
- * Either way, if the animation never runs the content is still shown, because
- * `whileInView`/`animate` both target the visible state and we only set the
- * faded `initial` when motion is on.
+ * The visual polish on this page comes from the scroll-in sections and the
+ * timeline's scroll-drawn rail; the hero just lands, cleanly.
  */
 export function Appear({
   children,
@@ -40,30 +43,18 @@ export function Appear({
 }: AppearProps) {
   const prefersReduced = useReducedMotion()
 
-  if (prefersReduced) {
+  if (!onView || prefersReduced) {
     return <div className={className}>{children}</div>
   }
 
-  const common = {
-    className,
-    initial: { opacity: 0, y: distance },
-    transition: { duration: 0.6, delay: delay / 1000, ease: [0.16, 1, 0.3, 1] as const },
-  }
-
-  if (onView) {
-    return (
-      <motion.div
-        {...common}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.3, margin: '0px 0px -60px 0px' }}
-      >
-        {children}
-      </motion.div>
-    )
-  }
-
   return (
-    <motion.div {...common} animate={{ opacity: 1, y: 0 }}>
+    <motion.div
+      className={className}
+      initial={{ opacity: 0, y: distance }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.3, margin: '0px 0px -60px 0px' }}
+      transition={{ duration: 0.6, delay: delay / 1000, ease: [0.16, 1, 0.3, 1] }}
+    >
       {children}
     </motion.div>
   )

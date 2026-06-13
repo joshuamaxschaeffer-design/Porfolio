@@ -4,23 +4,17 @@ import { Timeline } from './Timeline'
 import { intro, differentiators, outro } from './data'
 
 /**
- * About page — minimal, modern, four movements.
+ * About page — minimal, modern, value-first. Four movements.
  *
- * Rebuilt 2026-06-13 (per Joshua): the old page was a scattered checklist. This
- * is one claim, three differentiators, an animated proof timeline, one close.
- *
- *   1. Hero    — the single claim + one short paragraph  (animates on mount)
- *   2. Three   — the differentiators (the spine of the page)
- *   3. Path    — animated vertical timeline (line + dots, draws on scroll)
+ *   1. Hero    — the positioning claim + one short paragraph  (animates on mount)
+ *   2. Three   — the differentiators, framed as value to the buyer
+ *   3. Path    — card timeline (dots centered to cards, metric per card)
  *   4. Close   — availability + one CTA → /contact
  *
- * Entrance polish via <Appear>, which never hides content (resting state is
- * visible; motion only adds an entrance). The hero animates on mount — reliable
- * for above-the-fold content — while lower sections animate on scroll-in.
- *
- * No headshot, no capability matrix, no separate principles, no CV/side-project
- * links. Built on the br-* system so it reads as the same site as the case
- * studies.
+ * Voice is value-first and near-pronoun-less (not a personal blog). Entrance
+ * polish via <Appear>, which never hides content: the hero animates on mount
+ * (reliable above the fold) and lower sections animate on scroll-in. Built on
+ * the br-* system so it reads as the same site as the case studies.
  */
 export function AboutPage() {
   return (
@@ -33,7 +27,7 @@ export function AboutPage() {
           </p>
         </Appear>
         <Appear delay={80}>
-          <h1 className="mt-5 max-w-4xl whitespace-pre-line text-[44px] font-medium leading-[1.0] tracking-[-0.02em] text-[var(--br-ink)] md:text-[80px]">
+          <h1 className="mt-5 max-w-4xl whitespace-pre-line text-[44px] font-medium leading-[1.0] tracking-[-0.02em] text-[var(--br-ink)] md:text-[78px]">
             {intro.heading}
           </h1>
         </Appear>
@@ -68,17 +62,22 @@ export function AboutPage() {
         </div>
       </section>
 
-      {/* ── 3. Animated timeline ───────────────────────────────── */}
+      {/* ── 3. Card timeline ───────────────────────────────────── */}
       <section
         aria-label="Experience"
         className="br-container border-t border-[var(--br-line)] py-16 md:py-24"
       >
-        <div className="grid grid-cols-1 gap-y-10 lg:grid-cols-[0.36fr_1fr] lg:gap-x-16">
-          <Appear onView>
-            <h2 className="br-data text-xs font-semibold uppercase tracking-[0.2em] text-[var(--br-muted-2)] md:text-sm">
-              The path
+        <Appear onView>
+          <div className="mb-10 flex items-baseline justify-between gap-6 md:mb-14">
+            <h2 className="text-[26px] font-medium leading-tight tracking-[-0.01em] text-[var(--br-ink)] md:text-[34px]">
+              Thirteen years, four chapters.
             </h2>
-          </Appear>
+            <span className="br-data hidden text-xs uppercase tracking-[0.18em] text-[var(--br-muted-2)] sm:block">
+              2013 — Now
+            </span>
+          </div>
+        </Appear>
+        <div className="mx-auto max-w-4xl">
           <Timeline />
         </div>
       </section>

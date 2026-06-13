@@ -1,30 +1,29 @@
 /**
  * About page — content.
  *
- * Rewritten 2026-06-13 to be ruthless and targeted (per Joshua): one claim,
- * three differentiators, the proof timeline, one close. No capability matrix,
- * no separate principles list, no personal-hook paragraph, no résumé dump —
- * those scattered the page. The three differentiators ARE the page.
+ * Voice (reworked 2026-06-13, per Joshua): value-first, not "I"-first. This is
+ * not a personal blog — it's a case for the value delivered. Research-backed
+ * choices:
+ *   - Minimal first-person. Lead with the work and the outcome, not the self.
+ *     Third-person/agentless framing reads as more objective and senior (the
+ *     register Instrument / Work & Co / Clay use — Joshua's own references).
+ *   - Prefer METRICS over self-description. Every role that has defensible,
+ *     sourced numbers leads with them; the prose explains the value, not the
+ *     feelings. (Numbers reconciled with the live case studies — Panda,
+ *     Wingstop, Samsung — which cite their public sources.)
  *
- * The three were chosen by Joshua as his sharpest separators for the buyers he
- * wants (founders, design leaders, fintech/enterprise, family offices):
- *   1. Product + brand in one person  (the core moat)
- *   2. Investor-grade / high-trust work
- *   3. Owns the whole design function (operator, not just a maker)
- * Consumer scale (Panda/Wingstop/Cane's) stays as PROOF in the timeline, not as
- * a headline claim.
+ * Honesty firewall preserved: the Journalytic/Baserate role is "led / owned the
+ * design function," never "managed a team" (no direct reports; reference-call
+ * safe — strategy §8.1 + locked memory). Hathway role genuinely led a small
+ * team, so "led and art-directed" is accurate there.
  *
- * Tone: declarative, specific, operator-coded (strategy §10.2). Leadership is
- * worded as FUNCTION OWNERSHIP, never "managed a team" (reference-call firewall,
- * strategy §8.1 + locked memory). No /resume.pdf or /personal links (per Joshua).
+ * Three differentiators (Joshua's pick): product+brand in one person /
+ * high-trust (investor-grade) work / owns the whole function.
  */
 
 export interface Differentiator {
-  /** two-digit ordinal */
   num: string
-  /** the claim, as a tight headline */
   title: string
-  /** one sentence of proof — names, not adjectives */
   body: string
 }
 
@@ -32,69 +31,84 @@ export interface TimelineEntry {
   company: string
   role: string
   years: string
-  /** one operator-coded line */
+  /** headline metric or proof for this role (rendered large on the card) */
+  metric: string
+  /** what the metric is */
+  metricLabel: string
+  /** one value-framed line — what the work delivered, not how it felt */
   note: string
 }
 
 export const intro = {
-  eyebrow: 'Joshua Schaeffer',
-  /** the one claim (\n = display line break) */
-  heading: 'I design the product\nand the brand.',
-  /** one short paragraph — the whole "bio", said once */
+  eyebrow: 'About',
+  /** the one claim (\n = display line break) — value, not ego */
+  heading: 'Product and brand,\nbuilt by one operator.',
+  /** one short paragraph; agentless, value-framed */
   lead:
-    'Thirteen years shipping both, as a lead and an art director — for Samsung, Panda Express, Wingstop, Mindbody, and most recently as Head of Design for the investor products Journalytic and Baserate.',
+    'Thirteen years shipping both — product design and brand — for Samsung, Panda Express, Wingstop, Mindbody, and the investor products Journalytic and Baserate. One engagement instead of three vendors, from first principle to launch.',
 }
 
-/** The three differentiators. This is the spine of the page. */
+/** The three differentiators — framed as value to the buyer, not traits. */
 export const differentiators: Differentiator[] = [
   {
     num: '01',
-    title: 'Product and brand, one person.',
-    body: 'Most senior designers own one lane. I ship product, brand, motion, and the marketing site as a single engagement — fewer vendors, faster, and each one makes the others sharper.',
+    title: 'One operator, the whole stack.',
+    body: 'Product, brand, motion, and the marketing site ship as a single engagement — fewer vendors to coordinate, faster to launch, and a product and brand that actually agree with each other.',
   },
   {
     num: '02',
-    title: 'Built for high-trust products.',
-    body: 'I designed Baserate for investors — the same people writing the checks — so I design for clarity and trust under real stakes, not delight for its own sake. The kind of work fintech and enterprise are judged on.',
+    title: 'Made for high-trust products.',
+    body: 'Baserate was designed for the investors writing the checks. The result reads for clarity and trust under real stakes — the bar fintech, enterprise, and serious B2B are measured against.',
   },
   {
     num: '03',
-    title: 'I own the whole function.',
-    body: 'As Head of Design I owned product direction, UX, brand, and marketing end to end, in lockstep with the CEO and lead engineer. An operator who ships, not a maker who waits for a brief.',
+    title: 'Owns the function, not just the file.',
+    body: 'As Head of Design: product direction, UX, brand, and marketing owned end to end, in lockstep with the CEO and lead engineer. Strategy through shipped product — not concepts waiting on a brief.',
   },
 ]
 
-/** Proof. The timeline animates in; copy stays minimal. */
+/**
+ * The path. Each role leads with a sourced metric (the value), not a feeling.
+ * Numbers match the live case studies, which carry their public sources.
+ */
 export const timeline: TimelineEntry[] = [
   {
     company: 'Journalytic · Baserate',
     role: 'Head of Design',
     years: '2023 — Now',
-    note: 'Owned design end to end for two investor products — product, brand, site, and explainer film. The work helped close the round.',
+    metric: 'Seed',
+    metricLabel: 'round closed',
+    note: 'Two investor products — designed end to end, brand through product to explainer film. The work helped the founders close the round.',
   },
   {
     company: 'Hathway / Bounteous',
-    role: 'Lead Designer → Art Director',
+    role: 'Lead Designer · Art Director',
     years: '2018 — 2023',
-    note: 'Led and art-directed the apps for Panda Express, Wingstop, Raising Cane’s, and CBTL — used daily at national scale.',
+    metric: '4.8–4.9★',
+    metricLabel: 'app ratings, millions of reviews',
+    note: 'Led design on the Panda Express and Wingstop apps — 16M+ rewards members and a digital channel that grew to 70% of sales. Plus Raising Cane’s and CBTL.',
   },
   {
     company: 'Mindbody',
-    role: 'UI / Interaction Designer',
+    role: 'UI · Interaction Designer',
     years: '2017 — 2018',
-    note: 'B2B at depth — power-user workflows and cross-product consistency on a multi-product platform.',
+    metric: 'B2B',
+    metricLabel: 'multi-product platform',
+    note: 'Power-user workflows and cross-product consistency for a platform serving tens of thousands of wellness businesses — density without breaking the expert.',
   },
   {
     company: 'Samsung · Razorfish',
     role: 'Designer',
     years: '2013 — 2017',
-    note: 'Enterprise design at global scale. Where I learned systems, brand consistency, and how to ship inside a large org.',
+    metric: '8',
+    metricLabel: 'flagship Galaxy launches',
+    note: 'Launch pages, social, and in-store UI for the world’s #1 smartphone maker — each Galaxy designed under pre-announcement NDA, shipped to a global day-one audience.',
   },
 ]
 
-/** One close. CTA only — no side-projects link, no CV link. */
+/** One close — availability, framed as what's on offer. */
 export const outro = {
-  line: 'Open to senior product, brand, and design-lead engagements.',
-  ctaLabel: 'Get in touch',
+  line: 'Available for senior product, brand, and design-lead engagements.',
+  ctaLabel: 'Start a project',
   ctaHref: '/contact',
 }
