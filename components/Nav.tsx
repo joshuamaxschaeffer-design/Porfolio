@@ -16,8 +16,8 @@ interface NavProps {
 const WORK_PILLS: WorkPill[] = [
   { label: 'Baserate', href: '/work/baserate' },
   { label: 'Panda Express', href: '/work/panda-express' },
-  { label: 'Samsung', href: '/work/samsung' },
   { label: 'Wingstop', href: '/work/wingstop' },
+  { label: 'Samsung', href: '/work/samsung' },
   { label: 'Capabilities', href: '/work/capabilities' },
 ]
 
