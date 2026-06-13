@@ -1,7 +1,14 @@
 'use client'
 
-import { motion, useReducedMotion } from 'motion/react'
-import { useEffect, useRef, useState } from 'react'
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+  type MotionValue,
+} from 'motion/react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 
 import { KEY_SHADOW } from '@/components/studio/keyShadow'
 import { StudioObject } from '@/components/studio/StudioObject'
@@ -26,6 +33,60 @@ const FRAME_COUNT = 120
 const FPS = 30
 
 /**
+ * Scroll parallax + physics for the floating hero elements.
+ *
+ * One shared scroll signal drives the whole scene. `useScroll` measures the
+ * section's travel through the viewport: progress 0 = section's top hits the
+ * viewport bottom (entering), 1 = section's bottom hits the viewport top
+ * (leaving), so 0.5 ≈ section centered. We re-center that to a SIGNED factor
+ * (−0.5 … +0.5, zero when centered) and spring-smooth it — that spring is the
+ * "physics": the elements lag the scroll and ease in, never snap.
+ *
+ * Each element declares a `z` depth (its parallax strength in px of travel at
+ * the scroll extremes). Foreground elements (orbs) get a larger z than the
+ * background devices, so nearer things move more — the depth cue. Because the
+ * offset is tied to scroll POSITION (not velocity), it returns to 0 — the
+ * element's original Figma pose — whenever the section sits centered. Scroll
+ * away and back and everything settles exactly where it started.
+ *
+ * Per-element parallax DEPTH below (`PZ`) = px of vertical travel across the
+ * full scroll range (peak-to-peak ≈ 2× these). Tune intensity from there.
+ */
+const PZ = {
+  device: 14,
+  chip: 30,
+  orbFar: 30,
+  orbMid: 40,
+  orbNear: 52,
+}
+
+const ParallaxContext = createContext<MotionValue<number> | null>(null)
+
+function useParallaxY(z: number): MotionValue<number> | number {
+  const factor = useContext(ParallaxContext)
+  // hooks must run unconditionally; when there's no provider (reduced motion
+  // or SSR) we still call useTransform on a dummy and return a static 0.
+  const fallback = useSpring(0)
+  const signal = factor ?? fallback
+  // negative z·factor: as the page scrolls UP (factor grows), elements drift UP
+  return useTransform(signal, (v) => -v * z)
+}
+
+/** Wraps a positioned element so it parallax-drifts on scroll by its depth. */
+function Parallax({
+  z, className = '', style, children,
+}: {
+  z: number; className?: string; style?: React.CSSProperties; children: React.ReactNode
+}) {
+  const y = useParallaxY(z)
+  return (
+    <motion.div className={className} style={{ ...style, y }}>
+      {children}
+    </motion.div>
+  )
+}
+
+/**
  * Baked logo chip — an SD Studio icon-kind export (transparent webp spin +
  * per-frame physical shadow-v2) rendered through StudioObject. The shadow
  * rotates and squashes WITH the chip and matches the device family exactly
@@ -45,7 +106,7 @@ function BakedChip({
   delay?: number; reduce: boolean | null; className?: string; alt: string
 }) {
   return (
-    <div className={`pointer-events-none absolute ${className}`} style={{ width: size, height: size }}>
+    <div className={`pointer-events-none ${className}`} style={{ width: size, height: size }}>
       <motion.div
         className="relative"
         style={{ width: scaleW, marginLeft: ml, marginTop: mt }}
@@ -66,7 +127,7 @@ function Orb({
   className?: string; from: string; to: string; size: number; dur?: number; delay?: number; reduce: boolean | null
 }) {
   return (
-    <div className={`pointer-events-none absolute ${className}`} style={{ width: size, height: size }}>
+    <div className={`pointer-events-none ${className}`} style={{ width: size, height: size }}>
       <motion.div
         className="relative h-full w-full"
         initial={false}
@@ -108,6 +169,18 @@ export function BrandingHero() {
   const stageRef = useRef<HTMLDivElement>(null)
   useEffect(() => setMounted(true), [])
 
+  // Scroll signal for the whole scene: 0 = section entering (top at viewport
+  // bottom), 1 = leaving (bottom at viewport top), 0.5 ≈ centered. We map to a
+  // SIGNED factor centered on 0, then spring-smooth it (the "physics" lag).
+  const { scrollYProgress } = useScroll({
+    target: stageRef,
+    offset: ['start end', 'end start'],
+  })
+  const signed = useTransform(scrollYProgress, [0, 1], [-0.5, 0.5])
+  const factor = useSpring(signed, { stiffness: 70, damping: 22, mass: 0.6 })
+  // Disable parallax entirely for reduced-motion users.
+  const parallax = reduce ? null : factor
+
   return (
     <section ref={stageRef} className="relative overflow-hidden">
       {/* White top over the gradient field — gentle diagonal, higher on the
@@ -147,53 +220,72 @@ export function BrandingHero() {
 
         {/* ——— Floating scene (inside the 1443 frame) ——— */}
         {mounted && (
+          <ParallaxContext.Provider value={parallax}>
           <div className="pointer-events-none absolute inset-0">
-            {/* PHONE — render carries the Figma pose; silhouette drop-shadow lives in the canvas */}
-            <div className="absolute left-[0%] top-[3%] z-10 w-[42%] md:left-[11%] md:top-[18.5%] md:w-[18%]">
+            {/* PHONE — render carries the Figma pose; silhouette drop-shadow lives in the canvas.
+                Devices sit DEEP (small z) so they parallax the least — the backdrop the
+                nearer chips/orbs float in front of. */}
+            <Parallax z={PZ.device} className="absolute left-[0%] top-[3%] z-10 w-[42%] md:left-[11%] md:top-[18.5%] md:w-[18%]">
               <StudioObject base="/baserate/branding/devices/phone" frameCount={FRAME_COUNT} fps={FPS} delay={120} className="w-full" alt="phone device" />
-            </div>
+            </Parallax>
 
             {/* DESKTOP — pulled fully inside the frame, toward the center */}
-            <div className="absolute right-[-7%] top-[4%] z-10 w-[58%] md:left-[63.5%] md:right-auto md:top-[17%] md:w-[33%]">
+            <Parallax z={PZ.device} className="absolute right-[-7%] top-[4%] z-10 w-[58%] md:left-[63.5%] md:right-auto md:top-[17%] md:w-[33%]">
               <StudioObject base="/baserate/branding/devices/desktop" frameCount={FRAME_COUNT} fps={FPS} delay={0} className="w-full" alt="desktop device" />
-            </div>
+            </Parallax>
 
             {/* Baked 3D chips — SD Studio icon exports: spin in once with
                 physically-cast rotating shadows, SETTLE at the Figma pose.
                 Same tilts as before (J: x7 z-9 y16 · B: x5 z10 y-20), spun
                 about the local Y. md positions stay literal Figma 243:54723
                 coordinates (box ÷ 1443×893). */}
-            <BakedChip
-              base="/baserate/branding/chips/journalytic"
-              alt="Journalytic"
-              reduce={reduce}
-              frameCount={84}
-              size={124}
-              scaleW={153.5}
-              ml={-13.8}
-              mt={-12.8}
-              className="left-[36%] top-[6%] z-[15] scale-[0.55] md:left-[21.5%] md:top-[4.5%] md:scale-100"
-            />
-            <BakedChip
-              base="/baserate/branding/chips/baserate"
-              alt="Baserate"
-              reduce={reduce}
-              frameCount={96}
-              size={94}
-              scaleW={109.6}
-              ml={-9.4}
-              mt={-6.5}
-              className="left-[7%] top-[66%] z-[15] scale-[0.55] md:left-[58%] md:top-[38.5%] md:scale-100"
-              delay={250}
-            />
+            <Parallax z={PZ.chip} className="absolute left-[36%] top-[6%] z-[15] md:left-[21.5%] md:top-[4.5%]">
+              <BakedChip
+                base="/baserate/branding/chips/journalytic"
+                alt="Journalytic"
+                reduce={reduce}
+                frameCount={84}
+                size={124}
+                scaleW={153.5}
+                ml={-13.8}
+                mt={-12.8}
+                className="scale-[0.55] md:scale-100"
+              />
+            </Parallax>
+            <Parallax z={PZ.chip} className="absolute left-[7%] top-[66%] z-[15] md:left-[58%] md:top-[38.5%]">
+              <BakedChip
+                base="/baserate/branding/chips/baserate"
+                alt="Baserate"
+                reduce={reduce}
+                frameCount={96}
+                size={94}
+                scaleW={109.6}
+                ml={-9.4}
+                mt={-6.5}
+                className="scale-[0.55] md:scale-100"
+                delay={250}
+              />
+            </Parallax>
 
             {/* Colour orbs on slow drifts — Figma spots; the navy one is moved
                 LEFT of the desktop so it floats in clean space */}
-            <Orb reduce={reduce} className="left-[10%] top-[8%] z-[15] scale-75 md:left-[15.1%] md:top-[7.5%] md:scale-100" from="#e3cfa0" to="#a07d20" size={30} dur={15} />
-            <Orb reduce={reduce} className="left-[32.5%] top-[60%] z-[15] scale-75 md:left-[33.2%] md:top-[36.4%] md:scale-100" from="#4f9fcb" to="#1c5e8c" size={46} dur={18} delay={1.2} />
-            <Orb reduce={reduce} className="left-[69.5%] top-[26%] z-[15] scale-75 md:left-[69.6%] md:top-[9%] md:scale-100" from="#2a2f3a" to="#05070d" size={46} dur={17} delay={2.2} />
-            <Orb reduce={reduce} className="left-[64%] top-[64%] z-[15] scale-75 md:left-[55.5%] md:top-[57.5%] md:scale-100" from="#1e63c0" to="#06337a" size={46} dur={14} delay={0.6} />
+            {/* Orbs are the FOREGROUND layer (largest z) so they parallax most;
+                each gets a slightly different depth so they don't drift in
+                lockstep — that subtle desync sells the 3D. */}
+            <Parallax z={PZ.orbNear} className="absolute left-[10%] top-[8%] z-[15] md:left-[15.1%] md:top-[7.5%]">
+              <Orb reduce={reduce} className="scale-75 md:scale-100" from="#e3cfa0" to="#a07d20" size={30} dur={15} />
+            </Parallax>
+            <Parallax z={PZ.orbFar} className="absolute left-[32.5%] top-[60%] z-[15] md:left-[33.2%] md:top-[36.4%]">
+              <Orb reduce={reduce} className="scale-75 md:scale-100" from="#4f9fcb" to="#1c5e8c" size={46} dur={18} delay={1.2} />
+            </Parallax>
+            <Parallax z={PZ.orbNear} className="absolute left-[69.5%] top-[26%] z-[15] md:left-[69.6%] md:top-[9%]">
+              <Orb reduce={reduce} className="scale-75 md:scale-100" from="#2a2f3a" to="#05070d" size={46} dur={17} delay={2.2} />
+            </Parallax>
+            <Parallax z={PZ.orbMid} className="absolute left-[64%] top-[64%] z-[15] md:left-[55.5%] md:top-[57.5%]">
+              <Orb reduce={reduce} className="scale-75 md:scale-100" from="#1e63c0" to="#06337a" size={46} dur={14} delay={0.6} />
+            </Parallax>
           </div>
+          </ParallaxContext.Provider>
         )}
       </div>
 

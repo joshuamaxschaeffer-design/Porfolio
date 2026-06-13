@@ -14,9 +14,9 @@
  * blurry" fix). If this ever moves to box-shadow, double them back.
  */
 export const KEY_SHADOW = {
-  x: 0.07, // offset, fraction of element size (positive = right)
-  y: 0.09, //  fraction of element size (positive = down)
-  scale: 1.04,
-  color: 'rgba(8,20,44,0.32)',
-  blur: (s: number) => Math.max(5, s * 0.065),
+  x: 0.16, // offset, fraction of element size (positive = right)
+  y: 0.2, //  fraction of element size (positive = down)
+  scale: 1.02,
+  color: 'rgba(8,20,44,0.3)',
+  blur: (s: number) => Math.max(5, s * 0.075),
 }
