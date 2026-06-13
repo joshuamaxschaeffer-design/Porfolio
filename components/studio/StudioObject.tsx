@@ -1,5 +1,6 @@
 'use client'
 
+import { type MotionValue } from 'motion/react'
 import { useEffect, useRef } from 'react'
 import { STUDIO_PAD, createShadowPipeline, type ShadowTrack } from './studioShadow'
 
@@ -19,6 +20,12 @@ function pad4(n: number) {
  * Sequences preload politely from page load (8-way, fetchpriority=low) and
  * play ONCE when scrolled into view — gated on the full cache so playback
  * never frame-skips. Stills draw as soon as the image lands.
+ *
+ * SCRUB MODE: pass `scrub` (a 0→1 MotionValue, e.g. section scroll progress)
+ * and the sequence becomes scroll-scrubbed instead of play-once — frame index
+ * = round(scrub · (frameCount−1)), bidirectional, redrawn ONLY when the index
+ * changes (no per-frame canvas churn when idle). Frames preload eagerly so the
+ * scrub never misses. Reduced-motion settles on the last frame.
  */
 export function StudioObject({
   base,
@@ -27,6 +34,7 @@ export function StudioObject({
   delay = 0,
   className = '',
   alt = '',
+  scrub,
 }: {
   base: string
   frameCount?: number
@@ -34,6 +42,7 @@ export function StudioObject({
   delay?: number
   className?: string
   alt?: string
+  scrub?: MotionValue<number>
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const shadowRef = useRef<HTMLCanvasElement>(null)
@@ -103,6 +112,52 @@ export function StudioObject({
     if (!isSeq) {
       return () => {
         disposed = true
+      }
+    }
+
+    // ── SCRUB MODE: frame index driven by the `scrub` MotionValue ──
+    if (scrub) {
+      const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+      // eager preload (8-way) — small 20-frame sets, want them all ready fast
+      let nextIdx = 0
+      let loaded = 0
+      let curIdx = -1
+      const CONC = 8
+      const clampIdx = (p: number) =>
+        Math.max(0, Math.min(frameCount - 1, Math.round(p * (frameCount - 1))))
+      const renderAt = (p: number) => {
+        if (disposed) return
+        const i = reduce ? frameCount - 1 : clampIdx(p)
+        if (i === curIdx) return // redraw only on index change
+        if (imgs[i] && imgs[i].complete) {
+          curIdx = i
+          drawFrame(i)
+        }
+      }
+      const loadWorker = () => {
+        if (disposed) return
+        const i = nextIdx++
+        if (i >= frameCount) return
+        const img = new Image()
+        img.decoding = 'async'
+        const done = () => {
+          imgs[i] = img
+          loaded++
+          // once enough frames exist, reflect the current scrub position
+          renderAt(scrub.get())
+          if (loaded < frameCount) loadWorker()
+        }
+        img.onload = done
+        img.onerror = done
+        img.src = srcFor(i)
+      }
+      for (let w = 0; w < CONC; w++) loadWorker()
+      // draw the settled frame immediately for reduced-motion / first paint
+      const unsub = reduce ? undefined : scrub.on('change', renderAt)
+      renderAt(scrub.get())
+      return () => {
+        disposed = true
+        unsub?.()
       }
     }
 
@@ -176,7 +231,7 @@ export function StudioObject({
       io.disconnect()
       cancelAnimationFrame(raf)
     }
-  }, [base, frameCount, fps, delay])
+  }, [base, frameCount, fps, delay, scrub])
 
   const padPct = `${(STUDIO_PAD * 100).toFixed(0)}%`
   return (

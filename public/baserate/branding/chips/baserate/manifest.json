@@ -1,15 +1,15 @@
 {
   "kind": "icon",
   "mode": "sequence",
-  "frame_count": 96,
+  "frame_count": 20,
   "fps": 30,
-  "width": 772,
-  "height": 788,
+  "width": 684,
+  "height": 696,
   "crop": {
-    "x": 158,
-    "y": 154,
-    "w": 772,
-    "h": 788
+    "x": 186,
+    "y": 186,
+    "w": 684,
+    "h": 696
   },
   "export_width": 1080,
   "export_height": 1080,
