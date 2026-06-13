@@ -4,12 +4,12 @@ import { Timeline } from './Timeline'
 import { intro, differentiators, outro } from './data'
 
 /**
- * About page — minimal, modern, value-first. Four movements.
+ * About page — minimal, modern, value-first.
  *
  *   1. Hero    — the positioning claim + one short paragraph  (renders plainly)
  *   2. Three   — the differentiators, framed as value to the buyer
- *   3. Path    — card timeline (dots centered to cards, caret per card)
- *   4. Close   — availability + one CTA → /contact
+ *   3. Path    — card timeline (left) + the availability close (right, sticky on
+ *                desktop; stacks below on mobile/tablet)
  *
  * Voice is value-first and near-pronoun-less (not a personal blog). Entrance
  * polish via <Appear> (never hides content); the hero is plain so the first
@@ -61,7 +61,7 @@ export function AboutPage() {
         </div>
       </section>
 
-      {/* ── 3. Card timeline ───────────────────────────────────── */}
+      {/* ── 3. Card timeline + availability close ──────────────── */}
       <section
         aria-label="Experience"
         className="br-container border-t border-[var(--br-line)] py-16 md:py-24"
@@ -71,28 +71,34 @@ export function AboutPage() {
             Thirteen years, four chapters.
           </h2>
         </Appear>
-        {/* Left-aligned to the header (no mx-auto). */}
-        <div className="max-w-3xl">
-          <Timeline />
-        </div>
-      </section>
 
-      {/* ── 4. Close ───────────────────────────────────────────── */}
-      <section className="br-container border-t border-[var(--br-line)] py-20 md:py-28">
-        <Appear onView>
-          <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
-            <p className="max-w-xl text-[28px] font-medium leading-snug tracking-[-0.015em] text-[var(--br-ink)] md:text-[38px]">
-              {outro.line}
-            </p>
-            <Link
-              href={outro.ctaHref}
-              className="br-data inline-flex w-fit shrink-0 items-center gap-2 rounded-[var(--br-tag-radius)] bg-[var(--br-ink)] px-6 py-3.5 text-sm font-semibold uppercase tracking-[0.04em] text-white transition-opacity hover:opacity-90"
-            >
-              {outro.ctaLabel}
-              <span aria-hidden>→</span>
-            </Link>
+        {/* Desktop: timeline left, close sticky-centered right. Mobile/tablet:
+            timeline, then the close stacked below. */}
+        <div className="lg:grid lg:grid-cols-[minmax(0,640px)_1fr] lg:gap-x-16 xl:gap-x-24">
+          <div>
+            <Timeline />
           </div>
-        </Appear>
+
+          {/* Close — its own movement, pulled up beside the timeline on desktop.
+              `self-stretch` + a sticky inner block vertically centers it in the
+              column and keeps it in view while the cards scroll past. */}
+          <div className="mt-16 lg:mt-0 lg:self-stretch">
+            <Appear onView>
+              <div className="lg:sticky lg:top-1/2 lg:-translate-y-1/2">
+                <p className="max-w-md text-[28px] font-medium leading-snug tracking-[-0.015em] text-[var(--br-ink)] md:text-[34px]">
+                  {outro.line}
+                </p>
+                <Link
+                  href={outro.ctaHref}
+                  className="br-data mt-7 inline-flex w-fit items-center gap-2 rounded-[var(--br-tag-radius)] bg-[var(--br-ink)] px-6 py-3.5 text-sm font-semibold uppercase tracking-[0.04em] text-white transition-opacity hover:opacity-90"
+                >
+                  {outro.ctaLabel}
+                  <span aria-hidden>→</span>
+                </Link>
+              </div>
+            </Appear>
+          </div>
+        </div>
       </section>
     </article>
   )

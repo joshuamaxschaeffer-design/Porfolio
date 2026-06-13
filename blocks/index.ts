@@ -18,6 +18,8 @@ import { PandaCaseStudy } from './PandaCaseStudy'
 import { WingstopCaseStudy } from './WingstopCaseStudy'
 import { SamsungCaseStudy } from './SamsungCaseStudy'
 import { CapabilitiesPage } from './CapabilitiesPage'
+import { HomeFlagshipBaserate, HomeFlagshipPanda } from './HomeFlagship'
+import { HomeSecondaryRow } from './HomeSecondaryRow'
 
 export const allBlocks = [
   Hero,
@@ -41,6 +43,9 @@ export const allBlocks = [
   WingstopCaseStudy,
   SamsungCaseStudy,
   CapabilitiesPage,
+  HomeFlagshipBaserate,
+  HomeFlagshipPanda,
+  HomeSecondaryRow,
 ]
 
 export {
@@ -64,4 +69,7 @@ export {
   WingstopCaseStudy,
   SamsungCaseStudy,
   CapabilitiesPage,
+  HomeFlagshipBaserate,
+  HomeFlagshipPanda,
+  HomeSecondaryRow,
 }
