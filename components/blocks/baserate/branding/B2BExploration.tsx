@@ -16,7 +16,7 @@ import { Fragment, useEffect, useRef, useState } from 'react'
 const ALT_NAMES = [
   'Delphi', 'Kaizen', 'Agility', 'Peak', 'Ionic', 'Journalytic',
   'Ferrratta', 'Schema', 'Streamline', 'Decisive', 'Flux',
-].map((n) => `/baserate/branding/altnames-crop/${n}.png`)
+].map((n) => `/baserate/branding/altnames-crop/${n}.webp`)
 
 const ALT_LOGOS = ['1', '2', '3', '4', '5', '6', '7', '8', '10', '11', '12', '13', '14'].map(
   (n) => `/baserate/branding/altlogos/${n}.webp`,

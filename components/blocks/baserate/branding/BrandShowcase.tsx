@@ -27,7 +27,7 @@ function JournalyticPalette() {
     <div className="flex h-full flex-col p-5 md:p-[6.6%]">
       {/* gradient swatch band — Joshua's "Colored bar" export (radius baked in) */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/baserate/branding/colored-bar.png" alt="" className="h-auto w-full flex-none" />
+      <img src="/baserate/branding/colored-bar.webp" alt="" className="h-auto w-full flex-none" />
       {/* chips — exact Figma values */}
       <div className="mt-5 grid flex-none grid-cols-4 gap-3 md:mt-[4.5%] md:h-[19%]">
         {['#000000', '#277FA0', '#E6C45C', '#F4F1EF'].map((c) => (
@@ -173,7 +173,7 @@ export function BrandShowcase({ theme }: { theme: 'journalytic' | 'baserate' }) 
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/baserate/branding/letter-card.png"
+                src="/baserate/branding/letter-card.webp"
                 alt="Baserate annual letter UI"
                 className="h-full w-full object-cover"
                 loading="lazy"
@@ -185,7 +185,7 @@ export function BrandShowcase({ theme }: { theme: 'journalytic' | 'baserate' }) 
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/baserate/branding/r4-homepage.png"
+                src="/baserate/branding/r4-homepage.webp"
                 alt="Baserate marketing homepage"
                 className="h-full w-full object-cover"
                 loading="lazy"

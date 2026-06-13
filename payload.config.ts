@@ -2,6 +2,7 @@ import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
+import sharp from 'sharp'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
@@ -22,6 +23,9 @@ const dirname = path.dirname(filename)
 
 export default buildConfig({
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
+  // Pass sharp so Payload can resize CMS-uploaded media (the build warned it
+  // was installed but not wired into the config).
+  sharp,
   admin: {
     user: Users.slug,
     meta: {

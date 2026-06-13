@@ -44,8 +44,8 @@ export const challenge = {
       problem: 1,
       span: 'lg',
       tone: 'dark',
-      image: `${IMG}/challenge/problem-1.png`,
-      mobileImage: `${IMG}/challenge/problem-1-mobile.png`,
+      image: `${IMG}/challenge/problem-1.webp`,
+      mobileImage: `${IMG}/challenge/problem-1-mobile.webp`,
       title: [
         { text: 'CRITICAL RESEARCH IS ' },
         { text: 'FRAGMENTED', accent: true },
@@ -56,7 +56,7 @@ export const challenge = {
       problem: 2,
       span: 'md',
       tone: 'dark',
-      image: `${IMG}/challenge/problem-2.png`,
+      image: `${IMG}/challenge/problem-2.webp`,
       title: [{ text: 'INVESTORS FAIL TO RETAIN THEIR LEARNING.' }],
       body: [
         { text: 'Insights are created every day, but without a durable system, ' },
@@ -67,8 +67,8 @@ export const challenge = {
       problem: 3,
       span: 'lg',
       tone: 'light',
-      image: `${IMG}/challenge/problem-3.png`,
-      mobileImage: `${IMG}/challenge/problem-3-mobile.png`,
+      image: `${IMG}/challenge/problem-3.webp`,
+      mobileImage: `${IMG}/challenge/problem-3-mobile.webp`,
       title: [
         { text: 'TEAMS LACK A ' },
         { text: 'LIVE, SHARED VIEW', accent: true },
@@ -79,7 +79,7 @@ export const challenge = {
       problem: 4,
       span: 'md',
       tone: 'dark',
-      image: `${IMG}/challenge/problem-4.png`,
+      image: `${IMG}/challenge/problem-4.webp`,
       title: [
         { text: 'HIDDEN VIEWS', accent: true },
         { text: ' AND GROUPTHINK' },
@@ -92,7 +92,7 @@ export const challenge = {
       problem: 5,
       span: 'md',
       tone: 'light',
-      image: `${IMG}/challenge/problem-5.png`,
+      image: `${IMG}/challenge/problem-5.webp`,
       title: [{ text: 'OPEN FEEDBACK LOOPS' }],
       body: [
         { text: 'Past decisions rarely translate into ' },
@@ -103,7 +103,7 @@ export const challenge = {
       problem: 6,
       span: 'md',
       tone: 'dark',
-      image: `${IMG}/challenge/problem-6.png`,
+      image: `${IMG}/challenge/problem-6.webp`,
       title: [{ text: "PROCESS THAT CAN'T BE DEMONSTRATED" }],
       body: [
         { text: 'Even strong process is ' },
@@ -114,7 +114,7 @@ export const challenge = {
       problem: 7,
       span: 'md',
       tone: 'light',
-      image: `${IMG}/challenge/problem-7.png`,
+      image: `${IMG}/challenge/problem-7.webp`,
       title: [
         { text: 'AI NEEDS A ' },
         { text: 'MEMORY.', accent: true },
@@ -136,23 +136,23 @@ export const architecture = {
       {
         title: 'WORKFLOW ANALYSIS',
         body: 'From research and interviews we identified the current behaviors and tools that defined an investors workflow.',
-        image: `${IMG}/arch/workflow.png`,
+        image: `${IMG}/arch/workflow.webp`,
       },
       {
         title: 'DATA HIERARCHY',
         body: 'Charted out the structure of user data across tools, features, individuals and teams.',
-        image: `${IMG}/arch/data-hierarchy.png`,
+        image: `${IMG}/arch/data-hierarchy.webp`,
       },
       {
         title: 'FEATURE ECOSYSTEM',
         body: 'Mapped out the ecosystem of features and how they would interact with each other.',
-        image: `${IMG}/arch/feature-ecosystem.png`,
+        image: `${IMG}/arch/feature-ecosystem.webp`,
       },
     ],
   },
   crystalization: {
     tag: 'Crystalization',
-    image: `${IMG}/arch/crystalization.png`,
+    image: `${IMG}/arch/crystalization.webp`,
     items: [
       {
         title: 'FEATURE PRIORITIZATION',
@@ -182,13 +182,13 @@ export const productSystem = {
     badge: 'Premium',
     tagline: 'B2B Operating System for Modern Investment Teams',
     sub: 'Full features that touch the entire investment process.',
-    screenshot: `${IMG}/system/baserate-desktop-ui.png`,
+    screenshot: `${IMG}/system/baserate-desktop-ui.webp`,
   },
   journalytic: {
     emphasized: false,
     tagline: 'B2C Tool Enabling Solo Investors to Build Profitable Habits.',
     sub: 'Paired down software useful for journaling and reflection.',
-    phones: [`${IMG}/misc/phone-1.png`, `${IMG}/misc/phone-2.png`],
+    phones: [`${IMG}/misc/phone-1.webp`, `${IMG}/misc/phone-2.webp`],
   },
 }
 
@@ -323,7 +323,7 @@ export const featureCarousels = [
     centerLabel: 'Decisions',
     centerIcon: 'decision-builder',
     video: videoSrc('decision-demo.mp4'),
-    images: [`${IMG}/system/decision-builder.png`, `${IMG}/system/baserate-docs.png`],
+    images: [`${IMG}/system/decision-builder.webp`, `${IMG}/system/baserate-docs.webp`],
     offset: 0,
     videoStart: 50, // skip the first 50s intro
   },
@@ -331,7 +331,7 @@ export const featureCarousels = [
     centerLabel: 'Idea Lists',
     centerIcon: 'mood-graph',
     video: videoSrc('baserate-idea-list-demo.mp4'),
-    images: [`${IMG}/system/idea-lists.png`, `${IMG}/system/tasks.png`, `${IMG}/system/calendar.png`],
+    images: [`${IMG}/system/idea-lists.webp`, `${IMG}/system/tasks.webp`, `${IMG}/system/calendar.webp`],
     offset: 150,
     videoStart: 30, // skip the first 30s intro
   },
@@ -339,7 +339,7 @@ export const featureCarousels = [
     centerLabel: 'Conviction',
     centerIcon: 'track-convictions',
     video: videoSrc('conviction-demo-video.mp4'),
-    images: [`${IMG}/system/reporting.png`, `${IMG}/system/mood-graph.png`, `${IMG}/system/chat.png`],
+    images: [`${IMG}/system/reporting.webp`, `${IMG}/system/mood-graph.webp`, `${IMG}/system/chat.webp`],
     offset: 75,
     videoStart: 40, // skip the first 40s intro
   },
@@ -356,7 +356,7 @@ export const designSystems = {
   components: {
     title: 'COMPONENT LIBRARIES',
     body: 'Full component libraries from icons to larger complex components',
-    artifact: `${IMG}/components.png`,
+    artifact: `${IMG}/components.webp`,
   },
   scalability: {
     title: 'SCALABILITY',
@@ -368,12 +368,12 @@ export const designSystems = {
      * vanishing into the distance. `date` labels the dot on the timeline.
      */
     frames: [
-      { image: `${IMG}/scalability/scalability-1.png`, date: '2026' },
-      { image: `${IMG}/scalability/scalability-2.png`, date: '2027' },
-      { image: `${IMG}/scalability/scalability-3.png`, date: '2028' },
-      { image: `${IMG}/scalability/scalability-4.png`, date: '2029' },
-      { image: `${IMG}/scalability/scalability-5.png`, date: '2030' },
-      { image: `${IMG}/scalability/scalability-6.png`, date: '2031' },
+      { image: `${IMG}/scalability/scalability-1.webp`, date: '2026' },
+      { image: `${IMG}/scalability/scalability-2.webp`, date: '2027' },
+      { image: `${IMG}/scalability/scalability-3.webp`, date: '2028' },
+      { image: `${IMG}/scalability/scalability-4.webp`, date: '2029' },
+      { image: `${IMG}/scalability/scalability-5.webp`, date: '2030' },
+      { image: `${IMG}/scalability/scalability-6.webp`, date: '2031' },
     ],
   },
 }
@@ -450,9 +450,9 @@ export const outcomes = {
   ],
   trustedByHeading: 'TRUSTED BY',
   logos: [
-    { src: `${IMG}/logos/clients/gryphon-wealth.png`, alt: 'Gryphon Wealth' },
-    { src: `${IMG}/logos/clients/edgeworth-capital.png`, alt: 'Edgeworth Capital' },
-    { src: `${IMG}/logos/clients/enhancing-capital.png`, alt: 'Enhancing Capital' },
-    { src: `${IMG}/logos/clients/saber-capital.png`, alt: 'Saber Capital Management' },
+    { src: `${IMG}/logos/clients/gryphon-wealth.webp`, alt: 'Gryphon Wealth' },
+    { src: `${IMG}/logos/clients/edgeworth-capital.webp`, alt: 'Edgeworth Capital' },
+    { src: `${IMG}/logos/clients/enhancing-capital.webp`, alt: 'Enhancing Capital' },
+    { src: `${IMG}/logos/clients/saber-capital.webp`, alt: 'Saber Capital Management' },
   ],
 }

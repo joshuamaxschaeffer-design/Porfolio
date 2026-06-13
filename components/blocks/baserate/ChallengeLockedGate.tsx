@@ -16,7 +16,7 @@ import { LockIcon } from './LockIcon'
  */
 
 // Ambient-only backdrop frames (kept blurred + aria-hidden; never legible).
-const BACKDROP = ['/baserate/challenge/problem-1.png', '/baserate/challenge/problem-3.png']
+const BACKDROP = ['/baserate/challenge/problem-1.webp', '/baserate/challenge/problem-3.webp']
 
 export function ChallengeLockedGate({
   heading = 'THE CHALLENGE',
