@@ -150,15 +150,22 @@ function FrameCard({ frame, index, gap, total, frontX, vpX }: { frame: Frame; in
   const darken = useTransform(d, (dd) => darkenForD(dd))
   // split the blur across the outer wrapper and the inner image for a softer,
   // double-applied look (cheap approximation of a gaussian pyramid).
-  const blurOuter = useTransform(d, (dd) => `blur(${blurForD(dd) * 0.45}px)`)
-  const blurInner = useTransform(d, (dd) => `blur(${blurForD(dd) * 0.55}px)`)
+  // PERF: blur radius is QUANTIZED to 2px steps. Animating filter:blur() per
+  // scroll frame re-rasterizes these huge (≈750k-px) card layers every frame —
+  // that froze the whole page on scroll. Snapping to discrete steps means the
+  // filter only re-rasters when a card crosses a 2px threshold (rare), while
+  // scroll motion rides on the cheap GPU-composited transform/scale. The depth
+  // falloff is visually identical.
+  const qStep = (v: number, step: number) => Math.round(v / step) * step
+  const blurOuter = useTransform(d, (dd) => `blur(${qStep(blurForD(dd) * 0.45, 2)}px)`)
+  const blurInner = useTransform(d, (dd) => `blur(${qStep(blurForD(dd) * 0.55, 2)}px)`)
 
   // Dot on the floor directly below this card + a connector line from the
   // card down to it. Both fade/blur with depth like the card.
   const dotTop = useTransform(proj, (pr) => `${VP_Y + (FLOOR_Y - VP_Y) * pr.s}%`)
   const dotSize = useTransform(proj, (pr) => `${Math.max(3, 11 * pr.s)}px`)
   const cueOpacity = useTransform(d, (dd) => Math.max(0, 1 - dd * 0.32))
-  const cueBlur = useTransform(d, (dd) => `blur(${blurForD(dd) * 0.4}px)`)
+  const cueBlur = useTransform(d, (dd) => `blur(${qStep(blurForD(dd) * 0.4, 2)}px)`)
   // connector line: from card bottom (proj.y + ~half card height in %) to dot
   const lineTop = useTransform(proj, (pr) => `${pr.y}%`)
   const lineHeight = useTransform(proj, (pr) => `${VP_Y + (FLOOR_Y - VP_Y) * pr.s - pr.y}%`)
@@ -177,7 +184,10 @@ function FrameCard({ frame, index, gap, total, frontX, vpX }: { frame: Frame; in
         scale,
         zIndex: total - index,
         filter: blurOuter,
-        willChange: 'transform, filter',
+        // will-change: transform only. Including `filter` made the browser keep
+        // every card's filtered result GPU-resident + re-raster-ready — toxic on
+        // 750k-px layers. Transform stays cheap/composited.
+        willChange: 'transform',
       }}
     >
       {/* No border — a white/translucent edge + blur creates a glowing halo.
