@@ -53,11 +53,11 @@ const FPS = 30
  * full scroll range (peak-to-peak ≈ 2× these). Tune intensity from there.
  */
 const PZ = {
-  device: 14,
-  chip: 30,
-  orbFar: 30,
-  orbMid: 40,
-  orbNear: 52,
+  device: 28,
+  chip: 60,
+  orbFar: 60,
+  orbMid: 80,
+  orbNear: 104,
 }
 
 const ParallaxContext = createContext<MotionValue<number> | null>(null)
