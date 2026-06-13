@@ -41,6 +41,9 @@ const GOO_MIN = 0.5 // stdDeviation at rest (crisp, fully separate)
 const DURATION = 540 // ms, open
 const DURATION_OUT = 240 // ms, close (snaps back up faster)
 const PILL_W = 200 // blob + glass pill width
+const TOP_OFFSET = 10 // gap below the bar before the first (Baserate) pill
+const PAD_X = 16 // left/right inset inside the portal so pill SHADOWS aren't clipped
+const SHADOW_BLEED = 50 // how far the clip-path lets shadows bleed past L/R/bottom
 
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3)
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t
@@ -202,15 +205,18 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
   // Derived animation values.
   const stride = lerp(CLUSTER, STEP, progress) // px between pill tops
   const goo = lerp(GOO_MAX, GOO_MIN, progress) // current feGaussianBlur stdDev
-  const lastTop = (items.length - 1) * stride
-  const fullHeight = lastTop + PILL_H // visible clipped height grows with progress
+  // The whole stack sits TOP_OFFSET below the bar; the offset itself eases in
+  // (0 -> TOP_OFFSET) so the liquid still appears to start at the bar edge.
+  const topOffset = TOP_OFFSET * progress
+  const lastTop = topOffset + (items.length - 1) * stride
+  const fullHeight = lastTop + PILL_H // visible reveal height grows with progress
   // Blob layer fades OUT as pills finish separating, so only glass shows at rest.
   const blobOpacity = progress < 0.55 ? 1 : Math.max(0, 1 - (progress - 0.55) / 0.45)
   // Glass pills fade IN once the blobs have begun to separate.
   const glassBase = Math.max(0, (progress - 0.35) / 0.65)
 
-  const pillTop = (i: number) => Math.round(i * stride)
-  const restHeight = (items.length - 1) * STEP + PILL_H
+  const pillTop = (i: number) => Math.round(topOffset + i * stride)
+  const restHeight = TOP_OFFSET + (items.length - 1) * STEP + PILL_H
 
   return (
     <div
@@ -270,12 +276,14 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
             onPointerEnter={(e) => notTouch(e) && show()}
             style={{
               position: 'fixed',
-              left: pos?.left ?? -9999,
+              // Shift left by PAD_X so the inset pills still line up under the
+              // trigger; the extra width on both sides gives shadows room.
+              left: (pos?.left ?? -9999) - PAD_X,
               top: pos?.top ?? -9999,
               zIndex: 60,
               // Full-size hit region (matches where the pills END UP), so the
               // geometric "stay open" check is correct throughout the anim.
-              width: PILL_W + 30,
+              width: PILL_W + PAD_X * 2,
               height: restHeight,
               pointerEvents: open || progress > 0.01 ? 'auto' : 'none',
             }}
@@ -303,18 +311,29 @@ export function WorkNavGlass({ items, brand }: { items: WorkPill[]; brand: Brand
             </svg>
 
             {/* CLIPPED emergence wrapper: grows downward from the bar's bottom
-                edge so the liquid appears to bleed out of the bar. Clipping (not
-                pill transforms) keeps hit-testing out of the trigger strip. */}
+                edge so the liquid appears to bleed out of the bar. We clip ONLY
+                the TOP edge (the growing reveal line) via clip-path inset; the
+                left/right/bottom insets are NEGATIVE so pill SHADOWS bleed out
+                freely instead of being sliced (the old `overflow:hidden` cut
+                them off — that was the "weirdly cut off / odd shadows" bug).
+                clip-path (not pill transforms) keeps hit-testing out of the
+                trigger strip. The reveal line is the BOTTOM of the visible area;
+                everything above it (toward the bar) shows as it grows. */}
             <div
               style={{
                 position: 'absolute',
-                left: 0,
+                left: PAD_X,
                 top: 0,
-                width: '100%',
-                height: reduce
-                  ? fullHeight
-                  : Math.round(fullHeight * Math.min(1, progress * 1.15)),
-                overflow: 'hidden',
+                width: PILL_W,
+                height: restHeight,
+                // inset(top right bottom left): clip the bottom to the current
+                // reveal height; bleed -SHADOW_BLEED on the other three sides.
+                clipPath: reduce
+                  ? `inset(${-SHADOW_BLEED}px ${-SHADOW_BLEED}px ${-SHADOW_BLEED}px ${-SHADOW_BLEED}px)`
+                  : `inset(${-SHADOW_BLEED}px ${-SHADOW_BLEED}px ${Math.max(
+                      0,
+                      restHeight - Math.round(fullHeight * Math.min(1, progress * 1.15)),
+                    )}px ${-SHADOW_BLEED}px)`,
                 pointerEvents: 'none',
               }}
             >
