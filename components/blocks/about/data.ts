@@ -1,21 +1,16 @@
 /**
  * About page — content.
  *
- * Voice (reworked 2026-06-13, per Joshua): value-first, not "I"-first. This is
- * not a personal blog — it's a case for the value delivered. Research-backed
- * choices:
- *   - Minimal first-person. Lead with the work and the outcome, not the self.
- *     Third-person/agentless framing reads as more objective and senior (the
- *     register Instrument / Work & Co / Clay use — Joshua's own references).
- *   - Prefer METRICS over self-description. Every role that has defensible,
- *     sourced numbers leads with them; the prose explains the value, not the
- *     feelings. (Numbers reconciled with the live case studies — Panda,
- *     Wingstop, Samsung — which cite their public sources.)
+ * Voice (per Joshua): value-first, not "I"-first. Not a personal blog — a case
+ * for the value delivered. Minimal first-person; lead with the work and the
+ * outcome. Where there's a defensible, sourced number, it lives INLINE in the
+ * role's sentence (not a set-off metric block — that read as weak). Numbers are
+ * reconciled with the live case studies, which carry their public sources.
  *
- * Honesty firewall preserved: the Journalytic/Baserate role is "led / owned the
- * design function," never "managed a team" (no direct reports; reference-call
- * safe — strategy §8.1 + locked memory). Hathway role genuinely led a small
- * team, so "led and art-directed" is accurate there.
+ * Honesty firewall: the Journalytic/Baserate role is "led / owned the design
+ * function," never "managed a team" (no direct reports — reference-call safe,
+ * strategy §8.1 + locked memory). Hathway genuinely led a small team, so "led
+ * and art-directed" is accurate there.
  *
  * Three differentiators (Joshua's pick): product+brand in one person /
  * high-trust (investor-grade) work / owns the whole function.
@@ -31,11 +26,7 @@ export interface TimelineEntry {
   company: string
   role: string
   years: string
-  /** headline metric or proof for this role (rendered large on the card) */
-  metric: string
-  /** what the metric is */
-  metricLabel: string
-  /** one value-framed line — what the work delivered, not how it felt */
+  /** one value-framed line — what the work delivered (proof woven in) */
   note: string
 }
 
@@ -68,41 +59,33 @@ export const differentiators: Differentiator[] = [
 ]
 
 /**
- * The path. Each role leads with a sourced metric (the value), not a feeling.
- * Numbers match the live case studies, which carry their public sources.
+ * The path. Clean cards — year / company / role / one line. The proof (numbers,
+ * outcomes) is woven into each note rather than set off in a metric block.
  */
 export const timeline: TimelineEntry[] = [
   {
     company: 'Journalytic · Baserate',
     role: 'Head of Design',
     years: '2023 — Now',
-    metric: 'Seed',
-    metricLabel: 'round closed',
-    note: 'Two investor products — designed end to end, brand through product to explainer film. The work helped the founders close the round.',
+    note: 'Owned design end to end for two investor products — brand, product, marketing site, and explainer film. The work helped the founders close their seed round.',
   },
   {
     company: 'Hathway / Bounteous',
     role: 'Lead Designer · Art Director',
     years: '2018 — 2023',
-    metric: '4.8–4.9★',
-    metricLabel: 'app ratings, millions of reviews',
-    note: 'Led design on the Panda Express and Wingstop apps — 16M+ rewards members and a digital channel that grew to 70% of sales. Plus Raising Cane’s and CBTL.',
+    note: 'Led design on the Panda Express and Wingstop apps — 4.8–4.9★, millions of reviews, 16M+ rewards members, and a digital channel that grew to 70% of sales. Plus Raising Cane’s and CBTL.',
   },
   {
     company: 'Mindbody',
     role: 'UI · Interaction Designer',
     years: '2017 — 2018',
-    metric: 'B2B',
-    metricLabel: 'multi-product platform',
-    note: 'Power-user workflows and cross-product consistency for a platform serving tens of thousands of wellness businesses — density without breaking the expert.',
+    note: 'Power-user workflows and cross-product consistency for a multi-product platform serving tens of thousands of wellness businesses — density without breaking the expert.',
   },
   {
     company: 'Samsung · Razorfish',
     role: 'Designer',
     years: '2013 — 2017',
-    metric: '8',
-    metricLabel: 'flagship Galaxy launches',
-    note: 'Launch pages, social, and in-store UI for the world’s #1 smartphone maker — each Galaxy designed under pre-announcement NDA, shipped to a global day-one audience.',
+    note: 'Launch pages, social, and in-store UI for the world’s #1 smartphone maker — eight flagship Galaxy launches, each designed under pre-announcement NDA for a global day-one audience.',
   },
 ]
 
