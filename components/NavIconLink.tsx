@@ -9,7 +9,7 @@ import type { ReactNode } from 'react'
  * Boxes sit flush in the bar (no gap) so the hover targets tile edge-to-edge.
  * Colors inherit the per-brand --nav-* / --glass-* vars set on the header.
  */
-export const NAV_BOX = 'w-[104px]'
+export const NAV_BOX = 'w-[76px]'
 
 export function NavIconLink({
   href,
