@@ -145,7 +145,11 @@ export function StudioObject({
       img.decoding = 'async'
       img.onload = () => {
         if (disposed) return
-        if (!canvas.width) pipe.size(img.naturalWidth, img.naturalHeight)
+        // Size the OBJECT canvas to the frame's true pixels — a fresh <canvas>
+        // defaults to 300x150, so the old `if (!canvas.width)` guard never fired
+        // (300 is truthy) and tall device/chip frames were squished into 2:1
+        // with no shadow. This is the only object on the canvas; always size it.
+        pipe.size(img.naturalWidth, img.naturalHeight)
         svgShadow?.size(img.naturalWidth, img.naturalHeight)
         imgs[idx] = img
         drawFrame(idx, true)
