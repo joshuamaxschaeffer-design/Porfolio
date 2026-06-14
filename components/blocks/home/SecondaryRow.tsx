@@ -55,8 +55,9 @@ export function SecondaryRow({ heading, items }: SecondaryRowProps) {
 function Card({ card }: { card: SecondaryItem }) {
   return (
     <Link href={card.href} className="group block h-full">
-      {/* Tall, cinematic: grows with the viewport up to ~820px on big screens. */}
-      <div className="relative h-[clamp(440px,64vh,820px)] overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900 xl:rounded-3xl">
+      {/* Tall, cinematic. Height steps UP with viewport WIDTH (not height), so
+          the cards stay poster-tall on a normal-height laptop window too. */}
+      <div className="relative h-[460px] overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900 sm:h-[540px] lg:h-[600px] xl:h-[720px] 2xl:h-[820px] xl:rounded-3xl">
         {/* Visual slot watermark (placeholder until real media drops in). */}
         <span className="pointer-events-none absolute left-5 top-5 select-none font-mono text-[11px] uppercase tracking-[0.16em] text-neutral-400 xl:left-7 xl:top-7">
           {card.title} — visual slot
