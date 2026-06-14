@@ -80,11 +80,12 @@ export function AboutPage() {
           </div>
 
           {/* Close — its own movement, pulled up beside the timeline on desktop.
-              `self-stretch` + a sticky inner block vertically centers it in the
-              column and keeps it in view while the cards scroll past. */}
+              On desktop the column stretches (`self-stretch`) so the grey card
+              fills the same height as the timeline; the card centers its content
+              vertically. (Room left for an image later.) Mobile: stacks below. */}
           <div className="mt-16 lg:mt-0 lg:self-stretch">
-            <Appear onView>
-              <div className="lg:sticky lg:top-1/2 lg:-translate-y-1/2">
+            <Appear onView className="lg:h-full">
+              <div className="flex h-full flex-col justify-center rounded-lg bg-[var(--br-bg-2)] p-8 md:p-10 lg:p-12">
                 <p className="max-w-md text-[28px] font-medium leading-snug tracking-[-0.015em] text-[var(--br-ink)] md:text-[34px]">
                   {outro.line}
                 </p>
