@@ -140,27 +140,71 @@ function BakedChip({
  * `size` = on-screen diameter of the orb body; the render crop is padded, so
  * it's scaled to `scaleW` (crop ÷ body) and the wrapper centered on the box.
  */
-function Orb({
-  className = '', base, size, dur = 16, delay = 0, reduce, shadowMode = 'canvas',
+/**
+ * Floating colour-swatch card — replaces the old 3D orbs. A small white card
+ * (Tailwind/CSS only) holding a colour block + the hex code beneath, tilted to a
+ * subtle 3D angle via CSS `rotate3d`/skew so it reads like a chip floating in the
+ * scene. Casts the same desaturated-blue layered shadow as everything else
+ * (var(--hero-shadow), tuned to match the studio-rendered objects). Slow multi-
+ * axis drift like the orbs had. `w` = card width in px; rotX/rotY/rotZ give each
+ * card its own 3D pose so they read at "various angles".
+ */
+function SwatchCard({
+  className = '', color, hex, w = 64, rotX = 0, rotY = 0, rotZ = 0,
+  dur = 16, delay = 0, reduce,
 }: {
-  className?: string; base: string; size: number; dur?: number; delay?: number; reduce: boolean | null; shadowMode?: 'canvas' | 'svg'
+  className?: string; color: string; hex: string; w?: number
+  rotX?: number; rotY?: number; rotZ?: number
+  dur?: number; delay?: number; reduce: boolean | null
 }) {
-  const scaleW = size * (1 + ORB_PAD * 2)
-  const off = -(scaleW - size) / 2
+  const drift = w // travel scales with size
   return (
-    <div className={`pointer-events-none ${className}`} style={{ width: size, height: size }}>
+    <div
+      className={`pointer-events-none ${className}`}
+      style={{ width: w, perspective: 320 }}
+    >
       <motion.div
-        className="relative"
-        style={{ width: scaleW, marginLeft: off, marginTop: off }}
         initial={false}
         animate={reduce ? {} : {
-          x: [0, size * 0.34, -size * 0.18, size * 0.1, 0],
-          y: [0, -size * 0.42, -size * 0.12, -size * 0.5, 0],
-          scale: [1, 1.04, 0.985, 1.03, 1],
+          x: [0, drift * 0.18, -drift * 0.1, drift * 0.06, 0],
+          y: [0, -drift * 0.22, -drift * 0.06, -drift * 0.26, 0],
         }}
         transition={{ duration: dur, repeat: Infinity, ease: 'easeInOut', delay, times: [0, 0.3, 0.55, 0.8, 1] }}
       >
-        <StudioObject base={base} shadowMode={shadowMode} className="w-full" alt="" />
+        {/* the 3D-posed card: white surround + colour block + hex caption */}
+        <div
+          style={{
+            transform: `rotateX(${rotX}deg) rotateY(${rotY}deg) rotateZ(${rotZ}deg)`,
+            transformStyle: 'preserve-3d',
+            borderRadius: Math.round(w * 0.14),
+            background: '#fff',
+            padding: Math.round(w * 0.07),
+            paddingBottom: Math.round(w * 0.04),
+            boxShadow: 'var(--hero-shadow)',
+          }}
+        >
+          <div
+            style={{
+              background: color,
+              borderRadius: Math.round(w * 0.09),
+              aspectRatio: '1.35 / 1',
+              width: '100%',
+            }}
+          />
+          <div
+            style={{
+              fontSize: Math.max(5, Math.round(w * 0.13)),
+              lineHeight: 1.1,
+              color: '#3a4256',
+              fontWeight: 600,
+              letterSpacing: '0.01em',
+              padding: `${Math.round(w * 0.05)}px ${Math.round(w * 0.03)}px ${Math.round(w * 0.03)}px`,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {hex}
+          </div>
+        </div>
       </motion.div>
     </div>
   )
@@ -244,7 +288,17 @@ export function BrandingHero() {
   }, [])
 
   return (
-    <section ref={stageRef} className="relative overflow-hidden">
+    <section
+      ref={stageRef}
+      className="relative overflow-hidden"
+      style={{
+        // Layered, desaturated-blue shadow for the CSS swatch cards — matches the
+        // studio-rendered objects' tone (#1c3252 ≈ rgb 28 50 82): a tight contact
+        // layer + soft ambient layers, light from top-left so it falls bottom-right.
+        ['--hero-shadow' as string]:
+          '0 1px 2px rgba(28,50,82,0.30), 0 3px 6px rgba(28,50,82,0.18), 0 8px 16px rgba(28,50,82,0.14), 0 18px 32px rgba(28,50,82,0.10)',
+      }}
+    >
       {/* White top over the gradient field — gentle diagonal, higher on the
           right (Figma 243:54723 boundary mapped to the new section height).
           MOBILE: boundary raised 60.5/83 -> 45/67 (same slope) so the
@@ -333,22 +387,21 @@ export function BrandingHero() {
               />
             </Parallax>
 
-            {/* Colour orbs on slow drifts — Figma spots; the navy one is moved
-                LEFT of the desktop so it floats in clean space */}
-            {/* Orbs are the FOREGROUND layer (largest z) so they parallax most;
-                each gets a slightly different depth so they don't drift in
-                lockstep — that subtle desync sells the 3D. */}
+            {/* Floating colour-SWATCH CARDS (replaced the 3D orbs) — the 4 brand
+                colours as little CSS cards at varied 3D angles, each at the orb's
+                old spot/size. Foreground layer (largest z) so they parallax most;
+                staggered drift + distinct rot so they read at different angles. */}
             <Parallax z={PZ.orbNear} className="absolute left-[10%] top-[8%] z-[15] md:left-[15.1%] md:top-[7.5%]">
-              <Orb reduce={reduce} shadowMode={shadowMode} className="scale-75 md:scale-100" base="/baserate/branding/orbs/gold" size={30} dur={15} />
+              <SwatchCard reduce={reduce} className="scale-75 md:scale-100" color="#C08F2E" hex="#C08F2E" w={54} rotX={14} rotY={-20} rotZ={-4} dur={15} />
             </Parallax>
             <Parallax z={PZ.orbFar} className="absolute left-[32.5%] top-[60%] z-[15] md:left-[33.2%] md:top-[36.4%]">
-              <Orb reduce={reduce} shadowMode={shadowMode} className="scale-75 md:scale-100" base="/baserate/branding/orbs/ltblue" size={46} dur={18} delay={1.2} />
+              <SwatchCard reduce={reduce} className="scale-75 md:scale-100" color="#3F93CF" hex="#3F93CF" w={72} rotX={10} rotY={18} rotZ={5} dur={18} delay={1.2} />
             </Parallax>
             <Parallax z={PZ.orbNear} className="absolute left-[69.5%] top-[26%] z-[15] md:left-[69.6%] md:top-[9%]">
-              <Orb reduce={reduce} shadowMode={shadowMode} className="scale-75 md:scale-100" base="/baserate/branding/orbs/dark" size={46} dur={17} delay={2.2} />
+              <SwatchCard reduce={reduce} className="scale-75 md:scale-100" color="#1A2436" hex="#1A2436" w={70} rotX={16} rotY={-14} rotZ={3} dur={17} delay={2.2} />
             </Parallax>
             <Parallax z={PZ.orbMid} className="absolute left-[64%] top-[64%] z-[15] md:left-[55.5%] md:top-[57.5%]">
-              <Orb reduce={reduce} shadowMode={shadowMode} className="scale-75 md:scale-100" base="/baserate/branding/orbs/blue" size={46} dur={14} delay={0.6} />
+              <SwatchCard reduce={reduce} className="scale-75 md:scale-100" color="#1551C0" hex="#1551C0" w={70} rotX={12} rotY={22} rotZ={-5} dur={14} delay={0.6} />
             </Parallax>
           </div>
           </ParallaxContext.Provider>
