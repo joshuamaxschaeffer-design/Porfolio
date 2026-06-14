@@ -161,7 +161,7 @@ function SwatchCard({
   return (
     <div
       className={`pointer-events-none ${className}`}
-      style={{ width: w, perspective: 320 }}
+      style={{ width: w, perspective: 720 }}
     >
       <motion.div
         initial={false}
@@ -394,16 +394,16 @@ export function BrandingHero() {
                 old spot/size. Foreground layer (largest z) so they parallax most;
                 staggered drift + distinct rot so they read at different angles. */}
             <Parallax z={PZ.orbNear} className="absolute left-[10%] top-[8%] z-[15] md:left-[15.1%] md:top-[7.5%]">
-              <SwatchCard reduce={reduce} className="scale-75 md:scale-100" color="#C08F2E" hex="#C08F2E" w={54} rotX={14} rotY={-20} rotZ={-4} dur={15} />
+              <SwatchCard reduce={reduce} className="scale-75 md:scale-100" color="#C08F2E" hex="#C08F2E" w={54} rotX={9} rotY={-7} rotZ={0} dur={15} />
             </Parallax>
             <Parallax z={PZ.orbFar} className="absolute left-[32.5%] top-[60%] z-[15] md:left-[33.2%] md:top-[36.4%]">
-              <SwatchCard reduce={reduce} className="scale-75 md:scale-100" color="#3F93CF" hex="#3F93CF" w={72} rotX={10} rotY={18} rotZ={5} dur={18} delay={1.2} />
+              <SwatchCard reduce={reduce} className="scale-75 md:scale-100" color="#3F93CF" hex="#3F93CF" w={72} rotX={8} rotY={6} rotZ={0} dur={18} delay={1.2} />
             </Parallax>
             <Parallax z={PZ.orbNear} className="absolute left-[69.5%] top-[26%] z-[15] md:left-[69.6%] md:top-[9%]">
-              <SwatchCard reduce={reduce} className="scale-75 md:scale-100" color="#1A2436" hex="#1A2436" w={70} rotX={16} rotY={-14} rotZ={3} dur={17} delay={2.2} />
+              <SwatchCard reduce={reduce} className="scale-75 md:scale-100" color="#1A2436" hex="#1A2436" w={70} rotX={10} rotY={-5} rotZ={0} dur={17} delay={2.2} />
             </Parallax>
             <Parallax z={PZ.orbMid} className="absolute left-[64%] top-[64%] z-[15] md:left-[55.5%] md:top-[57.5%]">
-              <SwatchCard reduce={reduce} className="scale-75 md:scale-100" color="#1551C0" hex="#1551C0" w={70} rotX={12} rotY={22} rotZ={-5} dur={14} delay={0.6} />
+              <SwatchCard reduce={reduce} className="scale-75 md:scale-100" color="#1551C0" hex="#1551C0" w={70} rotX={8} rotY={7} rotZ={0} dur={14} delay={0.6} />
             </Parallax>
           </div>
           </ParallaxContext.Provider>
