@@ -30,20 +30,22 @@ export function SecondaryRow({ heading, items }: SecondaryRowProps) {
       : defaultItems
 
   return (
-    <section className="br-container my-20 md:my-28">
+    // Cinematic home width — breaks out of the 1443 case-study container and
+    // runs up to 1920px with generous gutters, then centers.
+    <section className="mx-auto my-24 w-full max-w-[1920px] px-6 md:my-32 md:px-12 xl:px-20">
       <p className="font-mono text-xs uppercase tracking-[0.2em] text-neutral-500">
         {heading ?? 'More work'}
       </p>
 
-      {/* Desktop: all three fit. */}
-      <div className="mt-8 hidden gap-6 lg:grid lg:grid-cols-3 lg:gap-8">
+      {/* Desktop: all three fit, big. */}
+      <div className="mt-10 hidden gap-6 lg:grid lg:grid-cols-3 lg:gap-8 xl:gap-10">
         {cards.map((c) => (
           <Card key={c.title} card={c} />
         ))}
       </div>
 
       {/* Mobile / tablet: draggable inertia rail. */}
-      <SwipeRail cards={cards} className="mt-8 lg:hidden" />
+      <SwipeRail cards={cards} className="mt-10 lg:hidden" />
     </section>
   )
 }
@@ -52,22 +54,23 @@ export function SecondaryRow({ heading, items }: SecondaryRowProps) {
 
 function Card({ card }: { card: SecondaryItem }) {
   return (
-    <Link href={card.href} className="group block">
-      <div className="relative h-[clamp(420px,60vh,560px)] overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900">
+    <Link href={card.href} className="group block h-full">
+      {/* Tall, cinematic: grows with the viewport up to ~820px on big screens. */}
+      <div className="relative h-[clamp(440px,64vh,820px)] overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900 xl:rounded-3xl">
         {/* Visual slot watermark (placeholder until real media drops in). */}
-        <span className="pointer-events-none absolute left-5 top-5 select-none font-mono text-[11px] uppercase tracking-[0.16em] text-neutral-400">
+        <span className="pointer-events-none absolute left-5 top-5 select-none font-mono text-[11px] uppercase tracking-[0.16em] text-neutral-400 xl:left-7 xl:top-7">
           {card.title} — visual slot
         </span>
 
         {/* White label card inset at the bottom. */}
-        <div className="absolute inset-x-3 bottom-3 rounded-xl border border-neutral-200/80 bg-white p-4 shadow-sm transition-transform duration-300 group-hover:-translate-y-0.5 dark:border-neutral-700 dark:bg-neutral-950">
+        <div className="absolute inset-x-3 bottom-3 rounded-xl border border-neutral-200/80 bg-white p-4 shadow-sm transition-transform duration-300 group-hover:-translate-y-0.5 dark:border-neutral-700 dark:bg-neutral-950 xl:inset-x-4 xl:bottom-4 xl:rounded-2xl xl:p-6">
           <div className="flex items-baseline justify-between gap-3">
-            <h3 className="text-lg font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 md:text-xl">
+            <h3 className="text-lg font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 md:text-xl xl:text-2xl">
               {card.title}
             </h3>
-            <span className="shrink-0 text-xs text-neutral-500">{card.meta}</span>
+            <span className="shrink-0 text-xs text-neutral-500 xl:text-sm">{card.meta}</span>
           </div>
-          <p className="mt-1.5 text-sm text-neutral-600 dark:text-neutral-400">
+          <p className="mt-1.5 text-sm text-neutral-600 dark:text-neutral-400 xl:mt-2.5 xl:text-base">
             {card.blurb}
           </p>
         </div>
