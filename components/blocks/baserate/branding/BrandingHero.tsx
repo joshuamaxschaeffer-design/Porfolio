@@ -218,18 +218,17 @@ export function BrandingHero() {
   // round(scrub·(N-1))). Centered sits near the settled Figma pose; scrolling
   // DOWN advances to the fully-settled frame, scrolling UP rotates back.
   //
-  // CHIPS get the fuller sweep (their shadow-v2 IS per-frame, so the cast shadow
-  // tracks the rotation). DEVICES get a NARROW sweep — their shadow-v2 is a flat
-  // single-pose track, so a big tilt would visibly detach from a fixed shadow; a
-  // few frames of motion keeps the static shadow looking correct. Both settle at
-  // the Figma pose when centred. Screens stay static throughout.
+  // CHIPS carry the scroll-rotation: their shadow-v2 IS per-frame (cast shadow
+  // tracks the spin) AND their screen is just a logo (no in-screen scroll to
+  // betray motion). DEVICES are rendered STATIC at the settled pose — their baked
+  // frames include an in-screen page-scroll (0→100→0) and a flat single-pose
+  // shadow, so any device rotation would (a) scroll the screen content (Joshua:
+  // screens must stay static showing the top of the page) and (b) detach from
+  // the fixed shadow. Static settled frame = top-of-page screen + correct shadow.
   const CHIP_CENTER = 0.78, CHIP_SPAN = 0.9 // factor −0.5 → ~frame 6, +0.5 → settled
-  const DEV_CENTER = 0.9, DEV_SPAN = 0.22 // factor ±0.5 → frames ~15↔settled (subtle)
   const chipRot = useTransform(factor, (v) => Math.max(0, Math.min(1, CHIP_CENTER + v * CHIP_SPAN)))
-  const devRot = useTransform(factor, (v) => Math.max(0, Math.min(1, DEV_CENTER + v * DEV_SPAN)))
   // reduced motion → settle on the last frame, no scroll rotation
   const chipScrub = reduce ? undefined : chipRot
-  const devScrub = reduce ? undefined : devRot
 
   // Shadow renderer: v3 (fast blurred-polygon SVG) is the hero default now — it
   // renders quicker AND is cheap enough to update every scroll-rotation frame
@@ -289,12 +288,12 @@ export function BrandingHero() {
                 Devices sit DEEP (small z) so they parallax the least — the backdrop the
                 nearer chips/orbs float in front of. */}
             <Parallax z={PZ.device} className="absolute left-[0%] top-[3%] z-10 w-[42%] md:left-[11%] md:top-[18.5%] md:w-[18%]">
-              <StudioObject base="/baserate/branding/devices/phone" frameCount={SCRUB_FRAMES} fps={FPS} scrub={devScrub} staticFrame={devScrub ? undefined : -1} shadowMode={shadowMode} className="w-full" alt="phone device" />
+              <StudioObject base="/baserate/branding/devices/phone" frameCount={SCRUB_FRAMES} fps={FPS} staticFrame={-1} shadowMode={shadowMode} className="w-full" alt="phone device" />
             </Parallax>
 
             {/* DESKTOP — pulled fully inside the frame, toward the center */}
             <Parallax z={PZ.device} className="absolute right-[-7%] top-[4%] z-10 w-[58%] md:left-[63.5%] md:right-auto md:top-[17%] md:w-[33%]">
-              <StudioObject base="/baserate/branding/devices/desktop" frameCount={SCRUB_FRAMES} fps={FPS} scrub={devScrub} staticFrame={devScrub ? undefined : -1} shadowMode={shadowMode} className="w-full" alt="desktop device" />
+              <StudioObject base="/baserate/branding/devices/desktop" frameCount={SCRUB_FRAMES} fps={FPS} staticFrame={-1} shadowMode={shadowMode} className="w-full" alt="desktop device" />
             </Parallax>
 
             {/* Baked 3D chips — SD Studio icon exports: spin in once with
