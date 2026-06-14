@@ -3,6 +3,7 @@ import { ChallengeSection } from './ChallengeSection'
 import { RedesignSection } from './RedesignSection'
 import { OutcomesSection } from './OutcomesSection'
 import { SectionNav, type SectionNavItem } from '../baserate/SectionNav'
+import { CaseStudyShowcase } from '../shared/CaseStudyShowcase'
 
 /** The 4 major sections — ids live on each section's root element. */
 const NAV_ITEMS: SectionNavItem[] = [
@@ -48,6 +49,7 @@ export function WingstopCaseStudy(props: WingstopCaseStudyProps = {}) {
       <ChallengeSection intro={props.challengeIntro} />
       <RedesignSection intro={props.redesignIntro} />
       <OutcomesSection intro={props.outcomesIntro} />
+      <CaseStudyShowcase accent="#00843D" current="wingstop" />
     </article>
   )
 }

@@ -1,8 +1,6 @@
 import Link from 'next/link'
 import { Appear } from './Appear'
 import { Timeline } from './Timeline'
-import { ComponentShowcase } from '../shared/ComponentShowcase'
-import { ComponentShowcaseTwo } from '../shared/ComponentShowcaseTwo'
 import { intro, differentiators, outro } from './data'
 
 /**
@@ -103,9 +101,6 @@ export function AboutPage() {
         </div>
       </section>
 
-      {/* ── Component library showcase (scratch — cull later) ───── */}
-      <ComponentShowcase />
-      <ComponentShowcaseTwo />
     </article>
   )
 }

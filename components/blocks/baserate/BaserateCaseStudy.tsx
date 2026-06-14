@@ -9,6 +9,7 @@ import { DesignSystemsSection } from './DesignSystemsSection'
 import { BrandingSection } from './branding/BrandingSection'
 import { OutcomesSection } from './OutcomesSection'
 import { SectionNav, type SectionNavItem } from './SectionNav'
+import { CaseStudyShowcase } from '../shared/CaseStudyShowcase'
 import { BASERATE_UNLOCK_COOKIE, BASERATE_UNLOCK_VALUE } from '@/lib/baserateGate'
 
 /** The 7 major sections — ids live on each section's root element below. */
@@ -83,6 +84,8 @@ export async function BaserateCaseStudy(props: BaserateCaseStudyProps = {}) {
           <BrandingSection />
           {/* Outcomes — count-up stat grid, testimonials, trusted-by logos. */}
           <OutcomesSection />
+          {/* Component preview (scratch — cull later). Unlocked only. */}
+          <CaseStudyShowcase accent="var(--br-gold)" current="baserate" />
         </>
       ) : (
         // Locked: the only thing past the Overview is the NDA gate (800px band).

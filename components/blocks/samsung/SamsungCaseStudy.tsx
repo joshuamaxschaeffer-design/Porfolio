@@ -3,6 +3,7 @@ import { BriefSection } from './BriefSection'
 import { WorkSection } from './WorkSection'
 import { OutcomesSection } from './OutcomesSection'
 import { SectionNav, type SectionNavItem } from '../baserate/SectionNav'
+import { CaseStudyShowcase } from '../shared/CaseStudyShowcase'
 
 /** The 4 major sections — ids live on each section's root element. */
 const NAV_ITEMS: SectionNavItem[] = [
@@ -49,6 +50,7 @@ export function SamsungCaseStudy(props: SamsungCaseStudyProps = {}) {
       <BriefSection intro={props.briefIntro} />
       <WorkSection intro={props.workIntro} />
       <OutcomesSection intro={props.outcomesIntro} />
+      <CaseStudyShowcase accent="#1428A0" current="samsung" />
     </article>
   )
 }

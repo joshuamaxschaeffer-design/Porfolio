@@ -3,6 +3,7 @@ import { ChallengeSection } from './ChallengeSection'
 import { ReleasesSection } from './ReleasesSection'
 import { OutcomesSection } from './OutcomesSection'
 import { SectionNav, type SectionNavItem } from '../baserate/SectionNav'
+import { CaseStudyShowcase } from '../shared/CaseStudyShowcase'
 
 /** The 4 major sections — ids live on each section's root element. */
 const NAV_ITEMS: SectionNavItem[] = [
@@ -47,6 +48,7 @@ export function PandaCaseStudy(props: PandaCaseStudyProps = {}) {
       <ChallengeSection intro={props.challengeIntro} />
       <ReleasesSection intro={props.releasesIntro} />
       <OutcomesSection intro={props.outcomesIntro} />
+      <CaseStudyShowcase accent="#D02B2E" current="panda-express" />
     </article>
   )
 }

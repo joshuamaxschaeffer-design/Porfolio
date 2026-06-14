@@ -6,6 +6,8 @@ import {
   type MediaSlot,
 } from './data'
 import { SectionNav, type SectionNavItem } from '../baserate/SectionNav'
+import { ComponentShowcase } from '../shared/ComponentShowcase'
+import { ComponentShowcaseTwo } from '../shared/ComponentShowcaseTwo'
 
 export interface CapabilitiesPageProps {
   /** Header overrides */
@@ -220,6 +222,10 @@ export function CapabilitiesPage(props: CapabilitiesPageProps = {}) {
       {sections.map((s) => (
         <DisciplineSection key={s.id} section={s} />
       ))}
+
+      {/* ── Component library showcase (scratch — cull later) ───── */}
+      <ComponentShowcase />
+      <ComponentShowcaseTwo />
     </article>
   )
 }
