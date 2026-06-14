@@ -20,6 +20,14 @@
 export const STUDIO_PAD = 0.3
 export const SHADOW_RES = 0.34
 
+// Shadow colour — a DESATURATED BLUE, not near-black/grey (per Josh Comeau,
+// "Designing Beautiful Shadows": match the environment's hue + drop saturation/
+// lightness so the shadow reads richer and not washed-out grey). The hero/
+// Baserate field is teal→blue, so a deep blue cast sits more naturally than the
+// old #07112b near-black navy. Opacity is applied separately (α track / layer
+// gradients), so this only sets the hue/tone of the cast shadow.
+export const SHADOW_COLOR = '#101d33' // hsl(218 53% 13%) — deep, slightly blue
+
 export type ShadowTrack =
   | { v2: true; calib: { sigma_base_px: number; sigma_per_h_px: number; alpha_base: number; alpha_per_h: number }; frames: any[] }
   | { v2: false; frames: any[] }
@@ -195,7 +203,7 @@ export function createShadowPipeline(canvas: HTMLCanvasElement, shadow: HTMLCanv
     silCtx.clearRect(0, 0, W, H)
     silCtx.drawImage(img, 0, 0, W, H)
     silCtx.globalCompositeOperation = 'source-in'
-    silCtx.fillStyle = '#07112b'
+    silCtx.fillStyle = SHADOW_COLOR
     silCtx.fillRect(0, 0, W, H)
     silCtx.globalCompositeOperation = 'source-over'
     sctx.clearRect(0, 0, shadow.width, shadow.height)
@@ -336,7 +344,7 @@ export function createSvgShadow(svg: SVGSVGElement) {
       const stopA = document.createElementNS(SVGNS, 'stop') as SVGStopElement
       const stopM = document.createElementNS(SVGNS, 'stop') as SVGStopElement
       const stopB = document.createElementNS(SVGNS, 'stop') as SVGStopElement
-      for (const s of [stopA, stopM, stopB]) s.setAttribute('stop-color', '#07112b')
+      for (const s of [stopA, stopM, stopB]) s.setAttribute('stop-color', SHADOW_COLOR)
       grad.appendChild(stopA); grad.appendChild(stopM); grad.appendChild(stopB)
       defs.appendChild(grad)
 
