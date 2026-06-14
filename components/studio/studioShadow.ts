@@ -26,7 +26,7 @@ export const SHADOW_RES = 0.34
 // Baserate field is teal→blue, so a deep blue cast sits more naturally than the
 // old #07112b near-black navy. Opacity is applied separately (α track / layer
 // gradients), so this only sets the hue/tone of the cast shadow.
-export const SHADOW_COLOR = '#101d33' // hsl(218 53% 13%) — deep, slightly blue
+export const SHADOW_COLOR = '#1c3252' // hsl(215 49% 22%) — clearly blue, medium-dark (not grey, not black, not a glow)
 
 export type ShadowTrack =
   | { v2: true; calib: { sigma_base_px: number; sigma_per_h_px: number; alpha_base: number; alpha_per_h: number }; frames: any[] }
@@ -306,6 +306,10 @@ export function createSvgShadow(svg: SVGSVGElement) {
   // lazily-built reusable nodes
   let defs: SVGDefsElement | null = null
   const layers: { g: SVGGElement; poly: SVGPolygonElement; blur: SVGFEGaussianBlurElement; grad: SVGLinearGradientElement; stopA: SVGStopElement; stopM: SVGStopElement; stopB: SVGStopElement }[] = []
+  // dedicated CONTACT (umbra) layer — a tighter, darker, less-blurred pool near
+  // the object's base, drawn UNDER the soft ambient stack so the object reads
+  // grounded instead of pasted-on (per realistic-shadow research: umbra + ambient).
+  let contact: { g: SVGGElement; poly: SVGPolygonElement; blur: SVGFEGaussianBlurElement } | null = null
 
   const size = (firstW: number, firstH: number) => {
     W = firstW
@@ -355,6 +359,29 @@ export function createSvgShadow(svg: SVGSVGElement) {
       g.appendChild(poly)
       svg.appendChild(g)
       layers.push({ g, poly, blur, grad, stopA, stopM, stopB })
+    }
+
+    // CONTACT layer: solid-fill tight polygon, small blur, higher opacity. Built
+    // last so it sits ON TOP of the ambient stack — its darker core reads through
+    // and grounds the object. Tighter than the silhouette + nudged toward the
+    // near/contact edge in draw().
+    {
+      const filter = document.createElementNS(SVGNS, 'filter')
+      const fid = `sh3c_${uid}`
+      filter.setAttribute('id', fid)
+      filter.setAttribute('x', '-50%'); filter.setAttribute('y', '-50%')
+      filter.setAttribute('width', '200%'); filter.setAttribute('height', '200%')
+      const blur = document.createElementNS(SVGNS, 'feGaussianBlur') as SVGFEGaussianBlurElement
+      blur.setAttribute('stdDeviation', '3')
+      filter.appendChild(blur)
+      defs!.appendChild(filter)
+      const g = document.createElementNS(SVGNS, 'g') as SVGGElement
+      g.setAttribute('filter', `url(#${fid})`)
+      const poly = document.createElementNS(SVGNS, 'polygon') as SVGPolygonElement
+      poly.setAttribute('fill', SHADOW_COLOR)
+      g.appendChild(poly)
+      svg.appendChild(g)
+      contact = { g, poly, blur }
     }
   }
 
@@ -466,6 +493,44 @@ export function createSvgShadow(svg: SVGSVGElement) {
       L.stopA.setAttribute('offset', `${(oA * 100).toFixed(1)}%`); L.stopA.setAttribute('stop-opacity', i === 0 ? '1' : '0')
       L.stopM.setAttribute('offset', `${(oM * 100).toFixed(1)}%`); L.stopM.setAttribute('stop-opacity', '1')
       L.stopB.setAttribute('offset', `${(oB * 100).toFixed(1)}%`); L.stopB.setAttribute('stop-opacity', i === layers.length - 1 ? '1' : '0')
+    }
+
+    // ── CONTACT (umbra) ── tight, darker, lightly-blurred pool at the base.
+    // Take the silhouette contour, shrink it toward its centroid (tighter than
+    // the cast shape), map through the SAME affine, then nudge it a touch along
+    // the near→far axis so it sits where the object meets the ground. Blur scales
+    // with the LOW height (h0) so it stays crisp; opacity keys off the contact
+    // alpha. Lower/closer objects (small h0) get a stronger contact pool; high
+    // floaters get a faint one — exactly the elevation cue.
+    if (contact) {
+      // centroid of the contour in object space
+      let ccx = 0, ccy = 0
+      for (const q of src) { ccx += q[0]; ccy += q[1] }
+      ccx /= src.length; ccy /= src.length
+      const SHRINK = 0.8 // contact pool is 80% of the silhouette
+      // unit near→far direction in shadow space, scaled to a small base nudge
+      const dx = far[0] - near[0], dy = far[1] - near[1]
+      const dlen = Math.hypot(dx, dy) || 1
+      const nudge = Math.min(W, H) * 0.04 // small push toward the ground
+      const ox = (dx / dlen) * nudge, oy = (dy / dlen) * nudge
+      const cPoly = src
+        .map((q) => {
+          const sx = ccx + (q[0] - ccx) * SHRINK
+          const sy = ccy + (q[1] - ccy) * SHRINK
+          const p = ap(af, sx, sy)
+          return `${(p[0] + ox).toFixed(1)},${(p[1] + oy).toFixed(1)}`
+        })
+        .join(' ')
+      // crisp-ish blur from the low height; opacity from the contact (low-h) alpha
+      const cSigma = Math.max(1.5, (s0 + s1 * h0) * 1.1)
+      const cAlpha = Math.max(0, Math.min(0.5, (a0 + a1 * h0) * 1.5 + 0.12))
+      if (cAlpha <= 0.004) { contact.g.style.display = 'none' }
+      else {
+        contact.g.style.display = ''
+        contact.g.style.opacity = String(cAlpha)
+        contact.blur.setAttribute('stdDeviation', cSigma.toFixed(2))
+        contact.poly.setAttribute('points', cPoly)
+      }
     }
   }
 
