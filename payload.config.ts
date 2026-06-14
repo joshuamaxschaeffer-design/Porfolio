@@ -55,6 +55,16 @@ export default buildConfig({
   db: postgresAdapter({
     pool: {
       connectionString: process.env.DATABASE_URI || '',
+      // Neon (free tier) autosuspends the compute after idle. The first request
+      // after a sleep has to wait for the compute to wake, which can take a few
+      // seconds. Give connections room to wait for that wake instead of throwing
+      // a "Failed query" 500 the instant Neon is cold.
+      connectionTimeoutMillis: 15000,
+      // Keep sockets warm and recycle idle ones so we don't pile up dead
+      // connections against a compute that just came back from suspend.
+      keepAlive: true,
+      idleTimeoutMillis: 30000,
+      max: 10,
     },
   }),
   secret: process.env.PAYLOAD_SECRET || 'CHANGE-ME-IN-PRODUCTION',
