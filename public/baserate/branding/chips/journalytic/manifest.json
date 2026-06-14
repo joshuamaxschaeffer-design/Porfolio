@@ -3,12 +3,12 @@
   "mode": "sequence",
   "frame_count": 20,
   "fps": 30,
-  "width": 672,
+  "width": 668,
   "height": 676,
   "crop": {
-    "x": 190,
+    "x": 194,
     "y": 178,
-    "w": 672,
+    "w": 668,
     "h": 676
   },
   "export_width": 1080,
