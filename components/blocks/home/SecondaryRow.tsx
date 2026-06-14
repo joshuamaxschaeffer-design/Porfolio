@@ -56,8 +56,11 @@ export function SecondaryRow({ heading, items }: SecondaryRowProps) {
   )
 }
 
+// Strip undefined / null / '' so blank CMS fields fall back to defaults
+// (Payload returns null for unset optional fields; a null href would crash
+// Next's <Link> url formatter at render).
 function stripEmpty<T extends object>(obj: T): Partial<T> {
   return Object.fromEntries(
-    Object.entries(obj).filter(([, v]) => v !== undefined && v !== ''),
+    Object.entries(obj).filter(([, v]) => v !== undefined && v !== null && v !== ''),
   ) as Partial<T>
 }
