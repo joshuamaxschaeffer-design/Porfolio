@@ -49,18 +49,6 @@ export const timelines = [
   'Just exploring',
 ]
 
-/** Direct-contact rail beside the form — for buyers who'd rather not fill it. */
-export const directContact = {
-  heading: 'Prefer something direct?',
-  email: 'joshuamaxschaeffer@gmail.com',
-  /** strategy §9.6 — Cal.com link for a 20-min intro; wire the real URL later */
-  callLabel: 'Book a 20-min intro',
-  callHref: 'https://cal.com/joshuaschaeffer',
-  linkedinLabel: 'LinkedIn',
-  linkedinHref: 'https://www.linkedin.com/in/josh-schaeffer-88973868/',
-  location: 'San Luis Obispo, CA · works remote',
-}
-
 /** Reassurance line under the submit button. */
 export const formNote =
   'I read every message myself and reply within a couple of business days.'
