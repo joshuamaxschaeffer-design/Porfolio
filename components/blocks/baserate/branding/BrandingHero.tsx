@@ -294,9 +294,11 @@ export function BrandingHero() {
       style={{
         // Layered, desaturated-blue shadow for the CSS swatch cards — matches the
         // studio-rendered objects' tone (#1c3252 ≈ rgb 28 50 82): a tight contact
-        // layer + soft ambient layers, light from top-left so it falls bottom-right.
+        // layer + soft ambient layers. Offset hard toward BOTTOM-RIGHT (light from
+        // top-left) and pushed ~20px further out so the swatches feel FLOATY — the
+        // x/y offsets grow across layers, the softest landing ~+24/+40.
         ['--hero-shadow' as string]:
-          '0 1px 2px rgba(28,50,82,0.30), 0 3px 6px rgba(28,50,82,0.18), 0 8px 16px rgba(28,50,82,0.14), 0 18px 32px rgba(28,50,82,0.10)',
+          '2px 3px 3px rgba(28,50,82,0.30), 6px 9px 9px rgba(28,50,82,0.18), 14px 22px 20px rgba(28,50,82,0.13), 24px 40px 36px rgba(28,50,82,0.10)',
       }}
     >
       {/* White top over the gradient field — gentle diagonal, higher on the
