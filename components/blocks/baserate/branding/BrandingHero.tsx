@@ -107,10 +107,11 @@ function Parallax({
  * box — numbers measured from each export's last-frame alpha bbox.
  */
 function BakedChip({
-  base, frameCount, size, scaleW, ml, mt, delay = 0, reduce, className = '', alt, shadowMode = 'canvas',
+  base, frameCount, size, scaleW, ml, mt, delay = 0, reduce, className = '', alt, shadowMode = 'canvas', scrub,
 }: {
   base: string; frameCount: number; size: number; scaleW: number; ml: number; mt: number
   delay?: number; reduce: boolean | null; className?: string; alt: string; shadowMode?: 'canvas' | 'svg'
+  scrub?: MotionValue<number>
 }) {
   return (
     <div className={`pointer-events-none ${className}`} style={{ width: size, height: size }}>
@@ -121,9 +122,11 @@ function BakedChip({
         animate={reduce ? {} : { y: [0, -8, 0] }}
         transition={{ duration: 7.5, repeat: Infinity, ease: 'easeInOut', delay: delay / 1000 }}
       >
-        {/* render the SETTLED pose only (static) — no per-scroll canvas work;
-            the motion.div above keeps the gentle vertical bob. */}
-        <StudioObject base={base} frameCount={frameCount} fps={30} staticFrame={-1} shadowMode={shadowMode} className="w-full" alt={alt} />
+        {/* Subtle scroll rotation: `scrub` drives the chip a few frames around
+            its settled 45° pose as the user scrolls; the motion.div above keeps
+            the gentle vertical bob. Falls back to the settled frame when there's
+            no scrub (reduced motion). Screen content is static either way. */}
+        <StudioObject base={base} frameCount={frameCount} fps={30} scrub={scrub} staticFrame={scrub ? undefined : -1} shadowMode={shadowMode} className="w-full" alt={alt} />
       </motion.div>
     </div>
   )
@@ -181,13 +184,31 @@ export function BrandingHero() {
   // Disable parallax entirely for reduced-motion users.
   const parallax = reduce ? null : factor
 
-  // A/B shadow renderer: ?shadow=svg uses the v3 blurred-polygon shadow,
-  // anything else keeps the default canvas shadow. Lets us compare both live.
-  const [shadowMode, setShadowMode] = useState<'canvas' | 'svg'>('canvas')
+  // SUBTLE SCROLL ROTATION: map the signed scroll factor (−0.5…+0.5, 0 when the
+  // section is centered) to a NARROW band of each object's 20-frame spin so the
+  // devices + logos rotate only a few degrees as you scroll, settling at the
+  // Figma pose (the last frame) when centered. `scrub` is a 0→1 MotionValue
+  // consumed by StudioObject (frame = round(scrub·(N-1))). We keep it near the
+  // end of the spin: centered → ~0.92 (settled-ish), travel ±~0.08 → ±~1.5
+  // frames = a gentle rock, never the full sweep. Reversible (down vs up).
+  const ROT_CENTER = 0.92 // scrub value when the section is centered
+  const ROT_SPAN = 0.16 // peak-to-peak scrub travel across the whole scroll
+  const rot = useTransform(factor, (v) =>
+    Math.max(0, Math.min(1, ROT_CENTER + v * ROT_SPAN)),
+  )
+  // reduced motion → settle on the last frame, no scroll rotation
+  const scrub = reduce ? undefined : rot
+
+  // Shadow renderer: v3 (fast blurred-polygon SVG) is the hero default now — it
+  // renders quicker AND is cheap enough to update every scroll-rotation frame
+  // (the canvas band-recomposite was too heavy for per-frame scrub). ?shadow=canvas
+  // forces the old renderer for comparison.
+  const [shadowMode, setShadowMode] = useState<'canvas' | 'svg'>('svg')
   useEffect(() => {
     try {
       const v = new URLSearchParams(window.location.search).get('shadow')
-      if (v === 'svg' || v === 'v3') setShadowMode('svg')
+      if (v === 'canvas') setShadowMode('canvas')
+      else if (v === 'svg' || v === 'v3') setShadowMode('svg')
     } catch {}
   }, [])
 
@@ -236,12 +257,12 @@ export function BrandingHero() {
                 Devices sit DEEP (small z) so they parallax the least — the backdrop the
                 nearer chips/orbs float in front of. */}
             <Parallax z={PZ.device} className="absolute left-[0%] top-[3%] z-10 w-[42%] md:left-[11%] md:top-[18.5%] md:w-[18%]">
-              <StudioObject base="/baserate/branding/devices/phone" frameCount={SCRUB_FRAMES} fps={FPS} staticFrame={-1} shadowMode={shadowMode} className="w-full" alt="phone device" />
+              <StudioObject base="/baserate/branding/devices/phone" frameCount={SCRUB_FRAMES} fps={FPS} scrub={scrub} staticFrame={scrub ? undefined : -1} shadowMode={shadowMode} className="w-full" alt="phone device" />
             </Parallax>
 
             {/* DESKTOP — pulled fully inside the frame, toward the center */}
             <Parallax z={PZ.device} className="absolute right-[-7%] top-[4%] z-10 w-[58%] md:left-[63.5%] md:right-auto md:top-[17%] md:w-[33%]">
-              <StudioObject base="/baserate/branding/devices/desktop" frameCount={SCRUB_FRAMES} fps={FPS} staticFrame={-1} shadowMode={shadowMode} className="w-full" alt="desktop device" />
+              <StudioObject base="/baserate/branding/devices/desktop" frameCount={SCRUB_FRAMES} fps={FPS} scrub={scrub} staticFrame={scrub ? undefined : -1} shadowMode={shadowMode} className="w-full" alt="desktop device" />
             </Parallax>
 
             {/* Baked 3D chips — SD Studio icon exports: spin in once with
@@ -261,6 +282,7 @@ export function BrandingHero() {
                 mt={-6.3}
                 className="scale-[0.55] md:scale-100"
                 shadowMode={shadowMode}
+                scrub={scrub}
               />
             </Parallax>
             <Parallax z={PZ.chip} className="absolute left-[7%] top-[66%] z-30 md:left-[58%] md:top-[38.5%]">
@@ -276,6 +298,7 @@ export function BrandingHero() {
                 className="scale-[0.55] md:scale-100"
                 delay={250}
                 shadowMode={shadowMode}
+                scrub={scrub}
               />
             </Parallax>
 

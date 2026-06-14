@@ -118,18 +118,21 @@ export function StudioObject({
       if (!disposed && canvas.width) drawFrame(lastDrawn)
     }
 
-    // Static mode draws its own single frame below — don't preload/draw frame 0
-    // first (avoids a flash of the start pose before the settled frame).
+    // Sizing pass. Static mode sizes in its own branch below (don't draw frame
+    // 0 first — avoids a flash of the start pose). For scrub mode, size off the
+    // SETTLED frame and draw THAT (not frame 0) so the first paint is the
+    // resting pose, not the start of the spin — the scrub then nudges from there.
     if (staticFrame === undefined) {
+      const sizeIdx = scrub ? frameCount - 1 : 0
       const first = new Image()
       first.onload = () => {
         if (disposed) return
         pipe.size(first.naturalWidth, first.naturalHeight)
         svgShadow?.size(first.naturalWidth, first.naturalHeight)
-        imgs[0] = first
-        drawFrame(0)
+        imgs[sizeIdx] = first
+        drawFrame(sizeIdx, true)
       }
-      first.src = srcFor(0)
+      first.src = srcFor(sizeIdx)
     }
 
     if (!isSeq) {
@@ -169,14 +172,15 @@ export function StudioObject({
       const CONC = 8
       const clampIdx = (p: number) =>
         Math.max(0, Math.min(frameCount - 1, Math.round(p * (frameCount - 1))))
-      // The cast shadow barely changes across this short scrub range (devices
-      // tilt 1/3, chips spin 45°), but recompositing it (multi-band blur warp)
-      // every scrub frame across 4 objects tanked the page to ~3fps. So during
-      // scroll we redraw ONLY the cheap device image; the shadow is refreshed
-      // lazily ~120ms after scrubbing settles. Result: smooth scroll, shadow
-      // still correct at rest.
+      // Shadow during scroll: the v3 SVG shadow is cheap (one gradient-filled
+      // blurred polygon) so we redraw it WITH the image every frame — the cast
+      // shadow tracks the rotation live. The canvas shadow (multi-band blur
+      // recomposite) is too heavy per frame (tanked to ~3fps across 4 objects),
+      // so for that path we draw image-only during scroll and refresh the
+      // shadow lazily ~120ms after scrubbing settles.
+      const liveShadow = !!svgShadow
       const refreshShadowSoon = () => {
-        if (reduce) return
+        if (reduce || liveShadow) return
         clearTimeout(shadowTimer)
         shadowTimer = window.setTimeout(() => { if (!disposed) drawFrame(curIdx, true) }, 120)
       }
@@ -186,7 +190,7 @@ export function StudioObject({
         if (i === curIdx) return // redraw only on index change
         if (imgs[i] && imgs[i].complete) {
           curIdx = i
-          drawFrame(i, false) // cheap: image only, no shadow recomposite
+          drawFrame(i, liveShadow) // v3: image+shadow live; canvas: image only
           refreshShadowSoon()
         }
       }
