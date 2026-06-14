@@ -53,7 +53,7 @@ export function SecondaryRow({ heading, items }: SecondaryRowProps) {
 function Card({ card }: { card: SecondaryItem }) {
   return (
     <Link href={card.href} className="group block">
-      <div className="relative aspect-[9/16] overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900">
+      <div className="relative h-[clamp(420px,60vh,560px)] overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900">
         {/* Visual slot watermark (placeholder until real media drops in). */}
         <span className="pointer-events-none absolute left-5 top-5 select-none font-mono text-[11px] uppercase tracking-[0.16em] text-neutral-400">
           {card.title} — visual slot
@@ -100,8 +100,9 @@ function SwipeRail({ cards, className }: { cards: SecondaryItem[]; className?: s
     }
   }, [cards.length])
 
-  // ~1.2 cards visible so the next one peeks; full-bleed to the screen edge.
-  const cardW = 'w-[78vw] sm:w-[60vw]'
+  // ~1.2 cards visible so the next one peeks; capped so tablet cards stay
+  // portrait-sized rather than stretching to 60vw.
+  const cardW = 'w-[74vw] max-w-[300px] sm:w-[46vw]'
 
   if (reduce) {
     return (
