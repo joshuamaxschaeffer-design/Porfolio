@@ -2,8 +2,8 @@
 
 import {
   motion,
+  useMotionValue,
   useReducedMotion,
-  useScroll,
   useSpring,
   useTransform,
   type MotionValue,
@@ -172,27 +172,56 @@ export function BrandingHero() {
   const stageRef = useRef<HTMLDivElement>(null)
   useEffect(() => setMounted(true), [])
 
-  // Scroll signal for the whole scene: 0 = section entering (top at viewport
-  // bottom), 1 = leaving (bottom at viewport top), 0.5 ≈ centered. We map to a
-  // SIGNED factor centered on 0, then spring-smooth it (the "physics" lag).
-  const { scrollYProgress } = useScroll({
-    target: stageRef,
-    offset: ['start end', 'end start'],
-  })
-  const signed = useTransform(scrollYProgress, [0, 1], [-0.5, 0.5])
-  const factor = useSpring(signed, { stiffness: 70, damping: 22, mass: 0.6 })
+  // Scroll signal for the whole scene. We compute it MANUALLY from the section's
+  // viewport position rather than Framer's useScroll({target}) — the latter was
+  // pinning scrollYProgress at 0 here (target measured stale under the SSR + tall
+  // dynamically-mounted subtree), which froze both the parallax and the scrub.
+  // signed = -0.5 when the section is entering (its center below the viewport),
+  // 0 when its center is at the viewport center, +0.5 when leaving. A scroll +
+  // resize listener (rAF-coalesced) drives a raw MotionValue; a spring smooths
+  // it into the "physics" lag.
+  const signedRaw = useMotionValue(0)
+  useEffect(() => {
+    const stage = stageRef.current
+    if (!stage) return
+    let raf = 0
+    const measure = () => {
+      raf = 0
+      const r = stage.getBoundingClientRect()
+      const vh = window.innerHeight || 1
+      // center of the section relative to the viewport center, normalised by the
+      // total travel (section height + viewport) → roughly -0.5…+0.5.
+      const sectionCenter = r.top + r.height / 2
+      const travel = (r.height + vh) / 2
+      const v = (vh / 2 - sectionCenter) / travel
+      signedRaw.set(Math.max(-0.5, Math.min(0.5, v)))
+    }
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(measure)
+    }
+    measure()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      if (raf) cancelAnimationFrame(raf)
+    }
+  }, [signedRaw])
+  const factor = useSpring(signedRaw, { stiffness: 70, damping: 22, mass: 0.6 })
   // Disable parallax entirely for reduced-motion users.
   const parallax = reduce ? null : factor
 
-  // SUBTLE SCROLL ROTATION: map the signed scroll factor (−0.5…+0.5, 0 when the
-  // section is centered) to a NARROW band of each object's 20-frame spin so the
-  // devices + logos rotate only a few degrees as you scroll, settling at the
-  // Figma pose (the last frame) when centered. `scrub` is a 0→1 MotionValue
-  // consumed by StudioObject (frame = round(scrub·(N-1))). We keep it near the
-  // end of the spin: centered → ~0.92 (settled-ish), travel ±~0.08 → ±~1.5
-  // frames = a gentle rock, never the full sweep. Reversible (down vs up).
-  const ROT_CENTER = 0.92 // scrub value when the section is centered
-  const ROT_SPAN = 0.16 // peak-to-peak scrub travel across the whole scroll
+  // SCROLL ROTATION: map the signed scroll factor (−0.5…+0.5, 0 when the section
+  // is centered) onto each object's 20-frame spin so devices + logos rotate as
+  // you scroll. `scrub` is a 0→1 MotionValue consumed by StudioObject (frame =
+  // round(scrub·(N-1))). Centered sits near the settled Figma pose; scrolling
+  // DOWN advances to the fully-settled frame, scrolling UP rotates back through
+  // the spin — a clear, gentle rock (≈13 frames end-to-end of the 45° / last-1/3
+  // sweep, but you only traverse the whole range at the scroll extremes; normal
+  // reading keeps it near settled). Screens stay static throughout.
+  const ROT_CENTER = 0.78 // scrub at section-centered ≈ frame 15 of 19 (near settled)
+  const ROT_SPAN = 0.9 // factor −0.5 → ~frame 6, factor +0.5 → settled (clamped to 1)
   const rot = useTransform(factor, (v) =>
     Math.max(0, Math.min(1, ROT_CENTER + v * ROT_SPAN)),
   )
