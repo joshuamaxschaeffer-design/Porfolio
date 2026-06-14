@@ -353,7 +353,59 @@ export function createSvgShadow(svg: SVGSVGElement) {
   // affine helper: map an object-space point through af [a,b,c,d,e,f]
   const ap = (af: number[], x: number, y: number) => [af[0] * x + af[2] * y + af[4], af[1] * x + af[3] * y + af[5]]
 
-  const draw = (frameIdx: number, track: ShadowTrack) => {
+  // Trace the object's actual SILHOUETTE in object space so the shadow follows
+  // the real outline (circle for a sphere, ring-ish for a torus, rounded rect
+  // for a chip) — not just a bbox quad. Radial sweep from the alpha centroid at
+  // N angles finds the farthest opaque pixel along each ray → an N-point closed
+  // contour. Cheap, and star-convex which is fine for every studio kind. Cached
+  // on a tiny offscreen so re-tracing the same frame image is free.
+  const traceCanvas = document.createElement('canvas')
+  const traceCtx = traceCanvas.getContext('2d', { willReadFrequently: true })!
+  let tracedSrc: any = null
+  let tracedPts: number[][] = []
+  const ANGLES = 48
+  const TRACE_RES = 96 // sample the silhouette at ≤96px (plenty for an outline)
+  const traceSilhouette = (img: HTMLImageElement | HTMLCanvasElement | ImageBitmap) => {
+    if (img === tracedSrc && tracedPts.length) return tracedPts
+    const sw = (img as any).naturalWidth || (img as any).width
+    const sh = (img as any).naturalHeight || (img as any).height
+    if (!sw || !sh) return tracedPts
+    const scale = Math.min(1, TRACE_RES / Math.max(sw, sh))
+    const tw = Math.max(8, Math.round(sw * scale))
+    const th = Math.max(8, Math.round(sh * scale))
+    traceCanvas.width = tw; traceCanvas.height = th
+    traceCtx.clearRect(0, 0, tw, th)
+    traceCtx.drawImage(img as any, 0, 0, tw, th)
+    let data: Uint8ClampedArray
+    try { data = traceCtx.getImageData(0, 0, tw, th).data } catch { return tracedPts }
+    // centroid of opaque pixels
+    let cx = 0, cy = 0, n = 0
+    for (let y = 0; y < th; y++) for (let x = 0; x < tw; x++) {
+      if (data[(y * tw + x) * 4 + 3] > 40) { cx += x; cy += y; n++ }
+    }
+    if (!n) { tracedSrc = img; tracedPts = []; return tracedPts }
+    cx /= n; cy /= n
+    const maxR = Math.hypot(tw, th)
+    const pts: number[][] = []
+    for (let a = 0; a < ANGLES; a++) {
+      const th0 = (a / ANGLES) * Math.PI * 2
+      const dx = Math.cos(th0), dy = Math.sin(th0)
+      let rHit = 0
+      // march outward, remember the farthest opaque sample (handles concavity
+      // by taking the outer edge along each ray)
+      for (let r = 1; r < maxR; r += 1.0) {
+        const sx = Math.round(cx + dx * r), sy = Math.round(cy + dy * r)
+        if (sx < 0 || sy < 0 || sx >= tw || sy >= th) break
+        if (data[(sy * tw + sx) * 4 + 3] > 40) rHit = r
+      }
+      // back to OBJECT space (0..W, 0..H)
+      pts.push([((cx + dx * rHit) / tw) * W, ((cy + dy * rHit) / th) * H])
+    }
+    tracedSrc = img; tracedPts = pts
+    return pts
+  }
+
+  const draw = (img: HTMLImageElement | HTMLCanvasElement | ImageBitmap, frameIdx: number, track: ShadowTrack) => {
     if (!W || !layers.length) return
     const fr: any = track?.frames?.[frameIdx]
     if (!(track && (track as any).v2 && fr && fr.af)) {
@@ -363,9 +415,11 @@ export function createSvgShadow(svg: SVGSVGElement) {
     }
     const { sigma_base_px: s0, sigma_per_h_px: s1, alpha_base: a0, alpha_per_h: a1 } = (track as any).calib
     const af = fr.af as number[]
-    // object footprint corners (full object bbox) → shadow space via af
-    const c = [ap(af, 0, 0), ap(af, W, 0), ap(af, W, H), ap(af, 0, H)]
-    const polyStr = c.map((p) => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ')
+    // shadow shape = the object's SILHOUETTE contour mapped through the affine
+    // (curved outlines preserved). Falls back to the bbox quad if tracing fails.
+    const contour = traceSilhouette(img)
+    const src = contour.length >= 6 ? contour : [[0, 0], [W, 0], [W, H], [0, H]]
+    const polyStr = src.map((q) => { const p = ap(af, q[0], q[1]); return `${p[0].toFixed(1)},${p[1].toFixed(1)}` }).join(' ')
     const h0 = fr.h0
     const h1 = Math.max(fr.h1, h0 + 0.001)
     // near (sharp/low) → far (soft/high) axis from the calibrated anchor points

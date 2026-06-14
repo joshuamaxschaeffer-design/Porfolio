@@ -108,7 +108,7 @@ export function StudioObject({
           // v3 SVG shadow is cheap enough to update every frame; the canvas
           // recomposite (multi-band blur warp) is the expensive path skipped
           // during scrub and refreshed lazily.
-          if (svgShadow) svgShadow.draw(i, trackRef.current)
+          if (svgShadow) svgShadow.draw(img, i, trackRef.current)
           else pipe.draw(img, i, trackRef.current)
         }
       }

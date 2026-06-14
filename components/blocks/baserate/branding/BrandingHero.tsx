@@ -138,9 +138,9 @@ function BakedChip({
  * it's scaled to `scaleW` (crop ÷ body) and the wrapper centered on the box.
  */
 function Orb({
-  className = '', base, size, dur = 16, delay = 0, reduce,
+  className = '', base, size, dur = 16, delay = 0, reduce, shadowMode = 'canvas',
 }: {
-  className?: string; base: string; size: number; dur?: number; delay?: number; reduce: boolean | null
+  className?: string; base: string; size: number; dur?: number; delay?: number; reduce: boolean | null; shadowMode?: 'canvas' | 'svg'
 }) {
   const scaleW = size * (1 + ORB_PAD * 2)
   const off = -(scaleW - size) / 2
@@ -157,7 +157,7 @@ function Orb({
         }}
         transition={{ duration: dur, repeat: Infinity, ease: 'easeInOut', delay, times: [0, 0.3, 0.55, 0.8, 1] }}
       >
-        <StudioObject base={base} className="w-full" alt="" />
+        <StudioObject base={base} shadowMode={shadowMode} className="w-full" alt="" />
       </motion.div>
     </div>
   )
@@ -285,16 +285,16 @@ export function BrandingHero() {
                 each gets a slightly different depth so they don't drift in
                 lockstep — that subtle desync sells the 3D. */}
             <Parallax z={PZ.orbNear} className="absolute left-[10%] top-[8%] z-[15] md:left-[15.1%] md:top-[7.5%]">
-              <Orb reduce={reduce} className="scale-75 md:scale-100" base="/baserate/branding/orbs/gold" size={30} dur={15} />
+              <Orb reduce={reduce} shadowMode={shadowMode} className="scale-75 md:scale-100" base="/baserate/branding/orbs/gold" size={30} dur={15} />
             </Parallax>
             <Parallax z={PZ.orbFar} className="absolute left-[32.5%] top-[60%] z-[15] md:left-[33.2%] md:top-[36.4%]">
-              <Orb reduce={reduce} className="scale-75 md:scale-100" base="/baserate/branding/orbs/ltblue" size={46} dur={18} delay={1.2} />
+              <Orb reduce={reduce} shadowMode={shadowMode} className="scale-75 md:scale-100" base="/baserate/branding/orbs/ltblue" size={46} dur={18} delay={1.2} />
             </Parallax>
             <Parallax z={PZ.orbNear} className="absolute left-[69.5%] top-[26%] z-[15] md:left-[69.6%] md:top-[9%]">
-              <Orb reduce={reduce} className="scale-75 md:scale-100" base="/baserate/branding/orbs/dark" size={46} dur={17} delay={2.2} />
+              <Orb reduce={reduce} shadowMode={shadowMode} className="scale-75 md:scale-100" base="/baserate/branding/orbs/dark" size={46} dur={17} delay={2.2} />
             </Parallax>
             <Parallax z={PZ.orbMid} className="absolute left-[64%] top-[64%] z-[15] md:left-[55.5%] md:top-[57.5%]">
-              <Orb reduce={reduce} className="scale-75 md:scale-100" base="/baserate/branding/orbs/blue" size={46} dur={14} delay={0.6} />
+              <Orb reduce={reduce} shadowMode={shadowMode} className="scale-75 md:scale-100" base="/baserate/branding/orbs/blue" size={46} dur={14} delay={0.6} />
             </Parallax>
           </div>
           </ParallaxContext.Provider>
