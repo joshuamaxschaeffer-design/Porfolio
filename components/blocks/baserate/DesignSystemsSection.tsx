@@ -26,7 +26,7 @@ export function DesignSystemsSection(props: DesignSystemsProps) {
   const scalability = defaults.scalability
 
   return (
-    <section id="design-systems" className="relative bg-[#070a14] py-24 text-white md:py-32">
+    <section id="design-systems" className="relative bg-[#131722] py-24 text-white md:py-32">
       <div className="br-container">
         {/* Section header */}
         <h2 className="text-[32px] font-medium uppercase leading-none text-white md:text-[40px]">5. {heading}</h2>

@@ -124,7 +124,7 @@ export function ScalabilityTimeline() {
           className="pointer-events-none absolute inset-0"
           style={{
             background:
-              'radial-gradient(120% 110% at 84% 28%, rgba(7,10,20,0) 26%, rgba(7,10,20,0.6) 60%, rgba(7,10,20,0.98) 86%)',
+              'radial-gradient(120% 110% at 84% 28%, rgba(19,23,34,0) 26%, rgba(19,23,34,0.6) 60%, rgba(19,23,34,0.98) 86%)',
           }}
         />
       </div>
@@ -196,7 +196,7 @@ function FrameCard({ frame, index, gap, total, frontX, vpX }: { frame: Frame; in
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={frame.image} alt="Baserate screen" draggable={false} className="block w-full select-none" />
-        <motion.div className="pointer-events-none absolute inset-0 bg-[#070a14]" style={{ opacity: darken }} />
+        <motion.div className="pointer-events-none absolute inset-0 bg-[#131722]" style={{ opacity: darken }} />
       </motion.div>
     </motion.div>
   )
