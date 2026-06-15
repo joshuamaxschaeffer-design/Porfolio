@@ -11,6 +11,7 @@ import {
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 
 import { StudioObject } from '@/components/studio/StudioObject'
+import { useIsSafari } from '@/lib/useIsSafari'
 
 /**
  * Branding hero — "Brand & Marketing". Matched to Figma 224:53188.
@@ -212,6 +213,11 @@ function SwatchCard({
 
 export function BrandingHero() {
   const reduce = useReducedMotion()
+  // Safari re-paints the chips' <canvas> + live SVG shadow every scroll-rotation
+  // frame, which drags sections 5–6 to single-digit fps. On Safari we drop the
+  // scroll-scrub so the chips render STATIC at the settled pose (drawn once, no
+  // per-frame redraw); the subtle rotation stays on Blink/Gecko where it's cheap.
+  const isSafari = useIsSafari()
   const [mounted, setMounted] = useState(false)
   const stageRef = useRef<HTMLDivElement>(null)
   useEffect(() => setMounted(true), [])
@@ -272,7 +278,7 @@ export function BrandingHero() {
   const CHIP_CENTER = 0.78, CHIP_SPAN = 0.9 // factor −0.5 → ~frame 6, +0.5 → settled
   const chipRot = useTransform(factor, (v) => Math.max(0, Math.min(1, CHIP_CENTER + v * CHIP_SPAN)))
   // reduced motion → settle on the last frame, no scroll rotation
-  const chipScrub = reduce ? undefined : chipRot
+  const chipScrub = reduce || isSafari ? undefined : chipRot
 
   // Shadow renderer: v3 (fast blurred-polygon SVG) is the hero default now — it
   // renders quicker AND is cheap enough to update every scroll-rotation frame

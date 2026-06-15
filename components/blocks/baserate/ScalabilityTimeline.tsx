@@ -150,28 +150,26 @@ function FrameCard({ frame, index, gap, total, frontX, vpX }: { frame: Frame; in
   const darken = useTransform(d, (dd) => darkenForD(dd))
   // split the blur across the outer wrapper and the inner image for a softer,
   // double-applied look (cheap approximation of a gaussian pyramid).
-  // PERF: blur radius is QUANTIZED to 2px steps. Animating filter:blur() per
-  // scroll frame re-rasterizes these huge (≈750k-px) card layers every frame —
-  // that froze the whole page on scroll. Snapping to discrete steps means the
-  // filter only re-rasters when a card crosses a 2px threshold (rare), while
-  // scroll motion rides on the cheap GPU-composited transform/scale. The depth
-  // falloff is visually identical.
+  //
+  // PERF (Safari): the DOF blur is now a STATIC per-card value computed from the
+  // card's SETTLED depth (gap = GAP_MAX → d = index), instead of animating with
+  // the live `gap` MotionValue. Previously the blur tracked scroll, so every
+  // card re-rasterized its huge (≈750k-px) filtered layer as the depth changed —
+  // even quantized, enough cards cross a 2px threshold each frame to drag Safari
+  // to single-digit fps. The recede still animates (transform/scale, cheap +
+  // GPU-composited); only the blur is frozen. The blur differs from the old
+  // behaviour only during the brief scroll-in dolly (GAP_MIN→GAP_MAX) and is
+  // identical at rest — visually indistinguishable, but the filter never
+  // re-rasters on scroll now.
   const qStep = (v: number, step: number) => Math.round(v / step) * step
-  const blurOuter = useTransform(d, (dd) => `blur(${qStep(blurForD(dd) * 0.45, 2)}px)`)
-  const blurInner = useTransform(d, (dd) => `blur(${qStep(blurForD(dd) * 0.55, 2)}px)`)
-
-  // Dot on the floor directly below this card + a connector line from the
-  // card down to it. Both fade/blur with depth like the card.
-  const dotTop = useTransform(proj, (pr) => `${VP_Y + (FLOOR_Y - VP_Y) * pr.s}%`)
-  const dotSize = useTransform(proj, (pr) => `${Math.max(3, 11 * pr.s)}px`)
-  const cueOpacity = useTransform(d, (dd) => Math.max(0, 1 - dd * 0.32))
-  const cueBlur = useTransform(d, (dd) => `blur(${qStep(blurForD(dd) * 0.4, 2)}px)`)
-  // connector line: from card bottom (proj.y + ~half card height in %) to dot
-  const lineTop = useTransform(proj, (pr) => `${pr.y}%`)
-  const lineHeight = useTransform(proj, (pr) => `${VP_Y + (FLOOR_Y - VP_Y) * pr.s - pr.y}%`)
+  const dSettled = index // = index * GAP_MAX / GAP_MAX
+  const blurOuter = `blur(${qStep(blurForD(dSettled) * 0.45, 2)}px)`
+  const blurInner = `blur(${qStep(blurForD(dSettled) * 0.55, 2)}px)`
 
   // (Rail connector line + floor dot removed — the screens just recede on their
-  // own now, no timeline lines.)
+  // own now, no timeline lines. The dot/line/cue MotionValues that used to live
+  // here were dead code: each added a per-scroll-frame useTransform subscription
+  // for an element no longer rendered, so they're gone.)
   return (
     <motion.div
       className="absolute"
@@ -265,9 +263,11 @@ function RailTick({ step, steps, n, gap }: { step: number; steps: number; n: num
   // running beneath the floating cards, never hidden behind the front card.
   const top = useTransform(proj, (pr) => `${VP_Y + (FLOOR_Y - VP_Y) * pr.s}%`)
   const width = useTransform(proj, (pr) => `${Math.max(0.3, 4.5 * pr.s)}%`)
-  // Visible but clearly dimmer than the bright receding line + connectors.
-  const opacity = useTransform(gap, () => Math.max(0, 0.55 - zMaxRatio * 0.14))
-  const blur = useTransform(gap, () => `blur(${blurForD(zMaxRatio) * 0.4}px)`)
+  // opacity + blur depend only on zMaxRatio (constant per tick), so they're
+  // plain static values — not MotionValues. With 120 ticks, wrapping these in
+  // useTransform added 240 needless per-scroll-frame subscriptions on Safari.
+  const opacity = Math.max(0, 0.55 - zMaxRatio * 0.14)
+  const blur = `blur(${blurForD(zMaxRatio) * 0.4}px)`
   return (
     <motion.span
       className="absolute"
