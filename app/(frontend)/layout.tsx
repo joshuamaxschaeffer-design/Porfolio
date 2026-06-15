@@ -4,6 +4,7 @@ import localFont from 'next/font/local'
 import { SmoothScroll } from '@/components/animation/SmoothScroll'
 import { SpeculationRules } from '@/components/loading/SpeculationRules'
 import { PageTransition } from '@/components/loading/PageTransition'
+import 'lenis/dist/lenis.css'
 import '../globals.css'
 
 // Self-hosted via next/font. font-display: swap. Subset to latin.
