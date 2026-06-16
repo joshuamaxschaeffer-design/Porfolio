@@ -30,12 +30,12 @@ const AUTOPLAY_MS = 4200
 /* normalized grid → viewBox units */
 const COLS = 12
 const ROWS = 5
-const VBW = 1200
-const VBH = 500
+const VBW = 1360
+const VBH = 560
 const colX = (c: number) => ((c + 0.5) / COLS) * VBW
 const rowY = (r: number) => ((r + 0.5) / ROWS) * VBH
-const NODE_W = 78
-const NODE_H = 96
+const NODE_W = 76
+const NODE_H = 94
 
 /* ── one-shot in-view detector (mirrors OutcomesSection) ─────────────────── */
 function useInViewOnce<T extends HTMLElement>(threshold = 0.25) {
@@ -166,15 +166,18 @@ function nodeCenter(n: MvpNode): Pt {
 
 /** Extra vertical room below the spine (viewBox units) for the two return
  *  rails. Must clear the bottom-row nodes (category/quantity) and their labels. */
-const RETURN_PAD = 70
+const RETURN_PAD = 104
 /** depth of a return edge's bottom rail, keyed so the two loops don't overlap. */
 function returnRail(from: MvpNode): number {
-  return from.id === 'confirmation' ? VBH + RETURN_PAD - 12 : VBH + RETURN_PAD - 32
+  return from.id === 'confirmation' ? VBH + RETURN_PAD - 14 : VBH + RETURN_PAD - 44
 }
+/** y of the mid rail the category→bag shortcut runs along — between the spine
+ *  row and the category row, so it never crosses the Product Page label. */
+const LOWRAIL = (rowY(2.6) + hh + (rowY(4.15) - hh)) / 2 + 6
 
-function buildPath(from: MvpNode, to: MvpNode, kind?: string): string {
-  const a = nodeCenter(from)
-  const b = nodeCenter(to)
+function buildPath(from: MvpNode, to: MvpNode, kind?: string, off = 0): string {
+  const a = { ...nodeCenter(from) }
+  const b = { ...nodeCenter(to) }
   if (kind === 'return') {
     // drop out the bottom of `from`, run along a low rail, rise into the
     // bottom of `to` (used for the Add-more / scrolled-location loops).
@@ -183,26 +186,32 @@ function buildPath(from: MvpNode, to: MvpNode, kind?: string): string {
     const railY = returnRail(from)
     return `M ${a.x} ${ay} L ${a.x} ${railY} L ${b.x} ${railY} L ${b.x} ${by}`
   }
-  if (kind === 'h' || (!kind && Math.abs(a.y - b.y) < 1)) {
-    // straight horizontal between facing edges
+  if (kind === 'low-rail') {
+    // out the bottom, along a mid rail, up into the target's bottom
+    const ay = a.y + hh
+    const by = b.y + hh
+    return `M ${a.x} ${ay} L ${a.x} ${LOWRAIL} L ${b.x} ${LOWRAIL} L ${b.x} ${by}`
+  }
+  if (kind === 'h' || kind === 'h-low' || (!kind && Math.abs(a.y - b.y) < 1)) {
+    // straight horizontal between facing edges; `off` shifts the line up/down
     const dir = b.x > a.x ? 1 : -1
-    const x1 = a.x + dir * hw
-    const x2 = b.x - dir * hw
-    return `M ${x1} ${a.y} L ${x2} ${b.y}`
+    const y = a.y + off
+    return `M ${a.x + dir * hw} ${y} L ${b.x - dir * hw} ${y}`
   }
   if (kind === 'elbow-up' || kind === 'elbow-down') {
     // leave from top/bottom of `from`, run vertically, then into the side or
-    // top/bottom of `to` with a midpoint elbow.
+    // top/bottom of `to`. `off` shifts the vertical run so a reverse edge runs
+    // on a parallel line rather than overlapping.
     const up = kind === 'elbow-up'
+    a.x += off
+    b.x += off
     const ay = up ? a.y - hh : a.y + hh
     const by = up ? b.y + hh : b.y - hh
     const sameColish = Math.abs(a.x - b.x) < NODE_W
     if (sameColish) {
-      // mostly vertical: small S so it doesn't overlap the node centers
       const midY = (ay + by) / 2
       return `M ${a.x} ${ay} L ${a.x} ${midY} L ${b.x} ${midY} L ${b.x} ${by}`
     }
-    // dog-leg: up/down out of `from`, across, then down/up into `to`
     const reach = up ? Math.min(ay, by) : Math.max(ay, by)
     const railY = up ? reach - 6 : reach + 6
     return `M ${a.x} ${ay} L ${a.x} ${railY} L ${b.x} ${railY} L ${b.x} ${by}`
@@ -212,21 +221,27 @@ function buildPath(from: MvpNode, to: MvpNode, kind?: string): string {
 }
 
 /* midpoint of a path's bounding span — used to anchor the edge label pill */
-function edgeLabelPos(from: MvpNode, to: MvpNode, kind?: string): Pt {
+function edgeLabelPos(from: MvpNode, to: MvpNode, kind?: string, off = 0): Pt {
   const a = nodeCenter(from)
   const b = nodeCenter(to)
   if (kind === 'return') {
     return { x: (a.x + b.x) / 2, y: returnRail(from) }
   }
+  if (kind === 'low-rail') {
+    return { x: (a.x + b.x) / 2 - 60, y: LOWRAIL }
+  }
+  if (kind === 'h-low') {
+    return { x: (a.x + b.x) / 2, y: a.y + off + 11 } // labels BELOW the lower line
+  }
   if (kind === 'h' || (!kind && Math.abs(a.y - b.y) < 1)) {
-    return { x: (a.x + b.x) / 2, y: a.y - 14 }
+    return { x: (a.x + b.x) / 2, y: a.y + off - 11 } // labels ABOVE the line
   }
   const up = kind === 'elbow-up'
   const ay = up ? a.y - hh : a.y + hh
   const by = up ? b.y + hh : b.y - hh
   const reach = up ? Math.min(ay, by) : Math.max(ay, by)
   const railY = up ? reach - 6 : reach + 6
-  return { x: (a.x + b.x) / 2, y: railY }
+  return { x: (a.x + b.x) / 2 + off, y: railY }
 }
 
 /* set of "from→to" keys for the active scenario path (consecutive pairs) */
@@ -270,11 +285,11 @@ function DesktopDiagram({ activeId, progress, reduced }: DiagramProps) {
     <div className="relative w-full" style={{ aspectRatio: `${VBW} / ${VBH + RETURN_PAD}` }}>
       <svg viewBox={`0 0 ${VBW} ${VBH + RETURN_PAD}`} className="absolute inset-0 h-full w-full" aria-hidden>
         <defs>
-          <marker id="mvp-arrow-dim" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M0 1L8 5L0 9" fill="none" stroke="#cfcfd6" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          <marker id="mvp-arrow-dim" viewBox="0 0 10 10" refX="7.5" refY="5" markerWidth="3.8" markerHeight="3.8" orient="auto-start-reverse">
+            <path d="M1 2L8 5L1 8" fill="none" stroke="#cfcfd6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </marker>
-          <marker id="mvp-arrow-lit" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
-            <path d="M0 1L8 5L0 9" fill="none" stroke="#D02B2E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          <marker id="mvp-arrow-lit" viewBox="0 0 10 10" refX="7.5" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+            <path d="M1 2L8 5L1 8" fill="none" stroke="#D02B2E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </marker>
         </defs>
 
@@ -283,7 +298,7 @@ function DesktopDiagram({ activeId, progress, reduced }: DiagramProps) {
           {edges.map((e, i) => (
             <path
               key={`dim-${i}`}
-              d={buildPath(nodeById.get(e.from)!, nodeById.get(e.to)!, e.kind)}
+              d={buildPath(nodeById.get(e.from)!, nodeById.get(e.to)!, e.kind, e.off)}
               fill="none"
               stroke={e.alt ? '#e7e7ec' : '#dadae1'}
               strokeWidth="2"
@@ -306,7 +321,7 @@ function DesktopDiagram({ activeId, progress, reduced }: DiagramProps) {
             return (
               <path
                 key={`lit-${stepIdx}`}
-                d={buildPath(nodeById.get(fromId)!, nodeById.get(toId)!, edge.kind)}
+                d={buildPath(nodeById.get(fromId)!, nodeById.get(toId)!, edge.kind, edge.off)}
                 fill="none"
                 stroke={RED}
                 strokeWidth="3"
@@ -333,18 +348,18 @@ function DesktopDiagram({ activeId, progress, reduced }: DiagramProps) {
         if (!e.label && !e.label2) return null
         const from = nodeById.get(e.from)!
         const to = nodeById.get(e.to)!
-        const pos = edgeLabelPos(from, to, e.kind)
+        const pos = edgeLabelPos(from, to, e.kind, e.off)
         const step = edgeStep(e.from, e.to)
         const onPath = step >= 0
         const active = onPath && step < revealedStep
-        const horizontal = e.kind === 'h' || e.kind === 'return'
-        const pill = (text: string, k: string, shift: number) => (
+        // a pill placed at (pos.x+dx, pos.y+dy) in viewBox units
+        const pill = (text: string, k: string, dy: number) => (
           <span
             key={`${i}-${k}`}
             className="br-data pointer-events-none absolute z-20 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full px-2 py-[3px] text-[10px] font-medium leading-none transition-colors duration-300"
             style={{
-              left: `${((pos.x + (horizontal ? 0 : shift)) / VBW) * 100}%`,
-              top: `${((pos.y + (horizontal ? shift : 0)) / (VBH + RETURN_PAD)) * 100}%`,
+              left: `${(pos.x / VBW) * 100}%`,
+              top: `${((pos.y + dy) / (VBH + RETURN_PAD)) * 100}%`,
               background: active ? RED : '#ffffff',
               color: active ? '#ffffff' : 'var(--br-muted)',
               border: active ? '1px solid transparent' : '1px solid var(--br-line)',
@@ -354,32 +369,55 @@ function DesktopDiagram({ activeId, progress, reduced }: DiagramProps) {
             {text}
           </span>
         )
+        // two chained labels stack vertically (centered) one line apart
         return (
           <span key={`lbl-${i}`}>
-            {e.label ? pill(e.label, 'a', e.label2 ? -10 : 0) : null}
-            {e.label2 ? pill(e.label2, 'b', 12) : null}
+            {e.label && e.label2 ? (
+              <>
+                {pill(e.label, 'a', -10)}
+                {pill(e.label2, 'b', 10)}
+              </>
+            ) : e.label ? (
+              pill(e.label, 'a', 0)
+            ) : e.label2 ? (
+              pill(e.label2, 'b', 0)
+            ) : null}
           </span>
         )
       })}
 
-      {/* NODES, positioned over the SVG */}
+      {/* NODES, positioned over the SVG. The label is absolutely placed around
+          the tile per node.labelPos so it never sits on a connector. */}
       {nodes.map((n) => {
         const lit = activeNodeIds.has(n.id)
         const arrivalIdx = scenario.path.indexOf(n.id)
         const reached = lit && arrivalIdx <= revealedStep
+        const pos = n.labelPos ?? 'below'
+        // label box anchored to the tile container (which is NODE_W×NODE_H)
+        const labelStyle: React.CSSProperties =
+          pos === 'above'
+            ? { bottom: '100%', left: '50%', transform: 'translate(-50%,-4px)', textAlign: 'center' }
+            : pos === 'left'
+              ? { right: '100%', top: '50%', transform: 'translate(-6px,-50%)', textAlign: 'right' }
+              : pos === 'right'
+                ? { left: '100%', top: '50%', transform: 'translate(6px,-50%)', textAlign: 'left' }
+                : { top: '100%', left: '50%', transform: 'translate(-50%,4px)', textAlign: 'center' }
         return (
           <div
             key={n.id}
-            className="absolute z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
-            style={{ left: `${(colX(n.col) / VBW) * 100}%`, top: `${(rowY(n.row) / (VBH + RETURN_PAD)) * 100}%` }}
+            className="absolute z-10 -translate-x-1/2 -translate-y-1/2"
+            style={{
+              left: `${(colX(n.col) / VBW) * 100}%`,
+              top: `${(rowY(n.row) / (VBH + RETURN_PAD)) * 100}%`,
+              width: NODE_W,
+              height: NODE_H,
+            }}
           >
-            <div style={{ width: NODE_W }}>
-              <PhoneTile node={n} lit={reached} />
-            </div>
-            {/* label gets its own backing pill so it reads over any line */}
+            <PhoneTile node={n} lit={reached} />
             <span
-              className="mt-1.5 max-w-[100px] rounded-[5px] px-1.5 py-0.5 text-center text-[10.5px] font-medium leading-tight transition-colors duration-300"
+              className="absolute w-max max-w-[110px] rounded-[5px] px-1.5 py-0.5 text-[10.5px] font-medium leading-tight transition-colors duration-300"
               style={{
+                ...labelStyle,
                 color: reached ? '#ffffff' : 'var(--br-muted)',
                 background: reached ? RED : 'var(--br-bg-2)',
               }}

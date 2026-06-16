@@ -98,6 +98,8 @@ export interface MvpNode {
   /** grid centre (col 0–11, row 0–4) */
   col: number
   row: number
+  /** where the text label sits relative to the phone tile (default 'below') */
+  labelPos?: 'below' | 'above' | 'left' | 'right'
 }
 
 export interface MvpEdge {
@@ -112,9 +114,15 @@ export interface MvpEdge {
    * drops below the diagram and runs back (used for the "Add more" /
    * "Will send to scrolled location" loops).
    */
-  kind?: 'h' | 'v' | 'elbow-up' | 'elbow-down' | 'return'
+  kind?: 'h' | 'h-low' | 'v' | 'elbow-up' | 'elbow-down' | 'return' | 'low-rail'
   /** dashed + lower-emphasis: a conditional/alternate branch, not the happy path */
   alt?: boolean
+  /**
+   * perpendicular lane offset (viewBox units) so a back-and-forth pair rides
+   * two parallel lines instead of overlapping: horizontal edges shift up(-)/
+   * down(+); elbow edges shift their vertical run left(-)/right(+).
+   */
+  off?: number
 }
 
 export interface MvpScenario {
@@ -127,12 +135,12 @@ export interface MvpScenario {
 
 /** Shared spine — every scenario ends on these last three. */
 const SPINE: MvpNode[] = [
-  { id: 'home', label: 'Homepage', glyph: 'home', col: 0.5, row: 2.5 },
-  { id: 'menu', label: 'Menu', glyph: 'menu', col: 2.7, row: 2.5 },
-  { id: 'product', label: 'Product Page', glyph: 'product', col: 5.3, row: 2.5 },
-  { id: 'bag', label: 'My Bag', glyph: 'bag', col: 7.8, row: 2.5 },
-  { id: 'checkout', label: 'Checkout', glyph: 'checkout', col: 9.7, row: 2.5 },
-  { id: 'confirmation', label: 'Confirmation', glyph: 'confirmation', col: 11.05, row: 2.5 },
+  { id: 'home', label: 'Homepage', glyph: 'home', col: 0.45, row: 2.6 },
+  { id: 'menu', label: 'Menu', glyph: 'menu', col: 2.45, row: 2.6 },
+  { id: 'product', label: 'Product Page', glyph: 'product', col: 5.15, row: 2.6 },
+  { id: 'bag', label: 'My Bag', glyph: 'bag', col: 7.95, row: 2.6 },
+  { id: 'checkout', label: 'Checkout', glyph: 'checkout', col: 9.75, row: 2.6 },
+  { id: 'confirmation', label: 'Confirmation', glyph: 'confirmation', col: 11.1, row: 2.6 },
 ]
 
 export const mvp = {
@@ -148,16 +156,16 @@ export const mvp = {
   nodes: [
     ...SPINE,
     // promo branch (upper-left)
-    { id: 'promoNotif', label: 'Item added to menu', glyph: 'promo', col: 1.55, row: 0.5 },
+    { id: 'promoNotif', label: 'Item added to menu', glyph: 'promo', col: 1.7, row: 0.45, labelPos: 'above' },
     // restaurant / location-handoff popup (upper-mid)
-    { id: 'restaurant', label: 'Choose Restaurant', glyph: 'popup', col: 3.85, row: 1.2 },
-    { id: 'productSel', label: 'Product, item selected', glyph: 'productSel', col: 5.3, row: 0.5 },
+    { id: 'restaurant', label: 'Choose Restaurant', glyph: 'popup', col: 3.95, row: 1.3, labelPos: 'left' },
+    { id: 'productSel', label: 'Product, item selected', glyph: 'productSel', col: 5.15, row: 0.45, labelPos: 'above' },
     // location branch (upper-right): handoff state → Location Page
-    { id: 'handoff', label: 'Change handoff / location', glyph: 'handoff', col: 8.55, row: 1.0 },
-    { id: 'location', label: 'Location Page', glyph: 'location', col: 10.4, row: 0.85 },
+    { id: 'handoff', label: 'Handoff / location', glyph: 'handoff', col: 8.5, row: 0.8, labelPos: 'above' },
+    { id: 'location', label: 'Location Page', glyph: 'location', col: 10.5, row: 0.8, labelPos: 'above' },
     // category branch (lower-mid)
-    { id: 'category', label: 'NomNom Category', glyph: 'category', col: 4.0, row: 3.95 },
-    { id: 'quantity', label: 'Choose Quantity', glyph: 'quantity', col: 6.1, row: 3.95 },
+    { id: 'category', label: 'NomNom Category', glyph: 'category', col: 4.0, row: 4.15 },
+    { id: 'quantity', label: 'Choose Quantity', glyph: 'quantity', col: 6.15, row: 4.15 },
   ] as MvpNode[],
   /**
    * Every directed edge in the diagram with its pill label(s). `alt` marks the
@@ -180,15 +188,15 @@ export const mvp = {
     { from: 'product', to: 'restaurant', label: 'No location selected', kind: 'elbow-up', alt: true },
     { from: 'restaurant', to: 'productSel', label: 'Location selected', kind: 'elbow-up', alt: true },
     // change handoff/location from the bag → handoff state → location page → back
-    { from: 'bag', to: 'handoff', label: 'Change handoff or location', kind: 'elbow-up', alt: true },
-    { from: 'handoff', to: 'location', label: '', kind: 'elbow-up', alt: true },
-    { from: 'location', to: 'handoff', label: 'Continue', kind: 'elbow-down', alt: true },
-    { from: 'handoff', to: 'bag', label: '', kind: 'elbow-down', alt: true },
+    { from: 'bag', to: 'handoff', label: 'Change location', kind: 'elbow-up', alt: true, off: -16 },
+    { from: 'handoff', to: 'location', label: '', kind: 'elbow-up', alt: true, off: -16 },
+    { from: 'location', to: 'handoff', label: 'Continue', kind: 'elbow-down', alt: true, off: 16 },
+    { from: 'handoff', to: 'bag', label: '', kind: 'elbow-down', alt: true, off: 16 },
     // ── category branch (purple) ──
     { from: 'menu', to: 'category', label: 'Tap a category', label2: 'Location preselected', kind: 'elbow-down' },
-    { from: 'category', to: 'quantity', label: 'Tap Product', kind: 'h' },
-    { from: 'quantity', to: 'category', label: 'Add Product', label2: 'Added to My Bag', kind: 'h', alt: true },
-    { from: 'category', to: 'bag', label: 'Tap Bag Icon', kind: 'elbow-up' },
+    { from: 'category', to: 'quantity', label: 'Tap Product', kind: 'h', off: -12 },
+    { from: 'quantity', to: 'category', label: 'Add Product', label2: 'Added to My Bag', kind: 'h-low', alt: true, off: 12 },
+    { from: 'category', to: 'bag', label: 'Tap Bag Icon', kind: 'low-rail' },
     // ── loops ──
     { from: 'bag', to: 'menu', label: 'Add more', kind: 'return', alt: true },
     { from: 'confirmation', to: 'menu', label: 'Will send to scrolled location', kind: 'return', alt: true },
