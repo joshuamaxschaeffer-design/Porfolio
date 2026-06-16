@@ -52,6 +52,18 @@ const SPOKES = [
   'M288.377 685.143L361.623 -35.1427',
 ]
 
+// Does a spoke's path START at its TOP endpoint (smaller y)? Parses the first
+// and last coordinate of the "M…L…" / "M…V…" path so we can draw every spoke
+// upward (bottom → top) regardless of how the d-string is ordered.
+function pathStartIsTop(d: string): boolean {
+  // numbers in order: M x0 y0 … then either "L x1 y1" or "V y1"
+  const nums = d.match(/-?\d*\.?\d+/g)?.map(Number) ?? []
+  if (nums.length < 2) return true
+  const y0 = nums[1] // start-point y
+  const y1 = nums[nums.length - 1] // end-point y (last number, for both "L x y" and "V y")
+  return y0 <= y1 // start y smaller (higher up) → start is the top
+}
+
 export function RewardsRadial({
   className,
   style,
@@ -86,8 +98,12 @@ export function RewardsRadial({
 
   const on = shown || reduced
   // Per-spoke stagger: spokes draw one-by-one in circle order.
-  const step = 0.05 // s between spokes
-  const dur = 0.55 // s each spoke takes to grow
+  // Stagger between spokes 3× faster (new lines start in quick succession);
+  // each individual spoke takes 2× as long to draw.
+  const step = 0.05 / 3 // s between spokes (was 0.05)
+  const dur = 0.55 * 2 // s each spoke takes to draw (was 0.55)
+  // Ease-out curve the devices/radial share, per the brief: cubic-bezier(0,0,.2,1).
+  const EASE = 'cubic-bezier(0,0,.2,1)'
 
   return (
     <svg
@@ -104,7 +120,7 @@ export function RewardsRadial({
         opacity: on ? 1 : 0,
         transition: reduced
           ? undefined
-          : 'transform 1200ms cubic-bezier(0.22,1,0.36,1), opacity 700ms cubic-bezier(0.22,1,0.36,1)',
+          : `transform 1600ms ${EASE}, opacity 900ms ${EASE}`,
         transformOrigin: '325px 325px',
       }}
     >
@@ -121,21 +137,29 @@ export function RewardsRadial({
       <g mask="url(#rewards-radial-mask)">
         {SPOKES.map((d, i) => {
           // Array is ordered counter-clockwise by angle; reverse the stagger so
-          // the spokes draw in CLOCKWISE order. Ease-out on grow + fade.
+          // the spokes draw in CLOCKWISE order. Ease-out on draw + fade.
           const delay = (SPOKES.length - 1 - i) * step
+          // Draw each line as ONE stroke from a single source — bottom → top —
+          // via stroke-dash (NOT scale, which grew from the centre in BOTH
+          // directions = two sources). With pathLength=1 and dasharray "1 1",
+          // offset 0 = fully drawn. We start the dash from whichever endpoint is
+          // LOWER on screen (larger y) so the stroke sweeps upward: offset +1
+          // hides toward the path start, -1 toward the path end.
+          const startFromEnd = pathStartIsTop(d) // start point is the top end?
+          const hiddenOffset = startFromEnd ? -1 : 1
           return (
             <path
               key={i}
               d={d}
               stroke="white"
+              pathLength={1}
               style={{
-                transformBox: 'view-box',
-                transformOrigin: '325px 325px',
-                transform: on ? 'scale(1)' : 'scale(0)',
+                strokeDasharray: 1,
+                strokeDashoffset: on ? 0 : hiddenOffset,
                 opacity: on ? 1 : 0,
                 transition: reduced
                   ? undefined
-                  : `transform ${dur}s cubic-bezier(0.22,1,0.36,1) ${delay}s, opacity ${dur * 0.6}s cubic-bezier(0.22,1,0.36,1) ${delay}s`,
+                  : `stroke-dashoffset ${dur}s ${EASE} ${delay}s, opacity ${dur * 0.4}s ${EASE} ${delay}s`,
               }}
             />
           )
