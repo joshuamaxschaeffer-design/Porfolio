@@ -3,6 +3,7 @@ import { ChallengeSection } from './ChallengeSection'
 import { ReleasesSection } from './ReleasesSection'
 import { MvpFlowSection } from './MvpFlowSection'
 import { MvpScatterSection } from './MvpScatterSection'
+import { MvpLaunchBento } from './MvpLaunchBento'
 import { OutcomesSection } from './OutcomesSection'
 import { SectionNav, type SectionNavItem } from '../baserate/SectionNav'
 import { CaseStudyShowcase } from '../shared/CaseStudyShowcase'
@@ -56,6 +57,10 @@ export function PandaCaseStudy(props: PandaCaseStudyProps = {}) {
       <ReleasesSection intro={props.releasesIntro} />
       <MvpFlowSection intro={props.mvpIntro} />
       <MvpScatterSection />
+      {/* Closing module of the MVP group — fast launch + cross-platform.
+          Sits AFTER the Seamless Reordering scatter band (its own red band),
+          as the last section before Outcomes. */}
+      <MvpLaunchBento />
       <OutcomesSection intro={props.outcomesIntro} />
       <CaseStudyShowcase accent="#D02B2E" current="panda-express" />
     </article>

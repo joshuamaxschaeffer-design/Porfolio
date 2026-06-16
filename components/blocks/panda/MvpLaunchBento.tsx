@@ -90,7 +90,7 @@ function StatCell({ stat, index }: { stat: MvpBentoStat; index: number }) {
   return (
     <div
       ref={ref}
-      className="flex flex-col justify-between rounded-[var(--br-card-radius)] bg-white p-6 shadow-[0_10px_24px_-12px_rgba(0,0,0,0.28)] md:p-7"
+      className="flex h-full flex-col justify-between rounded-[10px] bg-white p-6 shadow-[0_10px_24px_-12px_rgba(0,0,0,0.28)] md:p-7"
     >
       <p className="br-data text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-[var(--px-red)]">
         {stat.eyebrow}
@@ -123,7 +123,7 @@ function DeviceCluster({ phones, webSrc }: { phones: string[]; webSrc?: string }
   return (
     <div className="relative mt-6 h-[160px] w-full md:h-[180px]" aria-hidden>
       {/* web / browser frame — FPO drop-in slot */}
-      <div className="absolute left-0 top-0 w-[70%] overflow-hidden rounded-[10px] bg-white shadow-[0_14px_30px_-14px_rgba(0,0,0,0.35)] ring-1 ring-black/5">
+      <div className="absolute left-0 top-0 w-[70%] overflow-hidden rounded-[8px] bg-white shadow-[0_14px_30px_-14px_rgba(0,0,0,0.35)] ring-1 ring-black/5">
         <div className="flex h-[18px] items-center gap-1.5 border-b border-black/5 bg-[var(--br-bg-2)] px-2.5">
           <span className="h-1.5 w-1.5 rounded-full bg-black/15" />
           <span className="h-1.5 w-1.5 rounded-full bg-black/15" />
@@ -141,11 +141,11 @@ function DeviceCluster({ phones, webSrc }: { phones: string[]; webSrc?: string }
         )}
       </div>
       {/* two phones, overlapping the web frame's lower-right (true portrait ratio) */}
-      <div className="absolute bottom-0 right-[15%] w-[19%] overflow-hidden rounded-[12px] bg-white shadow-[0_14px_30px_-12px_rgba(0,0,0,0.4)] ring-1 ring-black/5">
+      <div className="absolute bottom-0 right-[15%] w-[19%] overflow-hidden rounded-[10px] bg-white shadow-[0_14px_30px_-12px_rgba(0,0,0,0.4)] ring-1 ring-black/5">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={phoneA} alt="" className="block w-full" />
       </div>
-      <div className="absolute -bottom-1 right-0 w-[19%] overflow-hidden rounded-[12px] bg-white shadow-[0_14px_30px_-12px_rgba(0,0,0,0.4)] ring-1 ring-black/5">
+      <div className="absolute -bottom-1 right-0 w-[19%] overflow-hidden rounded-[10px] bg-white shadow-[0_14px_30px_-12px_rgba(0,0,0,0.4)] ring-1 ring-black/5">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={phoneB} alt="" className="block w-full" />
       </div>
@@ -159,18 +159,21 @@ function DeviceCluster({ phones, webSrc }: { phones: string[]; webSrc?: string }
 export function MvpLaunchBento({
   phones,
   webSrc,
+  contained = false,
 }: {
   /** override the two phone screens in the cross-platform cell */
   phones?: string[]
   /** drop in a web/desktop capture for the browser frame (FPO until set) */
   webSrc?: string
+  /** true = bare block inside an already-red parent; false = own red band (default) */
+  contained?: boolean
 } = {}) {
   const d = defaults
   const devicePhones = phones ?? d.platform.phones
   const deviceWeb = webSrc ?? d.platform.webSrc
 
-  return (
-    <div data-anim="mvp-launch-bento" className="mt-14 md:mt-20">
+  const content = (
+    <>
       {/* quiet eyebrow + heading, matching the section's editorial voice */}
       <p className="br-data text-[11px] font-semibold uppercase leading-none tracking-[0.16em] text-white/70">
         {d.kicker}
@@ -179,21 +182,25 @@ export function MvpLaunchBento({
         {d.heading}
       </h3>
 
-      {/* asymmetric bento. Mobile: single column. lg+: 12-col mixed grid. */}
-      <div className="mt-8 grid grid-cols-1 gap-4 md:mt-10 md:gap-5 lg:grid-cols-12 lg:grid-rows-[auto_auto_auto]">
-        {/* FLAGSHIP — dark, tall: spans the left 5 cols over the top two rows */}
-        <div className="flex flex-col justify-between rounded-[var(--br-card-radius)] bg-[var(--br-ink)] p-7 text-white shadow-[0_18px_44px_-18px_rgba(0,0,0,0.5)] md:p-9 lg:col-span-5 lg:row-span-2">
+      {/* asymmetric bento. Mobile: single column. lg+: 12-col mixed grid.
+          Left: tall flagship (5 cols, 2 rows). Right: platform cell (row 1)
+          over two stat cells (row 2). items-stretch so cells fill their row
+          height and the column edges line up. */}
+      <div className="mt-8 grid grid-cols-1 gap-3 md:mt-10 md:gap-4 lg:grid-cols-12 lg:grid-rows-[auto_1fr] lg:items-stretch">
+        {/* FLAGSHIP — dark, tall: left 5 cols over both rows. Header pinned to
+            top, title block to the bottom (justify-between). */}
+        <div className="flex flex-col justify-between gap-12 rounded-[10px] bg-[var(--br-ink)] p-7 text-white shadow-[0_18px_44px_-18px_rgba(0,0,0,0.5)] md:p-8 lg:col-span-5 lg:row-span-2">
           <p className="br-data text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-white/55">
             {d.flagship.eyebrow}
           </p>
-          <div className="mt-12 md:mt-16">
+          <div>
             <h4
               className="text-[30px] font-medium leading-none tracking-[-0.01em] text-white md:text-[40px]"
               style={{ fontFamily: 'var(--br-font-heading)' }}
             >
               {d.flagship.title}
             </h4>
-            <p className="mt-4 max-w-[40ch] text-[15px] leading-relaxed text-white/80 md:text-base">
+            <p className="mt-4 max-w-[42ch] text-[15px] leading-relaxed text-white/80 md:text-base">
               {d.flagship.body}
             </p>
             {/* pulled-forward proof line, set off with a red rule */}
@@ -203,38 +210,36 @@ export function MvpLaunchBento({
           </div>
         </div>
 
-        {/* ONE EXPERIENCE — cross-platform cell, spans right 7 cols, top row */}
-        <div className="flex flex-col rounded-[var(--br-card-radius)] bg-white p-6 shadow-[0_10px_24px_-12px_rgba(0,0,0,0.28)] md:p-7 lg:col-span-7">
-          <div className="flex items-baseline justify-between gap-4">
-            <div>
-              <p className="br-data text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-[var(--px-red)]">
-                {d.platform.eyebrow}
-              </p>
-              <h4
-                className="mt-3 text-[24px] font-medium leading-none tracking-[-0.01em] text-[var(--br-ink)] md:text-[30px]"
-                style={{ fontFamily: 'var(--br-font-heading)' }}
-              >
-                {d.platform.title}
-              </h4>
-            </div>
-          </div>
+        {/* ONE EXPERIENCE — cross-platform cell, right 7 cols, top row */}
+        <div className="flex flex-col rounded-[10px] bg-white p-6 shadow-[0_10px_24px_-12px_rgba(0,0,0,0.28)] md:p-7 lg:col-span-7">
+          <p className="br-data text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-[var(--px-red)]">
+            {d.platform.eyebrow}
+          </p>
+          <h4
+            className="mt-3 text-[24px] font-medium leading-none tracking-[-0.01em] text-[var(--br-ink)] md:text-[30px]"
+            style={{ fontFamily: 'var(--br-font-heading)' }}
+          >
+            {d.platform.title}
+          </h4>
           <p className="mt-3 max-w-[44ch] text-[14px] leading-snug text-[var(--br-muted)] md:text-[15px]">
             {d.platform.body}
           </p>
           <DeviceCluster phones={devicePhones} webSrc={deviceWeb} />
         </div>
 
-        {/* two count-up stat cells — right side, second row (split 7 cols) */}
-        <div className="lg:col-span-4 lg:col-start-6">
+        {/* two count-up stat cells — right side, second row. Each spans half of
+            the 7-col right block; h-full so they match the row height and bottom-
+            align with the flagship card. */}
+        <div className="lg:col-span-4 lg:col-start-6 lg:h-full">
           <StatCell stat={d.stats[0]} index={0} />
         </div>
-        <div className="lg:col-span-3 lg:col-start-10">
+        <div className="lg:col-span-3 lg:col-start-10 lg:h-full">
           <StatCell stat={d.stats[1]} index={1} />
         </div>
 
         {/* OPERATING MODEL — full-width closing row */}
-        <div className="rounded-[var(--br-card-radius)] bg-white p-6 shadow-[0_10px_24px_-12px_rgba(0,0,0,0.28)] md:p-8 lg:col-span-12">
-          <div className="md:flex md:items-start md:justify-between md:gap-10">
+        <div className="rounded-[10px] bg-white p-6 shadow-[0_10px_24px_-12px_rgba(0,0,0,0.28)] md:p-8 lg:col-span-12">
+          <div className="md:flex md:items-baseline md:justify-between md:gap-10">
             <div className="md:max-w-[52%]">
               <p className="br-data text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-[var(--px-red)]">
                 {d.model.eyebrow}
@@ -246,7 +251,7 @@ export function MvpLaunchBento({
                 {d.model.title}
               </h4>
             </div>
-            <p className="mt-3 text-[15px] leading-relaxed text-[var(--br-muted)] md:mt-1 md:max-w-[42%] md:text-base">
+            <p className="mt-4 text-[15px] leading-relaxed text-[var(--br-muted)] md:mt-0 md:max-w-[42%] md:text-base">
               {d.model.body}
             </p>
           </div>
@@ -257,6 +262,28 @@ export function MvpLaunchBento({
       <p className="br-data mt-6 max-w-3xl text-[11.5px] leading-relaxed text-white/55 md:mt-8">
         {d.source}
       </p>
-    </div>
+    </>
+  )
+
+  // Contained: bare block inside an already-red parent section.
+  if (contained) {
+    return (
+      <div data-anim="mvp-launch-bento" className="mt-14 md:mt-20">
+        {content}
+      </div>
+    )
+  }
+
+  // Standalone (default): own full-bleed Panda-red band + container, so it can
+  // be the closing section after the (white-bordered) Seamless Reordering band.
+  return (
+    <section
+      id="mvp-launch"
+      data-anim="mvp-launch-bento"
+      aria-label="Fast launch, shipped everywhere"
+      className="relative left-1/2 -ml-[50vw] w-screen overflow-hidden bg-[var(--px-red)] py-16 text-white md:py-24"
+    >
+      <div className="br-container">{content}</div>
+    </section>
   )
 }

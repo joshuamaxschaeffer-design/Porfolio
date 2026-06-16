@@ -348,15 +348,15 @@ export const mvpLaunch = {
   flagship: {
     eyebrow: 'FLAGSHIP LAUNCH',
     title: 'Panda Delivers',
-    body: 'A full ordering platform — web, iOS, and Android — redesigned to mirror the in-store experience and shipped in the middle of the 2020 pivot.',
+    body: 'A full ordering platform across web, iOS, and Android, redesigned to mirror the in-store experience and shipped in the middle of the 2020 pivot.',
     /** pulled-forward proof, stated plainly under the title */
-    proof: 'Originally planned a year out. Pulled ~6 months early to meet the moment.',
+    proof: 'Originally planned a year out, then pulled six months early to meet the moment.',
   },
   /** cross-platform cell — carries the device FPO slots */
   platform: {
     eyebrow: 'ONE EXPERIENCE',
     title: 'Web, iOS & Android',
-    body: 'The same ordering flow across every surface — designed once, shipped everywhere.',
+    body: 'The same ordering flow across every surface, designed once and shipped everywhere.',
     /** two real MVP phone screens (portrait). Drop-in replaceable. */
     phones: ['/panda/mvp/screen1.webp', '/panda/mvp/screen2.webp'],
     /** web/desktop capture for the browser frame — FPO placeholder until set. */
@@ -366,7 +366,6 @@ export const mvpLaunch = {
   stats: [
     {
       value: 6,
-      prefix: '~',
       suffix: ' mo',
       eyebrow: 'AHEAD OF PLAN',
       caption: 'Pulled forward from a one-year roadmap to meet the pandemic pivot.',
@@ -375,14 +374,14 @@ export const mvpLaunch = {
       value: 1900,
       suffix: '+',
       eyebrow: 'LOCATIONS AT LAUNCH',
-      caption: 'A national rollout from day one — not a single-market pilot.',
+      caption: 'A national rollout from day one, not a single-market pilot.',
     },
   ] as MvpBentoStat[],
   /** operating-model cell — the disciplined MVP framing */
   model: {
     eyebrow: 'OPERATING MODEL',
     title: 'Web-first MVP, features as fast-follows',
-    body: 'Core ordering first, web prioritized. Curbside, rewards, and the native app experience landed as deliberate fast-follows.',
+    body: 'Core ordering first, with the web prioritized. Curbside, rewards, and the native app experience landed as deliberate fast-follows.',
   },
   /** quiet sourced footnote */
   source:
