@@ -30,17 +30,10 @@ export function ReleasesSection({ intro }: { intro?: string } = {}) {
           {intro ?? defaults.intro}
         </p>
 
-        <div data-anim="pivot-phases-label" className="mt-10">
-          <p className="text-base font-semibold uppercase tracking-[0.02em] text-[var(--br-ink)] md:text-lg">
-            {defaults.phasesLabel}
-          </p>
-          <p className="mt-1.5 max-w-2xl text-sm text-[var(--br-muted-2)] md:text-[15px]">
-            {defaults.phasesIntro}
-          </p>
-        </div>
-
-        {/* ── Two cards ──────────────────────────────────────────── */}
-        <div className="mt-8 grid grid-cols-1 gap-7 lg:grid-cols-2 lg:gap-8">
+        {/* ── Two cards. items-center so the shorter MVP card centers against
+            the taller Full Rewards card — MVP ends up inset (shorter at the top
+            AND bottom), matching the Figma. ── */}
+        <div className="mt-10 grid grid-cols-1 items-center gap-7 lg:grid-cols-2 lg:gap-8 md:mt-14">
           <MvpCard />
           <RewardsCard />
         </div>
@@ -147,7 +140,12 @@ function RewardsCard() {
           - radial is the masked donut (radial-masked.svg) so the centre stays
             clear behind the phones.
           Phones are flat layers (tilt baked into the PNG — no CSS rotation). */}
-      <div data-anim="rewards-stage" className="relative mx-auto mt-6 aspect-[715.26/611.5] w-full max-w-[680px]">
+      {/* stage breaks out of the card's side padding so the radial + phones fill
+          the card width edge-to-edge, matching the Figma. */}
+      <div
+        data-anim="rewards-stage"
+        className="relative mt-6 -mx-3 aspect-[715.26/611.5] w-[calc(100%+1.5rem)] md:-mx-6 md:w-[calc(100%+3rem)]"
+      >
         {/* radial burst (masked to a ring), centered behind the phones */}
         <img
           data-anim="rewards-radial"
@@ -191,18 +189,36 @@ function RewardsCard() {
           style={{ left: '40.60%', top: '16.52%', width: '45.81%', height: '60.47%' }}
         />
 
-        {/* CLIPPED shadow ("Mask group"): Phone 1's cast shadow falling onto
-            Phone 2 — the shadow asset is already shaped to Phone 2, placed at the
-            exact Figma rect (left 145.59 / top 416.05 in stage space). */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        {/* CLIPPED shadow: Phone 1's cast shadow falling onto Phone 2. The clip
+            box is placed at Phone 2's EXACT rect and uses phone2.webp itself as a
+            CSS mask, so the shadow is clipped to Phone 2's real silhouette
+            (rounded corners + baked-in tilt) — no hand-built vector shape. The
+            shadow art inside is offset to the upper-left, where Phone 1 overlaps. */}
+        <div
           data-anim="rewards-phone1-shadow"
-          src={`${P}/phone1-shadow.webp`}
-          alt=""
-          aria-hidden
-          className="pointer-events-none absolute z-[15] max-w-none"
-          style={{ left: '25.14%', top: '38.60%', width: '35.99%', height: '37.96%' }}
-        />
+          className="pointer-events-none absolute z-[15]"
+          style={{
+            left: '40.60%',
+            top: '16.52%',
+            width: '45.81%',
+            height: '60.47%',
+            WebkitMaskImage: `url(${P}/phone2.webp)`,
+            maskImage: `url(${P}/phone2.webp)`,
+            WebkitMaskSize: '100% 100%',
+            maskSize: '100% 100%',
+            WebkitMaskRepeat: 'no-repeat',
+            maskRepeat: 'no-repeat',
+          }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`${P}/phone1-shadow.webp`}
+            alt=""
+            aria-hidden
+            className="absolute max-w-none opacity-90"
+            style={{ left: '-46%', top: '38%', width: '150%' }}
+          />
+        </div>
 
         {/* FRONT phone (Phone 1) */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
