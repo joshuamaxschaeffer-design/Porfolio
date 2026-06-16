@@ -205,10 +205,9 @@ export const featureIntro = {
   countSuffix: '+',
   unit: 'Features',
   /** weaves in the exploration, testing and review cadence behind every feature */
-  body: 'Every feature was explored, pressure-tested and refined — not just drawn. Each one moved through workflow exploration, weekly design reviews with the team, and rounds of user testing before it shipped, so the system held together as it grew.',
-  /** proof chips — the former pills, now carrying their real numbers */
+  body: 'Every feature moved through workflow exploration, weekly design reviews, and rounds of user testing before it shipped.',
+  /** proof chips — the former pills (the redundant "70+" one dropped) */
   stats: [
-    { value: '70+', label: 'Full Features' },
     { value: 'Weekly', label: 'Design Reviews' },
     { value: 'Ongoing', label: 'User Testing' },
   ],
