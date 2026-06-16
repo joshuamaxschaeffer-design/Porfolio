@@ -123,6 +123,11 @@ export interface MvpEdge {
    * down(+); elbow edges shift their vertical run left(-)/right(+).
    */
   off?: number
+  /**
+   * explicit Y for an elbow's horizontal run, so opposing edges can turn at
+   * different heights (avoids overlapping turns). Auto-computed when omitted.
+   */
+  rail?: number
 }
 
 export interface MvpScenario {
@@ -139,7 +144,7 @@ const SPINE: MvpNode[] = [
   { id: 'menu', label: 'Menu', glyph: 'menu', col: 2.45, row: 2.6 },
   { id: 'product', label: 'Product Page', glyph: 'product', col: 5.15, row: 2.6 },
   { id: 'bag', label: 'My Bag', glyph: 'bag', col: 7.95, row: 2.6 },
-  { id: 'checkout', label: 'Checkout', glyph: 'checkout', col: 9.75, row: 2.6 },
+  { id: 'checkout', label: 'Checkout', glyph: 'checkout', col: 9.55, row: 2.6 },
   { id: 'confirmation', label: 'Confirmation', glyph: 'confirmation', col: 11.1, row: 2.6 },
 ]
 
@@ -158,11 +163,11 @@ export const mvp = {
     // promo branch (upper-left)
     { id: 'promoNotif', label: 'Item added to menu', glyph: 'promo', col: 1.7, row: 0.45, labelPos: 'above' },
     // restaurant / location-handoff popup (upper-mid)
-    { id: 'restaurant', label: 'Choose Restaurant', glyph: 'popup', col: 3.95, row: 1.3, labelPos: 'left' },
+    { id: 'restaurant', label: 'Choose Restaurant', glyph: 'popup', col: 3.35, row: 1.3, labelPos: 'left' },
     { id: 'productSel', label: 'Product, item selected', glyph: 'productSel', col: 5.15, row: 0.45, labelPos: 'above' },
     // location branch (upper-right): handoff state → Location Page
-    { id: 'handoff', label: 'Handoff / location', glyph: 'handoff', col: 8.5, row: 0.8, labelPos: 'above' },
-    { id: 'location', label: 'Location Page', glyph: 'location', col: 10.5, row: 0.8, labelPos: 'above' },
+    { id: 'handoff', label: 'Handoff / location', glyph: 'handoff', col: 8.5, row: 0.5, labelPos: 'above' },
+    { id: 'location', label: 'Location Page', glyph: 'location', col: 10.5, row: 0.5, labelPos: 'above' },
     // category branch (lower-mid)
     { id: 'category', label: 'NomNom Category', glyph: 'category', col: 4.0, row: 4.15 },
     { id: 'quantity', label: 'Choose Quantity', glyph: 'quantity', col: 6.15, row: 4.15 },
@@ -188,10 +193,10 @@ export const mvp = {
     { from: 'product', to: 'restaurant', label: 'No location selected', kind: 'elbow-up', alt: true },
     { from: 'restaurant', to: 'productSel', label: 'Location selected', kind: 'elbow-up', alt: true },
     // change handoff/location from the bag → handoff state → location page → back
-    { from: 'bag', to: 'handoff', label: 'Change location', kind: 'elbow-up', alt: true, off: -16 },
-    { from: 'handoff', to: 'location', label: '', kind: 'elbow-up', alt: true, off: -16 },
-    { from: 'location', to: 'handoff', label: 'Continue', kind: 'elbow-down', alt: true, off: 16 },
-    { from: 'handoff', to: 'bag', label: '', kind: 'elbow-down', alt: true, off: 16 },
+    { from: 'bag', to: 'handoff', label: 'Change location', kind: 'elbow-up', alt: true, off: -24, rail: 225 },
+    { from: 'handoff', to: 'location', label: '', kind: 'elbow-up', alt: true, off: -24 },
+    { from: 'location', to: 'handoff', label: 'Continue', kind: 'elbow-down', alt: true, off: 20, rail: 150 },
+    { from: 'handoff', to: 'bag', label: '', kind: 'elbow-down', alt: true, off: 20, rail: 285 },
     // ── category branch (purple) ──
     { from: 'menu', to: 'category', label: 'Tap a category', label2: 'Location preselected', kind: 'elbow-down' },
     { from: 'category', to: 'quantity', label: 'Tap Product', kind: 'h', off: -12 },
@@ -296,4 +301,90 @@ export const outcomes = {
 export const componentLibraries = {
   title: 'COMPONENT LIBRARIES',
   body: 'Component libraries included everything from icons to larger, complex components, along with a consistent set of illustrative iconography.',
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * MVP LAUNCH — closing bento for the MVP Fast-Launch section.
+ * An asymmetric mixed-media grid that lands the section's two points: the
+ * launch was FAST and SUCCESSFUL, and the experience shipped CROSS-PLATFORM
+ * (one ordering flow across web + iOS + Android).
+ *
+ * Deliberately distinct from the Outcomes stat grid (section 5) — that section
+ * owns the lifetime business numbers (4.8★, 16M members, $1B, #1 Ipsos). This
+ * bento speaks only to the LAUNCH itself.
+ *
+ * Sourced facts (verified June 2026):
+ *  - "We sped up that project by half a year" — Nidhin Mattappally, exec
+ *     director, digital & restaurant experience, Panda Express
+ *     (Food On Demand Q&A, Oct 15 2020). The native delivery platform was
+ *     originally planned ~a year out; the pandemic pulled it ~6 months early.
+ *  - "redesigned our ordering website and mobile apps to closely mirror our
+ *     in-store experience" (same Q&A) → one experience across web + iOS +
+ *     Android, mirroring in-store.
+ *  - "Panda Delivers is available at more than 1,900 locations" (same Q&A) →
+ *     a national rollout at launch, not a pilot.
+ *  - Launched mid-June 2020 (The Spoon, 06/16/20: "This week … launched its
+ *     own delivery service").
+ * ───────────────────────────────────────────────────────────────────────── */
+
+export interface MvpBentoStat {
+  /** count-up target */
+  value: number
+  decimals?: number
+  prefix?: string
+  /** rendered after the number (e.g. '+', 'mo', '×') */
+  suffix?: string
+  /** tiny eyebrow above the number */
+  eyebrow: string
+  /** one-line caption below the number */
+  caption: string
+}
+
+export const mvpLaunch = {
+  /** eyebrow shown above the bento (matches the section's quiet labels) */
+  kicker: 'THE LAUNCH',
+  heading: 'Fast launch, shipped everywhere',
+  /** the dark flagship cell — the headline launch story */
+  flagship: {
+    eyebrow: 'FLAGSHIP LAUNCH',
+    title: 'Panda Delivers',
+    body: 'A full ordering platform — web, iOS, and Android — redesigned to mirror the in-store experience and shipped in the middle of the 2020 pivot.',
+    /** pulled-forward proof, stated plainly under the title */
+    proof: 'Originally planned a year out. Pulled ~6 months early to meet the moment.',
+  },
+  /** cross-platform cell — carries the device FPO slots */
+  platform: {
+    eyebrow: 'ONE EXPERIENCE',
+    title: 'Web, iOS & Android',
+    body: 'The same ordering flow across every surface — designed once, shipped everywhere.',
+    /** two real MVP phone screens (portrait). Drop-in replaceable. */
+    phones: ['/panda/mvp/screen1.webp', '/panda/mvp/screen2.webp'],
+    /** web/desktop capture for the browser frame — FPO placeholder until set. */
+    webSrc: '' as string,
+  },
+  /** two compact count-up stat cells (LAUNCH facts only) */
+  stats: [
+    {
+      value: 6,
+      prefix: '~',
+      suffix: ' mo',
+      eyebrow: 'AHEAD OF PLAN',
+      caption: 'Pulled forward from a one-year roadmap to meet the pandemic pivot.',
+    },
+    {
+      value: 1900,
+      suffix: '+',
+      eyebrow: 'LOCATIONS AT LAUNCH',
+      caption: 'A national rollout from day one — not a single-market pilot.',
+    },
+  ] as MvpBentoStat[],
+  /** operating-model cell — the disciplined MVP framing */
+  model: {
+    eyebrow: 'OPERATING MODEL',
+    title: 'Web-first MVP, features as fast-follows',
+    body: 'Core ordering first, web prioritized. Curbside, rewards, and the native app experience landed as deliberate fast-follows.',
+  },
+  /** quiet sourced footnote */
+  source:
+    'Launch detail per Panda Express digital leadership (Food On Demand, Oct 2020) and contemporaneous reporting (The Spoon, June 2020).',
 }

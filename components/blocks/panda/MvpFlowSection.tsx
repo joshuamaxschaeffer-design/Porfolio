@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { mvp as defaults, type MvpGlyph, type MvpNode } from './data'
 import { ComponentLibrariesSection } from './ComponentLibrariesSection'
+import { MvpLaunchBento } from './MvpLaunchBento'
 
 /**
  * Section 4 — MVP Fast-Launch / Core UX.
@@ -656,6 +657,11 @@ export function MvpFlowSection({ intro }: { intro?: string } = {}) {
             "Seamless Simple Reordering" band. Contained mode = no own red
             band/container (this section already supplies both). */}
         <ComponentLibrariesSection />
+
+        {/* Closing bento — lands the section: fast launch + cross-platform.
+            White (+ one dark flagship) cards on the red field; the cross-
+            platform cell carries FPO/drop-in device art. */}
+        <MvpLaunchBento />
       </div>
     </section>
   )
