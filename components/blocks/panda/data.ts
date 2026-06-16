@@ -120,3 +120,13 @@ export const outcomes = {
   sources:
     'Sources: Apple App Store (2026) · WWT × Panda Express case study · Ipsos QSR Digital Ordering Performance Study, 2024 · Nation’s Restaurant News · Google Play (2026)',
 }
+
+/**
+ * Component Libraries — second item inside the MVP Fast-Launch section.
+ * Copy mirrors the Figma frame header (node 263:46908). Two flat artifact
+ * sheets live in /public/panda/components/.
+ */
+export const componentLibraries = {
+  title: 'COMPONENT LIBRARIES',
+  body: 'Component libraries included everything from icons to larger, complex components, along with a consistent set of illustrative iconography.',
+}
