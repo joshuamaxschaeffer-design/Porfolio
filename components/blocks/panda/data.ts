@@ -11,7 +11,7 @@
 
 export const overview = {
   client: 'Panda Express',
-  dateRange: '2020 — 2022',
+  dateRange: 'November 2019 — April 2022',
   lead: 'Panda Express needed its digital ordering rebuilt for a world that suddenly couldn’t walk up to the counter. I led design on the mobile app through two releases — a COVID sprint shipped under extreme pressure, then the full experience with a rewards program — plus the marketing site that wrapped around it.',
   role: 'Lead Designer & Art Director (Hathway, now Bounteous) — managed a small design team, personally designed nearly all of the app’s UI/UX, built the working prototypes, and ran the 6-hour stakeholder presentations that carried the vision through.',
   scope: [
