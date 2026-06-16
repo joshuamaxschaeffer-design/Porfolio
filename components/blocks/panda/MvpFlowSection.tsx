@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { mvp as defaults, type MvpGlyph, type MvpNode } from './data'
 import { ComponentLibrariesSection } from './ComponentLibrariesSection'
-import { MvpLaunchBento } from './MvpLaunchBento'
 
 /**
  * Section 4 — MVP Fast-Launch / Core UX.
@@ -176,7 +175,7 @@ function returnRail(from: MvpNode): number {
  *  row and the category row, so it never crosses the Product Page label. */
 const LOWRAIL = (rowY(2.6) + hh + (rowY(4.15) - hh)) / 2 + 6
 
-function buildPath(from: MvpNode, to: MvpNode, kind?: string, off = 0): string {
+function buildPath(from: MvpNode, to: MvpNode, kind?: string, off = 0, rail?: number): string {
   const a = { ...nodeCenter(from) }
   const b = { ...nodeCenter(to) }
   if (kind === 'return') {
@@ -208,6 +207,10 @@ function buildPath(from: MvpNode, to: MvpNode, kind?: string, off = 0): string {
     b.x += off
     const ay = up ? a.y - hh : a.y + hh
     const by = up ? b.y + hh : b.y - hh
+    // explicit rail Y lets opposing edges turn at different heights (note 1)
+    if (rail != null) {
+      return `M ${a.x} ${ay} L ${a.x} ${rail} L ${b.x} ${rail} L ${b.x} ${by}`
+    }
     const sameColish = Math.abs(a.x - b.x) < NODE_W
     if (sameColish) {
       const midY = (ay + by) / 2
@@ -222,7 +225,7 @@ function buildPath(from: MvpNode, to: MvpNode, kind?: string, off = 0): string {
 }
 
 /* midpoint of a path's bounding span — used to anchor the edge label pill */
-function edgeLabelPos(from: MvpNode, to: MvpNode, kind?: string, off = 0): Pt {
+function edgeLabelPos(from: MvpNode, to: MvpNode, kind?: string, off = 0, rail?: number): Pt {
   const a = nodeCenter(from)
   const b = nodeCenter(to)
   if (kind === 'return') {
@@ -231,11 +234,12 @@ function edgeLabelPos(from: MvpNode, to: MvpNode, kind?: string, off = 0): Pt {
   if (kind === 'low-rail') {
     return { x: (a.x + b.x) / 2 - 60, y: LOWRAIL }
   }
-  if (kind === 'h-low') {
-    return { x: (a.x + b.x) / 2, y: a.y + off + 11 } // labels BELOW the lower line
+  // pills centered ON the line (note 4)
+  if (kind === 'h' || kind === 'h-low' || (!kind && Math.abs(a.y - b.y) < 1)) {
+    return { x: (a.x + b.x) / 2, y: a.y + off }
   }
-  if (kind === 'h' || (!kind && Math.abs(a.y - b.y) < 1)) {
-    return { x: (a.x + b.x) / 2, y: a.y + off - 11 } // labels ABOVE the line
+  if (rail != null) {
+    return { x: (a.x + b.x) / 2 + off, y: rail }
   }
   const up = kind === 'elbow-up'
   const ay = up ? a.y - hh : a.y + hh
@@ -299,7 +303,7 @@ function DesktopDiagram({ activeId, progress, reduced }: DiagramProps) {
           {edges.map((e, i) => (
             <path
               key={`dim-${i}`}
-              d={buildPath(nodeById.get(e.from)!, nodeById.get(e.to)!, e.kind, e.off)}
+              d={buildPath(nodeById.get(e.from)!, nodeById.get(e.to)!, e.kind, e.off, e.rail)}
               fill="none"
               stroke={e.alt ? '#e7e7ec' : '#dadae1'}
               strokeWidth="2"
@@ -322,7 +326,7 @@ function DesktopDiagram({ activeId, progress, reduced }: DiagramProps) {
             return (
               <path
                 key={`lit-${stepIdx}`}
-                d={buildPath(nodeById.get(fromId)!, nodeById.get(toId)!, edge.kind, edge.off)}
+                d={buildPath(nodeById.get(fromId)!, nodeById.get(toId)!, edge.kind, edge.off, edge.rail)}
                 fill="none"
                 stroke={RED}
                 strokeWidth="3"
@@ -349,64 +353,45 @@ function DesktopDiagram({ activeId, progress, reduced }: DiagramProps) {
         if (!e.label && !e.label2) return null
         const from = nodeById.get(e.from)!
         const to = nodeById.get(e.to)!
-        const pos = edgeLabelPos(from, to, e.kind, e.off)
+        const pos = edgeLabelPos(from, to, e.kind, e.off, e.rail)
         const step = edgeStep(e.from, e.to)
         const onPath = step >= 0
         const active = onPath && step < revealedStep
-        // a pill placed at (pos.x+dx, pos.y+dy) in viewBox units
-        const pill = (text: string, k: string, dy: number) => (
+        // both labels live in ONE container (note 3), centered ON the line
+        // (note 4 — edgeLabelPos already returns the on-line y).
+        const textLines = [e.label, e.label2].filter(Boolean) as string[]
+        return (
           <span
-            key={`${i}-${k}`}
-            className="br-data pointer-events-none absolute z-20 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full px-2 py-[3px] text-[10px] font-medium leading-none transition-colors duration-300"
+            key={`lbl-${i}`}
+            className="br-data pointer-events-none absolute z-20 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center whitespace-nowrap rounded-[9px] px-2 py-[3px] text-[10px] font-medium leading-[1.25] transition-colors duration-300"
             style={{
               left: `${(pos.x / VBW) * 100}%`,
-              top: `${((pos.y + dy) / (VBH + RETURN_PAD)) * 100}%`,
+              top: `${(pos.y / (VBH + RETURN_PAD)) * 100}%`,
               background: active ? RED : '#ffffff',
               color: active ? '#ffffff' : 'var(--br-muted)',
               border: active ? '1px solid transparent' : '1px solid var(--br-line)',
               boxShadow: '0 1px 3px rgba(7,14,44,0.06)',
             }}
           >
-            {text}
-          </span>
-        )
-        // two chained labels stack vertically (centered) one line apart
-        return (
-          <span key={`lbl-${i}`}>
-            {e.label && e.label2 ? (
-              <>
-                {pill(e.label, 'a', -10)}
-                {pill(e.label2, 'b', 10)}
-              </>
-            ) : e.label ? (
-              pill(e.label, 'a', 0)
-            ) : e.label2 ? (
-              pill(e.label2, 'b', 0)
-            ) : null}
+            {textLines.map((t, k) => (
+              <span key={k}>{t}</span>
+            ))}
           </span>
         )
       })}
 
-      {/* NODES, positioned over the SVG. The label is absolutely placed around
-          the tile per node.labelPos so it never sits on a connector. */}
+      {/* NODES, positioned over the SVG. Every title is a CONTAINER attached to
+          the BOTTOM edge of its screen (note 2), overlapping the border slightly
+          so screen + label read as one unit. z-20 so it sits over any line that
+          passes beneath the node. */}
       {nodes.map((n) => {
         const lit = activeNodeIds.has(n.id)
         const arrivalIdx = scenario.path.indexOf(n.id)
         const reached = lit && arrivalIdx <= revealedStep
-        const pos = n.labelPos ?? 'below'
-        // label box anchored to the tile container (which is NODE_W×NODE_H)
-        const labelStyle: React.CSSProperties =
-          pos === 'above'
-            ? { bottom: '100%', left: '50%', transform: 'translate(-50%,-4px)', textAlign: 'center' }
-            : pos === 'left'
-              ? { right: '100%', top: '50%', transform: 'translate(-6px,-50%)', textAlign: 'right' }
-              : pos === 'right'
-                ? { left: '100%', top: '50%', transform: 'translate(6px,-50%)', textAlign: 'left' }
-                : { top: '100%', left: '50%', transform: 'translate(-50%,4px)', textAlign: 'center' }
         return (
           <div
             key={n.id}
-            className="absolute z-10 -translate-x-1/2 -translate-y-1/2"
+            className="absolute z-20 -translate-x-1/2 -translate-y-1/2"
             style={{
               left: `${(colX(n.col) / VBW) * 100}%`,
               top: `${(rowY(n.row) / (VBH + RETURN_PAD)) * 100}%`,
@@ -416,11 +401,11 @@ function DesktopDiagram({ activeId, progress, reduced }: DiagramProps) {
           >
             <PhoneTile node={n} lit={reached} />
             <span
-              className="absolute w-max max-w-[110px] rounded-[5px] px-1.5 py-0.5 text-[10.5px] font-medium leading-tight transition-colors duration-300"
+              className="absolute left-1/2 top-full w-max max-w-[120px] -translate-x-1/2 -translate-y-[8px] rounded-[6px] border px-2 py-1 text-center text-[10.5px] font-semibold leading-[1.15] transition-colors duration-300"
               style={{
-                ...labelStyle,
                 color: reached ? '#ffffff' : 'var(--br-muted)',
-                background: reached ? RED : 'var(--br-bg-2)',
+                background: reached ? RED : '#f1f1f4',
+                borderColor: reached ? RED : 'var(--br-line)',
               }}
             >
               {n.label}
@@ -657,11 +642,6 @@ export function MvpFlowSection({ intro }: { intro?: string } = {}) {
             "Seamless Simple Reordering" band. Contained mode = no own red
             band/container (this section already supplies both). */}
         <ComponentLibrariesSection />
-
-        {/* Closing bento — lands the section: fast launch + cross-platform.
-            White (+ one dark flagship) cards on the red field; the cross-
-            platform cell carries FPO/drop-in device art. */}
-        <MvpLaunchBento />
       </div>
     </section>
   )
