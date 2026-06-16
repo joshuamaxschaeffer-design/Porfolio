@@ -26,8 +26,8 @@ export function OverviewSection(props: OverviewProps) {
     >
       <div className="br-container relative py-16 md:py-24">
         <div className="relative grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,820px)_minmax(0,1fr)] lg:gap-8">
-          {/* ── Left: outlined card ───────────────────────────────── */}
-          <div className="relative z-10 rounded-[var(--br-card-radius)] border border-white/70 p-7 sm:p-10 md:p-[60px]">
+          {/* ── Left: solid red card ──────────────────────────────── */}
+          <div className="relative z-10 rounded-[var(--br-card-radius)] border border-white/70 bg-[var(--px-red)] p-7 sm:p-10 md:p-[60px]">
             <div className="flex flex-col gap-5">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img

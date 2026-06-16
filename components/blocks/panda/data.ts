@@ -12,15 +12,15 @@
 export const overview = {
   client: 'Panda Express',
   dateRange: 'November 2019 — April 2022',
-  lead: 'Panda Express needed its digital ordering rebuilt for a world that suddenly couldn’t walk up to the counter. I led design on the mobile app through two releases — a COVID sprint shipped under extreme pressure, then the full experience with a rewards program — plus the marketing site that wrapped around it.',
-  role: 'Lead Designer & Art Director (Hathway, now Bounteous) — managed a small design team, personally designed nearly all of the app’s UI/UX, built the working prototypes, and ran the 6-hour stakeholder presentations that carried the vision through.',
+  lead: 'Working for Hathway from pitch to launch for 2 versions of the Panda Express App and marketing site.',
+  role: 'Art Director + Product Lead',
   scope: [
-    'Mobile App UI/UX',
-    'Art Direction',
-    'Team Leadership',
-    'Prototyping',
-    'Rewards Program',
-    'Marketing Site',
+    'Project Pitch',
+    'Product Strategy',
+    'Product UX',
+    'Product UI',
+    'Marketing UI + UX',
+    'Presentations',
   ],
 }
 
@@ -47,23 +47,19 @@ export const challenge = {
 }
 
 export const releases = {
-  heading: 'THE TWO RELEASES',
-  intro: 'The product shipped twice: first as an emergency, then as a vision. Same team, two completely different definitions of done.',
-  phases: [
-    {
-      tag: 'PHASE 01 · 2020',
-      title: 'The COVID sprint',
-      body: 'When dining rooms closed, digital ordering went from a convenience to the only way to serve guests. We compressed the roadmap into a rushed release: core ordering, pickup, and delivery flows designed and shipped in weeks, prioritizing the essential path over polish.',
-      placeholder: 'V1 app screens — in progress',
-    },
-    {
-      tag: 'PHASE 02 · 2021–2022',
-      title: 'The full experience + rewards',
-      body: 'With the fires out, we rebuilt it the way it was always meant to be: the complete ordering experience, a ground-up rewards program woven through every flow, and working prototypes that anchored 6-hour stakeholder presentations.',
-      placeholder: 'V2 app + rewards screens — in progress',
-    },
-  ],
-  alsoShipped: 'Also shipped — the PandaExpress.com marketing site: brand storytelling and online ordering unified into one seamless experience.',
+  heading: '2020 PIVOT',
+  intro:
+    '2020 required a massive product pivot. Three months into UX discovery, mobile ordering became incredibly important. The new plan: a quick, minimal app in three months, followed by a full rewards app the following year.',
+  phasesLabel: '2 PHASES',
+  phasesIntro: 'Added brand differentiation to emphasize the value gain from the free to paid product.',
+  mvp: {
+    title: 'MVP FAST-LAUNCH',
+    body: 'The fast launch emphasized core ordering and prioritized the web experience.',
+  },
+  rewards: {
+    title: 'FULL REWARDS APP',
+    body: 'The full set of features, a better native app experience, and the rewards functionality was added as a follow-up to the core app.',
+  },
 }
 
 export interface PandaStat {
