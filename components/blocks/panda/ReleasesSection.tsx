@@ -147,12 +147,14 @@ function RewardsCard() {
           - radial is the masked donut (radial-masked.svg) so the centre stays
             clear behind the phones.
           Phones are flat layers (tilt baked into the PNG — no CSS rotation). */}
-      {/* stage breaks fully out of the card's side padding (px-6 / md:px-10) and
-          pulls up slightly so the radial + phones fill the red card edge-to-edge
-          (left, right, bottom), matching the Figma. */}
+      {/* stage breaks fully out of the card's side padding (px-6 / md:px-10) so
+          the radial + phones fill the red card edge-to-edge. The whole group is
+          then scaled up ~30% and nudged down ~60px (transform doesn't affect
+          layout — the card clips the bleed) so the phones sit larger and lower
+          in the red box, per Joshua. */}
       <div
         data-anim="rewards-stage"
-        className="relative -mx-6 -mt-2 aspect-[715.26/611.5] w-[calc(100%+3rem)] md:-mx-10 md:w-[calc(100%+5rem)]"
+        className="relative -mx-6 -mt-2 aspect-[715.26/611.5] w-[calc(100%+3rem)] [transform:translateY(48px)_scale(1.3)] [transform-origin:center_top] md:-mx-10 md:w-[calc(100%+5rem)] md:[transform:translateY(60px)_scale(1.3)]"
       >
         {/* radial burst (masked to a ring), centered behind the phones */}
         <img
