@@ -89,6 +89,7 @@ export const releases = {
 export type MvpGlyph =
   | 'home' | 'menu' | 'product' | 'bag' | 'checkout' | 'confirmation'
   | 'promo' | 'popup' | 'category' | 'quantity' | 'location' | 'productSel'
+  | 'handoff'
 
 export interface MvpNode {
   id: string
@@ -104,8 +105,16 @@ export interface MvpEdge {
   to: string
   /** pill label on the edge, e.g. "Tap a promo" */
   label?: string
-  /** routing hint for the SVG connector */
-  kind?: 'h' | 'v' | 'elbow-up' | 'elbow-down'
+  /** optional second pill chained along the same edge (e.g. "Location preselected") */
+  label2?: string
+  /**
+   * routing hint for the SVG connector. 'return' draws a long routed line that
+   * drops below the diagram and runs back (used for the "Add more" /
+   * "Will send to scrolled location" loops).
+   */
+  kind?: 'h' | 'v' | 'elbow-up' | 'elbow-down' | 'return'
+  /** dashed + lower-emphasis: a conditional/alternate branch, not the happy path */
+  alt?: boolean
 }
 
 export interface MvpScenario {
@@ -135,41 +144,54 @@ export const mvp = {
     body: 'The UX for ordering was mapped for 4 core scenarios, ensuring each scenario was simple and clear to the user.',
   },
   hint: 'Pick a scenario to trace its path — every one converges on the same checkout spine.',
-  /** all nodes in the diagram (spine + branch nodes) */
+  /** all nodes in the diagram (spine + branch nodes), 1:1 with Figma 278:73643 */
   nodes: [
     ...SPINE,
     // promo branch (upper-left)
-    { id: 'promoNotif', label: 'Item added to menu', glyph: 'promo', col: 1.6, row: 0.55 },
-    // restaurant/handoff popup (upper-mid)
-    { id: 'restaurant', label: 'Choose Restaurant', glyph: 'popup', col: 3.9, row: 1.15 },
-    { id: 'productSel', label: 'Product, item selected', glyph: 'productSel', col: 5.3, row: 0.55 },
-    // location branch (upper-right)
-    { id: 'location', label: 'Location Page', glyph: 'location', col: 9.9, row: 0.7 },
+    { id: 'promoNotif', label: 'Item added to menu', glyph: 'promo', col: 1.55, row: 0.5 },
+    // restaurant / location-handoff popup (upper-mid)
+    { id: 'restaurant', label: 'Choose Restaurant', glyph: 'popup', col: 3.85, row: 1.2 },
+    { id: 'productSel', label: 'Product, item selected', glyph: 'productSel', col: 5.3, row: 0.5 },
+    // location branch (upper-right): handoff state → Location Page
+    { id: 'handoff', label: 'Change handoff / location', glyph: 'handoff', col: 8.55, row: 1.0 },
+    { id: 'location', label: 'Location Page', glyph: 'location', col: 10.4, row: 0.85 },
     // category branch (lower-mid)
     { id: 'category', label: 'NomNom Category', glyph: 'category', col: 4.0, row: 3.95 },
-    { id: 'quantity', label: 'Choose Quantity', glyph: 'quantity', col: 6.0, row: 3.95 },
+    { id: 'quantity', label: 'Choose Quantity', glyph: 'quantity', col: 6.1, row: 3.95 },
   ] as MvpNode[],
-  /** every directed edge in the diagram, with its pill label */
+  /**
+   * Every directed edge in the diagram with its pill label(s). `alt` marks the
+   * conditional/alternate branches (drawn dashed, lower emphasis) so the happy
+   * path stays legible. Routing `return` edges loop below the diagram.
+   */
   edges: [
-    // spine
+    // ── spine ──
     { from: 'home', to: 'menu', label: 'Scroll', kind: 'h' },
-    { from: 'menu', to: 'product', label: 'Tap a product', kind: 'h' },
+    { from: 'menu', to: 'product', label: 'Tap a product', label2: 'Location preselected', kind: 'h' },
     { from: 'product', to: 'bag', label: 'Add product', kind: 'h' },
     { from: 'bag', to: 'checkout', label: 'Check out', kind: 'h' },
     { from: 'checkout', to: 'confirmation', label: 'Check out', kind: 'h' },
-    // promo branch
+    // ── promo branch (green) ──
     { from: 'home', to: 'promoNotif', label: 'Tap a promo', kind: 'elbow-up' },
-    { from: 'promoNotif', to: 'productSel', label: 'Tap a product', kind: 'h' },
+    { from: 'promoNotif', to: 'productSel', label: 'Tap a product', label2: 'Location preselected', kind: 'h' },
     { from: 'productSel', to: 'bag', label: 'Add product', kind: 'elbow-down' },
-    // location / handoff branch
-    { from: 'product', to: 'restaurant', label: 'No location set', kind: 'elbow-up' },
-    { from: 'restaurant', to: 'product', label: 'Location selected', kind: 'elbow-down' },
-    { from: 'bag', to: 'location', label: 'Change handoff', kind: 'elbow-up' },
-    { from: 'location', to: 'bag', label: 'Continue', kind: 'elbow-down' },
-    // category branch
-    { from: 'menu', to: 'category', label: 'Tap a category', kind: 'elbow-down' },
-    { from: 'category', to: 'quantity', label: 'Tap a product', kind: 'h' },
-    { from: 'quantity', to: 'bag', label: 'Add product', kind: 'elbow-up' },
+    // ── location / handoff branch (orange) ──
+    // no-location detours into the restaurant popup, which resolves location
+    { from: 'product', to: 'restaurant', label: 'No location selected', kind: 'elbow-up', alt: true },
+    { from: 'restaurant', to: 'productSel', label: 'Location selected', kind: 'elbow-up', alt: true },
+    // change handoff/location from the bag → handoff state → location page → back
+    { from: 'bag', to: 'handoff', label: 'Change handoff or location', kind: 'elbow-up', alt: true },
+    { from: 'handoff', to: 'location', label: '', kind: 'elbow-up', alt: true },
+    { from: 'location', to: 'handoff', label: 'Continue', kind: 'elbow-down', alt: true },
+    { from: 'handoff', to: 'bag', label: '', kind: 'elbow-down', alt: true },
+    // ── category branch (purple) ──
+    { from: 'menu', to: 'category', label: 'Tap a category', label2: 'Location preselected', kind: 'elbow-down' },
+    { from: 'category', to: 'quantity', label: 'Tap Product', kind: 'h' },
+    { from: 'quantity', to: 'category', label: 'Add Product', label2: 'Added to My Bag', kind: 'h', alt: true },
+    { from: 'category', to: 'bag', label: 'Tap Bag Icon', kind: 'elbow-up' },
+    // ── loops ──
+    { from: 'bag', to: 'menu', label: 'Add more', kind: 'return', alt: true },
+    { from: 'confirmation', to: 'menu', label: 'Will send to scrolled location', kind: 'return', alt: true },
   ] as MvpEdge[],
   scenarios: [
     {
@@ -187,14 +209,14 @@ export const mvp = {
     {
       id: 'category',
       title: 'Add from a category',
-      blurb: 'Open a menu category, set quantity in a popup, then send it to the bag.',
-      path: ['menu', 'category', 'quantity', 'bag', 'checkout', 'confirmation'],
+      blurb: 'From the homepage menu, open a category, set quantity in a popup; the item is added, then tap the bag to check out.',
+      path: ['home', 'menu', 'category', 'quantity', 'category', 'bag', 'checkout', 'confirmation'],
     },
     {
       id: 'location',
       title: 'Choose a location',
-      blurb: 'When no store is set, a handoff popup resolves location before the order continues.',
-      path: ['product', 'restaurant', 'product', 'bag', 'checkout', 'confirmation'],
+      blurb: 'With no store set, the order detours through a location handoff before continuing to checkout.',
+      path: ['home', 'menu', 'product', 'restaurant', 'productSel', 'bag', 'handoff', 'location', 'handoff', 'bag', 'checkout', 'confirmation'],
     },
   ] as MvpScenario[],
 }

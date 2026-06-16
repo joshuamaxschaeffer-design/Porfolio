@@ -114,6 +114,17 @@ function NodeGlyph({ glyph, lit }: { glyph: MvpGlyph; lit: boolean }) {
           {r(3, 33, 24, 4, accent, 2)}
         </g>
       )
+    case 'handoff':
+      // a settings/handoff card: pin + two toggle rows (pickup / delivery)
+      return (
+        <g>
+          {r(3, 3, 24, 7, soft, 2)}
+          <path d="M9 4.2c1.7 0 3 1.3 3 3 0 2-3 4.6-3 4.6S6 9.2 6 7.2c0-1.7 1.3-3 3-3z" fill={lit ? RED : '#bcbcc4'} />
+          {r(3, 15, 18, 4, line)}<circle cx="25" cy="17" r="2.6" fill={accent} />
+          {r(3, 23, 18, 4, line)}<circle cx="25" cy="25" r="2.6" fill={line} />
+          {r(3, 33, 24, 5, accent, 2.5)}
+        </g>
+      )
   }
 }
 
@@ -133,7 +144,7 @@ function PhoneTile({ node, lit, w = NODE_W }: { node: MvpNode; lit: boolean; w?:
         transform: lit ? 'translateY(-2px)' : 'none',
       }}
     >
-      <svg viewBox="0 0 30 46" className="absolute inset-0 m-auto" style={{ width: '64%', height: '64%' }} aria-hidden>
+      <svg viewBox="0 0 30 46" className="absolute inset-0 m-auto" style={{ width: '80%', height: '82%' }} aria-hidden>
         <NodeGlyph glyph={node.glyph} lit={lit} />
       </svg>
     </div>
@@ -152,9 +163,25 @@ function nodeCenter(n: MvpNode): Pt {
   return { x: colX(n.col), y: rowY(n.row) }
 }
 
+/** Extra vertical room below the spine (viewBox units) for the two return
+ *  rails. Must clear the bottom-row nodes (category/quantity) and their labels. */
+const RETURN_PAD = 70
+/** depth of a return edge's bottom rail, keyed so the two loops don't overlap. */
+function returnRail(from: MvpNode): number {
+  return from.id === 'confirmation' ? VBH + RETURN_PAD - 12 : VBH + RETURN_PAD - 32
+}
+
 function buildPath(from: MvpNode, to: MvpNode, kind?: string): string {
   const a = nodeCenter(from)
   const b = nodeCenter(to)
+  if (kind === 'return') {
+    // drop out the bottom of `from`, run along a low rail, rise into the
+    // bottom of `to` (used for the Add-more / scrolled-location loops).
+    const ay = a.y + hh
+    const by = b.y + hh
+    const railY = returnRail(from)
+    return `M ${a.x} ${ay} L ${a.x} ${railY} L ${b.x} ${railY} L ${b.x} ${by}`
+  }
   if (kind === 'h' || (!kind && Math.abs(a.y - b.y) < 1)) {
     // straight horizontal between facing edges
     const dir = b.x > a.x ? 1 : -1
@@ -187,6 +214,9 @@ function buildPath(from: MvpNode, to: MvpNode, kind?: string): string {
 function edgeLabelPos(from: MvpNode, to: MvpNode, kind?: string): Pt {
   const a = nodeCenter(from)
   const b = nodeCenter(to)
+  if (kind === 'return') {
+    return { x: (a.x + b.x) / 2, y: returnRail(from) }
+  }
   if (kind === 'h' || (!kind && Math.abs(a.y - b.y) < 1)) {
     return { x: (a.x + b.x) / 2, y: a.y - 14 }
   }
@@ -226,9 +256,18 @@ function DesktopDiagram({ activeId, progress, reduced }: DiagramProps) {
   // Which step indices are revealed yet (sequential draw). reduced = all at once.
   const revealedStep = reduced ? scenario.path.length : progress
 
+  // is this directed edge part of the active path, and has it been drawn yet?
+  const edgeStep = (fromId: string, toId: string): number => {
+    for (let i = 0; i < scenario.path.length - 1; i++) {
+      if (scenario.path[i] === fromId && scenario.path[i + 1] === toId) return i
+    }
+    return -1
+  }
+
   return (
-    <div className="relative aspect-[1200/500] w-full">
-      <svg viewBox={`0 0 ${VBW} ${VBH}`} className="absolute inset-0 h-full w-full" aria-hidden>
+    // extra bottom room (RETURN_PAD) holds the two return rails below the diagram
+    <div className="relative w-full" style={{ aspectRatio: `${VBW} / ${VBH + RETURN_PAD}` }}>
+      <svg viewBox={`0 0 ${VBW} ${VBH + RETURN_PAD}`} className="absolute inset-0 h-full w-full" aria-hidden>
         <defs>
           <marker id="mvp-arrow-dim" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
             <path d="M0 1L8 5L0 9" fill="none" stroke="#cfcfd6" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
@@ -238,24 +277,21 @@ function DesktopDiagram({ activeId, progress, reduced }: DiagramProps) {
           </marker>
         </defs>
 
-        {/* layer 1 — every edge, dim */}
+        {/* layer 1 — every edge, dim (alt branches dashed + fainter) */}
         <g>
-          {edges.map((e, i) => {
-            const from = nodeById.get(e.from)!
-            const to = nodeById.get(e.to)!
-            return (
-              <path
-                key={`dim-${i}`}
-                d={buildPath(from, to, e.kind)}
-                fill="none"
-                stroke="#e2e2e8"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                markerEnd="url(#mvp-arrow-dim)"
-              />
-            )
-          })}
+          {edges.map((e, i) => (
+            <path
+              key={`dim-${i}`}
+              d={buildPath(nodeById.get(e.from)!, nodeById.get(e.to)!, e.kind)}
+              fill="none"
+              stroke={e.alt ? '#e7e7ec' : '#dadae1'}
+              strokeWidth="2"
+              strokeDasharray={e.alt ? '5 5' : undefined}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              markerEnd="url(#mvp-arrow-dim)"
+            />
+          ))}
         </g>
 
         {/* layer 2 — active path edges, red, drawn sequentially */}
@@ -265,16 +301,14 @@ function DesktopDiagram({ activeId, progress, reduced }: DiagramProps) {
             const edge =
               edges.find((e) => e.from === fromId && e.to === toId) ??
               ({ from: fromId, to: toId } as (typeof edges)[number])
-            const from = nodeById.get(fromId)!
-            const to = nodeById.get(toId)!
             const drawn = stepIdx < revealedStep
             return (
               <path
                 key={`lit-${stepIdx}`}
-                d={buildPath(from, to, edge.kind)}
+                d={buildPath(nodeById.get(fromId)!, nodeById.get(toId)!, edge.kind)}
                 fill="none"
                 stroke={RED}
-                strokeWidth="2.75"
+                strokeWidth="3"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 markerEnd="url(#mvp-arrow-lit)"
@@ -291,47 +325,63 @@ function DesktopDiagram({ activeId, progress, reduced }: DiagramProps) {
         </g>
       </svg>
 
-      {/* edge-label pills on the active path (HTML, positioned over the SVG) */}
-      {scenario.path.slice(0, -1).map((fromId, stepIdx) => {
-        const toId = scenario.path[stepIdx + 1]
-        const edge = edges.find((e) => e.from === fromId && e.to === toId)
-        if (!edge?.label) return null
-        const pos = edgeLabelPos(nodeById.get(fromId)!, nodeById.get(toId)!, edge.kind)
-        const drawn = stepIdx < revealedStep
-        return (
+      {/* EDGE LABELS — every label always rendered as a readable pill.
+          Dim = white pill + hairline border; on the active (drawn) path = solid
+          red. label2 is nudged further along the edge so the two never stack. */}
+      {edges.map((e, i) => {
+        if (!e.label && !e.label2) return null
+        const from = nodeById.get(e.from)!
+        const to = nodeById.get(e.to)!
+        const pos = edgeLabelPos(from, to, e.kind)
+        const step = edgeStep(e.from, e.to)
+        const onPath = step >= 0
+        const active = onPath && step < revealedStep
+        const horizontal = e.kind === 'h' || e.kind === 'return'
+        const pill = (text: string, k: string, shift: number) => (
           <span
-            key={`pill-${stepIdx}`}
-            className="br-data pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full px-2 py-[3px] text-[10.5px] font-medium leading-none text-white transition-opacity duration-300"
+            key={`${i}-${k}`}
+            className="br-data pointer-events-none absolute z-20 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full px-2 py-[3px] text-[10px] font-medium leading-none transition-colors duration-300"
             style={{
-              left: `${(pos.x / VBW) * 100}%`,
-              top: `${(pos.y / VBH) * 100}%`,
-              background: RED,
-              opacity: drawn ? 1 : 0,
+              left: `${((pos.x + (horizontal ? 0 : shift)) / VBW) * 100}%`,
+              top: `${((pos.y + (horizontal ? shift : 0)) / (VBH + RETURN_PAD)) * 100}%`,
+              background: active ? RED : '#ffffff',
+              color: active ? '#ffffff' : 'var(--br-muted)',
+              border: active ? '1px solid transparent' : '1px solid var(--br-line)',
+              boxShadow: '0 1px 3px rgba(7,14,44,0.06)',
             }}
           >
-            {edge.label}
+            {text}
+          </span>
+        )
+        return (
+          <span key={`lbl-${i}`}>
+            {e.label ? pill(e.label, 'a', e.label2 ? -10 : 0) : null}
+            {e.label2 ? pill(e.label2, 'b', 12) : null}
           </span>
         )
       })}
 
-      {/* nodes, positioned over the SVG */}
+      {/* NODES, positioned over the SVG */}
       {nodes.map((n) => {
         const lit = activeNodeIds.has(n.id)
-        // a node counts as "reached" once the step that arrives at it is drawn
         const arrivalIdx = scenario.path.indexOf(n.id)
-        const reached = lit && (arrivalIdx <= revealedStep)
+        const reached = lit && arrivalIdx <= revealedStep
         return (
           <div
             key={n.id}
-            className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
-            style={{ left: `${(colX(n.col) / VBW) * 100}%`, top: `${(rowY(n.row) / VBH) * 100}%` }}
+            className="absolute z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center"
+            style={{ left: `${(colX(n.col) / VBW) * 100}%`, top: `${(rowY(n.row) / (VBH + RETURN_PAD)) * 100}%` }}
           >
             <div style={{ width: NODE_W }}>
               <PhoneTile node={n} lit={reached} />
             </div>
+            {/* label gets its own backing pill so it reads over any line */}
             <span
-              className="mt-1.5 max-w-[92px] text-center text-[10.5px] font-medium leading-tight transition-colors duration-300"
-              style={{ color: reached ? 'var(--br-ink)' : '#aeaeb6' }}
+              className="mt-1.5 max-w-[100px] rounded-[5px] px-1.5 py-0.5 text-center text-[10.5px] font-medium leading-tight transition-colors duration-300"
+              style={{
+                color: reached ? '#ffffff' : 'var(--br-muted)',
+                background: reached ? RED : 'var(--br-bg-2)',
+              }}
             >
               {n.label}
             </span>
@@ -420,16 +470,16 @@ function ScenarioChips({
             onClick={() => onPick(s.id)}
             className="group flex items-center gap-2 rounded-full border px-4 py-2 text-[14px] font-medium leading-none transition-colors duration-200 md:text-[15px]"
             style={{
-              borderColor: active ? RED : 'var(--br-line)',
-              background: active ? RED : 'white',
-              color: active ? 'white' : 'var(--br-muted)',
+              borderColor: active ? 'white' : 'rgba(255,255,255,0.5)',
+              background: active ? 'white' : 'rgba(255,255,255,0.10)',
+              color: active ? 'var(--px-red)' : 'white',
             }}
           >
             <span
               className="br-data grid h-5 w-5 place-items-center rounded-full text-[11px] transition-colors duration-200"
               style={{
-                background: active ? 'rgba(255,255,255,0.22)' : 'var(--br-bg-2)',
-                color: active ? 'white' : 'var(--px-red)',
+                background: active ? 'var(--px-red)' : 'rgba(255,255,255,0.18)',
+                color: 'white',
               }}
             >
               {i + 1}
@@ -501,46 +551,46 @@ export function MvpFlowSection({ intro }: { intro?: string } = {}) {
   const lead = intro ?? data.intro
 
   return (
-    <section id="mvp" className="bg-white">
-      <div className="br-container pt-16 pb-20 md:pt-20 md:pb-[120px]">
+    <section id="mvp" className="bg-[var(--px-red)] text-white">
+      <div className="br-container pt-16 pb-20 md:pt-24 md:pb-[120px]">
         {/* ── header ─────────────────────────────────────────────── */}
-        <h2 className="text-[32px] font-medium uppercase leading-none text-[var(--br-ink)] md:text-[40px]">
+        <h2 className="text-[32px] font-medium uppercase leading-none text-white md:text-[40px]">
           4. {data.heading}
         </h2>
-        <p className="mt-5 max-w-3xl text-lg leading-snug text-[var(--br-muted)] md:text-[22px]">
+        <p className="mt-5 max-w-3xl text-lg leading-snug text-white/90 md:text-[22px]">
           {lead}
         </p>
 
         {/* ── Core UX callout + scenario chips ───────────────────── */}
         <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)] lg:items-end md:mt-12">
-          <div className="rounded-[var(--br-card-radius)] border border-[var(--br-line)] bg-[var(--br-bg-2)] p-6 md:p-7">
+          <div className="rounded-[var(--br-card-radius)] border border-white/40 bg-white/10 p-6 md:p-7">
             <div className="flex items-center gap-2.5">
-              <span className="grid h-7 w-7 place-items-center rounded-full" style={{ background: RED }}>
-                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="white" strokeWidth="2.2" aria-hidden>
+              <span className="grid h-7 w-7 place-items-center rounded-full bg-white">
+                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="var(--px-red)" strokeWidth="2.4" aria-hidden>
                   <path d="M4 7h16M4 12h16M4 17h10" strokeLinecap="round" />
                 </svg>
               </span>
-              <h3 className="text-[20px] font-semibold uppercase leading-none text-[var(--br-ink)] md:text-[22px]">
+              <h3 className="text-[20px] font-semibold uppercase leading-none text-white md:text-[22px]">
                 {data.callout.title}
               </h3>
             </div>
-            <p className="mt-3 text-[15px] leading-snug text-[var(--br-muted)] md:text-base">
+            <p className="mt-3 text-[15px] leading-snug text-white/90 md:text-base">
               {data.callout.body}
             </p>
           </div>
 
           <div className="flex flex-col gap-3">
             <ScenarioChips activeId={activeId} onPick={pick} />
-            <p className="br-data text-[13px] leading-snug text-[var(--br-muted-2)]">
+            <p className="br-data text-[13px] leading-snug text-white/75">
               {data.scenarios[activeIdx].blurb}
             </p>
           </div>
         </div>
 
-        {/* ── the flow ───────────────────────────────────────────── */}
+        {/* ── the flow — white card on the red field so the highlight reads ── */}
         <div
           ref={ref}
-          className="relative mt-8 overflow-hidden rounded-[var(--br-card-radius)] border border-[var(--br-line)] bg-white p-5 md:mt-10 md:p-8"
+          className="relative mt-8 overflow-hidden rounded-[var(--br-card-radius)] bg-white p-5 shadow-[0_18px_40px_rgba(0,0,0,0.18)] md:mt-10 md:p-8"
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
           onFocusCapture={() => setPaused(true)}
@@ -557,8 +607,8 @@ export function MvpFlowSection({ intro }: { intro?: string } = {}) {
         </div>
 
         {/* converge note + autoplay legend */}
-        <p className="mt-5 flex items-center gap-2 text-[14px] leading-snug text-[var(--br-muted)] md:text-[15px]">
-          <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: RED }} aria-hidden />
+        <p className="mt-5 flex items-center gap-2 text-[14px] leading-snug text-white/85 md:text-[15px]">
+          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-white" aria-hidden />
           {data.hint}
         </p>
       </div>
