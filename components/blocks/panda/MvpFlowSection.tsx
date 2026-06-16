@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { mvp as defaults, type MvpGlyph, type MvpNode } from './data'
+import { ComponentLibrariesSection } from './ComponentLibrariesSection'
 
 /**
  * Section 4 — MVP Fast-Launch / Core UX.
@@ -611,6 +612,12 @@ export function MvpFlowSection({ intro }: { intro?: string } = {}) {
           <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-white" aria-hidden />
           {data.hint}
         </p>
+
+        {/* Component Libraries — the design system that shipped with the MVP.
+            Lives inside this red section, below the UX chart and above the
+            "Seamless Simple Reordering" band. Contained mode = no own red
+            band/container (this section already supplies both). */}
+        <ComponentLibrariesSection />
       </div>
     </section>
   )
