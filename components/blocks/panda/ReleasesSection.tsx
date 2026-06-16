@@ -1,13 +1,26 @@
+'use client'
+
+import { useEffect, useRef } from 'react'
+import {
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring,
+  useTransform,
+  type MotionValue,
+} from 'motion/react'
 import { releases as defaults } from './data'
+import { RewardsRadial } from './RewardsRadial'
+
 const P = '/panda/pivot'
 
 /**
  * Section 3 — "2020 Pivot". Two cards: the MVP Fast-Launch (web-first) and the
  * Full Rewards App (native). Every visual element is placed individually with a
  * stable `data-anim` hook and its own absolutely-positioned node, so each piece
- * (phones, shadows, badge, radial, screenshot) can be animated independently
- * later. The rewards card's front-phone cast shadow is CLIPPED to the back
- * phone (Phone 1 shadow masked to Phone 2's rounded-rect footprint).
+ * (phones, shadows, badge, radial, screenshot) can be animated independently.
+ * The rewards card's front-phone cast shadow is CLIPPED to the back phone
+ * (Phone 1 shadow masked to Phone 2's rounded-rect footprint).
  *
  * Figma: node 285:24956. Assets in /public/panda/pivot.
  */
@@ -89,15 +102,111 @@ function MvpCard() {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
+ * Scroll progress — signed "centeredness" of the stage, exactly the technique
+ * the BrandingHero uses. A rAF listener measures the stage's centre against the
+ * viewport centre and yields a value in [-0.5, +0.5]: -0.5 while entering from
+ * below, 0 dead-centre, +0.5 while leaving up top. Wrapped in a spring so the
+ * scrub feels weighty rather than 1:1 with the wheel.
+ * ───────────────────────────────────────────────────────────────────────── */
+function useCenteredness(ref: React.RefObject<HTMLElement | null>, enabled: boolean): MotionValue<number> {
+  const raw = useMotionValue(0)
+  const spring = useSpring(raw, { stiffness: 70, damping: 22, mass: 0.6 })
+
+  useEffect(() => {
+    if (!enabled) {
+      raw.set(0)
+      return
+    }
+    const el = ref.current
+    if (!el) return
+    let frame = 0
+    const measure = () => {
+      frame = 0
+      const rect = el.getBoundingClientRect()
+      const vh = window.innerHeight || 1
+      const center = rect.top + rect.height / 2
+      const v = (vh / 2 - center) / ((rect.height + vh) / 2)
+      raw.set(Math.max(-0.5, Math.min(0.5, v)))
+    }
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(measure)
+    }
+    measure()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      if (frame) cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
+  }, [ref, enabled, raw])
+
+  return spring
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
  * FULL REWARDS APP card — Panda-red field. A floating Panda badge overlaps the
  * top edge, then heading + body, then a phone "stage": a radial burst behind
- * two overlapping phones, each device + each cast shadow placed as its own
- * absolutely-positioned node (percentages of the stage, so it scales). The
- * front phone's cast shadow (phone1-shadow) is CLIPPED to the back phone
- * (phone2) via a rounded-rect overflow window matching phone2's footprint.
- * All nodes carry `data-anim` hooks for later animation.
+ * two overlapping phones.
+ *
+ * SCROLL CHOREOGRAPHY (scrubbed + reversible):
+ *   `a` ∈ [0,1] is the entry amount, 1 while the card is still low on screen,
+ *   easing to 0 as it reaches centre (and only the entering half drives it —
+ *   past centre it holds at rest, so the phones don't fly back out the top).
+ *
+ *   At a=1 the phones are displaced OUT toward their own sides + DOWN and a
+ *   touch over-rotated, then slide/settle into the exact Figma overlap at a=0.
+ *
+ *   Shadows follow real-ish physics, per the brief:
+ *     • move WITH the device horizontally (same direction),
+ *     • rotate the OPPOSITE direction to the device,
+ *     • as the device lifts in (a→1) the shadow drops DOWN, gets LIGHTER and
+ *       BLURRIER (device floating above the surface); at rest (a=0) every
+ *       shadow returns to its exact Figma offset / opacity / sharpness.
+ *   Phone 1's cast shadow stays CLIPPED to Phone 2 the whole time (the mask
+ *   window itself never moves; only the shadow art inside it animates).
  * ───────────────────────────────────────────────────────────────────────── */
 function RewardsCard() {
+  const reduce = useReducedMotion()
+  const stageRef = useRef<HTMLDivElement>(null)
+  const centered = useCenteredness(stageRef, !reduce)
+
+  // Entry amount: 1 far below centre → 0 at/above centre. Only the lower
+  // (entering) half scrubs; clamp keeps it from re-triggering on the way out.
+  const a = useTransform(centered, (c) => Math.max(0, Math.min(1, -c * 2)))
+
+  // ── Phone 1 (front / left): slides in from lower-left, slightly extra CCW.
+  const p1x = useTransform(a, (v) => -70 * v)
+  const p1y = useTransform(a, (v) => 60 * v)
+  const p1r = useTransform(a, (v) => -8 * v)
+  // ── Phone 2 (back / right): slides in from lower-right, slightly extra CW.
+  const p2x = useTransform(a, (v) => 70 * v)
+  const p2y = useTransform(a, (v) => 60 * v)
+  const p2r = useTransform(a, (v) => 8 * v)
+
+  // ── Shadows. Horizontal: track the device (same sign). Rotation: opposite.
+  // Vertical/elevation: as a→1 push DOWN + lighter + blurrier.
+  // Phone 1 back/ambient shadow couples to Phone 1.
+  const s1x = useTransform(a, (v) => -70 * v) // with device
+  const s1y = useTransform(a, (v) => 60 * v + 26 * v) // device-down + extra lift drop
+  const s1r = useTransform(a, (v) => 8 * v) // opposite of device's -8
+  const s1op = useTransform(a, (v) => 0.3 * (1 - 0.6 * v)) // 0.30 → lighter
+  const s1blur = useTransform(a, (v) => `blur(${10 * v}px)`)
+  // Phone 2 back shadow couples to Phone 2.
+  const s2x = useTransform(a, (v) => 70 * v)
+  const s2y = useTransform(a, (v) => 60 * v + 26 * v)
+  const s2r = useTransform(a, (v) => -8 * v) // opposite of device's +8
+  const s2op = useTransform(a, (v) => 0.3 * (1 - 0.6 * v))
+  const s2blur = useTransform(a, (v) => `blur(${10 * v}px)`)
+  // Phone 1's CLIPPED cast shadow on Phone 2 couples to Phone 1's motion, but
+  // only its art moves inside the fixed mask window. Drops down + lightens +
+  // blurs as Phone 1 lifts in.
+  const cs1x = useTransform(a, (v) => -70 * v)
+  const cs1y = useTransform(a, (v) => 60 * v + 22 * v)
+  const cs1r = useTransform(a, (v) => 8 * v)
+  const cs1op = useTransform(a, (v) => 0.9 * (1 - 0.55 * v))
+  const cs1blur = useTransform(a, (v) => `blur(${8 * v}px)`)
+
   return (
     <div data-anim="rewards-card" className="relative">
       {/* floating Panda badge — sibling of the clipped card so it can overhang
@@ -129,73 +238,58 @@ function RewardsCard() {
       </p>
 
       {/* ── phone stage ──────────────────────────────────────────────
-          Exact 1:1 from the Figma "Group 3877" (715.26 × 611.50). Positions,
-          sizes, ROTATIONS and OPACITY all pulled from the Figma node:
-          - back shadows: their art is rotated inside an axis-aligned box
-            (−26.51° / 22.41°) and sit at OPACITY 0.30 (this is why they read as
-            soft drops, not black boxes);
-          - phone1's cast shadow ("Mask group") is the pre-shaped shadow that
-            falls onto phone 2, placed at its exact Figma rect;
-          - radial is the masked donut (radial-masked.svg) so the centre stays
-            clear behind the phones.
-          Phones are flat layers (tilt baked into the PNG — no CSS rotation). */}
-      {/* stage breaks fully out of the card's side padding (px-6 / md:px-10) so
-          the radial + phones fill the red card edge-to-edge. The whole group is
-          then scaled up ~30% and nudged down ~60px (transform doesn't affect
-          layout — the card clips the bleed) so the phones sit larger and lower
-          in the red box, per Joshua. */}
+          Exact 1:1 from the Figma "Group 3877" (715.26 × 611.50). Stage breaks
+          fully out of the card's side padding so the radial + phones fill the
+          red card edge-to-edge, then the whole group is scaled up ~30% and
+          nudged down ~60px. Phones + shadows scrub in on scroll (see header). */}
       <div
+        ref={stageRef}
         data-anim="rewards-stage"
         className="relative -mx-6 -mt-2 aspect-[715.26/611.5] w-[calc(100%+3rem)] [transform:translateY(48px)_scale(1.3)] [transform-origin:center_top] md:-mx-10 md:w-[calc(100%+5rem)] md:[transform:translateY(60px)_scale(1.3)]"
       >
-        {/* radial burst (masked to a ring), centered behind the phones */}
-        <img
-          data-anim="rewards-radial"
-          src={`${P}/radial-masked.svg`}
-          alt=""
-          aria-hidden
+        {/* radial burst (masked to a ring), centered behind the phones. Inlined
+            SVG so each spoke animates from the centre outward on first view. */}
+        <RewardsRadial
           className="pointer-events-none absolute z-0 max-w-none"
           style={{ left: '6.96%', top: '1.96%', width: '90.88%' }}
         />
 
         {/* BACK phone's drop shadow (Phone 2 Back Shadow) — rot 22.41°, op .30 */}
-        <div
+        <motion.div
           data-anim="rewards-phone2-back-shadow"
           className="pointer-events-none absolute z-[5] flex items-center justify-center"
-          style={{ left: '34.40%', top: '14.58%', width: '65.60%', height: '85.42%' }}
+          style={{ left: '34.40%', top: '14.58%', width: '65.60%', height: '85.42%', x: s2x, y: s2y, rotate: s2r, opacity: s2op, filter: s2blur }}
         >
-          <div className="opacity-30" style={{ width: '70.50%', height: '82.06%', transform: 'rotate(22.41deg)' }}>
+          <div style={{ width: '70.50%', height: '82.06%', transform: 'rotate(22.41deg)' }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={`${P}/phone2-back-shadow.webp`} alt="" aria-hidden className="h-full w-full max-w-none object-cover" />
           </div>
-        </div>
+        </motion.div>
         {/* FRONT phone's back/ambient shadow (Phone 1 back shadow) — rot −26.51°, op .30 */}
-        <div
+        <motion.div
           data-anim="rewards-phone1-back-shadow"
           className="pointer-events-none absolute z-[5] flex items-center justify-center"
-          style={{ left: '0%', top: '0%', width: '68.72%', height: '86.28%' }}
+          style={{ left: '0%', top: '0%', width: '68.72%', height: '86.28%', x: s1x, y: s1y, rotate: s1r, opacity: s1op, filter: s1blur }}
         >
-          <div className="opacity-30" style={{ width: '69.11%', height: '79.63%', transform: 'rotate(-26.51deg)' }}>
+          <div style={{ width: '69.11%', height: '79.63%', transform: 'rotate(-26.51deg)' }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={`${P}/phone1-back-shadow.webp`} alt="" aria-hidden className="h-full w-full max-w-none object-cover" />
           </div>
-        </div>
+        </motion.div>
 
         {/* BACK phone (Phone 2) */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <motion.img
           data-anim="rewards-phone2"
           src={`${P}/phone2.webp`}
           alt="Panda Rewards — upgrade to premium entrée screen"
           className="absolute z-10 max-w-none"
-          style={{ left: '40.60%', top: '16.52%', width: '45.81%', height: '60.47%' }}
+          style={{ left: '40.60%', top: '16.52%', width: '45.81%', height: '60.47%', x: p2x, y: p2y, rotate: p2r }}
         />
 
         {/* CLIPPED shadow: Phone 1's cast shadow falling onto Phone 2. The clip
             box is placed at Phone 2's EXACT rect and uses phone2.webp itself as a
-            CSS mask, so the shadow is clipped to Phone 2's real silhouette
-            (rounded corners + baked-in tilt) — no hand-built vector shape. The
-            shadow art inside is offset to the upper-left, where Phone 1 overlaps. */}
+            CSS mask, so the shadow is clipped to Phone 2's real silhouette. The
+            mask window never moves; only the shadow art inside it animates. */}
         <div
           data-anim="rewards-phone1-shadow"
           className="pointer-events-none absolute z-[15]"
@@ -213,23 +307,22 @@ function RewardsCard() {
           }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <motion.img
             src={`${P}/phone1-shadow.webp`}
             alt=""
             aria-hidden
-            className="absolute max-w-none opacity-90"
-            style={{ left: '-33.75%', top: '36.51%', width: '78.56%', height: '62.78%' }}
+            className="absolute max-w-none"
+            style={{ left: '-33.75%', top: '36.51%', width: '78.56%', height: '62.78%', x: cs1x, y: cs1y, rotate: cs1r, opacity: cs1op, filter: cs1blur }}
           />
         </div>
 
         {/* FRONT phone (Phone 1) */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <motion.img
           data-anim="rewards-phone1"
           src={`${P}/phone1.webp`}
           alt="Panda Rewards — 520 Panda Points home screen"
           className="absolute z-20 max-w-none"
-          style={{ left: '15.30%', top: '6.10%', width: '45.81%', height: '60.47%' }}
+          style={{ left: '15.30%', top: '6.10%', width: '45.81%', height: '60.47%', x: p1x, y: p1y, rotate: p1r }}
         />
       </div>
       </div>
