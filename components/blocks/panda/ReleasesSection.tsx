@@ -38,11 +38,13 @@ export function ReleasesSection({ intro }: { intro?: string } = {}) {
           <MvpCard />
           <RewardsCard />
         </div>
-
-        {/* Second item inside the MVP Fast-Launch story: the component library
-            that shipped with it (palette, controls, icon set, type scale). */}
-        <ComponentLibrariesSection />
       </div>
+
+      {/* Second item inside the MVP Fast-Launch story: the component library that
+          shipped with it (palette, controls, icon set, type scale). Sits OUTSIDE
+          the padded br-container so its full-bleed red band butts cleanly against
+          the section edges (the band re-establishes its own container inside). */}
+      <ComponentLibrariesSection />
     </section>
   )
 }
