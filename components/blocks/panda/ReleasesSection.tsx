@@ -102,13 +102,16 @@ function MvpCard() {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
- * Scroll progress — signed "centeredness" of the stage, exactly the technique
- * the BrandingHero uses. A rAF listener measures the stage's centre against the
- * viewport centre and yields a value in [-0.5, +0.5]: -0.5 while entering from
- * below, 0 dead-centre, +0.5 while leaving up top. Wrapped in a spring so the
- * scrub feels weighty rather than 1:1 with the wheel.
+ * Entry progress — 0 → 1 as the stage scrolls up through a FIXED, viewport-
+ * relative window: progress 0 when the stage top is near the bottom of the
+ * viewport (devices just entering), progress 1 when the stage top reaches just
+ * above centre (settled, card in the middle of the screen). Anchored to vh
+ * fractions, NOT the section height, so it completes at the same on-screen
+ * position on tall and short viewports alike (the old centeredness scheme
+ * normalised by section height, so a tall card on a short viewport didn't
+ * finish until it was nearly scrolled off the top). Spring-smoothed for weight.
  * ───────────────────────────────────────────────────────────────────────── */
-function useCenteredness(ref: React.RefObject<HTMLElement | null>, enabled: boolean): MotionValue<number> {
+function useEntryProgress(ref: React.RefObject<HTMLElement | null>, enabled: boolean): MotionValue<number> {
   const raw = useMotionValue(0)
   const spring = useSpring(raw, { stiffness: 70, damping: 22, mass: 0.6 })
 
@@ -124,9 +127,18 @@ function useCenteredness(ref: React.RefObject<HTMLElement | null>, enabled: bool
       frame = 0
       const rect = el.getBoundingClientRect()
       const vh = window.innerHeight || 1
-      const center = rect.top + rect.height / 2
-      const v = (vh / 2 - center) / ((rect.height + vh) / 2)
-      raw.set(Math.max(-0.5, Math.min(0.5, v)))
+      // Entry PROGRESS driven by a fixed viewport-relative window — NOT the
+      // section size — so it behaves the same on tall and short viewports.
+      // The stage TOP travels from ENTER_AT (just entering, near the bottom)
+      // up to DONE_AT (just above centre). progress 0 → 1 across that window;
+      // it completes by the time the card reaches the middle of the screen and
+      // then holds. (Independent of stage height, which is what broke short
+      // viewports before.)
+      const ENTER_AT = 0.95 * vh // stage top here → progress 0 (devices entering)
+      const DONE_AT = 0.45 * vh // stage top here → progress 1 (settled, ~centre)
+      const top = rect.top
+      const progress = (ENTER_AT - top) / (ENTER_AT - DONE_AT)
+      raw.set(Math.max(0, Math.min(1, progress)))
     }
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(measure)
@@ -169,18 +181,17 @@ function useCenteredness(ref: React.RefObject<HTMLElement | null>, enabled: bool
 function RewardsCard() {
   const reduce = useReducedMotion()
   const stageRef = useRef<HTMLDivElement>(null)
-  const centered = useCenteredness(stageRef, !reduce)
+  // progress: 0 as the devices enter the bottom of the screen → 1 when the card
+  // reaches the middle (fixed viewport window, height-independent).
+  const progress = useEntryProgress(stageRef, !reduce)
 
-  // Entry amount: 1 while the card is low on screen → 0 by the time it reaches
-  // the MIDDLE of the viewport. Linear progress first (finishes a touch BEFORE
-  // dead-centre, c ≈ -0.19, so it visibly completes in the middle, not above),
-  // then an EASE-OUT so the devices decelerate as they settle — fast as they
-  // fly in, slowing right at the end into the resting Figma pose. We ease the
-  // displacement a = aLin^2 toward 0 (cubic-ish slow-down near rest). Past
-  // centre it holds at rest (clamp), so it never flies back out the top.
-  const a = useTransform(centered, (c) => {
-    const aLin = Math.max(0, Math.min(1, -c * 2.7))
-    return aLin * aLin // ease-out toward rest (slows down at the end)
+  // Displacement amount: 1 when entering (progress 0) → 0 when settled
+  // (progress 1), with an EASE-OUT so the devices decelerate into the resting
+  // Figma pose — fast as they fly in, slowing at the end. (1-p)^2 eases the
+  // displacement toward 0 near the end.
+  const a = useTransform(progress, (p) => {
+    const d = 1 - p
+    return d * d // ease-out toward rest (slows down at the end)
   })
 
   // Both phones sit 80px higher than their raw Figma slot so their centres land
