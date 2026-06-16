@@ -67,6 +67,138 @@ export const releases = {
   },
 }
 
+/* ─────────────────────────────────────────────────────────────────────────
+ * MVP FAST-LAUNCH — Core UX (section 4)
+ * The MVP shipped barebones ordering. Its UX was mapped as 4 core scenarios
+ * that all converge on one checkout spine. Source of truth: the original UX
+ * flow (Figma node 278:73643) — the four color-coded paths in that diagram are
+ * reproduced here as selectable, step-by-step flows. `screen` selects which
+ * simple vector mock the phone renders for that step.
+ * ───────────────────────────────────────────────────────────────────────── */
+
+/**
+ * Modeled as a node/edge graph so the section can draw the WHOLE flow once
+ * (like Joshua's original slides) and then light up ONE scenario's path at a
+ * time over a dimmed diagram. Coordinates are in a normalized 12×5 grid
+ * (col 0–11, row 0–4) laid out to echo the source flowchart: a checkout spine
+ * across the middle (row 2.5) with promo/location branches above and the
+ * category branch below.
+ */
+
+/** Glyph drawn inside a node's little phone (kept deliberately schematic). */
+export type MvpGlyph =
+  | 'home' | 'menu' | 'product' | 'bag' | 'checkout' | 'confirmation'
+  | 'promo' | 'popup' | 'category' | 'quantity' | 'location' | 'productSel'
+
+export interface MvpNode {
+  id: string
+  label: string
+  glyph: MvpGlyph
+  /** grid centre (col 0–11, row 0–4) */
+  col: number
+  row: number
+}
+
+export interface MvpEdge {
+  from: string
+  to: string
+  /** pill label on the edge, e.g. "Tap a promo" */
+  label?: string
+  /** routing hint for the SVG connector */
+  kind?: 'h' | 'v' | 'elbow-up' | 'elbow-down'
+}
+
+export interface MvpScenario {
+  id: string
+  title: string
+  blurb: string
+  /** ordered node ids the path visits */
+  path: string[]
+}
+
+/** Shared spine — every scenario ends on these last three. */
+const SPINE: MvpNode[] = [
+  { id: 'home', label: 'Homepage', glyph: 'home', col: 0.5, row: 2.5 },
+  { id: 'menu', label: 'Menu', glyph: 'menu', col: 2.7, row: 2.5 },
+  { id: 'product', label: 'Product Page', glyph: 'product', col: 5.3, row: 2.5 },
+  { id: 'bag', label: 'My Bag', glyph: 'bag', col: 7.8, row: 2.5 },
+  { id: 'checkout', label: 'Checkout', glyph: 'checkout', col: 9.7, row: 2.5 },
+  { id: 'confirmation', label: 'Confirmation', glyph: 'confirmation', col: 11.05, row: 2.5 },
+]
+
+export const mvp = {
+  heading: 'MVP FAST-LAUNCH',
+  intro:
+    'The MVP was focused on streamlining barebones ordering, with other features like curbside pickup as a fast follow.',
+  callout: {
+    title: 'Core UX',
+    body: 'The UX for ordering was mapped for 4 core scenarios, ensuring each scenario was simple and clear to the user.',
+  },
+  hint: 'Pick a scenario to trace its path — every one converges on the same checkout spine.',
+  /** all nodes in the diagram (spine + branch nodes) */
+  nodes: [
+    ...SPINE,
+    // promo branch (upper-left)
+    { id: 'promoNotif', label: 'Item added to menu', glyph: 'promo', col: 1.6, row: 0.55 },
+    // restaurant/handoff popup (upper-mid)
+    { id: 'restaurant', label: 'Choose Restaurant', glyph: 'popup', col: 3.9, row: 1.15 },
+    { id: 'productSel', label: 'Product, item selected', glyph: 'productSel', col: 5.3, row: 0.55 },
+    // location branch (upper-right)
+    { id: 'location', label: 'Location Page', glyph: 'location', col: 9.9, row: 0.7 },
+    // category branch (lower-mid)
+    { id: 'category', label: 'NomNom Category', glyph: 'category', col: 4.0, row: 3.95 },
+    { id: 'quantity', label: 'Choose Quantity', glyph: 'quantity', col: 6.0, row: 3.95 },
+  ] as MvpNode[],
+  /** every directed edge in the diagram, with its pill label */
+  edges: [
+    // spine
+    { from: 'home', to: 'menu', label: 'Scroll', kind: 'h' },
+    { from: 'menu', to: 'product', label: 'Tap a product', kind: 'h' },
+    { from: 'product', to: 'bag', label: 'Add product', kind: 'h' },
+    { from: 'bag', to: 'checkout', label: 'Check out', kind: 'h' },
+    { from: 'checkout', to: 'confirmation', label: 'Check out', kind: 'h' },
+    // promo branch
+    { from: 'home', to: 'promoNotif', label: 'Tap a promo', kind: 'elbow-up' },
+    { from: 'promoNotif', to: 'productSel', label: 'Tap a product', kind: 'h' },
+    { from: 'productSel', to: 'bag', label: 'Add product', kind: 'elbow-down' },
+    // location / handoff branch
+    { from: 'product', to: 'restaurant', label: 'No location set', kind: 'elbow-up' },
+    { from: 'restaurant', to: 'product', label: 'Location selected', kind: 'elbow-down' },
+    { from: 'bag', to: 'location', label: 'Change handoff', kind: 'elbow-up' },
+    { from: 'location', to: 'bag', label: 'Continue', kind: 'elbow-down' },
+    // category branch
+    { from: 'menu', to: 'category', label: 'Tap a category', kind: 'elbow-down' },
+    { from: 'category', to: 'quantity', label: 'Tap a product', kind: 'h' },
+    { from: 'quantity', to: 'bag', label: 'Add product', kind: 'elbow-up' },
+  ] as MvpEdge[],
+  scenarios: [
+    {
+      id: 'promo',
+      title: 'Add a promotion',
+      blurb: 'Tap a featured promo on the homepage; the item is added and the order continues to checkout.',
+      path: ['home', 'promoNotif', 'productSel', 'bag', 'checkout', 'confirmation'],
+    },
+    {
+      id: 'product',
+      title: 'Add a product',
+      blurb: 'Scroll the homepage menu, open a dish, add it — the simplest path to checkout.',
+      path: ['home', 'menu', 'product', 'bag', 'checkout', 'confirmation'],
+    },
+    {
+      id: 'category',
+      title: 'Add from a category',
+      blurb: 'Open a menu category, set quantity in a popup, then send it to the bag.',
+      path: ['menu', 'category', 'quantity', 'bag', 'checkout', 'confirmation'],
+    },
+    {
+      id: 'location',
+      title: 'Choose a location',
+      blurb: 'When no store is set, a handoff popup resolves location before the order continues.',
+      path: ['product', 'restaurant', 'product', 'bag', 'checkout', 'confirmation'],
+    },
+  ] as MvpScenario[],
+}
+
 export interface PandaStat {
   /** numeric target the count-up animates to */
   value: number
