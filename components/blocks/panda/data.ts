@@ -56,6 +56,11 @@ export const releases = {
     title: 'MVP FAST-LAUNCH',
     body: 'The fast launch emphasized core ordering and prioritized the web experience.',
   },
+  /** Device-scatter band that follows the 2-card grid (Figma "MVP Section 3"). */
+  scatter: {
+    title: 'Seamless Simple Reordering',
+    body: 'Designed every page to factor in the unique ordering style of Panda Express.',
+  },
   rewards: {
     title: 'FULL REWARDS APP',
     body: 'The full set of features, a better native app experience, and the rewards functionality was added as a follow-up to the core app.',
