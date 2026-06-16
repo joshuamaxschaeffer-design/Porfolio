@@ -374,7 +374,7 @@ export const mvpLaunch = {
       value: 1900,
       suffix: '+',
       eyebrow: 'LOCATIONS AT LAUNCH',
-      caption: 'A national rollout from day one, not a single-market pilot.',
+      caption: 'A national rollout that followed a successful multi-city pilot.',
     },
   ] as MvpBentoStat[],
   /** operating-model cell — the disciplined MVP framing */
