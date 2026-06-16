@@ -9,11 +9,12 @@ import { useEffect, useRef, useState } from 'react'
  * centre clear behind the phones — identical geometry to the original
  * /public/panda/pivot/radial-masked.svg, just inlined.
  *
- * On first scroll-into-view the whole group rotates in, and each spoke grows
- * from the centre outward one-at-a-time, in circle order (the array is already
- * ordered by angle). We grow a spoke with transform: scaleX/scaleY 0 -> 1 about
- * the shared centre, so it appears to shoot out from the middle in both
- * directions. Respects prefers-reduced-motion (everything just appears).
+ * On first scroll-into-view the whole group rotates in (counter-clockwise,
+ * +28° → 0°) while each spoke grows from the centre outward one-at-a-time. The
+ * spokes fire in CLOCKWISE order (reverse the angle-ordered array). Each spoke
+ * grows with transform: scale 0 -> 1 about the shared centre, so it shoots out
+ * from the middle in both directions. Every transition is an ease-out (settles
+ * gently at the end). Respects prefers-reduced-motion (everything just appears).
  */
 
 // 31 spoke path-d strings, ordered by angle around the circle.
@@ -97,11 +98,13 @@ export function RewardsRadial({
       className={className}
       style={{
         ...style,
-        transform: reduced ? undefined : `rotate(${on ? 0 : -28}deg)`,
+        // Group rotates COUNTER-CLOCKWISE as the spokes grow: start +28°, settle
+        // to 0° (decreasing angle = CCW). Ease-out so it slows into rest.
+        transform: reduced ? undefined : `rotate(${on ? 0 : 28}deg)`,
         opacity: on ? 1 : 0,
         transition: reduced
           ? undefined
-          : 'transform 1100ms cubic-bezier(0.22,1,0.36,1), opacity 700ms ease-out',
+          : 'transform 1200ms cubic-bezier(0.22,1,0.36,1), opacity 700ms cubic-bezier(0.22,1,0.36,1)',
         transformOrigin: '325px 325px',
       }}
     >
@@ -116,22 +119,27 @@ export function RewardsRadial({
         </mask>
       </defs>
       <g mask="url(#rewards-radial-mask)">
-        {SPOKES.map((d, i) => (
-          <path
-            key={i}
-            d={d}
-            stroke="white"
-            style={{
-              transformBox: 'view-box',
-              transformOrigin: '325px 325px',
-              transform: on ? 'scale(1)' : 'scale(0)',
-              opacity: on ? 1 : 0,
-              transition: reduced
-                ? undefined
-                : `transform ${dur}s cubic-bezier(0.22,1,0.36,1) ${i * step}s, opacity ${dur * 0.6}s ease-out ${i * step}s`,
-            }}
-          />
-        ))}
+        {SPOKES.map((d, i) => {
+          // Array is ordered counter-clockwise by angle; reverse the stagger so
+          // the spokes draw in CLOCKWISE order. Ease-out on grow + fade.
+          const delay = (SPOKES.length - 1 - i) * step
+          return (
+            <path
+              key={i}
+              d={d}
+              stroke="white"
+              style={{
+                transformBox: 'view-box',
+                transformOrigin: '325px 325px',
+                transform: on ? 'scale(1)' : 'scale(0)',
+                opacity: on ? 1 : 0,
+                transition: reduced
+                  ? undefined
+                  : `transform ${dur}s cubic-bezier(0.22,1,0.36,1) ${delay}s, opacity ${dur * 0.6}s cubic-bezier(0.22,1,0.36,1) ${delay}s`,
+              }}
+            />
+          )
+        })}
       </g>
     </svg>
   )

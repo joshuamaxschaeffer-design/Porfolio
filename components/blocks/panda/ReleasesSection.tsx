@@ -277,7 +277,7 @@ function RewardsCard() {
             SVG so each spoke animates from the centre outward on first view. */}
         <RewardsRadial
           className="pointer-events-none absolute z-0 max-w-none"
-          style={{ left: '6.96%', top: '1.96%', width: '90.88%' }}
+          style={{ left: '6.96%', top: 'calc(1.96% - 20px)', width: '90.88%' }}
         />
 
         {/* BACK phone's drop shadow (Phone 2 Back Shadow) — rot 22.41°, op .30 */}
