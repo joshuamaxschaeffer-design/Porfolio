@@ -136,35 +136,50 @@ function RewardsCard() {
         {defaults.rewards.body}
       </p>
 
-      {/* ── phone stage ──────────────────────────────────────────── */}
-      <div data-anim="rewards-stage" className="relative mx-auto mt-6 aspect-[715/611] w-full max-w-[660px]">
-        {/* radial burst, centered behind the phones */}
+      {/* ── phone stage ──────────────────────────────────────────────
+          Exact 1:1 from the Figma "Group 3877" (715.26 × 611.50). Positions,
+          sizes, ROTATIONS and OPACITY all pulled from the Figma node:
+          - back shadows: their art is rotated inside an axis-aligned box
+            (−26.51° / 22.41°) and sit at OPACITY 0.30 (this is why they read as
+            soft drops, not black boxes);
+          - phone1's cast shadow ("Mask group") is the pre-shaped shadow that
+            falls onto phone 2, placed at its exact Figma rect;
+          - radial is the masked donut (radial-masked.svg) so the centre stays
+            clear behind the phones.
+          Phones are flat layers (tilt baked into the PNG — no CSS rotation). */}
+      <div data-anim="rewards-stage" className="relative mx-auto mt-6 aspect-[715.26/611.5] w-full max-w-[680px]">
+        {/* radial burst (masked to a ring), centered behind the phones */}
         <img
           data-anim="rewards-radial"
-          src={`${P}/radial-stroked.svg`}
+          src={`${P}/radial-masked.svg`}
           alt=""
           aria-hidden
-          className="pointer-events-none absolute left-1/2 top-[34%] z-0 w-[125%] max-w-none -translate-x-1/2 -translate-y-1/2 opacity-90"
+          className="pointer-events-none absolute z-0 max-w-none"
+          style={{ left: '6.96%', top: '1.96%', width: '90.88%' }}
         />
 
-        {/* back phone's drop shadow */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        {/* BACK phone's drop shadow (Phone 2 Back Shadow) — rot 22.41°, op .30 */}
+        <div
           data-anim="rewards-phone2-back-shadow"
-          src={`${P}/phone2-back-shadow.webp`}
-          alt=""
-          aria-hidden
-          className="pointer-events-none absolute left-[52.4%] top-[44%] z-[5] w-[65.6%] max-w-none opacity-50 [filter:blur(2px)]"
-        />
-        {/* front phone's back/ambient shadow */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+          className="pointer-events-none absolute z-[5] flex items-center justify-center"
+          style={{ left: '34.40%', top: '14.58%', width: '65.60%', height: '85.42%' }}
+        >
+          <div className="opacity-30" style={{ width: '70.50%', height: '82.06%', transform: 'rotate(22.41deg)' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={`${P}/phone2-back-shadow.webp`} alt="" aria-hidden className="h-full w-full max-w-none object-cover" />
+          </div>
+        </div>
+        {/* FRONT phone's back/ambient shadow (Phone 1 back shadow) — rot −26.51°, op .30 */}
+        <div
           data-anim="rewards-phone1-back-shadow"
-          src={`${P}/phone1-back-shadow.webp`}
-          alt=""
-          aria-hidden
-          className="pointer-events-none absolute left-[-4.8%] top-[54.2%] z-[5] w-[68.7%] max-w-none opacity-50 [filter:blur(2px)]"
-        />
+          className="pointer-events-none absolute z-[5] flex items-center justify-center"
+          style={{ left: '0%', top: '0%', width: '68.72%', height: '86.28%' }}
+        >
+          <div className="opacity-30" style={{ width: '69.11%', height: '79.63%', transform: 'rotate(-26.51deg)' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={`${P}/phone1-back-shadow.webp`} alt="" aria-hidden className="h-full w-full max-w-none object-cover" />
+          </div>
+        </div>
 
         {/* BACK phone (Phone 2) */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -172,27 +187,22 @@ function RewardsCard() {
           data-anim="rewards-phone2"
           src={`${P}/phone2.webp`}
           alt="Panda Rewards — upgrade to premium entrée screen"
-          className="absolute left-[35.8%] top-[45.8%] z-10 w-[45.7%] max-w-none"
+          className="absolute z-10 max-w-none"
+          style={{ left: '40.60%', top: '16.52%', width: '45.81%', height: '60.47%' }}
         />
 
-        {/* CLIPPED shadow: Phone 1's cast shadow, clipped to Phone 2's footprint.
-            The wrapper is sized/placed to Phone 2's visible body and clips
-            (overflow-hidden + rounded) so the shadow only shows ON Phone 2. */}
-        <div
-          data-anim="rewards-clip"
-          className="absolute left-[38.5%] top-[48%] z-[15] h-[40%] w-[40%] overflow-hidden rounded-[14px]"
-          style={{ transform: 'rotate(-29deg)' }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            data-anim="rewards-phone1-shadow"
-            src={`${P}/phone1-shadow.webp`}
-            alt=""
-            aria-hidden
-            className="absolute left-[-50%] top-[-2%] w-[190%] max-w-none opacity-70"
-            style={{ transform: 'rotate(29deg)' }}
-          />
-        </div>
+        {/* CLIPPED shadow ("Mask group"): Phone 1's cast shadow falling onto
+            Phone 2 — the shadow asset is already shaped to Phone 2, placed at the
+            exact Figma rect (left 145.59 / top 416.05 in stage space). */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          data-anim="rewards-phone1-shadow"
+          src={`${P}/phone1-shadow.webp`}
+          alt=""
+          aria-hidden
+          className="pointer-events-none absolute z-[15] max-w-none"
+          style={{ left: '25.14%', top: '38.60%', width: '35.99%', height: '37.96%' }}
+        />
 
         {/* FRONT phone (Phone 1) */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -200,7 +210,8 @@ function RewardsCard() {
           data-anim="rewards-phone1"
           src={`${P}/phone1.webp`}
           alt="Panda Rewards — 520 Panda Points home screen"
-          className="absolute left-[10.5%] top-[35.5%] z-20 w-[45.7%] max-w-none"
+          className="absolute z-20 max-w-none"
+          style={{ left: '15.30%', top: '6.10%', width: '45.81%', height: '60.47%' }}
         />
       </div>
       </div>
