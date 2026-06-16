@@ -1,6 +1,7 @@
 import { featureSections as defaultSections, featureCarousels as defaultCarousels, type Feature } from './data'
 import { AutoScrollCarousel, type CarouselRow } from './AutoScrollCarousel'
 import { EdgeFadeBlur } from './EdgeFadeBlur'
+import { FeatureEcosystemIntro } from './FeatureEcosystemIntro'
 
 interface FeatureSection {
   number: number
@@ -124,6 +125,12 @@ export function FeatureEcosystemSection(props: FeatureEcosystemProps) {
 
   return (
     <section className="pb-20 pt-[60px] md:pb-[160px] md:pt-[120px]">
+      {/* Entry to the feature ecosystem: count-up "70+ Features" headline + the
+          story of the testing/reviews/exploration behind each one. Leads into
+          the first carousel below. */}
+      <FeatureEcosystemIntro />
+      <div aria-hidden className="h-14 md:h-20" />
+
       {pairs.map((pair, p) => {
         const carousel = carousels[p]
         return (

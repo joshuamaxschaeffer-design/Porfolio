@@ -192,6 +192,28 @@ export const productSystem = {
   },
 }
 
+/**
+ * Lead-in to the feature ecosystem (the carousels + the 70+ feature columns).
+ * This is the "entry" header: a count-up hero number, then a line about the
+ * depth of work behind each feature, then the three proof chips (the old
+ * "70+ Full Features / Weekly Design Reviews / User Testing" pills, now reframed
+ * with their real numbers).
+ */
+export const featureIntro = {
+  /** count-up target + the unit that sits beside it */
+  count: 70,
+  countSuffix: '+',
+  unit: 'Features',
+  /** weaves in the exploration, testing and review cadence behind every feature */
+  body: 'Every feature was explored, pressure-tested and refined — not just drawn. Each one moved through workflow exploration, weekly design reviews with the team, and rounds of user testing before it shipped, so the system held together as it grew.',
+  /** proof chips — the former pills, now carrying their real numbers */
+  stats: [
+    { value: '70+', label: 'Full Features' },
+    { value: 'Weekly', label: 'Design Reviews' },
+    { value: 'Ongoing', label: 'User Testing' },
+  ],
+}
+
 export interface Feature {
   label: string
   icon: string // slug -> /baserate/icons/<slug>.svg

@@ -5,7 +5,6 @@ import { ProductDeviceStage } from './ProductDeviceStage'
 interface ProductSystemProps {
   heading?: string
   intro?: string
-  pills?: string[]
   productsHeading?: string
   productsIntro?: string
   baserate?: typeof defaults.baserate
@@ -15,7 +14,6 @@ interface ProductSystemProps {
 export function ProductSystemSection(props: ProductSystemProps) {
   const heading = props.heading ?? defaults.heading
   const intro = props.intro ?? defaults.intro
-  const pills = props.pills ?? defaults.pills
   const productsHeading = props.productsHeading ?? defaults.productsHeading
   const productsIntro = props.productsIntro ?? defaults.productsIntro
   const baserate = props.baserate ?? defaults.baserate
@@ -28,25 +26,6 @@ export function ProductSystemSection(props: ProductSystemProps) {
         4. {heading}
       </h2>
       <p className="mt-4 max-w-3xl text-lg leading-relaxed text-[var(--br-ink)] md:text-[22px]">{intro}</p>
-      </div>
-
-      {/* Pills: horizontal scroll on mobile so they never clip at the margin;
-          wrapped row inside the container on desktop. */}
-      <ul
-        className="br-noscrollbar mt-6 flex gap-3 overflow-x-auto px-6 md:flex-wrap md:px-[calc(max(0px,(100vw-1443px)/2)+5rem)] md:pr-[calc(max(0px,(100vw-1443px)/2)+5rem)]"
-        style={{ touchAction: 'pan-x pan-y' }}
-      >
-        {pills.map((p) => (
-          <li
-            key={p}
-            className="br-data shrink-0 rounded-[var(--br-tag-radius)] border border-[var(--br-gold)] px-3 py-1.5 text-[14px] uppercase text-[var(--br-gold)]"
-          >
-            {p}
-          </li>
-        ))}
-      </ul>
-
-      <div className="br-container">
 
       {/* Devices + product cards — a "stage" that reproduces the Figma's exact
           1283×689 absolute placement, scaled to the column width. The "2 PRODUCTS"
