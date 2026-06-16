@@ -1,4 +1,5 @@
 import { releases as defaults } from './data'
+import { ComponentLibrariesSection } from './ComponentLibrariesSection'
 
 const P = '/panda/pivot'
 
@@ -37,6 +38,10 @@ export function ReleasesSection({ intro }: { intro?: string } = {}) {
           <MvpCard />
           <RewardsCard />
         </div>
+
+        {/* Second item inside the MVP Fast-Launch story: the component library
+            that shipped with it (palette, controls, icon set, type scale). */}
+        <ComponentLibrariesSection />
       </div>
     </section>
   )
@@ -140,11 +145,12 @@ function RewardsCard() {
           - radial is the masked donut (radial-masked.svg) so the centre stays
             clear behind the phones.
           Phones are flat layers (tilt baked into the PNG — no CSS rotation). */}
-      {/* stage breaks out of the card's side padding so the radial + phones fill
-          the card width edge-to-edge, matching the Figma. */}
+      {/* stage breaks fully out of the card's side padding (px-6 / md:px-10) and
+          pulls up slightly so the radial + phones fill the red card edge-to-edge
+          (left, right, bottom), matching the Figma. */}
       <div
         data-anim="rewards-stage"
-        className="relative mt-6 -mx-3 aspect-[715.26/611.5] w-[calc(100%+1.5rem)] md:-mx-6 md:w-[calc(100%+3rem)]"
+        className="relative -mx-6 -mt-2 aspect-[715.26/611.5] w-[calc(100%+3rem)] md:-mx-10 md:w-[calc(100%+5rem)]"
       >
         {/* radial burst (masked to a ring), centered behind the phones */}
         <img
@@ -216,7 +222,7 @@ function RewardsCard() {
             alt=""
             aria-hidden
             className="absolute max-w-none opacity-90"
-            style={{ left: '-46%', top: '38%', width: '150%' }}
+            style={{ left: '-33.75%', top: '36.51%', width: '78.56%', height: '62.78%' }}
           />
         </div>
 
