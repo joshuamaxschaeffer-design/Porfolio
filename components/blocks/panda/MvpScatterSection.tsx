@@ -30,7 +30,7 @@ const P = '/panda/mvp'
 
 /** Tilt of every phone (deg), and the parallax travel along that axis (px). */
 const TILT_DEG = 15.43
-const TRAVEL = 40
+const TRAVEL = 80
 const RAD = (TILT_DEG * Math.PI) / 180
 // Unit vector "up the tilt axis" in screen space: up (−y) and slightly right (+x).
 const AXIS_X = Math.sin(RAD) // ≈ 0.266
@@ -142,7 +142,7 @@ export function MvpScatterSection() {
       id="mvp-reordering"
       aria-label="Seamless simple reordering"
       data-anim="mvp-scatter-section"
-      className="relative isolate w-full overflow-hidden bg-[var(--px-red)]"
+      className="relative isolate w-full overflow-hidden border-y border-white/20 bg-[var(--px-red)]"
     >
       {/* ── DESKTOP / TABLET (≥1024px): exact Figma scatter ──────────────
           A fixed-aspect band; every node is positioned as a % of it, so the
