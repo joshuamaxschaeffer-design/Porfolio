@@ -3,6 +3,7 @@ import { ChallengeSection } from './ChallengeSection'
 import { ReleasesSection } from './ReleasesSection'
 import { MvpFlowSection } from './MvpFlowSection'
 import { MvpScatterSection } from './MvpScatterSection'
+import { ComponentLibrariesSection } from './ComponentLibrariesSection'
 import { OutcomesSection } from './OutcomesSection'
 import { SectionNav, type SectionNavItem } from '../baserate/SectionNav'
 import { CaseStudyShowcase } from '../shared/CaseStudyShowcase'
@@ -33,7 +34,8 @@ export interface PandaCaseStudyProps {
  * Panda Express case study:
  * Overview · The Challenge · The Two Releases · MVP Fast-Launch · Outcomes.
  * Section 4 (MVP Fast-Launch) leads with the interactive Core UX flow, followed
- * by the device-scatter band that continues the 2020-Pivot showcase.
+ * by the device-scatter band and then the Component Libraries panel (both
+ * full-bleed Panda-red), all continuing the 2020-Pivot showcase.
  * Reuses the br-* editorial system (container metrics, type, neutrals) from
  * the Baserate build, with the accent swapped to Panda red via --px-red.
  */
@@ -55,6 +57,7 @@ export function PandaCaseStudy(props: PandaCaseStudyProps = {}) {
       <ReleasesSection intro={props.releasesIntro} />
       <MvpFlowSection intro={props.mvpIntro} />
       <MvpScatterSection />
+      <ComponentLibrariesSection />
       <OutcomesSection intro={props.outcomesIntro} />
       <CaseStudyShowcase accent="#D02B2E" current="panda-express" />
     </article>

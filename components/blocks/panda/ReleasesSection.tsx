@@ -1,6 +1,4 @@
 import { releases as defaults } from './data'
-import { ComponentLibrariesSection } from './ComponentLibrariesSection'
-
 const P = '/panda/pivot'
 
 /**
@@ -39,12 +37,6 @@ export function ReleasesSection({ intro }: { intro?: string } = {}) {
           <RewardsCard />
         </div>
       </div>
-
-      {/* Second item inside the MVP Fast-Launch story: the component library that
-          shipped with it (palette, controls, icon set, type scale). Sits OUTSIDE
-          the padded br-container so its full-bleed red band butts cleanly against
-          the section edges (the band re-establishes its own container inside). */}
-      <ComponentLibrariesSection />
     </section>
   )
 }
