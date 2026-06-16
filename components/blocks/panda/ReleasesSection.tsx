@@ -171,36 +171,51 @@ function RewardsCard() {
   const stageRef = useRef<HTMLDivElement>(null)
   const centered = useCenteredness(stageRef, !reduce)
 
-  // Entry amount: 1 far below centre → 0 at/above centre. Only the lower
-  // (entering) half scrubs; clamp keeps it from re-triggering on the way out.
-  const a = useTransform(centered, (c) => Math.max(0, Math.min(1, -c * 2)))
+  // Entry amount: 1 while the card is low on screen → 0 by the time it reaches
+  // the MIDDLE of the viewport. Linear progress first (finishes a touch BEFORE
+  // dead-centre, c ≈ -0.19, so it visibly completes in the middle, not above),
+  // then an EASE-OUT so the devices decelerate as they settle — fast as they
+  // fly in, slowing right at the end into the resting Figma pose. We ease the
+  // displacement a = aLin^2 toward 0 (cubic-ish slow-down near rest). Past
+  // centre it holds at rest (clamp), so it never flies back out the top.
+  const a = useTransform(centered, (c) => {
+    const aLin = Math.max(0, Math.min(1, -c * 2.7))
+    return aLin * aLin // ease-out toward rest (slows down at the end)
+  })
+
+  // Both phones sit 80px higher than their raw Figma slot so their centres land
+  // over the radial's centre. REST_Y is the settled baseline; the scroll entry
+  // (60*v down) rides on top of it. Shadows share the same baseline so they stay
+  // glued to their phones at rest.
+  const REST_Y = -80
 
   // ── Phone 1 (front / left): slides in from lower-left, slightly extra CCW.
   const p1x = useTransform(a, (v) => -70 * v)
-  const p1y = useTransform(a, (v) => 60 * v)
+  const p1y = useTransform(a, (v) => REST_Y + 60 * v)
   const p1r = useTransform(a, (v) => -8 * v)
   // ── Phone 2 (back / right): slides in from lower-right, slightly extra CW.
   const p2x = useTransform(a, (v) => 70 * v)
-  const p2y = useTransform(a, (v) => 60 * v)
+  const p2y = useTransform(a, (v) => REST_Y + 60 * v)
   const p2r = useTransform(a, (v) => 8 * v)
 
   // ── Shadows. Horizontal: track the device (same sign). Rotation: opposite.
   // Vertical/elevation: as a→1 push DOWN + lighter + blurrier.
   // Phone 1 back/ambient shadow couples to Phone 1.
   const s1x = useTransform(a, (v) => -70 * v) // with device
-  const s1y = useTransform(a, (v) => 60 * v + 26 * v) // device-down + extra lift drop
+  const s1y = useTransform(a, (v) => REST_Y + 60 * v + 26 * v) // device-down + extra lift drop
   const s1r = useTransform(a, (v) => 8 * v) // opposite of device's -8
   const s1op = useTransform(a, (v) => 0.3 * (1 - 0.6 * v)) // 0.30 → lighter
   const s1blur = useTransform(a, (v) => `blur(${10 * v}px)`)
   // Phone 2 back shadow couples to Phone 2.
   const s2x = useTransform(a, (v) => 70 * v)
-  const s2y = useTransform(a, (v) => 60 * v + 26 * v)
+  const s2y = useTransform(a, (v) => REST_Y + 60 * v + 26 * v)
   const s2r = useTransform(a, (v) => -8 * v) // opposite of device's +8
   const s2op = useTransform(a, (v) => 0.3 * (1 - 0.6 * v))
   const s2blur = useTransform(a, (v) => `blur(${10 * v}px)`)
   // Phone 1's CLIPPED cast shadow on Phone 2 couples to Phone 1's motion, but
   // only its art moves inside the fixed mask window. Drops down + lightens +
-  // blurs as Phone 1 lifts in.
+  // blurs as Phone 1 lifts in. (No REST_Y here — this shadow art is positioned
+  // relative to the fixed phone2 mask window, not the moving phone.)
   const cs1x = useTransform(a, (v) => -70 * v)
   const cs1y = useTransform(a, (v) => 60 * v + 22 * v)
   const cs1r = useTransform(a, (v) => 8 * v)
@@ -289,8 +304,10 @@ function RewardsCard() {
         {/* CLIPPED shadow: Phone 1's cast shadow falling onto Phone 2. The clip
             box is placed at Phone 2's EXACT rect and uses phone2.webp itself as a
             CSS mask, so the shadow is clipped to Phone 2's real silhouette. The
-            mask window never moves; only the shadow art inside it animates. */}
-        <div
+            window TRACKS Phone 2 (same x/y/rotate) so the clip stays aligned to
+            the device wherever it moves; the shadow art inside then animates with
+            Phone 1's coupling. */}
+        <motion.div
           data-anim="rewards-phone1-shadow"
           className="pointer-events-none absolute z-[15]"
           style={{
@@ -298,6 +315,9 @@ function RewardsCard() {
             top: '16.52%',
             width: '45.81%',
             height: '60.47%',
+            x: p2x,
+            y: p2y,
+            rotate: p2r,
             WebkitMaskImage: `url(${P}/phone2.webp)`,
             maskImage: `url(${P}/phone2.webp)`,
             WebkitMaskSize: '100% 100%',
@@ -314,7 +334,7 @@ function RewardsCard() {
             className="absolute max-w-none"
             style={{ left: '-33.75%', top: '36.51%', width: '78.56%', height: '62.78%', x: cs1x, y: cs1y, rotate: cs1r, opacity: cs1op, filter: cs1blur }}
           />
-        </div>
+        </motion.div>
 
         {/* FRONT phone (Phone 1) */}
         <motion.img
