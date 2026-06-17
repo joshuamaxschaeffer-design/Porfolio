@@ -39,16 +39,15 @@ const RED = 'var(--px-red)'
 const CARD =
   'relative overflow-hidden rounded-[10px] border border-[var(--br-line)] bg-white shadow-[0_10px_24px_-14px_rgba(7,14,44,0.20)]'
 
-/* Faint red radial glow tucked into a card's top-right corner. Decorative. */
+/* Faint red glow tucked into a card's top-right corner. Same technique as the
+ * shared BentoGrid mockup: a solid-colour circle at low opacity, softened with
+ * a large blur (blur-2xl) so it reads as a big, soft gradient — not a hard dot. */
 function CornerGlow() {
   return (
     <span
       aria-hidden
-      className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full"
-      style={{
-        background:
-          'radial-gradient(closest-side, rgba(208,43,46,0.16), rgba(208,43,46,0.05) 60%, transparent 75%)',
-      }}
+      className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full opacity-[0.12] blur-2xl"
+      style={{ background: RED }}
     />
   )
 }
