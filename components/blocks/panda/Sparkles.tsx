@@ -26,7 +26,7 @@ const GOLD_LIGHT = '#F4CF6B'
 /** One scattered instance. x/y are % of the band; size is px at 1440w-ish. */
 interface Spark {
   id: number
-  kind: 'sparkle' | 'firework' | 'star'
+  kind: 'sparkle' | 'firework' | 'star' | 'bigFirework'
   x: number // % from left
   y: number // % from top (kept in the upper region)
   size: number // px
@@ -41,85 +41,160 @@ const SPARKS: Spark[] = [
   { id: 1, kind: 'sparkle', x: 4.4, y: 8, size: 30, delay: 0.0, period: 7.5 },
   { id: 2, kind: 'star', x: 12.6, y: 4.5, size: 15, delay: 2.9, period: 8.2 },
   { id: 3, kind: 'sparkle', x: 28.8, y: 3.2, size: 22, delay: 5.1, period: 9.0 },
-  { id: 4, kind: 'firework', x: 44.1, y: 11.5, size: 30, delay: 1.4, period: 8.6 },
+  { id: 4, kind: 'firework', x: 44.1, y: 11.5, size: 42, delay: 1.4, period: 8.6 },
   { id: 5, kind: 'sparkle', x: 53.8, y: 4.8, size: 26, delay: 4.3, period: 7.8 },
   { id: 6, kind: 'star', x: 62.0, y: 9.5, size: 18, delay: 6.7, period: 8.9 },
-  { id: 7, kind: 'firework', x: 45.3, y: 6.8, size: 24, delay: 3.6, period: 9.4 },
+  { id: 7, kind: 'firework', x: 31.0, y: 18.5, size: 38, delay: 3.6, period: 9.4 },
   { id: 8, kind: 'sparkle', x: 89.0, y: 3.5, size: 30, delay: 0.8, period: 8.0 },
   { id: 9, kind: 'star', x: 90.5, y: 25, size: 18, delay: 5.9, period: 9.1 },
-  { id: 10, kind: 'firework', x: 96.5, y: 7.5, size: 26, delay: 2.2, period: 8.4 },
+  { id: 10, kind: 'firework', x: 96.5, y: 7.5, size: 38, delay: 2.2, period: 8.4 },
   { id: 11, kind: 'star', x: 0.9, y: 21, size: 18, delay: 4.8, period: 9.3 },
   { id: 12, kind: 'sparkle', x: 51.1, y: 0.5, size: 18, delay: 7.4, period: 7.9 },
-  { id: 13, kind: 'firework', x: 66.2, y: 27.5, size: 28, delay: 1.9, period: 9.6 },
+  { id: 13, kind: 'firework', x: 66.2, y: 27.5, size: 40, delay: 1.9, period: 9.6 },
   { id: 14, kind: 'star', x: 3.5, y: 31.5, size: 16, delay: 6.1, period: 8.7 },
   { id: 15, kind: 'sparkle', x: 17.3, y: 1.5, size: 16, delay: 3.0, period: 8.3 },
   { id: 16, kind: 'sparkle', x: 76.5, y: 2.5, size: 20, delay: 5.4, period: 9.2 },
-  { id: 17, kind: 'firework', x: 36.0, y: 1.8, size: 22, delay: 7.9, period: 8.1 },
+  { id: 17, kind: 'firework', x: 36.0, y: 1.8, size: 36, delay: 7.9, period: 8.1 },
   { id: 18, kind: 'star', x: 92.7, y: 13, size: 15, delay: 2.6, period: 9.0 },
   { id: 19, kind: 'sparkle', x: 24.5, y: 12, size: 18, delay: 6.4, period: 8.8 },
-  { id: 20, kind: 'firework', x: 84.5, y: 18, size: 22, delay: 4.0, period: 9.5 },
+  { id: 20, kind: 'firework', x: 84.5, y: 18, size: 38, delay: 4.0, period: 9.5 },
   { id: 21, kind: 'sparkle', x: 70.0, y: 5.5, size: 16, delay: 8.6, period: 7.7 },
   { id: 22, kind: 'star', x: 58.5, y: 14, size: 14, delay: 3.8, period: 9.2 },
+  // One LARGE firework (~2× the others) bursting in two short rounds.
+  { id: 23, kind: 'bigFirework', x: 52.5, y: 16, size: 76, delay: 2.4, period: 9.8 },
 ]
 
 /* ── Glyphs ───────────────────────────────────────────────────────────────
  * Each is drawn in a 0 0 100 100 box, centred on (50,50), so a single CSS
  * scale about the centre makes it grow/burst from its middle. */
 
-/** Four-point "twinkle" sparkle — concave diamond with a soft inner core. */
+/** Four-point sparkle drawn as an OUTLINE stroke — a concave diamond with a
+ *  hollow centre and rounded points (matches the reference). Stroke width 7 in
+ *  the 100-unit box → same visual weight family as the fireworks. */
 function SparkleGlyph() {
   return (
     <svg viewBox="0 0 100 100" className="block h-full w-full" aria-hidden>
       <path
-        d="M50 2 C54 34 66 46 98 50 C66 54 54 66 50 98 C46 66 34 54 2 50 C34 46 46 34 50 2 Z"
-        fill={GOLD}
-      />
-      <path
-        d="M50 24 C52 44 56 48 76 50 C56 52 52 56 50 76 C48 56 44 52 24 50 C44 48 48 44 50 24 Z"
-        fill={GOLD_LIGHT}
+        d="M50 8 C53 36 64 47 92 50 C64 53 53 64 50 92 C47 64 36 53 8 50 C36 47 47 36 50 8 Z"
+        fill="none"
+        stroke={GOLD}
+        strokeWidth={7}
+        strokeLinejoin="round"
+        strokeLinecap="round"
       />
     </svg>
   )
 }
 
-/** Simple thin four-point star (the small "Stroke" accents in the mock). */
+/** Small four-point accent — same outlined sparkle, lighter stroke so it reads
+ *  as a smaller twinkle among the bigger sparkles/fireworks. */
 function StarGlyph() {
   return (
     <svg viewBox="0 0 100 100" className="block h-full w-full" aria-hidden>
       <path
-        d="M50 6 C53 38 62 47 94 50 C62 53 53 62 50 94 C47 62 38 53 6 50 C38 47 47 38 50 6 Z"
-        fill={GOLD}
+        d="M50 8 C53 36 64 47 92 50 C64 53 53 64 50 92 C47 64 36 53 8 50 C36 47 47 36 50 8 Z"
+        fill="none"
+        stroke={GOLD}
+        strokeWidth={6}
+        strokeLinejoin="round"
+        strokeLinecap="round"
       />
     </svg>
   )
 }
 
-/** Firework — 12 tapered rays radiating from the centre. The rays themselves
- *  scale out from r0 via a child <g> so they "shoot" from the middle. */
+/** Firework — 12 thick rounded rays radiating from the centre, at TWO
+ *  alternating lengths (long / short) like the reference. Drawn as round-capped
+ *  <line>s from an inner radius outward; the parent <g> scales them out from the
+ *  middle so they "shoot" on burst. STROKE is the shared firework weight (5).
+ *
+ *  `box` lets the big variant render in a 200-unit viewBox while keeping the
+ *  SAME absolute stroke width, so at 2× render size the stroke matches the
+ *  small firework's screen weight. Geometry is expressed as fractions of `box`.
+ */
+function FireworkRays({ box = 100, stroke = 5 }: { box?: number; stroke?: number }) {
+  const c = box / 2
+  const inner = box * 0.16 // gap at the centre
+  const long = box * 0.46 // tip radius — long rays
+  const short = box * 0.34 // tip radius — short rays
+  const rays = Array.from({ length: 12 }, (_, i) => ({ deg: (i * 360) / 12, long: i % 2 === 0 }))
+  return (
+    <>
+      {rays.map(({ deg, long: isLong }) => {
+        const r = isLong ? long : short
+        return (
+          <line
+            key={deg}
+            x1={c}
+            y1={c - inner}
+            x2={c}
+            y2={c - r}
+            stroke={GOLD}
+            strokeWidth={stroke}
+            strokeLinecap="round"
+            transform={`rotate(${deg} ${c} ${c})`}
+          />
+        )
+      })}
+    </>
+  )
+}
+
 function FireworkGlyph() {
-  const rays = Array.from({ length: 12 }, (_, i) => (i * 360) / 12)
   return (
     <svg viewBox="0 0 100 100" className="block h-full w-full" aria-hidden>
       <g>
-        {rays.map((deg) => (
-          <rect
-            key={deg}
-            x="48.7"
-            y="6"
-            width="2.6"
-            height="30"
-            rx="1.3"
-            fill={GOLD}
-            transform={`rotate(${deg} 50 50)`}
-          />
-        ))}
+        <FireworkRays box={100} stroke={7.5} />
       </g>
-      <circle cx="50" cy="50" r="3.2" fill={GOLD_LIGHT} />
     </svg>
   )
 }
 
-function Glyph({ kind }: { kind: Spark['kind'] }) {
+/** Larger firework (2× the others) that bursts in TWO short rounds. Drawn in a
+ *  200-unit box with the SAME absolute stroke width (5) so, rendered at 2× the
+ *  size, its rays read at the same weight as the small firework. Two ray sets
+ *  are stacked: an OUTER long set and an INNER short set, each on its own <g>
+ *  so they can pop in sequence (see the .pr-bigfw-* keyframes). */
+function BigFireworkGlyph({
+  period,
+  delay,
+  reduced,
+}: {
+  period: number
+  delay: number
+  reduced: boolean
+}) {
+  const c = 100
+  const r1 = reduced ? undefined : `pr-bigfw-round1 ${period}s ease-out ${delay}s infinite`
+  const r2 = reduced ? undefined : `pr-bigfw-round2 ${period}s ease-out ${delay}s infinite`
+  return (
+    <svg viewBox="0 0 200 200" className="block h-full w-full" aria-hidden>
+      {/* round 1 — first burst (shorter rays, fires first) */}
+      <g style={{ transformOrigin: `${c}px ${c}px`, transformBox: 'view-box', animation: r1, opacity: reduced ? 1 : 0 }}>
+        <FireworkRays box={200} stroke={7.5} />
+      </g>
+      {/* round 2 — second burst a beat later, rotated 15° so it reads as a new pop */}
+      <g style={{ transformOrigin: `${c}px ${c}px`, transformBox: 'view-box', animation: r2, opacity: reduced ? 1 : 0 }}>
+        <g transform={`rotate(15 ${c} ${c})`}>
+          <FireworkRays box={200} stroke={7.5} />
+        </g>
+      </g>
+    </svg>
+  )
+}
+
+function Glyph({
+  kind,
+  period,
+  delay,
+  reduced,
+}: {
+  kind: Spark['kind']
+  period: number
+  delay: number
+  reduced: boolean
+}) {
+  if (kind === 'bigFirework') return <BigFireworkGlyph period={period} delay={delay} reduced={reduced} />
   if (kind === 'firework') return <FireworkGlyph />
   if (kind === 'star') return <StarGlyph />
   return <SparkleGlyph />
@@ -157,10 +232,36 @@ export function Sparkles({ className }: { className?: string }) {
           30%  { transform: scale(1); }
           100% { transform: scale(1.08); }
         }
+        /* Big firework — two short rounds. Round 1 pops first and holds; round 2
+           fires a beat later (rotated 15°) so it reads as a fresh burst. Each
+           group carries its OWN scale + opacity (no parent fade), giving the
+           two-pop appear-then-disappear. */
+        @keyframes pr-bigfw-round1 {
+          0%   { transform: scale(0.05); opacity: 0; }
+          5%   { transform: scale(0.85); opacity: 1; }
+          12%  { transform: scale(1); opacity: 1; }
+          34%  { transform: scale(1.05); opacity: 1; }
+          40%  { opacity: 0; }
+          100% { transform: scale(1.05); opacity: 0; }
+        }
+        @keyframes pr-bigfw-round2 {
+          0%, 12%  { transform: scale(0.05); opacity: 0; }
+          18%      { transform: scale(0.9); opacity: 1; }
+          24%      { transform: scale(1.12); opacity: 1; }
+          34%      { transform: scale(1.18); opacity: 1; }
+          40%      { opacity: 0; }
+          100%     { transform: scale(1.18); opacity: 0; }
+        }
       `}</style>
 
       {SPARKS.map((s) => {
         const isFw = s.kind === 'firework'
+        const isBig = s.kind === 'bigFirework'
+        // The big firework manages its own opacity + two-round bursts on its
+        // inner groups, so its outer node carries NO fade/scale animation.
+        const outerAnim = reduced || isBig
+          ? undefined
+          : `${isFw ? 'pr-fw-fade' : 'pr-spark-pop'} ${s.period}s ease-in-out ${s.delay}s infinite`
         return (
           <div
             key={s.id}
@@ -171,24 +272,23 @@ export function Sparkles({ className }: { className?: string }) {
               width: `clamp(${Math.round(s.size * 0.55)}px, ${s.size / 14.4}vw, ${s.size}px)`,
               aspectRatio: '1 / 1',
               transform: 'translate(-50%, -50%)',
-              // The fade/scale loop. Reduced motion → hold faint & still.
-              opacity: reduced ? 0.5 : undefined,
-              animation: reduced
-                ? undefined
-                : `${isFw ? 'pr-fw-fade' : 'pr-spark-pop'} ${s.period}s ease-in-out ${s.delay}s infinite`,
+              // Reduced motion → hold faint & still. Big firework keeps full
+              // opacity at the node level (its rounds fade themselves).
+              opacity: reduced ? (isBig ? 0.5 : 0.5) : undefined,
+              animation: outerAnim,
               willChange: 'transform, opacity',
             }}
           >
-            {/* Firework rays get their own burst animation on the inner <g>. */}
+            {/* Small firework's rays get a single burst on an inner div. */}
             {isFw && !reduced ? (
               <div
                 className="h-full w-full"
                 style={{ animation: `pr-fw-burst ${s.period}s ease-out ${s.delay}s infinite` }}
               >
-                <Glyph kind={s.kind} />
+                <Glyph kind={s.kind} period={s.period} delay={s.delay} reduced={reduced} />
               </div>
             ) : (
-              <Glyph kind={s.kind} />
+              <Glyph kind={s.kind} period={s.period} delay={s.delay} reduced={reduced} />
             )}
           </div>
         )
