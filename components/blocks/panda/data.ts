@@ -30,19 +30,19 @@ export const challenge = {
   problems: [
     {
       tag: '01',
-      icon: 'systems',
+      icon: 'workflow',
       title: 'One order, three systems',
       body: 'Menus, pricing, item availability, and order status originated in the backend, were acted on in the restaurant, and were promised to the guest. Every screen had to be designed around what each system actually knew — and when it knew it.',
     },
     {
       tag: '02',
-      icon: 'locations',
+      icon: 'data',
       title: '2,300+ restaurants, each their own source of truth',
       body: 'Store hours, regional menus, sold-out items, kitchen throughput at peak. The UI had to absorb per-location variance without ever making the guest do the reconciling.',
     },
     {
       tag: '03',
-      icon: 'trust',
+      icon: 'target',
       title: 'Zero margin for confusion',
       body: 'COVID made the order pipeline the business. Contactless pickup and delivery only work when the status a guest sees matches what the kitchen is doing — designing that trust was the job.',
     },
