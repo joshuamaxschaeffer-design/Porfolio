@@ -277,19 +277,22 @@ export function Sparkles({ className }: { className?: string }) {
         }
         /* ── fireworks: trim-path rays ──
            dasharray 1 = one pathLength unit; offset 1 hides the ray (segment
-           before the start), 0 = fully drawn inner→tip. The ray draws OUTWARD
-           only (offset 1 → 0); the instant it is fully extended, opacity snaps
-           to 0 (so it never retracts/shrinks back in), then the offset resets to
-           1 WHILE invisible, and opacity snaps back to 1 exactly when the next
-           draw begins. So: shoot out → vanish at full length → re-draw fresh.
-           Steps are stacked at the SAME % (e.g. 12%) so the off→reset→on flip is
-           instantaneous. linear = even draw speed. Short burst → ~4–5 lit. */
+           before the start), 0 = fully drawn inner→tip, -1 = the visible segment
+           has slid fully off past the tip. The offset sweeps 1 → 0 → -1: first
+           the ray DRAWS OUT from the centre, then the inner end catches up to the
+           tip so it collapses to a DOT at the outer edge. At that dot moment
+           (offset -1) opacity snaps to 0 so the dot disappears, then the offset
+           resets to 1 WHILE invisible and opacity snaps back to 1 when the next
+           draw begins. So: shoot out → collapse to an edge dot → dot vanishes →
+           re-draw fresh. Stacked steps at the dot make the flip instantaneous.
+           linear = even motion. Short burst → ~4–5 fireworks lit at once. */
         @keyframes pr-fw-trim {
-          0%   { stroke-dashoffset: 1; opacity: 1; }  /* start drawing, visible */
-          12%  { stroke-dashoffset: 0; opacity: 1; }  /* fully extended */
-          12.01% { stroke-dashoffset: 0; opacity: 0; }/* vanish instantly */
-          12.02% { stroke-dashoffset: 1; opacity: 0; }/* reset to start, hidden */
-          100% { stroke-dashoffset: 1; opacity: 0; }  /* wait (idle) */
+          0%   { stroke-dashoffset: 1;  opacity: 1; }  /* start drawing */
+          7%   { stroke-dashoffset: 0;  opacity: 1; }  /* fully extended */
+          12%  { stroke-dashoffset: -1; opacity: 1; }  /* collapsed to edge dot */
+          12.01% { stroke-dashoffset: -1; opacity: 0; }/* dot vanishes */
+          12.02% { stroke-dashoffset: 1;  opacity: 0; }/* reset to start, hidden */
+          100% { stroke-dashoffset: 1;  opacity: 0; }  /* wait (idle) */
         }
         .pr-fw-ray {
           stroke-dasharray: 1;
@@ -297,8 +300,8 @@ export function Sparkles({ className }: { className?: string }) {
           opacity: 0;
           animation: pr-fw-trim var(--fw-dur, 8s) linear var(--fw-delay, 0s) infinite;
         }
-        /* Big firework — two rounds. Round 1 draws out first; round 2 fires a
-           beat later (own keyframe), both draw-out-then-vanish (no retract). */
+        /* Big firework — two rounds. Round 1 fires first; round 2 a beat later
+           (own keyframe). Both: draw out → collapse to edge dot → vanish. */
         .pr-fw-ray-r1 {
           stroke-dasharray: 1;
           stroke-dashoffset: 1;
@@ -311,14 +314,15 @@ export function Sparkles({ className }: { className?: string }) {
           opacity: 0;
           animation: pr-fw-trim-late var(--fw-dur, 8s) linear var(--fw-delay, 0s) infinite;
         }
-        /* second round: same draw-out-then-vanish, shifted to start after r1. */
+        /* second round: same sweep, shifted to start right after round 1. */
         @keyframes pr-fw-trim-late {
-          0%, 8% { stroke-dashoffset: 1; opacity: 0; } /* idle until r2 fires */
-          8.01%  { stroke-dashoffset: 1; opacity: 1; } /* start drawing */
-          20%    { stroke-dashoffset: 0; opacity: 1; } /* fully extended */
-          20.01% { stroke-dashoffset: 0; opacity: 0; } /* vanish instantly */
-          20.02% { stroke-dashoffset: 1; opacity: 0; } /* reset, hidden */
-          100%   { stroke-dashoffset: 1; opacity: 0; }
+          0%, 8% { stroke-dashoffset: 1;  opacity: 0; } /* idle until r2 fires */
+          8.01%  { stroke-dashoffset: 1;  opacity: 1; } /* start drawing */
+          15%    { stroke-dashoffset: 0;  opacity: 1; } /* fully extended */
+          20%    { stroke-dashoffset: -1; opacity: 1; } /* collapsed to edge dot */
+          20.01% { stroke-dashoffset: -1; opacity: 0; } /* dot vanishes */
+          20.02% { stroke-dashoffset: 1;  opacity: 0; } /* reset, hidden */
+          100%   { stroke-dashoffset: 1;  opacity: 0; }
         }
         @media (prefers-reduced-motion: reduce) {
           .pr-spark-stroke, .pr-fw-ray, .pr-fw-ray-r1, .pr-fw-ray-r2 { animation: none; }

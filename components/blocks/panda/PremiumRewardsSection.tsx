@@ -55,8 +55,11 @@ export function PremiumRewardsSection({ intro }: { intro?: string } = {}) {
           </p>
         </div>
 
-        {/* scaled-up phone + firework stage, centred below the title */}
-        <RewardsStage className="relative z-10 mx-auto mt-2 w-full max-w-[1124px]" />
+        {/* scaled-up phone + firework stage, centred below the title.
+            Pushed DOWN 60px (translate-y), and the empty lower part of the stage
+            is cropped by pulling the section bottom up 200px (negative margin +
+            the section's own overflow-hidden) so the whole band is 200px shorter. */}
+        <RewardsStage className="relative z-10 mx-auto mt-2 mb-[-200px] w-full max-w-[1124px] translate-y-[60px]" />
       </div>
 
       {/* ── MOBILE (<1024px) ───────────────────────────────────────────── */}
