@@ -63,7 +63,7 @@ function MvpCard() {
   return (
     <div
       data-anim="mvp-card"
-      className="relative flex flex-col items-center overflow-hidden rounded-[var(--br-card-radius)] border border-[var(--px-red)] bg-white px-6 pt-12 pb-0 text-center md:px-10 md:pt-14"
+      className="relative flex flex-col items-center overflow-hidden rounded-[var(--br-card-radius)] border border-[var(--px-red)] bg-white px-6 pt-10 pb-0 text-center md:px-10 md:pt-12"
     >
       {/* fast-forward icon badge */}
       <div
@@ -77,19 +77,21 @@ function MvpCard() {
 
       <h3
         data-anim="mvp-title"
-        className="mt-6 text-[30px] font-semibold uppercase leading-none text-[var(--br-ink)] md:text-[40px]"
+        className="mt-5 text-[30px] font-semibold uppercase leading-none text-[var(--br-ink)] md:text-[40px]"
       >
         {defaults.mvp.title}
       </h3>
       <p
         data-anim="mvp-body"
-        className="mt-4 max-w-[42ch] text-base leading-snug text-[var(--br-muted)] md:text-lg"
+        className="mt-3 max-w-[42ch] text-base leading-snug text-[var(--br-muted)] md:text-lg"
       >
         {defaults.mvp.body}
       </p>
 
-      {/* web homepage screenshot — sits at the bottom, slight rounded top */}
-      <div data-anim="mvp-screenshot" className="mt-9 w-full max-w-[460px] md:mt-11">
+      {/* web homepage screenshot — sits at the bottom, slight rounded top.
+          Tighter top spacing so more of the mockup is visible before the card's
+          lower edge (it intentionally bleeds off the bottom). */}
+      <div data-anim="mvp-screenshot" className="mt-7 w-full max-w-[460px] md:mt-8">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={`${P}/homepage-hero.webp`}
@@ -198,7 +200,7 @@ function RewardsCard() {
   // over the radial's centre. REST_Y is the settled baseline; the scroll entry
   // (60*v down) rides on top of it. Shadows share the same baseline so they stay
   // glued to their phones at rest.
-  const REST_Y = -80
+  const REST_Y = -70
 
   // ── Phone 1 (front / left): slides in from lower-left, slightly extra CCW.
   const p1x = useTransform(a, (v) => -70 * v)
