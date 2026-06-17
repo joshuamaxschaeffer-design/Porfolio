@@ -68,51 +68,68 @@ const SPARKS: Spark[] = [
  * Each is drawn in a 0 0 100 100 box, centred on (50,50), so a single CSS
  * scale about the centre makes it grow/burst from its middle. */
 
-/** Four-point sparkle drawn as an OUTLINE stroke — a concave diamond with a
- *  hollow centre and rounded points (matches the reference). Stroke width 7 in
- *  the 100-unit box → same visual weight family as the fireworks. */
-function SparkleGlyph() {
+// Shared sparkle outline path (concave 4-point diamond, hollow centre).
+const SPARKLE_D =
+  'M50 8 C53 36 64 47 92 50 C64 53 53 64 50 92 C47 64 36 53 8 50 C36 47 47 36 50 8 Z'
+
+/** Four-point sparkle drawn as an OUTLINE stroke. It appears/disappears by
+ *  animating STROKE-WIDTH (0 → peak → 0), NOT opacity — so it "inflates" into
+ *  view and thins back out to nothing. The outer wrapper still scales it. The
+ *  peak stroke width rides on a CSS var (--spk-w) so one keyframe serves both
+ *  the bigger sparkle (7) and the smaller star (6). reduced → static at peak. */
+function SparkleGlyph({ peak = 7, reduced }: { peak?: number; reduced?: boolean }) {
   return (
-    <svg viewBox="0 0 100 100" className="block h-full w-full" aria-hidden>
+    <svg
+      viewBox="0 0 100 100"
+      className="block h-full w-full overflow-visible"
+      aria-hidden
+      style={{ ['--spk-w' as string]: `${peak}` }}
+    >
       <path
-        d="M50 8 C53 36 64 47 92 50 C64 53 53 64 50 92 C47 64 36 53 8 50 C36 47 47 36 50 8 Z"
+        d={SPARKLE_D}
         fill="none"
         stroke={GOLD}
-        strokeWidth={7}
+        strokeWidth={reduced ? peak : 0}
         strokeLinejoin="round"
         strokeLinecap="round"
+        className={reduced ? undefined : 'pr-spark-stroke'}
       />
     </svg>
   )
 }
 
-/** Small four-point accent — same outlined sparkle, lighter stroke so it reads
- *  as a smaller twinkle among the bigger sparkles/fireworks. */
-function StarGlyph() {
-  return (
-    <svg viewBox="0 0 100 100" className="block h-full w-full" aria-hidden>
-      <path
-        d="M50 8 C53 36 64 47 92 50 C64 53 53 64 50 92 C47 64 36 53 8 50 C36 47 47 36 50 8 Z"
-        fill="none"
-        stroke={GOLD}
-        strokeWidth={6}
-        strokeLinejoin="round"
-        strokeLinecap="round"
-      />
-    </svg>
-  )
+/** Small four-point accent — same sparkle, lighter peak stroke. */
+function StarGlyph({ reduced }: { reduced?: boolean }) {
+  return <SparkleGlyph peak={6} reduced={reduced} />
 }
 
-/** Firework — 12 thick rounded rays radiating from the centre, at TWO
- *  alternating lengths (long / short) like the reference. Drawn as round-capped
- *  <line>s from an inner radius outward; the parent <g> scales them out from the
- *  middle so they "shoot" on burst. STROKE is the shared firework weight (5).
+/** Firework rays — 12 round-capped <line>s from an inner radius outward, at TWO
+ *  alternating lengths (long / short) like the reference. Each ray is animated
+ *  with a TRIM PATH (After-Effects style): stroke-dashoffset sweeps the visible
+ *  segment from the inner end out to the tip, then off the tip, so the ray
+ *  SHOOTS OUTWARD and retracts — no opacity change. pathLength=1 normalises the
+ *  dash math so long & short rays trim identically.
  *
  *  `box` lets the big variant render in a 200-unit viewBox while keeping the
  *  SAME absolute stroke width, so at 2× render size the stroke matches the
- *  small firework's screen weight. Geometry is expressed as fractions of `box`.
+ *  small firework's screen weight. Geometry is fractions of `box`.
+ *
+ *  `animClass` selects which trim keyframe (single burst vs the two rounds), and
+ *  the per-instance duration/delay ride on CSS vars (--fw-dur/--fw-delay) set on
+ *  the host so one keyframe serves every instance. `reduced` → fully drawn,
+ *  static.
  */
-function FireworkRays({ box = 100, stroke = 5 }: { box?: number; stroke?: number }) {
+function FireworkRays({
+  box = 100,
+  stroke = 5,
+  animClass,
+  reduced,
+}: {
+  box?: number
+  stroke?: number
+  animClass?: string
+  reduced?: boolean
+}) {
   const c = box / 2
   const inner = box * 0.16 // gap at the centre
   const long = box * 0.46 // tip radius — long rays
@@ -132,6 +149,10 @@ function FireworkRays({ box = 100, stroke = 5 }: { box?: number; stroke?: number
             stroke={GOLD}
             strokeWidth={stroke}
             strokeLinecap="round"
+            pathLength={1}
+            className={reduced ? undefined : animClass}
+            // reduced-motion (or no animClass) → ray fully drawn & static.
+            style={reduced ? { strokeDasharray: 'none' } : undefined}
             transform={`rotate(${deg} ${c} ${c})`}
           />
         )
@@ -140,21 +161,34 @@ function FireworkRays({ box = 100, stroke = 5 }: { box?: number; stroke?: number
   )
 }
 
-function FireworkGlyph() {
+function FireworkGlyph({
+  period,
+  delay,
+  reduced,
+}: {
+  period: number
+  delay: number
+  reduced: boolean
+}) {
   return (
-    <svg viewBox="0 0 100 100" className="block h-full w-full" aria-hidden>
+    <svg
+      viewBox="0 0 100 100"
+      className="block h-full w-full"
+      aria-hidden
+      style={{ ['--fw-dur' as string]: `${period}s`, ['--fw-delay' as string]: `${delay}s` }}
+    >
       <g>
-        <FireworkRays box={100} stroke={7.5} />
+        <FireworkRays box={100} stroke={7.5} animClass="pr-fw-ray" reduced={reduced} />
       </g>
     </svg>
   )
 }
 
 /** Larger firework (2× the others) that bursts in TWO short rounds. Drawn in a
- *  200-unit box with the SAME absolute stroke width (5) so, rendered at 2× the
- *  size, its rays read at the same weight as the small firework. Two ray sets
- *  are stacked: an OUTER long set and an INNER short set, each on its own <g>
- *  so they can pop in sequence (see the .pr-bigfw-* keyframes). */
+ *  200-unit box with the SAME absolute stroke width so, rendered at 2× the size,
+ *  its rays read at the same weight as the small firework. Two ray sets trim
+ *  outward in sequence: an inner round fires first (pr-fw-ray-r1), then a second
+ *  rotated round a beat later (pr-fw-ray-r2) — both pure trim-path, no opacity. */
 function BigFireworkGlyph({
   period,
   delay,
@@ -165,19 +199,20 @@ function BigFireworkGlyph({
   reduced: boolean
 }) {
   const c = 100
-  const r1 = reduced ? undefined : `pr-bigfw-round1 ${period}s ease-out ${delay}s infinite`
-  const r2 = reduced ? undefined : `pr-bigfw-round2 ${period}s ease-out ${delay}s infinite`
   return (
-    <svg viewBox="0 0 200 200" className="block h-full w-full" aria-hidden>
-      {/* round 1 — first burst (shorter rays, fires first) */}
-      <g style={{ transformOrigin: `${c}px ${c}px`, transformBox: 'view-box', animation: r1, opacity: reduced ? 1 : 0 }}>
-        <FireworkRays box={200} stroke={7.5} />
+    <svg
+      viewBox="0 0 200 200"
+      className="block h-full w-full"
+      aria-hidden
+      style={{ ['--fw-dur' as string]: `${period}s`, ['--fw-delay' as string]: `${delay}s` }}
+    >
+      {/* round 1 — first burst, trims outward first */}
+      <g>
+        <FireworkRays box={200} stroke={7.5} animClass="pr-fw-ray-r1" reduced={reduced} />
       </g>
       {/* round 2 — second burst a beat later, rotated 15° so it reads as a new pop */}
-      <g style={{ transformOrigin: `${c}px ${c}px`, transformBox: 'view-box', animation: r2, opacity: reduced ? 1 : 0 }}>
-        <g transform={`rotate(15 ${c} ${c})`}>
-          <FireworkRays box={200} stroke={7.5} />
-        </g>
+      <g transform={`rotate(15 ${c} ${c})`}>
+        <FireworkRays box={200} stroke={7.5} animClass="pr-fw-ray-r2" reduced={reduced} />
       </g>
     </svg>
   )
@@ -195,9 +230,9 @@ function Glyph({
   reduced: boolean
 }) {
   if (kind === 'bigFirework') return <BigFireworkGlyph period={period} delay={delay} reduced={reduced} />
-  if (kind === 'firework') return <FireworkGlyph />
-  if (kind === 'star') return <StarGlyph />
-  return <SparkleGlyph />
+  if (kind === 'firework') return <FireworkGlyph period={period} delay={delay} reduced={reduced} />
+  if (kind === 'star') return <StarGlyph reduced={reduced} />
+  return <SparkleGlyph reduced={reduced} />
 }
 
 export function Sparkles({ className }: { className?: string }) {
@@ -208,88 +243,101 @@ export function Sparkles({ className }: { className?: string }) {
 
   return (
     <div className={`pointer-events-none absolute inset-0 overflow-hidden ${className ?? ''}`} aria-hidden>
-      {/* Scoped keyframes. The "on" window is a small slice of each loop, so
-          most of the time a given spark is invisible → only ~4–5 lit at once.
-          • sparkle/star: scale 0 → 1 (overshoot) → 0 with a matching fade.
-          • firework: the whole node fades in/out while its rays scale out from
-            the centre (handled by .pr-fw-rays). */}
+      {/* Scoped keyframes — all motion is STROKE-BASED (After-Effects trim path
+          style), not opacity. Each glyph is lit for only a small slice of its
+          loop, so ~4–5 show at once.
+          • Fireworks: each ray's visible dash sweeps from the centre out to the
+            tip then off it (stroke-dashoffset 1 → 0 → -1) — the ray shoots
+            outward and retracts. No opacity. pathLength=1 normalises long/short.
+          • Sparkles: the outer wrapper still SCALES in/out, but the glyph
+            appears/disappears via STROKE-WIDTH (0 → peak → 0), not opacity. */}
       <style>{`
-        @keyframes pr-spark-pop {
-          0%, 100% { opacity: 0; transform: scale(0); }
-          7%       { opacity: 1; transform: scale(1.12); }
-          12%      { opacity: 1; transform: scale(0.96); }
-          20%      { opacity: 1; transform: scale(1); }
-          30%      { opacity: 0; transform: scale(0.35); }
+        /* ── sparkles ── */
+        @keyframes pr-spark-scale {
+          0%, 100% { transform: scale(0.2); }
+          10%      { transform: scale(1.08); }
+          20%      { transform: scale(1); }
+          30%      { transform: scale(1.04); }
         }
-        @keyframes pr-fw-fade {
-          0%, 100% { opacity: 0; }
-          6%       { opacity: 1; }
-          22%      { opacity: 1; }
-          34%      { opacity: 0; }
+        @keyframes pr-spark-stroke {
+          0%, 100% { stroke-width: 0; }
+          8%       { stroke-width: var(--spk-w); }
+          26%      { stroke-width: var(--spk-w); }
+          32%      { stroke-width: 0; }
         }
-        @keyframes pr-fw-burst {
-          0%   { transform: scale(0.05); }
-          30%  { transform: scale(1); }
-          100% { transform: scale(1.08); }
+        .pr-spark-stroke {
+          animation: pr-spark-stroke var(--spk-dur, 8s) ease-in-out var(--spk-delay, 0s) infinite;
         }
-        /* Big firework — two short rounds. Round 1 pops first and holds; round 2
-           fires a beat later (rotated 15°) so it reads as a fresh burst. Each
-           group carries its OWN scale + opacity (no parent fade), giving the
-           two-pop appear-then-disappear. */
-        @keyframes pr-bigfw-round1 {
-          0%   { transform: scale(0.05); opacity: 0; }
-          5%   { transform: scale(0.85); opacity: 1; }
-          12%  { transform: scale(1); opacity: 1; }
-          34%  { transform: scale(1.05); opacity: 1; }
-          40%  { opacity: 0; }
-          100% { transform: scale(1.05); opacity: 0; }
+        /* ── fireworks: trim-path rays ──
+           dasharray 1 = one pathLength unit; offset 1 hides the ray (segment
+           pushed before the start), 0 = fully drawn from inner→tip, -1 = pushed
+           off past the tip (retracted). So 1 → 0 draws OUT, 0 → -1 trims away. */
+        @keyframes pr-fw-trim {
+          0%, 100% { stroke-dashoffset: 1; }
+          18%      { stroke-dashoffset: 0; }
+          40%      { stroke-dashoffset: -1; }
         }
-        @keyframes pr-bigfw-round2 {
-          0%, 12%  { transform: scale(0.05); opacity: 0; }
-          18%      { transform: scale(0.9); opacity: 1; }
-          24%      { transform: scale(1.12); opacity: 1; }
-          34%      { transform: scale(1.18); opacity: 1; }
-          40%      { opacity: 0; }
-          100%     { transform: scale(1.18); opacity: 0; }
+        .pr-fw-ray {
+          stroke-dasharray: 1;
+          stroke-dashoffset: 1;
+          animation: pr-fw-trim var(--fw-dur, 8s) cubic-bezier(0.2,0.7,0.2,1) var(--fw-delay, 0s) infinite;
+        }
+        /* Big firework — two rounds. Round 1 trims out early; round 2 a beat
+           later (own delay offset), both pure trim-path. */
+        .pr-fw-ray-r1 {
+          stroke-dasharray: 1;
+          stroke-dashoffset: 1;
+          animation: pr-fw-trim var(--fw-dur, 8s) cubic-bezier(0.2,0.7,0.2,1) var(--fw-delay, 0s) infinite;
+        }
+        .pr-fw-ray-r2 {
+          stroke-dasharray: 1;
+          stroke-dashoffset: 1;
+          animation: pr-fw-trim-late var(--fw-dur, 8s) cubic-bezier(0.2,0.7,0.2,1) var(--fw-delay, 0s) infinite;
+        }
+        /* second round: same trim shape, shifted later in the loop so it reads
+           as a fresh burst right after round 1. */
+        @keyframes pr-fw-trim-late {
+          0%, 12%, 100% { stroke-dashoffset: 1; }
+          28%           { stroke-dashoffset: 0; }
+          50%           { stroke-dashoffset: -1; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .pr-spark-stroke, .pr-fw-ray, .pr-fw-ray-r1, .pr-fw-ray-r2 { animation: none; }
         }
       `}</style>
 
       {SPARKS.map((s) => {
-        const isFw = s.kind === 'firework'
-        const isBig = s.kind === 'bigFirework'
-        // The big firework manages its own opacity + two-round bursts on its
-        // inner groups, so its outer node carries NO fade/scale animation.
-        const outerAnim = reduced || isBig
-          ? undefined
-          : `${isFw ? 'pr-fw-fade' : 'pr-spark-pop'} ${s.period}s ease-in-out ${s.delay}s infinite`
+        const isSpark = s.kind === 'sparkle' || s.kind === 'star'
+        // Sparkles still SCALE on the wrapper (stroke-width handles appear/
+        // disappear inside the glyph). Fireworks carry no wrapper animation —
+        // their rays trim via CSS vars set on the inner <svg>.
+        const wrapperStyle: React.CSSProperties = {
+          left: `${s.x}%`,
+          top: `${s.y}%`,
+          width: `clamp(${Math.round(s.size * 0.55)}px, ${s.size / 14.4}vw, ${s.size}px)`,
+          aspectRatio: '1 / 1',
+          // centre the node, then (for sparkles) scale about that centre
+          transform: 'translate(-50%, -50%)',
+          willChange: 'transform',
+        }
+        if (isSpark && !reduced) {
+          // expose the stroke-width animation timing to the glyph + drive scale
+          ;(wrapperStyle as Record<string, string | number>)['--spk-dur'] = `${s.period}s`
+          ;(wrapperStyle as Record<string, string | number>)['--spk-delay'] = `${s.delay}s`
+        }
         return (
-          <div
-            key={s.id}
-            className="absolute"
-            style={{
-              left: `${s.x}%`,
-              top: `${s.y}%`,
-              width: `clamp(${Math.round(s.size * 0.55)}px, ${s.size / 14.4}vw, ${s.size}px)`,
-              aspectRatio: '1 / 1',
-              transform: 'translate(-50%, -50%)',
-              // Reduced motion → hold faint & still. Big firework keeps full
-              // opacity at the node level (its rounds fade themselves).
-              opacity: reduced ? (isBig ? 0.5 : 0.5) : undefined,
-              animation: outerAnim,
-              willChange: 'transform, opacity',
-            }}
-          >
-            {/* Small firework's rays get a single burst on an inner div. */}
-            {isFw && !reduced ? (
-              <div
-                className="h-full w-full"
-                style={{ animation: `pr-fw-burst ${s.period}s ease-out ${s.delay}s infinite` }}
-              >
-                <Glyph kind={s.kind} period={s.period} delay={s.delay} reduced={reduced} />
-              </div>
-            ) : (
+          <div key={s.id} className="absolute" style={wrapperStyle}>
+            {/* inner layer owns the scale (kept off the centring transform) */}
+            <div
+              className="h-full w-full"
+              style={
+                isSpark && !reduced
+                  ? { animation: `pr-spark-scale ${s.period}s ease-in-out ${s.delay}s infinite` }
+                  : undefined
+              }
+            >
               <Glyph kind={s.kind} period={s.period} delay={s.delay} reduced={reduced} />
-            )}
+            </div>
           </div>
         )
       })}
