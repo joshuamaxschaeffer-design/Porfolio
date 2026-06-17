@@ -271,35 +271,49 @@ export function Sparkles({ className }: { className?: string }) {
         /* ── fireworks: trim-path rays ──
            dasharray 1 = one pathLength unit; offset 1 hides the ray (segment
            pushed before the start), 0 = fully drawn from inner→tip, -1 = pushed
-           off past the tip (retracted). So 1 → 0 draws OUT, 0 → -1 trims away. */
+           off past the tip (retracted). So 1 → 0 draws OUT, 0 → -1 trims away,
+           leaving the ray completely INVISIBLE. While invisible (opacity 0) the
+           offset snaps back to 1 (the start), so the next burst plays clean.
+           The whole burst is a SHORT slice of the loop (~3× faster than before);
+           the long idle tail keeps only ~4–5 fireworks lit at once. */
         @keyframes pr-fw-trim {
-          0%, 100% { stroke-dashoffset: 1; }
-          18%      { stroke-dashoffset: 0; }
-          40%      { stroke-dashoffset: -1; }
+          0%        { stroke-dashoffset: 1;  opacity: 0; }
+          1%        { stroke-dashoffset: 1;  opacity: 1; }
+          6%        { stroke-dashoffset: 0;  opacity: 1; }
+          12%       { stroke-dashoffset: -1; opacity: 1; }
+          14%       { stroke-dashoffset: -1; opacity: 0; }
+          15%       { stroke-dashoffset: 1;  opacity: 0; } /* reset while hidden */
+          100%      { stroke-dashoffset: 1;  opacity: 0; }
         }
         .pr-fw-ray {
           stroke-dasharray: 1;
           stroke-dashoffset: 1;
+          opacity: 0;
           animation: pr-fw-trim var(--fw-dur, 8s) cubic-bezier(0.2,0.7,0.2,1) var(--fw-delay, 0s) infinite;
         }
-        /* Big firework — two rounds. Round 1 trims out early; round 2 a beat
-           later (own delay offset), both pure trim-path. */
+        /* Big firework — two rounds. Round 1 trims out first; round 2 fires a
+           beat later (own keyframe), both same fast trim + invisible reset. */
         .pr-fw-ray-r1 {
           stroke-dasharray: 1;
           stroke-dashoffset: 1;
+          opacity: 0;
           animation: pr-fw-trim var(--fw-dur, 8s) cubic-bezier(0.2,0.7,0.2,1) var(--fw-delay, 0s) infinite;
         }
         .pr-fw-ray-r2 {
           stroke-dasharray: 1;
           stroke-dashoffset: 1;
+          opacity: 0;
           animation: pr-fw-trim-late var(--fw-dur, 8s) cubic-bezier(0.2,0.7,0.2,1) var(--fw-delay, 0s) infinite;
         }
-        /* second round: same trim shape, shifted later in the loop so it reads
-           as a fresh burst right after round 1. */
+        /* second round: same fast trim, shifted to start right after round 1. */
         @keyframes pr-fw-trim-late {
-          0%, 12%, 100% { stroke-dashoffset: 1; }
-          28%           { stroke-dashoffset: 0; }
-          50%           { stroke-dashoffset: -1; }
+          0%, 8%    { stroke-dashoffset: 1;  opacity: 0; }
+          9%        { stroke-dashoffset: 1;  opacity: 1; }
+          14%       { stroke-dashoffset: 0;  opacity: 1; }
+          20%       { stroke-dashoffset: -1; opacity: 1; }
+          22%       { stroke-dashoffset: -1; opacity: 0; }
+          23%       { stroke-dashoffset: 1;  opacity: 0; } /* reset while hidden */
+          100%      { stroke-dashoffset: 1;  opacity: 0; }
         }
         @media (prefers-reduced-motion: reduce) {
           .pr-spark-stroke, .pr-fw-ray, .pr-fw-ray-r1, .pr-fw-ray-r2 { animation: none; }
