@@ -25,7 +25,7 @@ import { ComponentLibrariesSection } from './ComponentLibrariesSection'
  */
 
 const RED = 'var(--px-red)'
-const AUTOPLAY_MS = 4200
+const AUTOPLAY_MS = 2100
 
 /* normalized grid → viewBox units */
 const COLS = 12
@@ -134,11 +134,13 @@ function PhoneTile({ node, lit, w = NODE_W }: { node: MvpNode; lit: boolean; w?:
   const h = (w / NODE_W) * NODE_H
   return (
     <div
-      className="relative shrink-0 rounded-[12px] border bg-white transition-[border-color,box-shadow,transform] duration-300"
+      className="relative shrink-0 rounded-[12px] bg-white transition-[border-color,box-shadow,transform] duration-300"
       style={{
         width: w,
         height: h,
-        borderColor: lit ? RED : '#e4e4ea',
+        borderWidth: 1.5,
+        borderStyle: 'solid',
+        borderColor: lit ? RED : '#cfcfd6',
         boxShadow: lit
           ? '0 10px 22px rgba(208,43,46,0.18), 0 2px 6px rgba(208,43,46,0.10)'
           : '0 2px 6px rgba(7,14,44,0.05)',
@@ -174,6 +176,9 @@ function returnRail(from: MvpNode): number {
 /** y of the mid rail the category→bag shortcut runs along — between the spine
  *  row and the category row, so it never crosses the Product Page label. */
 const LOWRAIL = (rowY(2.6) + hh + (rowY(4.15) - hh)) / 2 + 6
+/** gap between a line's end and the target card, so the solid-triangle
+ *  arrowhead sits in clear space rather than hidden under the card (note 6). */
+const INSET = 7
 
 function buildPath(from: MvpNode, to: MvpNode, kind?: string, off = 0, rail?: number): string {
   const a = { ...nodeCenter(from) }
@@ -182,21 +187,21 @@ function buildPath(from: MvpNode, to: MvpNode, kind?: string, off = 0, rail?: nu
     // drop out the bottom of `from`, run along a low rail, rise into the
     // bottom of `to` (used for the Add-more / scrolled-location loops).
     const ay = a.y + hh
-    const by = b.y + hh
+    const by = b.y + hh + INSET
     const railY = returnRail(from)
     return `M ${a.x} ${ay} L ${a.x} ${railY} L ${b.x} ${railY} L ${b.x} ${by}`
   }
   if (kind === 'low-rail') {
     // out the bottom, along a mid rail, up into the target's bottom
     const ay = a.y + hh
-    const by = b.y + hh
+    const by = b.y + hh + INSET
     return `M ${a.x} ${ay} L ${a.x} ${LOWRAIL} L ${b.x} ${LOWRAIL} L ${b.x} ${by}`
   }
   if (kind === 'h' || kind === 'h-low' || (!kind && Math.abs(a.y - b.y) < 1)) {
     // straight horizontal between facing edges; `off` shifts the line up/down
     const dir = b.x > a.x ? 1 : -1
     const y = a.y + off
-    return `M ${a.x + dir * hw} ${y} L ${b.x - dir * hw} ${y}`
+    return `M ${a.x + dir * hw} ${y} L ${b.x - dir * (hw + INSET)} ${y}`
   }
   if (kind === 'elbow-up' || kind === 'elbow-down') {
     // leave from top/bottom of `from`, run vertically, then into the side or
@@ -206,7 +211,7 @@ function buildPath(from: MvpNode, to: MvpNode, kind?: string, off = 0, rail?: nu
     a.x += off
     b.x += off
     const ay = up ? a.y - hh : a.y + hh
-    const by = up ? b.y + hh : b.y - hh
+    const by = up ? b.y + hh + INSET : b.y - hh - INSET
     // explicit rail Y lets opposing edges turn at different heights (note 1)
     if (rail != null) {
       return `M ${a.x} ${ay} L ${a.x} ${rail} L ${b.x} ${rail} L ${b.x} ${by}`
@@ -290,11 +295,11 @@ function DesktopDiagram({ activeId, progress, reduced }: DiagramProps) {
     <div className="relative w-full" style={{ aspectRatio: `${VBW} / ${VBH + RETURN_PAD}` }}>
       <svg viewBox={`0 0 ${VBW} ${VBH + RETURN_PAD}`} className="absolute inset-0 h-full w-full" aria-hidden>
         <defs>
-          <marker id="mvp-arrow-dim" viewBox="0 0 10 10" refX="7.5" refY="5" markerWidth="3.8" markerHeight="3.8" orient="auto-start-reverse">
-            <path d="M1 2L8 5L1 8" fill="none" stroke="#cfcfd6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <marker id="mvp-arrow-dim" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L8 4 L0 8 Z" fill="#c4c4cc" />
           </marker>
-          <marker id="mvp-arrow-lit" viewBox="0 0 10 10" refX="7.5" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
-            <path d="M1 2L8 5L1 8" fill="none" stroke="#D02B2E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <marker id="mvp-arrow-lit" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7.5" markerHeight="7.5" orient="auto-start-reverse">
+            <path d="M0 0 L8 4 L0 8 Z" fill="#D02B2E" />
           </marker>
         </defs>
 
@@ -305,9 +310,9 @@ function DesktopDiagram({ activeId, progress, reduced }: DiagramProps) {
               key={`dim-${i}`}
               d={buildPath(nodeById.get(e.from)!, nodeById.get(e.to)!, e.kind, e.off, e.rail)}
               fill="none"
-              stroke={e.alt ? '#e7e7ec' : '#dadae1'}
-              strokeWidth="2"
-              strokeDasharray={e.alt ? '5 5' : undefined}
+              stroke={e.alt ? '#dcdce1' : '#cfcfd6'}
+              strokeWidth="1.5"
+              strokeDasharray={e.alt ? '4 4' : undefined}
               strokeLinecap="round"
               strokeLinejoin="round"
               markerEnd="url(#mvp-arrow-dim)"
@@ -329,7 +334,7 @@ function DesktopDiagram({ activeId, progress, reduced }: DiagramProps) {
                 d={buildPath(nodeById.get(fromId)!, nodeById.get(toId)!, edge.kind, edge.off, edge.rail)}
                 fill="none"
                 stroke={RED}
-                strokeWidth="3"
+                strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 markerEnd="url(#mvp-arrow-lit)"
@@ -337,7 +342,7 @@ function DesktopDiagram({ activeId, progress, reduced }: DiagramProps) {
                 style={{
                   strokeDasharray: 1,
                   strokeDashoffset: drawn ? 0 : 1,
-                  transition: reduced ? 'none' : 'stroke-dashoffset 520ms ease-in-out',
+                  transition: reduced ? 'none' : 'stroke-dashoffset 260ms ease-in-out',
                   opacity: drawn ? 1 : 0,
                 }}
               />
@@ -353,7 +358,7 @@ function DesktopDiagram({ activeId, progress, reduced }: DiagramProps) {
         if (!e.label && !e.label2) return null
         const from = nodeById.get(e.from)!
         const to = nodeById.get(e.to)!
-        const pos = edgeLabelPos(from, to, e.kind, e.off, e.rail)
+        const pos = e.labelAt ?? edgeLabelPos(from, to, e.kind, e.off, e.rail)
         const step = edgeStep(e.from, e.to)
         const onPath = step >= 0
         const active = onPath && step < revealedStep
@@ -549,7 +554,7 @@ export function MvpFlowSection({ intro }: { intro?: string } = {}) {
 
     // still drawing this path?
     if (progress < pathLen - 1) {
-      const t = setTimeout(() => setProgress((p) => p + 1), 560)
+      const t = setTimeout(() => setProgress((p) => p + 1), 280)
       return () => clearTimeout(t)
     }
     // path fully drawn — hold, then move to next scenario (unless user-driven)
@@ -586,30 +591,15 @@ export function MvpFlowSection({ intro }: { intro?: string } = {}) {
           {lead}
         </p>
 
-        {/* ── Core UX callout + scenario chips ───────────────────── */}
-        <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)] lg:items-end md:mt-12">
-          <div className="rounded-[var(--br-card-radius)] border border-white/40 bg-white/10 p-6 md:p-7">
-            <div className="flex items-center gap-2.5">
-              <span className="grid h-7 w-7 place-items-center rounded-full bg-white">
-                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="var(--px-red)" strokeWidth="2.4" aria-hidden>
-                  <path d="M4 7h16M4 12h16M4 17h10" strokeLinecap="round" />
-                </svg>
-              </span>
-              <h3 className="text-[20px] font-semibold uppercase leading-none text-white md:text-[22px]">
-                {data.callout.title}
-              </h3>
-            </div>
-            <p className="mt-3 text-[15px] leading-snug text-white/90 md:text-base">
-              {data.callout.body}
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <ScenarioChips activeId={activeId} onPick={pick} />
-            <p className="br-data text-[13px] leading-snug text-white/75">
-              {data.scenarios[activeIdx].blurb}
-            </p>
-          </div>
+        {/* ── Core UX: headline → one line of body → scenario chips, stacked ── */}
+        <div className="mt-10 flex flex-col gap-4 md:mt-12">
+          <h3 className="text-[20px] font-semibold uppercase leading-none text-white md:text-[22px]">
+            {data.callout.title}
+          </h3>
+          <p className="text-[15px] leading-snug text-white/90 md:text-base">
+            {data.callout.body}
+          </p>
+          <ScenarioChips activeId={activeId} onPick={pick} />
         </div>
 
         {/* ── the flow — white card on the red field so the highlight reads ── */}
@@ -630,12 +620,6 @@ export function MvpFlowSection({ intro }: { intro?: string } = {}) {
             <MobileFlow activeId={activeId} progress={progress} reduced={reduced} />
           </div>
         </div>
-
-        {/* converge note + autoplay legend */}
-        <p className="mt-5 flex items-center gap-2 text-[14px] leading-snug text-white/85 md:text-[15px]">
-          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-white" aria-hidden />
-          {data.hint}
-        </p>
 
         {/* Component Libraries — the design system that shipped with the MVP.
             Lives inside this red section, below the UX chart and above the
