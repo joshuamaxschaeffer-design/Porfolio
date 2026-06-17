@@ -277,21 +277,19 @@ export function Sparkles({ className }: { className?: string }) {
         }
         /* ── fireworks: trim-path rays ──
            dasharray 1 = one pathLength unit; offset 1 hides the ray (segment
-           before the start), 0 = fully drawn inner→tip, -1 = pushed off past the
-           tip. The offset slides CONTINUOUSLY 1 → -1 in ONE smooth move (the
-           visible dash sweeps out from the centre and off the tip — no dwell at
-           "fully drawn", so no grow/shrink/disappear steps). Opacity only fades
-           in at the very start and out at the very end; the reset to 1 happens
-           while invisible so the next burst is clean. linear keeps the slide
-           even (no per-segment deceleration that read as pauses before). Burst
-           is a short slice of the loop → ~4–5 fireworks lit at once. */
+           before the start), 0 = fully drawn inner→tip. The ray draws OUTWARD
+           only (offset 1 → 0); the instant it is fully extended, opacity snaps
+           to 0 (so it never retracts/shrinks back in), then the offset resets to
+           1 WHILE invisible, and opacity snaps back to 1 exactly when the next
+           draw begins. So: shoot out → vanish at full length → re-draw fresh.
+           Steps are stacked at the SAME % (e.g. 12%) so the off→reset→on flip is
+           instantaneous. linear = even draw speed. Short burst → ~4–5 lit. */
         @keyframes pr-fw-trim {
-          0%   { stroke-dashoffset: 1;  opacity: 0; }
-          3%   { opacity: 1; }
-          12%  { stroke-dashoffset: -1; opacity: 1; }
-          14%  { opacity: 0; }                          /* gone at the tip */
-          15%  { stroke-dashoffset: 1;  opacity: 0; }   /* reset while hidden */
-          100% { stroke-dashoffset: 1;  opacity: 0; }
+          0%   { stroke-dashoffset: 1; opacity: 1; }  /* start drawing, visible */
+          12%  { stroke-dashoffset: 0; opacity: 1; }  /* fully extended */
+          12.01% { stroke-dashoffset: 0; opacity: 0; }/* vanish instantly */
+          12.02% { stroke-dashoffset: 1; opacity: 0; }/* reset to start, hidden */
+          100% { stroke-dashoffset: 1; opacity: 0; }  /* wait (idle) */
         }
         .pr-fw-ray {
           stroke-dasharray: 1;
@@ -299,8 +297,8 @@ export function Sparkles({ className }: { className?: string }) {
           opacity: 0;
           animation: pr-fw-trim var(--fw-dur, 8s) linear var(--fw-delay, 0s) infinite;
         }
-        /* Big firework — two rounds. Round 1 trims out first; round 2 fires a
-           beat later (own keyframe), both the same smooth continuous slide. */
+        /* Big firework — two rounds. Round 1 draws out first; round 2 fires a
+           beat later (own keyframe), both draw-out-then-vanish (no retract). */
         .pr-fw-ray-r1 {
           stroke-dasharray: 1;
           stroke-dashoffset: 1;
@@ -313,14 +311,14 @@ export function Sparkles({ className }: { className?: string }) {
           opacity: 0;
           animation: pr-fw-trim-late var(--fw-dur, 8s) linear var(--fw-delay, 0s) infinite;
         }
-        /* second round: same smooth slide, shifted to start right after round 1. */
+        /* second round: same draw-out-then-vanish, shifted to start after r1. */
         @keyframes pr-fw-trim-late {
-          0%, 8% { stroke-dashoffset: 1;  opacity: 0; }
-          11%    { opacity: 1; }
-          20%    { stroke-dashoffset: -1; opacity: 1; }
-          22%    { opacity: 0; }
-          23%    { stroke-dashoffset: 1;  opacity: 0; }
-          100%   { stroke-dashoffset: 1;  opacity: 0; }
+          0%, 8% { stroke-dashoffset: 1; opacity: 0; } /* idle until r2 fires */
+          8.01%  { stroke-dashoffset: 1; opacity: 1; } /* start drawing */
+          20%    { stroke-dashoffset: 0; opacity: 1; } /* fully extended */
+          20.01% { stroke-dashoffset: 0; opacity: 0; } /* vanish instantly */
+          20.02% { stroke-dashoffset: 1; opacity: 0; } /* reset, hidden */
+          100%   { stroke-dashoffset: 1; opacity: 0; }
         }
         @media (prefers-reduced-motion: reduce) {
           .pr-spark-stroke, .pr-fw-ray, .pr-fw-ray-r1, .pr-fw-ray-r2 { animation: none; }
