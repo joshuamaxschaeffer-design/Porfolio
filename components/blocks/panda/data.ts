@@ -71,6 +71,19 @@ export const releases = {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
+ * PREMIUM REWARDS APP — standalone hero that opens the rewards chapter
+ * (Figma node 292:25968, "MVP Section 6"). A full-bleed Panda-red band: the
+ * title + two-phase summary sit top-left, the scaled-up two-phone rewards
+ * mockup bursts from a radial firework at the centre, and gold sparkles /
+ * fireworks animate on and off across the top.
+ * ───────────────────────────────────────────────────────────────────────── */
+export const premiumRewards = {
+  heading: 'PREMIUM REWARDS APP',
+  intro:
+    'The premium rewards app came in two phases. Phase one: improve the fast-launch experience. Phase two: plan, design, test and execute a rewards system across all locations.',
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
  * MVP FAST-LAUNCH — Core UX (section 4)
  * The MVP shipped barebones ordering. Its UX was mapped as 4 core scenarios
  * that all converge on one checkout spine. Source of truth: the original UX

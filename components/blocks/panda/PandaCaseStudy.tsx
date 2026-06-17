@@ -4,6 +4,7 @@ import { ReleasesSection } from './ReleasesSection'
 import { MvpFlowSection } from './MvpFlowSection'
 import { MvpScatterSection } from './MvpScatterSection'
 import { MvpLaunchBento } from './MvpLaunchBento'
+import { PremiumRewardsSection } from './PremiumRewardsSection'
 import { OutcomesSection } from './OutcomesSection'
 import { SectionNav, type SectionNavItem } from '../baserate/SectionNav'
 import { CaseStudyShowcase } from '../shared/CaseStudyShowcase'
@@ -14,6 +15,7 @@ const NAV_ITEMS: SectionNavItem[] = [
   { id: 'challenge', title: 'The Challenge' },
   { id: 'releases', title: 'The Two Releases' },
   { id: 'mvp', title: 'MVP Fast-Launch' },
+  { id: 'premium-rewards', title: 'Premium Rewards' },
   { id: 'outcomes', title: 'Outcomes' },
 ]
 
@@ -27,6 +29,7 @@ export interface PandaCaseStudyProps {
   challengeIntro?: string
   releasesIntro?: string
   mvpIntro?: string
+  premiumRewardsIntro?: string
   outcomesIntro?: string
 }
 
@@ -61,6 +64,9 @@ export function PandaCaseStudy(props: PandaCaseStudyProps = {}) {
           Sits AFTER the Seamless Reordering scatter band (its own red band),
           as the last section before Outcomes. */}
       <MvpLaunchBento />
+      {/* Opens the rewards chapter — full-bleed red hero with the scaled-up
+          two-phone mockup + animated gold sparkles/fireworks. */}
+      <PremiumRewardsSection intro={props.premiumRewardsIntro} />
       <OutcomesSection intro={props.outcomesIntro} />
       <CaseStudyShowcase accent="#D02B2E" current="panda-express" />
     </article>
