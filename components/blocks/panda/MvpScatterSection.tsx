@@ -142,7 +142,7 @@ export function MvpScatterSection() {
       id="mvp-reordering"
       aria-label="Seamless simple reordering"
       data-anim="mvp-scatter-section"
-      className="relative isolate w-full overflow-hidden border-y border-white/20 bg-[var(--px-red)]"
+      className="relative isolate w-full overflow-hidden bg-white"
     >
       {/* ── DESKTOP / TABLET (≥1024px): exact Figma scatter ──────────────
           A fixed-aspect band; every node is positioned as a % of it, so the
@@ -200,12 +200,12 @@ export function MvpScatterSection() {
         {/* heading plate — top layer, red fill, hairline white border */}
         <div
           data-anim="mvp-scatter-heading"
-          className="absolute left-[5.128%] top-[2.178%] flex w-[89.744%] flex-col gap-3 rounded-[10px] border border-white/60 bg-[var(--px-red)] p-7 lg:p-10"
+          className="absolute left-[5.128%] top-[2.178%] flex w-[89.744%] flex-col gap-3 rounded-[10px] border border-[var(--br-line)] bg-white p-7 shadow-[var(--br-card-shadow)] lg:p-10"
         >
-          <h2 className="text-[22px] font-semibold uppercase leading-tight tracking-wide text-white lg:text-2xl">
+          <h2 className="text-[22px] font-semibold uppercase leading-tight tracking-wide text-[var(--br-ink)] lg:text-2xl">
             {defaults.scatter.title}
           </h2>
-          <p className="text-base leading-snug text-white/90 lg:text-xl">{defaults.scatter.body}</p>
+          <p className="text-base leading-snug text-[var(--br-muted)] lg:text-xl">{defaults.scatter.body}</p>
         </div>
       </div>
 
@@ -218,12 +218,12 @@ export function MvpScatterSection() {
         {/* heading plate */}
         <div
           data-anim="mvp-scatter-heading"
-          className="relative z-30 flex flex-col gap-2.5 rounded-[10px] border border-white/60 bg-[var(--px-red)] p-6 text-center"
+          className="relative z-30 flex flex-col gap-2.5 rounded-[10px] border border-[var(--br-line)] bg-white p-6 text-center shadow-[var(--br-card-shadow)]"
         >
-          <h2 className="text-[22px] font-semibold uppercase leading-tight tracking-wide text-white">
+          <h2 className="text-[22px] font-semibold uppercase leading-tight tracking-wide text-[var(--br-ink)]">
             {defaults.scatter.title}
           </h2>
-          <p className="text-[15px] leading-snug text-white/90">{defaults.scatter.body}</p>
+          <p className="text-[15px] leading-snug text-[var(--br-muted)]">{defaults.scatter.body}</p>
         </div>
 
         {/* phone fan — three tilted screens, sized so they overlap without

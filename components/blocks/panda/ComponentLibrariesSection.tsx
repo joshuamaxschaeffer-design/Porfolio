@@ -44,16 +44,16 @@ export function ComponentLibrariesSection({
 } = {}) {
   const content = (
     <>
-      {/* Panel header — white on the red field. */}
+      {/* Panel header — ink on the white field. */}
       <h3
         data-anim="complib-title"
-        className="text-[24px] font-semibold uppercase leading-tight text-white md:text-[28px]"
+        className="text-[24px] font-semibold uppercase leading-tight text-[var(--br-ink)] md:text-[28px]"
       >
         {title ?? defaults.title}
       </h3>
       <p
         data-anim="complib-body"
-        className="br-body mt-3 max-w-3xl text-[16px] leading-relaxed text-white/90 md:text-[18px]"
+        className="br-body mt-3 max-w-3xl text-[16px] leading-relaxed text-[var(--br-muted)] md:text-[18px]"
       >
         {body ?? defaults.body}
       </p>
@@ -65,7 +65,7 @@ export function ComponentLibrariesSection({
           `overflow-x: clip` — crops, never scrolls the page. Desktop: card fits
           the column, fully rounded. `vw` resolves against the viewport. */}
       <div data-anim="complib-sheet" className="-mr-6 mt-9 md:mr-0 md:mt-12" style={{ overflowX: 'clip' }}>
-        <div className="w-[190vw] overflow-hidden rounded-l-2xl bg-white shadow-[0_24px_60px_-28px_rgba(0,0,0,0.5)] md:w-full md:rounded-2xl">
+        <div className="w-[190vw] overflow-hidden rounded-l-2xl border border-[var(--br-line)] bg-white shadow-[0_18px_44px_-30px_rgba(7,14,44,0.35)] md:w-full md:rounded-2xl">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={`${P}/component-sheet.webp`}
@@ -82,7 +82,7 @@ export function ComponentLibrariesSection({
           cleanly, so it fits the column full-width on every breakpoint — no
           off-edge bleed needed. */}
       <div data-anim="complib-icons" className="mt-6 md:mt-8">
-        <div className="overflow-hidden rounded-2xl bg-white shadow-[0_24px_60px_-28px_rgba(0,0,0,0.5)]">
+        <div className="overflow-hidden rounded-2xl border border-[var(--br-line)] bg-white shadow-[0_18px_44px_-30px_rgba(7,14,44,0.35)]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={`${P}/icon-sheet.webp`}

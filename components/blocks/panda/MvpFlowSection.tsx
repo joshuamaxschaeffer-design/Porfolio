@@ -500,16 +500,16 @@ function ScenarioChips({
             onClick={() => onPick(s.id)}
             className="group flex items-center gap-2 rounded-full border px-4 py-2 text-[14px] font-medium leading-none transition-colors duration-200 md:text-[15px]"
             style={{
-              borderColor: active ? 'white' : 'rgba(255,255,255,0.5)',
-              background: active ? 'white' : 'rgba(255,255,255,0.10)',
-              color: active ? 'var(--px-red)' : 'white',
+              borderColor: active ? 'var(--px-red)' : 'var(--br-line)',
+              background: active ? 'var(--px-red)' : 'white',
+              color: active ? 'white' : 'var(--br-muted)',
             }}
           >
             <span
               className="br-data grid h-5 w-5 place-items-center rounded-full text-[11px] transition-colors duration-200"
               style={{
-                background: active ? 'var(--px-red)' : 'rgba(255,255,255,0.18)',
-                color: 'white',
+                background: active ? 'rgba(255,255,255,0.22)' : 'var(--br-bg-2)',
+                color: active ? 'white' : 'var(--px-red)',
               }}
             >
               {i + 1}
@@ -581,31 +581,33 @@ export function MvpFlowSection({ intro }: { intro?: string } = {}) {
   const lead = intro ?? data.intro
 
   return (
-    <section id="mvp" className="bg-[var(--px-red)] text-white">
+    <section id="mvp" className="bg-white text-[var(--br-body)]">
+      {/* 2px full-width red divider marking the top of section 4 */}
+      <div className="h-[2px] w-full bg-[var(--px-red)]" aria-hidden />
       <div className="br-container pt-16 pb-20 md:pt-24 md:pb-[120px]">
         {/* ── header ─────────────────────────────────────────────── */}
-        <h2 className="text-[32px] font-medium uppercase leading-none text-white md:text-[40px]">
+        <h2 className="text-[32px] font-medium uppercase leading-none text-[var(--br-ink)] md:text-[40px]">
           4. {data.heading}
         </h2>
-        <p className="mt-5 max-w-3xl text-lg leading-snug text-white/90 md:text-[22px]">
+        <p className="mt-5 max-w-3xl text-lg leading-snug text-[var(--br-muted)] md:text-[22px]">
           {lead}
         </p>
 
         {/* ── Core UX: headline → one line of body → scenario chips, stacked ── */}
         <div className="mt-10 flex flex-col gap-4 md:mt-12">
-          <h3 className="text-[20px] font-semibold uppercase leading-none text-white md:text-[22px]">
+          <h3 className="text-[20px] font-semibold uppercase leading-none text-[var(--br-ink)] md:text-[22px]">
             {data.callout.title}
           </h3>
-          <p className="text-[15px] leading-snug text-white/90 md:text-base">
+          <p className="text-[15px] leading-snug text-[var(--br-muted)] md:text-base">
             {data.callout.body}
           </p>
           <ScenarioChips activeId={activeId} onPick={pick} />
         </div>
 
-        {/* ── the flow — white card on the red field so the highlight reads ── */}
+        {/* ── the flow — bordered white card on the white field ── */}
         <div
           ref={ref}
-          className="relative mt-8 overflow-hidden rounded-[var(--br-card-radius)] bg-white p-5 shadow-[0_18px_40px_rgba(0,0,0,0.18)] md:mt-10 md:p-8"
+          className="relative mt-8 overflow-hidden rounded-[var(--br-card-radius)] border border-[var(--br-line)] bg-white p-5 shadow-[var(--br-card-shadow)] md:mt-10 md:p-8"
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
           onFocusCapture={() => setPaused(true)}

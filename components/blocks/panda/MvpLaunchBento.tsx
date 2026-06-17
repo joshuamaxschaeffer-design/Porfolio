@@ -175,10 +175,10 @@ export function MvpLaunchBento({
   const content = (
     <>
       {/* quiet eyebrow + heading, matching the section's editorial voice */}
-      <p className="br-data text-[11px] font-semibold uppercase leading-none tracking-[0.16em] text-white/70">
+      <p className="br-data text-[11px] font-semibold uppercase leading-none tracking-[0.16em] text-[var(--px-red)]">
         {d.kicker}
       </p>
-      <h3 className="mt-3 text-[24px] font-semibold uppercase leading-tight text-white md:text-[28px]">
+      <h3 className="mt-3 text-[24px] font-semibold uppercase leading-tight text-[var(--br-ink)] md:text-[28px]">
         {d.heading}
       </h3>
 
@@ -259,7 +259,7 @@ export function MvpLaunchBento({
       </div>
 
       {/* quiet sourced footnote */}
-      <p className="br-data mt-6 max-w-3xl text-[11.5px] leading-relaxed text-white/55 md:mt-8">
+      <p className="br-data mt-6 max-w-3xl text-[11.5px] leading-relaxed text-[var(--br-muted-2)] md:mt-8">
         {d.source}
       </p>
     </>
@@ -281,7 +281,7 @@ export function MvpLaunchBento({
       id="mvp-launch"
       data-anim="mvp-launch-bento"
       aria-label="Fast launch, shipped everywhere"
-      className="relative left-1/2 -ml-[50vw] w-screen overflow-hidden bg-[var(--px-red)] py-16 text-white md:py-24"
+      className="relative left-1/2 -ml-[50vw] w-screen overflow-hidden bg-white py-16 text-[var(--br-body)] md:py-24"
     >
       <div className="br-container">{content}</div>
     </section>
