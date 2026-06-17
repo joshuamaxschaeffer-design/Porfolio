@@ -142,7 +142,7 @@ export function MvpScatterSection() {
       id="mvp-reordering"
       aria-label="Seamless simple reordering"
       data-anim="mvp-scatter-section"
-      className="relative isolate w-full overflow-hidden bg-white"
+      className="relative isolate w-full overflow-hidden border-y border-[var(--br-line)] bg-white"
     >
       {/* ── DESKTOP / TABLET (≥1024px): exact Figma scatter ──────────────
           A fixed-aspect band; every node is positioned as a % of it, so the

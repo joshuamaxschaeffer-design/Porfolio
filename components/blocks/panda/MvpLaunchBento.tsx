@@ -33,6 +33,26 @@ import { mvpLaunch as defaults, type MvpBentoStat } from './data'
 
 const RED = 'var(--px-red)'
 
+/* Shared white-card shell: hairline stroke + soft shadow, relative + clipped so
+ * the corner glow can bleed to the rounded edge. (matches the original Baserate
+ * bento mockup's faint corner gradients — recoloured red here.) */
+const CARD =
+  'relative overflow-hidden rounded-[10px] border border-[var(--br-line)] bg-white shadow-[0_10px_24px_-14px_rgba(7,14,44,0.20)]'
+
+/* Faint red radial glow tucked into a card's top-right corner. Decorative. */
+function CornerGlow() {
+  return (
+    <span
+      aria-hidden
+      className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full"
+      style={{
+        background:
+          'radial-gradient(closest-side, rgba(208,43,46,0.16), rgba(208,43,46,0.05) 60%, transparent 75%)',
+      }}
+    />
+  )
+}
+
 /* ── shared count-up plumbing (mirrors OutcomesSection) ──────────────────── */
 function useInViewOnce<T extends HTMLElement>(threshold = 0.3) {
   const ref = useRef<T>(null)
@@ -90,9 +110,10 @@ function StatCell({ stat, index }: { stat: MvpBentoStat; index: number }) {
   return (
     <div
       ref={ref}
-      className="flex h-full flex-col justify-between rounded-[10px] bg-white p-6 shadow-[0_10px_24px_-12px_rgba(0,0,0,0.28)] md:p-7"
+      className={`flex h-full flex-col justify-between ${CARD} p-6 md:p-7`}
     >
-      <p className="br-data text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-[var(--px-red)]">
+      <CornerGlow />
+      <p className="br-data relative text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-[var(--px-red)]">
         {stat.eyebrow}
       </p>
       <p
@@ -211,8 +232,9 @@ export function MvpLaunchBento({
         </div>
 
         {/* ONE EXPERIENCE — cross-platform cell, right 7 cols, top row */}
-        <div className="flex flex-col rounded-[10px] bg-white p-6 shadow-[0_10px_24px_-12px_rgba(0,0,0,0.28)] md:p-7 lg:col-span-7">
-          <p className="br-data text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-[var(--px-red)]">
+        <div className={`flex flex-col ${CARD} p-6 md:p-7 lg:col-span-7`}>
+          <CornerGlow />
+          <p className="br-data relative text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-[var(--px-red)]">
             {d.platform.eyebrow}
           </p>
           <h4
@@ -238,8 +260,9 @@ export function MvpLaunchBento({
         </div>
 
         {/* OPERATING MODEL — full-width closing row */}
-        <div className="rounded-[10px] bg-white p-6 shadow-[0_10px_24px_-12px_rgba(0,0,0,0.28)] md:p-8 lg:col-span-12">
-          <div className="md:flex md:items-baseline md:justify-between md:gap-10">
+        <div className={`${CARD} p-6 md:p-8 lg:col-span-12`}>
+          <CornerGlow />
+          <div className="relative md:flex md:items-baseline md:justify-between md:gap-10">
             <div className="md:max-w-[52%]">
               <p className="br-data text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-[var(--px-red)]">
                 {d.model.eyebrow}
