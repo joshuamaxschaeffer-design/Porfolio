@@ -60,8 +60,12 @@ const SPARKS: Spark[] = [
   { id: 20, kind: 'firework', x: 84.5, y: 18, size: 38, delay: 4.0, period: 9.5 },
   { id: 21, kind: 'sparkle', x: 70.0, y: 5.5, size: 16, delay: 8.6, period: 7.7 },
   { id: 22, kind: 'star', x: 58.5, y: 14, size: 14, delay: 3.8, period: 9.2 },
-  // One LARGE firework (~2× the others) bursting in two short rounds.
+  // LARGE fireworks (~2× the others), each bursting in two short rounds,
+  // spread across the band with varied timing so they don't fire in sync.
   { id: 23, kind: 'bigFirework', x: 52.5, y: 16, size: 76, delay: 2.4, period: 9.8 },
+  { id: 24, kind: 'bigFirework', x: 14.0, y: 13, size: 70, delay: 6.2, period: 10.4 },
+  { id: 25, kind: 'bigFirework', x: 80.5, y: 9, size: 72, delay: 0.6, period: 9.2 },
+  { id: 26, kind: 'bigFirework', x: 38.0, y: 27, size: 66, delay: 8.1, period: 10.0 },
 ]
 
 /* ── Glyphs ───────────────────────────────────────────────────────────────
@@ -252,17 +256,20 @@ export function Sparkles({ className }: { className?: string }) {
           • Sparkles: the outer wrapper still SCALES in/out, but the glyph
             appears/disappears via STROKE-WIDTH (0 → peak → 0), not opacity. */}
       <style>{`
-        /* ── sparkles ── */
+        /* ── sparkles ──
+           Grow THEN shrink: the wrapper scales up to a peak then back down to
+           nothing, and the stroke-width inflates then deflates in lock-step, so
+           the sparkle blooms open and closes again (no plateau / no abrupt
+           vanish). Both peak together at ~16% and return to 0 by ~32%; the rest
+           of the loop is idle so only ~4–5 show at once. */
         @keyframes pr-spark-scale {
-          0%, 100% { transform: scale(0.2); }
-          10%      { transform: scale(1.08); }
-          20%      { transform: scale(1); }
-          30%      { transform: scale(1.04); }
+          0%, 100% { transform: scale(0); }
+          16%      { transform: scale(1.12); }
+          32%      { transform: scale(0); }
         }
         @keyframes pr-spark-stroke {
           0%, 100% { stroke-width: 0; }
-          8%       { stroke-width: var(--spk-w); }
-          26%      { stroke-width: var(--spk-w); }
+          16%      { stroke-width: var(--spk-w); }
           32%      { stroke-width: 0; }
         }
         .pr-spark-stroke {
@@ -270,50 +277,50 @@ export function Sparkles({ className }: { className?: string }) {
         }
         /* ── fireworks: trim-path rays ──
            dasharray 1 = one pathLength unit; offset 1 hides the ray (segment
-           pushed before the start), 0 = fully drawn from inner→tip, -1 = pushed
-           off past the tip (retracted). So 1 → 0 draws OUT, 0 → -1 trims away,
-           leaving the ray completely INVISIBLE. While invisible (opacity 0) the
-           offset snaps back to 1 (the start), so the next burst plays clean.
-           The whole burst is a SHORT slice of the loop (~3× faster than before);
-           the long idle tail keeps only ~4–5 fireworks lit at once. */
+           before the start), 0 = fully drawn inner→tip, -1 = pushed off past the
+           tip. The offset slides CONTINUOUSLY 1 → -1 in ONE smooth move (the
+           visible dash sweeps out from the centre and off the tip — no dwell at
+           "fully drawn", so no grow/shrink/disappear steps). Opacity only fades
+           in at the very start and out at the very end; the reset to 1 happens
+           while invisible so the next burst is clean. linear keeps the slide
+           even (no per-segment deceleration that read as pauses before). Burst
+           is a short slice of the loop → ~4–5 fireworks lit at once. */
         @keyframes pr-fw-trim {
-          0%        { stroke-dashoffset: 1;  opacity: 0; }
-          1%        { stroke-dashoffset: 1;  opacity: 1; }
-          6%        { stroke-dashoffset: 0;  opacity: 1; }
-          12%       { stroke-dashoffset: -1; opacity: 1; }
-          14%       { stroke-dashoffset: -1; opacity: 0; }
-          15%       { stroke-dashoffset: 1;  opacity: 0; } /* reset while hidden */
-          100%      { stroke-dashoffset: 1;  opacity: 0; }
+          0%   { stroke-dashoffset: 1;  opacity: 0; }
+          3%   { opacity: 1; }
+          12%  { stroke-dashoffset: -1; opacity: 1; }
+          14%  { opacity: 0; }                          /* gone at the tip */
+          15%  { stroke-dashoffset: 1;  opacity: 0; }   /* reset while hidden */
+          100% { stroke-dashoffset: 1;  opacity: 0; }
         }
         .pr-fw-ray {
           stroke-dasharray: 1;
           stroke-dashoffset: 1;
           opacity: 0;
-          animation: pr-fw-trim var(--fw-dur, 8s) cubic-bezier(0.2,0.7,0.2,1) var(--fw-delay, 0s) infinite;
+          animation: pr-fw-trim var(--fw-dur, 8s) linear var(--fw-delay, 0s) infinite;
         }
         /* Big firework — two rounds. Round 1 trims out first; round 2 fires a
-           beat later (own keyframe), both same fast trim + invisible reset. */
+           beat later (own keyframe), both the same smooth continuous slide. */
         .pr-fw-ray-r1 {
           stroke-dasharray: 1;
           stroke-dashoffset: 1;
           opacity: 0;
-          animation: pr-fw-trim var(--fw-dur, 8s) cubic-bezier(0.2,0.7,0.2,1) var(--fw-delay, 0s) infinite;
+          animation: pr-fw-trim var(--fw-dur, 8s) linear var(--fw-delay, 0s) infinite;
         }
         .pr-fw-ray-r2 {
           stroke-dasharray: 1;
           stroke-dashoffset: 1;
           opacity: 0;
-          animation: pr-fw-trim-late var(--fw-dur, 8s) cubic-bezier(0.2,0.7,0.2,1) var(--fw-delay, 0s) infinite;
+          animation: pr-fw-trim-late var(--fw-dur, 8s) linear var(--fw-delay, 0s) infinite;
         }
-        /* second round: same fast trim, shifted to start right after round 1. */
+        /* second round: same smooth slide, shifted to start right after round 1. */
         @keyframes pr-fw-trim-late {
-          0%, 8%    { stroke-dashoffset: 1;  opacity: 0; }
-          9%        { stroke-dashoffset: 1;  opacity: 1; }
-          14%       { stroke-dashoffset: 0;  opacity: 1; }
-          20%       { stroke-dashoffset: -1; opacity: 1; }
-          22%       { stroke-dashoffset: -1; opacity: 0; }
-          23%       { stroke-dashoffset: 1;  opacity: 0; } /* reset while hidden */
-          100%      { stroke-dashoffset: 1;  opacity: 0; }
+          0%, 8% { stroke-dashoffset: 1;  opacity: 0; }
+          11%    { opacity: 1; }
+          20%    { stroke-dashoffset: -1; opacity: 1; }
+          22%    { opacity: 0; }
+          23%    { stroke-dashoffset: 1;  opacity: 0; }
+          100%   { stroke-dashoffset: 1;  opacity: 0; }
         }
         @media (prefers-reduced-motion: reduce) {
           .pr-spark-stroke, .pr-fw-ray, .pr-fw-ray-r1, .pr-fw-ray-r2 { animation: none; }
