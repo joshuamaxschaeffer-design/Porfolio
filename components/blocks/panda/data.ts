@@ -68,6 +68,21 @@ export const releases = {
     title: 'FULL REWARDS APP',
     body: 'The full set of features, a better native app experience, and the rewards functionality was added as a follow-up to the core app.',
   },
+  /**
+   * Parallel-tracks strip — three workstreams running at once across the
+   * engagement. Spans are fractions of the 2019→2022 timeline (start→end, 0–1).
+   * Communicates the breadth: one lead, three tracks, simultaneously.
+   */
+  tracks: {
+    label: 'THREE TRACKS, AT ONCE',
+    span: { start: 2019, end: 2022 },
+    rows: [
+      { key: 'marketing', name: 'Marketing site', start: 0.0, end: 0.62, tone: 'gold' },
+      { key: 'mvp', name: 'MVP app', start: 0.18, end: 0.5, tone: 'ink' },
+      { key: 'rewards', name: 'Rewards app', start: 0.46, end: 1.0, tone: 'red' },
+    ],
+    ticks: ['2019', '2020', '2021', '2022'],
+  },
 }
 
 /* ─────────────────────────────────────────────────────────────────────────

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   motion,
   useMotionValue,
@@ -42,6 +42,9 @@ export function ReleasesSection({ intro }: { intro?: string } = {}) {
           {intro ?? defaults.intro}
         </p>
 
+        {/* ── Parallel-tracks strip: the three workstreams running at once. ── */}
+        <ParallelTracks />
+
         {/* ── Two cards. items-center so the shorter MVP card centers against
             the taller Full Rewards card — MVP ends up inset (shorter at the top
             AND bottom), matching the Figma. ── */}
@@ -51,6 +54,84 @@ export function ReleasesSection({ intro }: { intro?: string } = {}) {
         </div>
       </div>
     </section>
+  )
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * ParallelTracks — a compact 3-lane timeline showing the marketing site, MVP
+ * app, and rewards app overlapping across 2019→2022. Makes the breadth legible
+ * (one lead, three simultaneous tracks) before the two app-release cards detail
+ * the apps. Bars grow in on scroll; static under reduced-motion.
+ * ───────────────────────────────────────────────────────────────────────── */
+const TRACK_TONES: Record<string, string> = {
+  gold: '#E8B23A',
+  ink: 'var(--br-ink)',
+  red: 'var(--px-red)',
+}
+
+function ParallelTracks() {
+  const { tracks } = defaults
+  const ref = useRef<HTMLDivElement>(null)
+  const [shown, setShown] = useState(false)
+
+  useEffect(() => {
+    const reduce =
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    if (reduce) {
+      setShown(true)
+      return
+    }
+    const el = ref.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) if (e.isIntersecting) { setShown(true); io.disconnect() }
+      },
+      { threshold: 0.3 },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+
+  return (
+    <div ref={ref} className="mt-10 md:mt-12">
+      <span className="br-data text-xs font-semibold uppercase tracking-[0.18em] text-[var(--px-red)]">
+        {tracks.label}
+      </span>
+      <div className="mt-4 max-w-3xl">
+        {/* lanes */}
+        <div className="flex flex-col gap-3">
+          {tracks.rows.map((r, i) => (
+            <div key={r.key} className="flex items-center gap-3">
+              <span className="w-[104px] shrink-0 text-right text-[13px] text-[var(--br-body)] sm:w-[120px] sm:text-sm">
+                {r.name}
+              </span>
+              <div className="relative h-7 flex-1 overflow-hidden rounded-full bg-[var(--br-bg-2,#f4f4f5)]">
+                <div
+                  className="absolute inset-y-0 rounded-full"
+                  style={{
+                    left: `${r.start * 100}%`,
+                    backgroundColor: TRACK_TONES[r.tone] ?? 'var(--br-ink)',
+                    width: shown ? `${(r.end - r.start) * 100}%` : '0%',
+                    transition: `width 0.7s cubic-bezier(0.22,1,0.36,1) ${i * 120}ms`,
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* year ticks under the lanes (aligned to the bar track, not the labels) */}
+        <div className="mt-2 flex items-center gap-3">
+          <span className="w-[104px] shrink-0 sm:w-[120px]" aria-hidden />
+          <div className="flex flex-1 justify-between text-[11px] uppercase tracking-wide text-[var(--br-muted-2,#a1a1aa)]">
+            {tracks.ticks.map((t) => (
+              <span key={t}>{t}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 
