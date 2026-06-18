@@ -112,9 +112,19 @@ function StatCell({ stat, index }: { stat: MvpBentoStat; index: number }) {
       className={`flex h-full flex-col justify-between ${CARD} p-6 md:p-7`}
     >
       <CornerGlow />
-      <p className="br-data relative text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-[var(--px-red)]">
-        {stat.eyebrow}
-      </p>
+      <div className="relative flex items-center gap-2.5">
+        {stat.icon ? (
+          <span
+            aria-hidden
+            className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[var(--px-red)]/10 text-[var(--px-red)] [&_svg]:h-[18px] [&_svg]:w-[18px] [&_svg_path]:fill-current"
+            // eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{ __html: stat.icon }}
+          />
+        ) : null}
+        <p className="br-data text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-[var(--px-red)]">
+          {stat.eyebrow}
+        </p>
+      </div>
       <p
         className="mt-7 whitespace-nowrap text-[44px] font-medium leading-none tracking-[-0.01em] text-[var(--br-ink)] md:mt-10 md:text-[52px]"
         style={{ fontFamily: 'var(--br-font-heading)' }}
@@ -130,45 +140,42 @@ function StatCell({ stat, index }: { stat: MvpBentoStat; index: number }) {
   )
 }
 
-/* ── device cluster for the cross-platform cell (FPO / drop-in) ──────────────
- * A wide "web" frame with two phones overlapping its lower-right — the visual
- * shorthand for "one flow, every surface." The two phones use the real MVP
- * screens (portrait, shown at their true aspect). The web frame is an explicit
- * FPO slot: Joshua can drop a desktop/web capture into `webSrc`; until then it
- * renders a labeled placeholder rather than a cropped phone screen (the only
- * art on hand is portrait, which would distort in a landscape frame).
- * Rounded clip, hairline frame, soft drop shadow. No motion (rasterizes art). */
-function DeviceCluster({ phones, webSrc }: { phones: string[]; webSrc?: string }) {
-  const [phoneA, phoneB] = phones
+/* ── App Store gallery strip ─────────────────────────────────────────────────
+ * The actual App Store listing screenshots, laid out as a horizontal gallery
+ * the way they appear on the store product page. Each screen is a real 6.5"
+ * App Store capture (portrait, 9:19.5) on a soft-shadowed rounded card. The
+ * row scrolls horizontally if it overflows the cell, so every screen stays
+ * reachable at any width; a right-edge fade hints there's more to swipe. No
+ * device bezel is drawn — the captures already include the marketing frame. */
+function AppStoreGallery({ screens, alts }: { screens: string[]; alts?: string[] }) {
   return (
-    <div className="relative mt-6 h-[160px] w-full md:h-[180px]" aria-hidden>
-      {/* web / browser frame — FPO drop-in slot */}
-      <div className="absolute left-0 top-0 w-[70%] overflow-hidden rounded-[8px] bg-white shadow-[0_14px_30px_-14px_rgba(0,0,0,0.35)] ring-1 ring-black/5">
-        <div className="flex h-[18px] items-center gap-1.5 border-b border-black/5 bg-[var(--br-bg-2)] px-2.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-black/15" />
-          <span className="h-1.5 w-1.5 rounded-full bg-black/15" />
-          <span className="h-1.5 w-1.5 rounded-full bg-black/15" />
-        </div>
-        {webSrc ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={webSrc} alt="" className="block h-[122px] w-full object-cover object-top md:h-[140px]" />
-        ) : (
-          <div className="grid h-[122px] w-full place-items-center bg-[var(--br-bg-2)] md:h-[140px]">
-            <span className="br-data text-[11px] uppercase tracking-[0.14em] text-[var(--br-muted-2)]">
-              Web · ordering site
-            </span>
-          </div>
-        )}
-      </div>
-      {/* two phones, overlapping the web frame's lower-right (true portrait ratio) */}
-      <div className="absolute bottom-0 right-[15%] w-[19%] overflow-hidden rounded-[10px] bg-white shadow-[0_14px_30px_-12px_rgba(0,0,0,0.4)] ring-1 ring-black/5">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={phoneA} alt="" className="block w-full" />
-      </div>
-      <div className="absolute -bottom-1 right-0 w-[19%] overflow-hidden rounded-[10px] bg-white shadow-[0_14px_30px_-12px_rgba(0,0,0,0.4)] ring-1 ring-black/5">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={phoneB} alt="" className="block w-full" />
-      </div>
+    <div className="relative mt-6">
+      <ul
+        className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2 pt-1 [scrollbar-width:none] md:gap-4 [&::-webkit-scrollbar]:hidden"
+        aria-label="Panda Express App Store screenshots"
+      >
+        {screens.map((src, i) => (
+          <li
+            key={src}
+            className="w-[110px] shrink-0 snap-start overflow-hidden rounded-[12px] bg-white shadow-[0_12px_28px_-14px_rgba(0,0,0,0.4)] ring-1 ring-black/[0.06] md:w-[124px]"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={src}
+              alt={alts?.[i] ?? ''}
+              width={1240}
+              height={2684}
+              loading="lazy"
+              className="block w-full"
+            />
+          </li>
+        ))}
+      </ul>
+      {/* right-edge fade — signals the strip continues (matches the white card) */}
+      <div
+        className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-white to-transparent"
+        aria-hidden
+      />
     </div>
   )
 }
@@ -177,20 +184,16 @@ function DeviceCluster({ phones, webSrc }: { phones: string[]; webSrc?: string }
  * MvpLaunchBento
  * ───────────────────────────────────────────────────────────────────────── */
 export function MvpLaunchBento({
-  phones,
-  webSrc,
+  screens,
   contained = false,
 }: {
-  /** override the two phone screens in the cross-platform cell */
-  phones?: string[]
-  /** drop in a web/desktop capture for the browser frame (FPO until set) */
-  webSrc?: string
+  /** override the App Store screenshots shown in the release cell */
+  screens?: string[]
   /** true = bare block inside an already-red parent; false = own red band (default) */
   contained?: boolean
 } = {}) {
   const d = defaults
-  const devicePhones = phones ?? d.platform.phones
-  const deviceWeb = webSrc ?? d.platform.webSrc
+  const appStoreScreens = screens ?? d.platform.screens
 
   const content = (
     <>
@@ -207,15 +210,18 @@ export function MvpLaunchBento({
           over two stat cells (row 2). items-stretch so cells fill their row
           height and the column edges line up. */}
       <div className="mt-8 grid grid-cols-1 gap-3 md:mt-10 md:gap-4 lg:grid-cols-12 lg:grid-rows-[auto_1fr] lg:items-stretch">
-        {/* FLAGSHIP — dark, tall: left 5 cols over both rows. Header pinned to
-            top, title block to the bottom (justify-between). */}
-        <div className="flex flex-col justify-between gap-12 rounded-[10px] bg-[var(--br-ink)] p-7 text-white shadow-[0_18px_44px_-18px_rgba(0,0,0,0.5)] md:p-8 lg:col-span-5 lg:row-span-2">
-          <p className="br-data text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-white/55">
-            {d.flagship.eyebrow}
-          </p>
-          <div>
+        {/* FLAGSHIP — dark, tall: left 5 cols over both rows. Copy pinned to the
+            top; the cross-platform device composition fills the lower portion
+            and bleeds to the rounded edges (its red field reads as the brand
+            against the dark ink cell). The phone-app + web-checkout pairing is
+            the section's whole point: one ordering experience, every surface. */}
+        <div className="relative flex flex-col overflow-hidden rounded-[10px] bg-[var(--br-ink)] text-white shadow-[0_18px_44px_-18px_rgba(0,0,0,0.5)] lg:col-span-5 lg:row-span-2">
+          <div className="p-7 pb-0 md:p-8 md:pb-0">
+            <p className="br-data text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-white/55">
+              {d.flagship.eyebrow}
+            </p>
             <h4
-              className="text-[30px] font-medium leading-none tracking-[-0.01em] text-white md:text-[40px]"
+              className="mt-5 text-[30px] font-medium leading-none tracking-[-0.01em] text-white md:text-[40px]"
               style={{ fontFamily: 'var(--br-font-heading)' }}
             >
               {d.flagship.title}
@@ -223,14 +229,26 @@ export function MvpLaunchBento({
             <p className="mt-4 max-w-[42ch] text-[15px] leading-relaxed text-white/80 md:text-base">
               {d.flagship.body}
             </p>
-            {/* pulled-forward proof line, set off with a red rule */}
+            {/* one-experience proof line, set off with a red rule */}
             <p className="mt-6 border-l-2 pl-4 text-[14px] font-medium leading-snug text-white md:text-[15px]" style={{ borderColor: RED }}>
               {d.flagship.proof}
             </p>
           </div>
+          {/* cross-platform composition — phone app + web checkout on the red
+              field. Bleeds to the cell's left/right/bottom edges. */}
+          <div className="relative mt-8 grow">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={d.flagship.image}
+              alt="Panda Express ordering on the phone app and the web checkout — one experience across surfaces"
+              width={1600}
+              height={1959}
+              className="block w-full"
+            />
+          </div>
         </div>
 
-        {/* ONE EXPERIENCE — cross-platform cell, right 7 cols, top row */}
+        {/* THE RELEASE — App Store gallery cell, right 7 cols, top row */}
         <div className={`flex flex-col ${CARD} p-6 md:p-7 lg:col-span-7`}>
           <CornerGlow />
           <p className="br-data relative text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-[var(--px-red)]">
@@ -245,7 +263,7 @@ export function MvpLaunchBento({
           <p className="mt-3 max-w-[44ch] text-[14px] leading-snug text-[var(--br-muted)] md:text-[15px]">
             {d.platform.body}
           </p>
-          <DeviceCluster phones={devicePhones} webSrc={deviceWeb} />
+          <AppStoreGallery screens={appStoreScreens} alts={d.platform.alts} />
         </div>
 
         {/* two count-up stat cells — right side, second row. Each spans half of
