@@ -7,7 +7,6 @@ import { MvpLaunchBento } from './MvpLaunchBento'
 import { PremiumRewardsSection } from './PremiumRewardsSection'
 import { OutcomesSection } from './OutcomesSection'
 import { SectionNav, type SectionNavItem } from '../baserate/SectionNav'
-import { CaseStudyShowcase } from '../shared/CaseStudyShowcase'
 
 /** The 5 major sections — ids live on each section's root element. */
 const NAV_ITEMS: SectionNavItem[] = [
@@ -68,7 +67,6 @@ export function PandaCaseStudy(props: PandaCaseStudyProps = {}) {
           two-phone mockup + animated gold sparkles/fireworks. */}
       <PremiumRewardsSection intro={props.premiumRewardsIntro} />
       <OutcomesSection intro={props.outcomesIntro} />
-      <CaseStudyShowcase accent="#D02B2E" current="panda-express" />
     </article>
   )
 }
