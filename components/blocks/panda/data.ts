@@ -12,21 +12,21 @@
 export const overview = {
   client: 'Panda Express',
   dateRange: 'November 2019 — April 2022',
-  lead: 'Working for Hathway from pitch to launch for 2 versions of the Panda Express App and marketing site.',
+  lead: 'Art director and product lead, from pitch to launch. Over two and a half years I designed two versions of the Panda Express app and its marketing site, working at Hathway.',
   role: 'Art Director + Product Lead',
   scope: [
-    'Project Pitch',
     'Product Strategy',
     'Product UX',
     'Product UI',
-    'Marketing UI + UX',
+    'Brand & Marketing Site',
+    'Design System',
     'Presentations',
   ],
 }
 
 export const challenge = {
   heading: 'THE CHALLENGE',
-  intro: 'An order placed on a phone has to be true in three places at once: the platform that takes it, the restaurant that cooks it, and the guest standing outside waiting on it. Most of the hard design work lived in that pipeline — making backend data, store operations, and the guest experience agree with each other in real time.',
+  intro: 'An order placed on a phone has to be true in three places at once: the platform that takes it, the restaurant that cooks it, and the guest standing outside waiting on it. Most of the hard design work lived in that pipeline, making backend data, store operations, and the guest experience agree with each other in real time. The answer was not one app but a system: two apps and a marketing site, built at the same time.',
   problems: [
     {
       tag: '01',
@@ -50,9 +50,9 @@ export const challenge = {
 }
 
 export const releases = {
-  heading: '2020 PIVOT',
+  heading: 'TWO PRODUCTS, ONE PIVOT',
   intro:
-    '2020 required a massive product pivot. Three months into UX discovery, mobile ordering became incredibly important. The new plan: a quick, minimal app in three months, followed by a full rewards app the following year.',
+    'When COVID hit, mobile ordering went from roadmap to lifeline. We changed plans: ship a minimal ordering app in three months, then a full rewards app the next year. The marketing site ran in parallel the whole time.',
   phasesLabel: '2 PHASES',
   phasesIntro: 'Added brand differentiation to emphasize the value gain from the free to paid product.',
   mvp: {
@@ -80,7 +80,7 @@ export const releases = {
 export const premiumRewards = {
   heading: 'PREMIUM REWARDS APP',
   intro:
-    'The premium rewards app came in two phases. Phase one: improve the fast-launch experience. Phase two: plan, design, test and execute a rewards system across all locations.',
+    'The rewards app came in two phases. First, a better, more native version of the launch app. Then a full rewards program: planned, designed, tested, and rolled out to every location.',
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -179,9 +179,9 @@ export const MVP_VBH = 1750
  * gold · Add-from-Category = red · Choose-Location = blue.
  */
 export const mvp = {
-  heading: 'MVP FAST-LAUNCH',
+  heading: 'ACT I — LAUNCH IN A CRISIS',
   intro:
-    'The MVP was focused on streamlining barebones ordering, with other features like curbside pickup as a fast follow.',
+    'Act I was a fast, focused ordering app. Core ordering first, with the web prioritized. Curbside and other features followed close behind.',
   callout: {
     title: 'Core UX',
     body: 'The UX for ordering was mapped for 4 core scenarios, ensuring each scenario was simple and clear to the user.',
@@ -245,7 +245,7 @@ export interface PandaStat {
 
 export const outcomes = {
   heading: 'OUTCOMES',
-  lead: 'A platform born in a crisis became the backbone of Panda’s digital business. The app, the rewards program, and the site now carry a measurable share of one of America’s largest restaurant brands.',
+  lead: 'A platform born in a crisis became the backbone of Panda’s digital business. The app, the rewards program, and the site now carry a measurable share of one of America’s largest restaurant brands. Two apps and a marketing site, designed in parallel by one lead, during the busiest stretch in the brand’s digital history.',
   stats: [
     {
       value: 4.8,
