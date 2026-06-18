@@ -84,6 +84,55 @@ export const premiumRewards = {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
+ * REWARDS PLATFORM — the curated beats that follow the Premium Rewards hero,
+ * on the same red field. Real pilot screens (public/panda/rewards/*.webp).
+ * Keeps the celebratory register: gold accents, points, surprise-and-delight.
+ * Milestone tiers are taken from the real redeem screen.
+ * ───────────────────────────────────────────────────────────────────────── */
+export const rewardsPlatform = {
+  /** Beat 1 — earning */
+  earn: {
+    eyebrow: 'EARNING',
+    title: 'Every order moves the bar',
+    body: 'Members earn Panda Points on every order and watch the next reward get closer. The home screen leads with progress, not fine print.',
+    screens: [
+      { src: '/panda/rewards/earn-0.webp', alt: 'Panda Rewards home at 0 points' },
+      { src: '/panda/rewards/earn-210.webp', alt: 'Panda Rewards home at 210 points' },
+      { src: '/panda/rewards/earn-520.webp', alt: 'Panda Rewards home at 520 points' },
+    ],
+  },
+  /** Beat 2 — moments of surprise */
+  surprise: {
+    eyebrow: 'MOMENTS OF SURPRISE',
+    title: 'Good fortune, every month',
+    body: 'A surprise gift unlocks with the first order of each month. Small, recurring delight that gives members a reason to come back.',
+    card: { src: '/panda/rewards/good-fortune-card.webp', alt: 'Monthly Good Fortune surprise gift card' },
+    reveal: { src: '/panda/rewards/good-fortune-awaits.webp', alt: 'Good Fortune Awaits reward reveal' },
+  },
+  /** Beat 3 — the reward store / milestone ladder (tiers from the real screen) */
+  store: {
+    eyebrow: 'THE REWARD STORE',
+    title: 'Points, redeemed for real food',
+    body: 'Points convert straight into menu rewards. The ladder runs from a small upgrade to a full meal, so there is always a next goal in reach.',
+    redeem: { src: '/panda/rewards/redeem-premium-entree.webp', alt: 'Redeem 200 points to upgrade to a premium entrée' },
+    tiers: [
+      { points: 200, label: 'Upgrade to Premium Entrée' },
+      { points: 250, label: 'Upgrade Bowl to Plate' },
+      { points: 300, label: 'Small Appetizer' },
+      { points: 325, label: 'Medium Drink' },
+      { points: 500, label: 'Bowl' },
+      { points: 1000, label: 'Bigger Plate' },
+    ],
+  },
+  /** Beat 4 — a more native experience (closing note; stored value lives here later) */
+  native: {
+    eyebrow: 'A MORE NATIVE EXPERIENCE',
+    title: 'Built for the phone, not ported to it',
+    body: 'Phase one rebuilt the launch app as a true native experience: smoother motion, native patterns, and groundwork for stored value and deeper personalization.',
+  },
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
  * LOYALTY QR ENROLLMENT — a red "blueprint" band (LoyaltyQrSection).
  * Communicates the systems-design weight of the receipt-QR enrollment flow:
  * a branching, multi-platform userflow that orchestrates four backend systems

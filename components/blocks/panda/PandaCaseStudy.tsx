@@ -5,6 +5,7 @@ import { MvpFlowSection } from './MvpFlowSection'
 import { MvpScatterSection } from './MvpScatterSection'
 import { MvpLaunchBento } from './MvpLaunchBento'
 import { PremiumRewardsSection } from './PremiumRewardsSection'
+import { RewardsPlatformSection } from './RewardsPlatformSection'
 import { LoyaltyQrSection } from './LoyaltyQrSection'
 import { OutcomesSection } from './OutcomesSection'
 import { SectionNav, type SectionNavItem } from '../baserate/SectionNav'
@@ -69,6 +70,10 @@ export function PandaCaseStudy(props: PandaCaseStudyProps = {}) {
       {/* Opens the rewards chapter — full-bleed red hero with the scaled-up
           two-phone mockup + animated gold sparkles/fireworks. */}
       <PremiumRewardsSection intro={props.premiumRewardsIntro} />
+      {/* Rewards-platform beats on the same red field: earning, moments of
+          surprise, the reward store, and the native-experience note. Continues
+          the celebratory register set by the hero. */}
+      <RewardsPlatformSection />
       {/* Loyalty QR enrollment — red "blueprint" band: the branching receipt-QR
           userflow + the Cache→Azure→mParticle→Punchh backend handoff. Verified
           against the Figma prototype graph (REST API). */}
