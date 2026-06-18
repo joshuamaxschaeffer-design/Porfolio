@@ -216,7 +216,7 @@ export function MvpLaunchBento({
             "Panda Delivers" copy overlays at the BOTTOM, over the red — a soft
             dark scrim along the bottom keeps it legible. The phone-app +
             web-checkout pairing is the section's whole point. */}
-        <div className="relative isolate flex min-h-[480px] flex-col justify-end overflow-hidden rounded-[10px] bg-[var(--px-red)] text-white shadow-[0_18px_44px_-18px_rgba(0,0,0,0.5)] md:min-h-[560px] lg:col-span-5 lg:row-span-2">
+        <div className="relative isolate flex min-h-[420px] flex-col justify-end overflow-hidden rounded-[10px] bg-[var(--px-red)] text-white shadow-[0_18px_44px_-18px_rgba(0,0,0,0.5)] lg:min-h-0 lg:col-span-5 lg:row-span-2">
           {/* background composition */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
