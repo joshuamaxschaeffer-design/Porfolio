@@ -433,7 +433,7 @@ export function MvpFlowSection({ intro }: { intro?: string } = {}) {
       <div className="h-[2px] w-full bg-[var(--px-red)]" aria-hidden />
       <div className="br-container pt-16 pb-20 md:pt-24 md:pb-[120px]">
         <h2 className="text-[32px] font-medium uppercase leading-none text-[var(--br-ink)] md:text-[40px]">
-          4. {data.heading}
+          {data.heading}
         </h2>
         <p className="mt-5 max-w-3xl text-lg leading-snug text-[var(--br-muted)] md:text-[22px]">{lead}</p>
 

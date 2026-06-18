@@ -33,7 +33,7 @@ export function ReleasesSection({ intro }: { intro?: string } = {}) {
           data-anim="pivot-heading"
           className="text-[32px] font-medium uppercase leading-none text-[var(--br-ink)] md:text-[40px]"
         >
-          3. {defaults.heading}
+          {defaults.heading}
         </h2>
         <p
           data-anim="pivot-intro"

@@ -47,7 +47,7 @@ export function ChallengeSection({ intro }: { intro?: string } = {}) {
     <section id="challenge" className="bg-[var(--br-bg-2)]">
       <div className="br-container pt-16 pb-20 md:pt-20 md:pb-[120px]">
         <h2 className="text-[32px] font-medium uppercase leading-none text-[var(--br-ink)] md:text-[40px]">
-          2. {defaults.heading}
+          {defaults.heading}
         </h2>
         <p className="mt-3 max-w-3xl text-lg text-[var(--br-muted)] md:text-[22px]">
           {intro ?? defaults.intro}
