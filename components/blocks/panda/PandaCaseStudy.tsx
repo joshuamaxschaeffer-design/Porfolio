@@ -7,6 +7,7 @@ import { MvpLaunchBento } from './MvpLaunchBento'
 import { PremiumRewardsSection } from './PremiumRewardsSection'
 import { RewardsPlatformSection } from './RewardsPlatformSection'
 import { LoyaltyQrSection } from './LoyaltyQrSection'
+import { MarketingSection } from './MarketingSection'
 import { OutcomesSection } from './OutcomesSection'
 import { SectionNav, type SectionNavItem } from '../baserate/SectionNav'
 
@@ -18,6 +19,7 @@ const NAV_ITEMS: SectionNavItem[] = [
   { id: 'mvp', title: 'Act I — MVP' },
   { id: 'premium-rewards', title: 'Act II — Rewards' },
   { id: 'loyalty-qr', title: 'Loyalty QR' },
+  { id: 'marketing', title: 'The Brand Online' },
   { id: 'outcomes', title: 'Outcomes' },
 ]
 
@@ -78,6 +80,9 @@ export function PandaCaseStudy(props: PandaCaseStudyProps = {}) {
           userflow + the Cache→Azure→mParticle→Punchh backend handoff. Verified
           against the Figma prototype graph (REST API). */}
       <LoyaltyQrSection intro={props.loyaltyQrIntro} />
+      {/* Compact marketing-site coda — proves the brand-site workstream (nav/IA
+          redesign + page family) after the product story, before Outcomes. */}
+      <MarketingSection />
       <OutcomesSection intro={props.outcomesIntro} />
     </article>
   )

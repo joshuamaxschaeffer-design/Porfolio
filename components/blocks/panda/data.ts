@@ -133,6 +133,38 @@ export const rewardsPlatform = {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
+ * MARKETING SITE — a compact coda after the product story. Proves the brand-site
+ * work without slowing the app→app spine. Leads with the nav/IA redesign
+ * (real crops in public/panda/marketing), then names the page system.
+ * Page renders are asset-slotted (drop clean exports into public/panda/marketing).
+ * ───────────────────────────────────────────────────────────────────────── */
+export const marketing = {
+  heading: 'THE BRAND ONLINE',
+  intro:
+    'Alongside the apps, I redesigned the Panda Express marketing site: a clearer navigation and a connected family of brand pages.',
+  nav: {
+    eyebrow: 'NAVIGATION',
+    title: 'From a flat bar to a guided menu',
+    body: 'The old nav was a single row of links. The redesign groups the site into clear paths, so guests can find food, values, and the shop without guessing.',
+    before: { src: '/panda/marketing/nav-current.webp', alt: 'Current Panda Express navigation — a flat row of links', label: 'Before' },
+    after: { src: '/panda/marketing/nav-recommended.webp', alt: 'Redesigned navigation with grouped dropdown menus', label: 'After' },
+  },
+  pages: {
+    eyebrow: 'THE PAGE SYSTEM',
+    title: 'One brand, a connected set of pages',
+    body: 'Homepage, Our Food, Innovation, Values, and Shop were designed as a family: shared layout, shared voice, each with its own focus.',
+    /** asset-slotted page renders — drop clean exports here */
+    items: [
+      { key: 'homepage', label: 'Homepage', src: '' },
+      { key: 'our-food', label: 'Our Food', src: '' },
+      { key: 'innovation', label: 'Innovation', src: '' },
+      { key: 'values', label: 'Values', src: '' },
+      { key: 'shop', label: 'Shop', src: '' },
+    ],
+  },
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
  * LOYALTY QR ENROLLMENT — a red "blueprint" band (LoyaltyQrSection).
  * Communicates the systems-design weight of the receipt-QR enrollment flow:
  * a branching, multi-platform userflow that orchestrates four backend systems
