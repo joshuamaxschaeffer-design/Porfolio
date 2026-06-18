@@ -210,41 +210,45 @@ export function MvpLaunchBento({
           over two stat cells (row 2). items-stretch so cells fill their row
           height and the column edges line up. */}
       <div className="mt-8 grid grid-cols-1 gap-3 md:mt-10 md:gap-4 lg:grid-cols-12 lg:grid-rows-[auto_1fr] lg:items-stretch">
-        {/* FLAGSHIP — dark, tall: left 5 cols over both rows. Copy pinned to the
-            top; the cross-platform device composition fills the lower portion
-            and bleeds to the rounded edges (its red field reads as the brand
-            against the dark ink cell). The phone-app + web-checkout pairing is
-            the section's whole point: one ordering experience, every surface. */}
-        <div className="relative flex flex-col overflow-hidden rounded-[10px] bg-[var(--br-ink)] text-white shadow-[0_18px_44px_-18px_rgba(0,0,0,0.5)] lg:col-span-5 lg:row-span-2">
-          <div className="p-7 pb-0 md:p-8 md:pb-0">
-            <p className="br-data text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-white/55">
+        {/* FLAGSHIP — tall: left 5 cols over both rows. The cross-platform
+            device composition (phone app + web checkout on the Panda-red field)
+            is the cell BACKGROUND, filling the whole cell via object-cover. The
+            "Panda Delivers" copy overlays at the BOTTOM, over the red — a soft
+            dark scrim along the bottom keeps it legible. The phone-app +
+            web-checkout pairing is the section's whole point. */}
+        <div className="relative isolate flex min-h-[480px] flex-col justify-end overflow-hidden rounded-[10px] bg-[var(--px-red)] text-white shadow-[0_18px_44px_-18px_rgba(0,0,0,0.5)] md:min-h-[560px] lg:col-span-5 lg:row-span-2">
+          {/* background composition */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={d.flagship.image}
+            alt="Panda Express ordering on the phone app and the web checkout — one experience across surfaces"
+            width={1600}
+            height={1959}
+            className="pointer-events-none absolute inset-0 -z-10 h-full w-full object-cover object-top"
+          />
+          {/* bottom scrim so the copy reads over the red field */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-2/3 bg-gradient-to-t from-[rgba(120,12,14,0.92)] via-[rgba(150,18,20,0.55)] to-transparent"
+          />
+          {/* copy — overlaid at the bottom, over the red */}
+          <div className="p-7 md:p-8">
+            <p className="br-data text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-white/70">
               {d.flagship.eyebrow}
             </p>
             <h4
-              className="mt-5 text-[30px] font-medium leading-none tracking-[-0.01em] text-white md:text-[40px]"
+              className="mt-4 text-[30px] font-medium leading-none tracking-[-0.01em] text-white md:text-[40px]"
               style={{ fontFamily: 'var(--br-font-heading)' }}
             >
               {d.flagship.title}
             </h4>
-            <p className="mt-4 max-w-[42ch] text-[15px] leading-relaxed text-white/80 md:text-base">
+            <p className="mt-4 max-w-[42ch] text-[15px] leading-relaxed text-white/90 md:text-base">
               {d.flagship.body}
             </p>
-            {/* one-experience proof line, set off with a red rule */}
-            <p className="mt-6 border-l-2 pl-4 text-[14px] font-medium leading-snug text-white md:text-[15px]" style={{ borderColor: RED }}>
+            {/* one-experience proof line, set off with a white rule */}
+            <p className="mt-6 border-l-2 border-white/70 pl-4 text-[14px] font-medium leading-snug text-white md:text-[15px]">
               {d.flagship.proof}
             </p>
-          </div>
-          {/* cross-platform composition — phone app + web checkout on the red
-              field. Bleeds to the cell's left/right/bottom edges. */}
-          <div className="relative mt-8 grow">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={d.flagship.image}
-              alt="Panda Express ordering on the phone app and the web checkout — one experience across surfaces"
-              width={1600}
-              height={1959}
-              className="block w-full"
-            />
           </div>
         </div>
 

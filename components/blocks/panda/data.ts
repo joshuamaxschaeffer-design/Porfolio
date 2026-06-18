@@ -308,6 +308,29 @@ export const outcomes = {
       description: 'Google Play downloads, alongside the iOS install base that anchors the rating above.',
     },
   ] as PandaStat[],
+  /**
+   * Platform availability — the app is still live on both stores today. Links
+   * are the current official listings (verified June 2026):
+   *  - iOS: Panda Express by Panda Restaurant Group (App Store id 903990394)
+   *  - Android: com.pandaexpress.app by Panda Restaurant Group (Google Play)
+   */
+  platforms: {
+    eyebrow: 'STILL SHIPPING',
+    title: 'Live on iOS and Android',
+    body: 'Years on, the app the team launched is still the one in guests’ pockets — continuously updated on both stores.',
+    links: [
+      {
+        store: 'App Store',
+        label: 'Download on the',
+        href: 'https://apps.apple.com/us/app/panda-express/id903990394',
+      },
+      {
+        store: 'Google Play',
+        label: 'Get it on',
+        href: 'https://play.google.com/store/apps/details?id=com.pandaexpress.app',
+      },
+    ],
+  },
   sources:
     'Sources: Apple App Store (2026) · WWT × Panda Express case study · Ipsos QSR Digital Ordering Performance Study, 2024 · Nation’s Restaurant News · Google Play (2026)',
 }
