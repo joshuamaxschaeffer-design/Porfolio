@@ -84,6 +84,34 @@ export const premiumRewards = {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
+ * LOYALTY QR ENROLLMENT — a red "blueprint" band (LoyaltyQrSection).
+ * Communicates the systems-design weight of the receipt-QR enrollment flow:
+ * a branching, multi-platform userflow that orchestrates four backend systems
+ * behind a few calm screens. Reconstructed + verified against the Figma
+ * prototype graph (REST API). Screens live in /public/panda/loyalty.
+ * ───────────────────────────────────────────────────────────────────────── */
+export const loyaltyQr = {
+  heading: 'LOYALTY QR ENROLLMENT',
+  intro:
+    'Diners enroll in Panda Rewards by scanning the QR code on their receipt. Simple promise — but each scan has to silently resolve channel, location, account state and membership, then stitch four backend systems together so the scanned order’s points land on a brand-new account. I designed the whole branching journey, every dead-end and recovery, across app, mobile web and desktop.',
+  chips: [
+    '3 platforms',
+    '6 flow variants',
+    '4 backend systems',
+    '25+ screens',
+    'End-to-end UX architecture',
+  ],
+  screens: [
+    { src: 'intro.webp', alt: 'Panda Rewards welcome modal', cap: 'The hook' },
+    { src: 'signin.webp', alt: 'Sign in / sign up screen', cap: 'Sign in (Azure)' },
+    { src: 'thanks.webp', alt: 'Thanks for scanning your receipt', cap: 'Points credited' },
+    { src: 'rewards.webp', alt: 'Rewards dashboard with Good Fortune Points', cap: 'The payoff' },
+  ],
+  footnote:
+    'The hardest stretch runs from sign-in to points-credited: Cache holds the receipt’s transaction across the auth redirect, Azure authenticates and flips the loyalty flag on, mParticle logs the event, and Punchh ties the transaction to the account so the points appear — all behind a single “Thanks for scanning” screen.',
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
  * MVP FAST-LAUNCH — Core UX (section 4)
  * The MVP shipped barebones ordering. Its UX was mapped as 4 core scenarios
  * that all converge on one checkout spine. Source of truth: the original UX
@@ -101,72 +129,55 @@ export const premiumRewards = {
  * category branch below.
  */
 
-/** Glyph drawn inside a node's little phone (kept deliberately schematic). */
-export type MvpGlyph =
+/** Which simple vector screen the node's device renders. */
+export type MvpScreen =
   | 'home' | 'menu' | 'product' | 'bag' | 'checkout' | 'confirmation'
-  | 'promo' | 'popup' | 'category' | 'quantity' | 'location' | 'productSel'
-  | 'handoff'
+  | 'productSel' | 'popup' | 'category' | 'quantity' | 'location'
+
+/** Path/legend color key (SWAPPED from the source legend). */
+export type MvpColor = 'grey' | 'gold' | 'red' | 'blue'
 
 export interface MvpNode {
   id: string
   label: string
-  glyph: MvpGlyph
-  /** grid centre (col 0–11, row 0–4) */
-  col: number
-  row: number
-  /** where the text label sits relative to the phone tile (default 'below') */
-  labelPos?: 'below' | 'above' | 'left' | 'right'
+  screen: MvpScreen
+  color: MvpColor
+  /** Figma-frame px bounding box [x, y, w, h] (viewBox 2862×1750). */
+  box: [number, number, number, number]
 }
 
 export interface MvpEdge {
   from: string
   to: string
-  /** pill label on the edge, e.g. "Tap a promo" */
+  color: MvpColor
+  /** explicit orthogonal polyline waypoints in Figma px; arrow at last pt. */
+  pts: [number, number][]
   label?: string
-  /** optional second pill chained along the same edge (e.g. "Location preselected") */
   label2?: string
-  /**
-   * routing hint for the SVG connector. 'return' draws a long routed line that
-   * drops below the diagram and runs back (used for the "Add more" /
-   * "Will send to scrolled location" loops).
-   */
-  kind?: 'h' | 'h-low' | 'v' | 'elbow-up' | 'elbow-down' | 'return' | 'low-rail'
-  /** dashed + lower-emphasis: a conditional/alternate branch, not the happy path */
-  alt?: boolean
-  /**
-   * perpendicular lane offset (viewBox units) so a back-and-forth pair rides
-   * two parallel lines instead of overlapping: horizontal edges shift up(-)/
-   * down(+); elbow edges shift their vertical run left(-)/right(+).
-   */
-  off?: number
-  /**
-   * explicit Y for an elbow's horizontal run, so opposing edges can turn at
-   * different heights (avoids overlapping turns). Auto-computed when omitted.
-   */
-  rail?: number
-  /** manual label position (viewBox units) for edges where the auto-anchor
-   *  would land awkwardly (e.g. a label on a vertical segment). */
+  /** manual pill center (Figma px); defaults to the polyline midpoint */
   labelAt?: { x: number; y: number }
+  /** plain (non-pill) caption under the edge */
+  caption?: { text: string; x: number; y: number }
 }
 
 export interface MvpScenario {
   id: string
   title: string
   blurb: string
-  /** ordered node ids the path visits */
+  color: MvpColor
+  /** ordered node ids the path visits (drives the reveal) */
   path: string[]
 }
 
-/** Shared spine — every scenario ends on these last three. */
-const SPINE: MvpNode[] = [
-  { id: 'home', label: 'Homepage', glyph: 'home', col: 0.45, row: 2.6 },
-  { id: 'menu', label: 'Menu', glyph: 'menu', col: 2.1, row: 2.6 },
-  { id: 'product', label: 'Product Page', glyph: 'product', col: 5.55, row: 2.6 },
-  { id: 'bag', label: 'My Bag', glyph: 'bag', col: 7.95, row: 2.6 },
-  { id: 'checkout', label: 'Checkout', glyph: 'checkout', col: 9.55, row: 2.6 },
-  { id: 'confirmation', label: 'Confirmation', glyph: 'confirmation', col: 11.1, row: 2.6 },
-]
+export const MVP_VBW = 2862
+export const MVP_VBH = 1750
 
+/**
+ * 1:1 with Figma 311-26243. Node boxes are literal Figma frame coords; the
+ * component renders in a 2862×1750 viewBox and scales to fit. Colors SWAPPED
+ * from the source legend: spine / Add-a-Product = grey · Add-a-Promotion =
+ * gold · Add-from-Category = red · Choose-Location = blue.
+ */
 export const mvp = {
   heading: 'MVP FAST-LAUNCH',
   intro:
@@ -176,80 +187,47 @@ export const mvp = {
     body: 'The UX for ordering was mapped for 4 core scenarios, ensuring each scenario was simple and clear to the user.',
   },
   hint: 'Pick a scenario to trace its path — every one converges on the same checkout spine.',
-  /** all nodes in the diagram (spine + branch nodes), 1:1 with Figma 278:73643 */
   nodes: [
-    ...SPINE,
-    // promo branch (upper-left)
-    { id: 'promoNotif', label: 'Item added to menu', glyph: 'promo', col: 1.55, row: 0.45, labelPos: 'above' },
-    // restaurant / location-handoff popup (upper-mid)
-    { id: 'restaurant', label: 'Choose Restaurant', glyph: 'popup', col: 2.95, row: 1.3, labelPos: 'left' },
-    { id: 'productSel', label: 'Product, item selected', glyph: 'productSel', col: 5.55, row: 0.45, labelPos: 'above' },
-    // location branch (upper-right): handoff state → Location Page
-    { id: 'handoff', label: 'Handoff / location', glyph: 'handoff', col: 8.5, row: 0.5, labelPos: 'above' },
-    { id: 'location', label: 'Location Page', glyph: 'location', col: 10.5, row: 0.5, labelPos: 'above' },
-    // category branch (lower-mid)
-    { id: 'category', label: 'NomNom Category', glyph: 'category', col: 4.0, row: 4.15 },
-    { id: 'quantity', label: 'Choose Quantity', glyph: 'quantity', col: 6.15, row: 4.15 },
+    { id: 'home',         label: 'Homepage',                            screen: 'home',         color: 'grey', box: [59, 933, 200, 245] },
+    { id: 'menu',         label: 'Menu On Homepage',                    screen: 'menu',         color: 'grey', box: [411, 933, 200, 245] },
+    { id: 'product',      label: 'Product Page',                        screen: 'product',      color: 'grey', box: [1228, 933, 200, 245] },
+    { id: 'bag',          label: 'My Bag',                              screen: 'bag',          color: 'grey', box: [1689, 933, 200, 245] },
+    { id: 'checkout',     label: 'Checkout',                            screen: 'checkout',     color: 'grey', box: [2124, 933, 200, 245] },
+    { id: 'confirmation', label: 'Confirmation',                        screen: 'confirmation', color: 'grey', box: [2546, 933, 200, 245] },
+    { id: 'promoNotif',   label: 'Product added notification on menu.', screen: 'home',         color: 'gold', box: [411, 359, 200, 282] },
+    { id: 'productSel',   label: 'Product Page with item selected.',    screen: 'productSel',   color: 'gold', box: [1228, 359, 200, 282] },
+    { id: 'restaurant',   label: 'Choose Restaurant Popup',            screen: 'popup',        color: 'blue', box: [751, 619, 200, 291] },
+    { id: 'location',     label: 'Location Page',                       screen: 'location',     color: 'blue', box: [2124, 612, 200, 245] },
+    { id: 'category',     label: 'NomNom Category Page',               screen: 'category',     color: 'red',  box: [921, 1269, 201, 245] },
+    { id: 'quantity',     label: 'Choose Quantity Popup',              screen: 'quantity',     color: 'red',  box: [1376, 1278, 200, 291] },
   ] as MvpNode[],
-  /**
-   * Every directed edge in the diagram with its pill label(s). `alt` marks the
-   * conditional/alternate branches (drawn dashed, lower emphasis) so the happy
-   * path stays legible. Routing `return` edges loop below the diagram.
-   */
   edges: [
-    // ── spine ──
-    { from: 'home', to: 'menu', label: 'Scroll', kind: 'h' },
-    { from: 'menu', to: 'product', label: 'Tap a product', label2: 'Location preselected', kind: 'h' },
-    { from: 'product', to: 'bag', label: 'Add product', kind: 'h' },
-    { from: 'bag', to: 'checkout', label: 'Check out', kind: 'h' },
-    { from: 'checkout', to: 'confirmation', label: 'Check out', kind: 'h' },
-    // ── promo branch (green) ──
-    { from: 'home', to: 'promoNotif', label: 'Tap a promo', kind: 'elbow-up', rail: 210, labelAt: { x: 108, y: 278 } },
-    { from: 'promoNotif', to: 'productSel', label: 'Tap a product', label2: 'Location preselected', kind: 'h' },
-    { from: 'productSel', to: 'bag', label: 'Add product', kind: 'elbow-down' },
-    // ── location / handoff branch (orange) ──
-    // no-location detours into the restaurant popup, which resolves location
-    { from: 'product', to: 'restaurant', label: 'No location selected', kind: 'elbow-up', alt: true },
-    { from: 'restaurant', to: 'productSel', label: 'Location selected', kind: 'elbow-up', alt: true },
-    // change handoff/location from the bag → handoff state → location page → back
-    { from: 'bag', to: 'handoff', label: 'Change location', kind: 'elbow-up', alt: true, off: -24, rail: 225 },
-    { from: 'handoff', to: 'location', label: '', kind: 'h', alt: true, off: -14 },
-    { from: 'location', to: 'handoff', label: 'Continue', kind: 'h', alt: true, off: 14 },
-    { from: 'handoff', to: 'bag', label: '', kind: 'elbow-down', alt: true, off: 20, rail: 285 },
-    // ── category branch (purple) ──
-    { from: 'menu', to: 'category', label: 'Tap a category', label2: 'Location preselected', kind: 'elbow-down', rail: 430 },
-    { from: 'category', to: 'quantity', label: 'Tap Product', kind: 'h', off: -18 },
-    { from: 'quantity', to: 'category', label: 'Add Product', label2: 'Added to My Bag', kind: 'h-low', alt: true, off: 18 },
-    { from: 'category', to: 'bag', label: 'Tap Bag Icon', kind: 'low-rail' },
-    // ── loops ──
-    { from: 'bag', to: 'menu', label: 'Add more', kind: 'return', alt: true },
-    { from: 'confirmation', to: 'menu', label: 'Will send to scrolled location', kind: 'return', alt: true },
+    { from: 'home', to: 'menu', color: 'grey', label: 'Scroll', pts: [[259, 1055], [411, 1055]] },
+    { from: 'menu', to: 'product', color: 'grey', label: 'Tap a Product', label2: 'Location preselected', pts: [[611, 1055], [1228, 1055]] },
+    { from: 'product', to: 'bag', color: 'grey', label: 'Add Product', pts: [[1428, 1055], [1689, 1055]] },
+    { from: 'bag', to: 'checkout', color: 'grey', label: 'Check Out', pts: [[1889, 1055], [2124, 1055]] },
+    { from: 'checkout', to: 'confirmation', color: 'grey', label: 'Check Out', pts: [[2324, 1055], [2546, 1055]] },
+    { from: 'home', to: 'promoNotif', color: 'gold', label: 'Tap a Promo', labelAt: { x: 159, y: 565 }, pts: [[159, 933], [159, 486], [411, 486], [411, 500]] },
+    { from: 'promoNotif', to: 'productSel', color: 'gold', label: 'Tap a Product', label2: 'Location preselected', pts: [[611, 486], [1228, 486], [1228, 500]] },
+    { from: 'productSel', to: 'bag', color: 'gold', label: 'Add Product', labelAt: { x: 1525, y: 486 }, pts: [[1428, 500], [1620, 500], [1620, 933]] },
+    { from: 'promoNotif', to: 'restaurant', color: 'gold', label: 'No location selected', labelAt: { x: 760, y: 565 }, pts: [[850, 486], [850, 619]] },
+    { from: 'restaurant', to: 'productSel', color: 'blue', label: 'Location Selected', labelAt: { x: 1045, y: 716 }, pts: [[951, 716], [1130, 716], [1130, 641]] },
+    { from: 'restaurant', to: 'product', color: 'blue', pts: [[951, 800], [1130, 800], [1130, 933]] },
+    { from: 'productNoLoc', to: 'restaurant', color: 'grey', label: 'No location selected', labelAt: { x: 760, y: 977 }, pts: [[838, 1055], [838, 910]] },
+    { from: 'categoryNoLoc', to: 'restaurant', color: 'red', pts: [[868, 1108], [868, 910]] },
+    { from: 'bag', to: 'location', color: 'blue', label: 'Change handoff mode or location', labelAt: { x: 1789, y: 800 }, pts: [[1789, 933], [1789, 701], [2224, 701], [2224, 612]] },
+    { from: 'location', to: 'bag', color: 'blue', label: 'Continue', labelAt: { x: 2035, y: 758 }, pts: [[2164, 612], [2164, 758], [1864, 758], [1864, 933]] },
+    { from: 'menu', to: 'category', color: 'red', label: 'Tap a Category', label2: 'Location preselected', labelAt: { x: 730, y: 1108 }, pts: [[611, 1108], [1021, 1108], [1021, 1269]] },
+    { from: 'category', to: 'quantity', color: 'red', label: 'Tap Product', pts: [[1122, 1404], [1376, 1404]] },
+    { from: 'quantity', to: 'category', color: 'red', label: 'Add Product', caption: { text: 'Product is added to My Bag', x: 1252, y: 1548 }, pts: [[1376, 1483], [1122, 1483]] },
+    { from: 'category', to: 'bag', color: 'red', label: 'Tap Bag Icon', labelAt: { x: 1229, y: 1320 }, pts: [[1122, 1320], [1789, 1320], [1789, 1178]] },
+    { from: 'bag', to: 'menu', color: 'grey', label: 'Add more', label2: 'Will send to scrolled location', labelAt: { x: 1981, y: 1091 }, pts: [[2084, 1178], [2084, 1684], [511, 1684], [511, 1178]] },
   ] as MvpEdge[],
   scenarios: [
-    {
-      id: 'promo',
-      title: 'Add a promotion',
-      blurb: 'Tap a featured promo on the homepage; the item is added and the order continues to checkout.',
-      path: ['home', 'promoNotif', 'productSel', 'bag', 'checkout', 'confirmation'],
-    },
-    {
-      id: 'product',
-      title: 'Add a product',
-      blurb: 'Scroll the homepage menu, open a dish, add it — the simplest path to checkout.',
-      path: ['home', 'menu', 'product', 'bag', 'checkout', 'confirmation'],
-    },
-    {
-      id: 'category',
-      title: 'Add from a category',
-      blurb: 'From the homepage menu, open a category, set quantity in a popup; the item is added, then tap the bag to check out.',
-      path: ['home', 'menu', 'category', 'quantity', 'category', 'bag', 'checkout', 'confirmation'],
-    },
-    {
-      id: 'location',
-      title: 'Choose a location',
-      blurb: 'With no store set, the order detours through a location handoff before continuing to checkout.',
-      path: ['home', 'menu', 'product', 'restaurant', 'productSel', 'bag', 'handoff', 'location', 'handoff', 'bag', 'checkout', 'confirmation'],
-    },
+    { id: 'promo', title: 'Add a promotion', color: 'gold', blurb: 'Tap a featured promo on the homepage; the item is added and the order continues to checkout.', path: ['home', 'promoNotif', 'productSel', 'bag', 'checkout', 'confirmation'] },
+    { id: 'product', title: 'Add a product', color: 'grey', blurb: 'Scroll the homepage menu, open a dish, add it — the simplest path to checkout.', path: ['home', 'menu', 'product', 'bag', 'checkout', 'confirmation'] },
+    { id: 'category', title: 'Add from a category', color: 'red', blurb: 'From the homepage menu, open a category, set quantity in a popup; the item is added, then tap the bag to check out.', path: ['home', 'menu', 'category', 'quantity', 'category', 'bag', 'checkout', 'confirmation'] },
+    { id: 'location', title: 'Choose a location', color: 'blue', blurb: 'With no store set, the order detours to a restaurant/location handoff before continuing to checkout.', path: ['home', 'menu', 'product', 'restaurant', 'product', 'bag', 'location', 'bag', 'checkout', 'confirmation'] },
   ] as MvpScenario[],
 }
 

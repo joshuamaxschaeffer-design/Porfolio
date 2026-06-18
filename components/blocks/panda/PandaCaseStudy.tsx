@@ -5,6 +5,7 @@ import { MvpFlowSection } from './MvpFlowSection'
 import { MvpScatterSection } from './MvpScatterSection'
 import { MvpLaunchBento } from './MvpLaunchBento'
 import { PremiumRewardsSection } from './PremiumRewardsSection'
+import { LoyaltyQrSection } from './LoyaltyQrSection'
 import { OutcomesSection } from './OutcomesSection'
 import { SectionNav, type SectionNavItem } from '../baserate/SectionNav'
 
@@ -15,6 +16,7 @@ const NAV_ITEMS: SectionNavItem[] = [
   { id: 'releases', title: 'The Two Releases' },
   { id: 'mvp', title: 'MVP Fast-Launch' },
   { id: 'premium-rewards', title: 'Premium Rewards' },
+  { id: 'loyalty-qr', title: 'Loyalty QR' },
   { id: 'outcomes', title: 'Outcomes' },
 ]
 
@@ -29,6 +31,7 @@ export interface PandaCaseStudyProps {
   releasesIntro?: string
   mvpIntro?: string
   premiumRewardsIntro?: string
+  loyaltyQrIntro?: string
   outcomesIntro?: string
 }
 
@@ -66,6 +69,10 @@ export function PandaCaseStudy(props: PandaCaseStudyProps = {}) {
       {/* Opens the rewards chapter — full-bleed red hero with the scaled-up
           two-phone mockup + animated gold sparkles/fireworks. */}
       <PremiumRewardsSection intro={props.premiumRewardsIntro} />
+      {/* Loyalty QR enrollment — red "blueprint" band: the branching receipt-QR
+          userflow + the Cache→Azure→mParticle→Punchh backend handoff. Verified
+          against the Figma prototype graph (REST API). */}
+      <LoyaltyQrSection intro={props.loyaltyQrIntro} />
       <OutcomesSection intro={props.outcomesIntro} />
     </article>
   )
