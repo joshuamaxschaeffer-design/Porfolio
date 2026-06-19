@@ -188,106 +188,64 @@ function AngledScreen({ page, reduce, index }: { page: DeckPage; reduce: boolean
  * layers; NO border/edge-mask — a radial vignette dissolves the far cards into
  * the black. Reduced-motion → settled (fully spread, static).
  * ──────────────────────────────────────────────────────────────────────────── */
-const UX_F = 1500 // focal length (gentle shrink)
-const UX_GAP_MAX = 440 // z between cards, fully spread
-const UX_GAP_MIN = 200 // at scroll start
-const UX_VP_X = 92 // vanishing point x (stage %) — far right
-const UX_VP_Y = 26
-const UX_FRONT_Y = 50
-
-function uxProject(z: number, frontX: number, vpX: number) {
-  const s = UX_F / (UX_F + z)
-  const k = 1 - s
-  return { s, x: frontX + (vpX - frontX) * k, y: UX_FRONT_Y + (UX_VP_Y - UX_FRONT_Y) * k }
-}
-const uxBlur = (d: number) => Math.max(0, (d - 1) * 7)
-
+/* The blue UX wireframes as a receding, overlapping stack. Built with the SAME
+ * single-parent-3D-plane technique as the live-pages deck below (a per-card
+ * filter/scale/clip context made Chrome paint the tall wireframes black), so it
+ * renders reliably: one tilted plane, simple <img> children, depth via a
+ * darkening overlay only. Cards overlap (negative margins) so they read as a
+ * stacked deck rather than a spaced row. Reduced-motion safe (static pose). */
 function WireframeStack({ pages }: { pages: { key: string; label: string; src: string }[] }) {
-  const stageRef = useRef<HTMLDivElement>(null)
-  const [mobile, setMobile] = useState(false)
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 1023px)')
-    const apply = () => setMobile(mq.matches)
-    apply()
-    mq.addEventListener('change', apply)
-    return () => mq.removeEventListener('change', apply)
-  }, [])
-  const frontX = mobile ? 30 : 22 // front card sits left; deck recedes right
-  const vpX = mobile ? 96 : UX_VP_X
-
-  // NOTE: Motion's useScroll({target}) is frozen by this site's Lenis smooth
-  // scroll, so a scroll-driven gap leaves the derived darken/blur stuck (all
-  // cards rendered black). The deck is decorative, so use a fixed, fully-spread
-  // gap and derive depth from each card's static index — correct + Safe.
-  const gap = UX_GAP_MAX
-
   const deck = pages.slice(0, 5)
-  const n = deck.length
   return (
-    <div ref={stageRef} className="relative mx-auto mt-8 h-[clamp(420px,54vw,720px)] w-full max-w-[1200px]">
-      {deck.map((pg, i) => (
-        <WireframeCard key={pg.key} page={pg} index={i} gap={gap} total={n} frontX={frontX} vpX={vpX} />
-      ))}
-      {/* vignette: the far/right portion dissolves into the section black */}
+    <div className="relative mt-10 w-full overflow-hidden">
+      <div className="mx-auto" style={{ perspective: '2200px', perspectiveOrigin: '50% 35%' }}>
+        {/* the tilted + leaned plane the wireframes lie on */}
+        <div
+          className="flex items-start justify-center pb-[3vw] pt-[1vw]"
+          style={{
+            transformStyle: 'preserve-3d',
+            transform: 'rotateX(34deg) rotateZ(-22deg) scale(0.96)',
+            transformOrigin: '50% 40%',
+          }}
+        >
+          {deck.map((pg, i) => (
+            <figure
+              key={pg.key}
+              className="relative m-0 w-[16vw] min-w-[120px] max-w-[230px] shrink-0"
+              style={{ marginLeft: i === 0 ? 0 : '-3.2vw', zIndex: deck.length - i }}
+            >
+              <div
+                className="relative h-[26vw] max-h-[460px] min-h-[260px] overflow-hidden rounded-[12px] bg-white"
+                style={{ boxShadow: '0 30px 70px -28px rgba(0,0,0,0.8)' }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={pg.src}
+                  alt={`${pg.label} page design`}
+                  draggable={false}
+                  loading="lazy"
+                  className="block w-full select-none"
+                />
+                {/* depth darken on the receding cards (front stays clear) */}
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 bg-[#0d0d0f]"
+                  style={{ opacity: Math.min(0.5, i * 0.12) }}
+                />
+              </div>
+            </figure>
+          ))}
+        </div>
+      </div>
+      {/* edge vignettes so the plane dissolves into the section black */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            'radial-gradient(120% 115% at 86% 34%, rgba(13,13,15,0) 30%, rgba(13,13,15,0.55) 62%, rgba(13,13,15,0.98) 88%)',
+            'linear-gradient(to right, #0d0d0f 0%, rgba(13,13,15,0) 12%, rgba(13,13,15,0) 88%, #0d0d0f 100%), linear-gradient(to bottom, rgba(13,13,15,0) 60%, #0d0d0f 98%)',
         }}
       />
-    </div>
-  )
-}
-
-function WireframeCard({
-  page,
-  index,
-  gap,
-  total,
-  frontX,
-  vpX,
-}: {
-  page: { key: string; label: string; src: string }
-  index: number
-  gap: number
-  total: number
-  frontX: number
-  vpX: number
-}) {
-  // settled depth from the static spread (gap = GAP_MAX → d = index)
-  const d = (index * gap) / UX_GAP_MAX
-  const proj = uxProject(index * gap, frontX, vpX)
-  // keep the back wireframes readable: lighter darken than the live-pages deck
-  const darken = Math.max(0, Math.min(0.5, (d - 1) * 0.16))
-  const q = (v: number, step: number) => Math.round(v / step) * step
-  const blurOuter = `blur(${q(uxBlur(index) * 0.4, 2)}px)`
-  const blurInner = `blur(${q(uxBlur(index) * 0.5, 2)}px)`
-  return (
-    <div
-      className="absolute"
-      style={{
-        left: `${proj.x}%`,
-        top: `${proj.y}%`,
-        width: 'min(34%, 360px)', // tall, narrow portrait page
-        transform: `translate(-50%, -50%) scale(${proj.s})`,
-        zIndex: total - index,
-        filter: blurOuter,
-      }}
-    >
-      {/* clean clipped corners, no border (a translucent edge + blur = halo) */}
-      <div
-        className="relative overflow-hidden rounded-xl bg-white"
-        style={{ boxShadow: '0 30px 70px -28px rgba(0,0,0,0.7)', filter: blurInner }}
-      >
-        {/* fixed portrait crop, top-anchored — uniform height across the deck */}
-        <div className="aspect-[360/620] w-full overflow-hidden">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={page.src} alt={`${page.label} page design`} draggable={false} className="block w-full select-none" />
-        </div>
-        <div className="pointer-events-none absolute inset-0 bg-[#0d0d0f]" style={{ opacity: darken }} />
-      </div>
     </div>
   )
 }
