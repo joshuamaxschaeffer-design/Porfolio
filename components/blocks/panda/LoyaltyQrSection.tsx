@@ -366,7 +366,7 @@ function FlowDetail({ flow, onBack }: { flow: Flow; onBack: () => void }) {
             const topClamped = Math.min(86, Math.max(8, nodeTopPct))
             return (
               <div
-                className="pointer-events-none absolute z-[60] w-[230px] md:w-[260px]"
+                className="pointer-events-none absolute z-[60] w-[248px] md:w-[280px]"
                 style={{
                   top: `${topClamped}%`,
                   ...(onRightHalf
@@ -377,9 +377,14 @@ function FlowDetail({ flow, onBack }: { flow: Flow; onBack: () => void }) {
               >
                 <div className="overflow-hidden rounded-[12px] border border-white/25 bg-[#7a1418]/95 shadow-[0_16px_40px_rgba(0,0,0,0.45)] backdrop-blur-sm">
                   {act.thumb && (
-                    <div className="flex max-h-[150px] justify-center overflow-hidden border-b border-white/15 bg-black/25">
+                    <div className="flex h-[300px] items-center justify-center border-b border-white/15 bg-[#5e1015] p-4">
+                      {/* whole screen, scaled to fit by height (never cropped), with a shadow */}
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={`${THUMB}/${act.thumb}@2x.webp`} alt={act.label} className="w-full object-cover object-top" />
+                      <img
+                        src={`${THUMB}/${act.thumb}@2x.webp`}
+                        alt={act.label}
+                        className="h-full w-auto rounded-[6px] shadow-[0_10px_26px_rgba(0,0,0,0.5)]"
+                      />
                     </div>
                   )}
                   <div className="p-3.5">

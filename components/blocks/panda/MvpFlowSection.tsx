@@ -71,12 +71,51 @@ function prefersReducedMotion() {
 type Pt = [number, number]
 const nodeById = new Map<string, MvpNode>(defaults.nodes.map((n) => [n.id, n]))
 
+type Side = 'top' | 'right' | 'bottom' | 'left'
+
+/** Anchor point ON a card's edge. Slots are evenly spaced along the side
+ *  (slot 1..of; left→right on top/bottom, top→bottom on left/right). Internal
+ *  only — not visibly numbered. Default = centered. */
+function anchor(id: string, side: Side, slot = 1, of = 1): Pt {
+  const n = nodeById.get(id)
+  if (!n) return [0, 0]
+  const [x, y, w, h] = n.box
+  const f = of <= 1 ? 0.5 : slot / (of + 1)
+  switch (side) {
+    case 'top': return [x + w * f, y]
+    case 'bottom': return [x + w * f, y + h]
+    case 'left': return [x, y + h * f]
+    case 'right': return [x + w, y + h * f]
+  }
+}
+function outDir(side: Side): Pt {
+  return side === 'top' ? [0, -1] : side === 'bottom' ? [0, 1] : side === 'left' ? [-1, 0] : [1, 0]
+}
+
+/** Build an edge's polyline from its from/to slot anchors (+ optional manual
+ *  `via` waypoints). The endpoints are derived from the CARDS, so lines always
+ *  start/end exactly on a card edge. Auto-routes one orthogonal elbow when no
+ *  via is given. */
+function resolvePts(e: MvpEdge): Pt[] {
+  const a = anchor(e.from, e.fromSide, e.fromSlot, e.fromOf)
+  const b = anchor(e.to, e.toSide, e.toSlot, e.toOf)
+  if (e.via && e.via.length) return [a, ...(e.via as Pt[]), b]
+  const [aox, aoy] = outDir(e.fromSide)
+  const [box, boy] = outDir(e.toSide)
+  const STUB = 26
+  const a1: Pt = [a[0] + aox * STUB, a[1] + aoy * STUB]
+  const b1: Pt = [b[0] + box * STUB, b[1] + boy * STUB]
+  if (Math.abs(a[0] - b[0]) < 1 || Math.abs(a[1] - b[1]) < 1) return [a, b]
+  if (e.fromSide === 'top' || e.fromSide === 'bottom') return [a, a1, [b1[0], a1[1]], b1, b]
+  return [a, a1, [a1[0], b1[1]], b1, b]
+}
+
 /** Arrow geometry shared by line + triangle so they meet cleanly:
  *  INSET = gap from target card to the arrow TIP.
  *  ARROW = triangle length (the LINE stops here, at the triangle base). */
-const INSET = 10
-const ARROW = 24
-const ARROW_W = 13
+const INSET = 3
+const ARROW = 22
+const ARROW_W = 12
 function lastDir(pts: Pt[]): { ux: number; uy: number } {
   const a = pts[pts.length - 2], b = pts[pts.length - 1]
   const dx = b[0] - a[0], dy = b[1] - a[1]
@@ -299,10 +338,11 @@ function DesktopDiagram({ activeId, progress, reduced }: DiagramProps) {
       <g>
         {edges.map((ed, i) => {
           if (edgeState(ed).lit) return null
+          const pts = resolvePts(ed)
           return (
             <g key={`dim-${i}`}>
-              <path d={edgeD(ed.pts)} fill="none" stroke="#e4e5ea" strokeWidth={5} strokeLinecap="round" strokeLinejoin="round" />
-              <polygon points={arrowPoly(ed.pts)} fill="#e4e5ea" />
+              <path d={edgeD(pts)} fill="none" stroke="#e4e5ea" strokeWidth={5} strokeLinecap="round" strokeLinejoin="round" />
+              <polygon points={arrowPoly(pts)} fill="#e4e5ea" />
             </g>
           )
         })}
@@ -313,10 +353,11 @@ function DesktopDiagram({ activeId, progress, reduced }: DiagramProps) {
         {edges.map((ed, i) => {
           const { lit, color } = edgeState(ed)
           if (!lit) return null
+          const pts = resolvePts(ed)
           return (
             <g key={`lit-${i}`} style={{ transition: reduced ? 'none' : 'opacity .26s ease-in-out' }}>
-              <path d={edgeD(ed.pts)} fill="none" stroke={color} strokeWidth={6} strokeLinecap="round" strokeLinejoin="round" />
-              <polygon points={arrowPoly(ed.pts)} fill={color} />
+              <path d={edgeD(pts)} fill="none" stroke={color} strokeWidth={6} strokeLinecap="round" strokeLinejoin="round" />
+              <polygon points={arrowPoly(pts)} fill={color} />
             </g>
           )
         })}
@@ -333,11 +374,11 @@ function DesktopDiagram({ activeId, progress, reduced }: DiagramProps) {
       <g>
         {edges.map((ed, i) => {
           const { lit } = edgeState(ed)
-          const anchor = ed.labelAt ? ([ed.labelAt.x, ed.labelAt.y] as Pt) : edgeMid(ed.pts)
+          const pillPos = ed.labelAt ? ([ed.labelAt.x, ed.labelAt.y] as Pt) : edgeMid(resolvePts(ed))
           const els: React.ReactNode[] = []
-          if (ed.label) els.push(<Pill key={`p-${i}`} x={anchor[0]} y={anchor[1]} lines={[ed.label]} color={ed.color} lit={lit} />)
+          if (ed.label) els.push(<Pill key={`p-${i}`} x={pillPos[0]} y={pillPos[1]} lines={[ed.label]} color={ed.color} lit={lit} />)
           if (ed.label2) {
-            const a2: Pt = ed.label2At ? [ed.label2At.x, ed.label2At.y] : secondAnchor(anchor, ed.label ?? '')
+            const a2: Pt = ed.label2At ? [ed.label2At.x, ed.label2At.y] : secondAnchor(pillPos, ed.label ?? '')
             els.push(<Pill key={`p2-${i}`} x={a2[0]} y={a2[1]} lines={[ed.label2]} color={ed.color} lit={lit} />)
           }
           if (ed.caption) {
