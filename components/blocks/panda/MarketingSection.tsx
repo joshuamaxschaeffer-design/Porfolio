@@ -6,22 +6,15 @@ import { marketing as defaults } from './data'
 
 /**
  * THE BRAND ONLINE — marketing-site workstream, on a near-BLACK ground so it
- * reads distinctly from the white/red sections around it. It's the brand site,
- * so it's the most aesthetic section: a food-led bento mixing big dish cutouts
- * with real page screenshots, then the live link.
+ * reads distinctly from the white/red sections around it.
  *
- * Layout: the "Food bento" direction (chosen from the 3 options). The page
- * tiles show REAL pandaexpress.com screenshots from `marketing.liveShots`
- * (public/panda/marketing/live/*). Until a screenshot file is dropped in, a
- * tile shows a clean labeled placeholder — never a broken image.
- *
- * Food cutouts: public/panda/marketing/food/*.webp.
+ * The section is the angled UX deck: the real pandaexpress.com page designs laid
+ * down on a single receding plane, full-bleed on the black field, then the live
+ * link. Tall pages auto-scroll their own content (up and down); short pages
+ * render at their natural height, static, and are ordered last (far right).
  */
 
-const FOOD = '/panda/marketing/food'
-
 export function MarketingSection() {
-  const shots = defaults.liveShots
   return (
     <section
       id="marketing"
@@ -60,39 +53,6 @@ export function MarketingSection() {
           </Reveal>
         </div>
 
-        {/* bento: big food hero (2x2) + page screenshots + food cutouts */}
-        <div className="mt-12 grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4 lg:auto-rows-[230px]">
-          {/* big food hero on a red field — spans 2x2 */}
-          <Reveal className="col-span-2 row-span-2 lg:col-span-2 lg:row-span-2">
-            <FoodTile src={`${FOOD}/orange-chicken.webp`} caption="The Original Orange Chicken" red big />
-          </Reveal>
-
-          {/* page screenshot — Homepage */}
-          <Reveal delay={80} className="col-span-1 lg:row-span-1">
-            <ShotTile shot={shots[0]} />
-          </Reveal>
-
-          {/* food cutout */}
-          <Reveal delay={120} className="col-span-1 lg:row-span-1">
-            <FoodTile src={`${FOOD}/string-bean-chicken.webp`} caption="String Bean Chicken" />
-          </Reveal>
-
-          {/* food cutout (red) */}
-          <Reveal delay={160} className="col-span-1 lg:row-span-1">
-            <FoodTile src={`${FOOD}/broccoli-beef.webp`} caption="Broccoli Beef" red />
-          </Reveal>
-
-          {/* page screenshot — Our Food */}
-          <Reveal delay={200} className="col-span-1 lg:row-span-1">
-            <ShotTile shot={shots[1]} />
-          </Reveal>
-        </div>
-
-        {/* a third page screenshot on its own wide row (optional 3rd capture) */}
-        <Reveal delay={120} className="mt-4 sm:mt-5">
-          <ShotTile shot={shots[2]} wide />
-        </Reveal>
-
         <div className="mt-10">
           <LiveLink />
         </div>
@@ -111,9 +71,18 @@ export function MarketingSection() {
  * tiles read smaller. Inspired by the Wingstop angled-screens mockup, minus the
  * stretched device frames. Reduced-motion → no auto-scroll, static pose.
  * ──────────────────────────────────────────────────────────────────────────── */
-function PerspectiveStack({ pages }: { pages: { key: string; label: string; src: string }[] }) {
+type DeckPage = { key: string; label: string; src: string; ratio?: number }
+
+/** Window aspect (height / width) for a tile in the deck. A page can scroll only
+ *  when it's taller than this; shorter pages get a window sized to their image. */
+const WINDOW_RATIO = 34 / 13 // h-[34vw] / w-[13vw] ≈ 2.62
+
+function PerspectiveStack({ pages }: { pages: DeckPage[] }) {
   const reduce = useReducedMotion()
-  const deck = pages.slice(0, 7)
+  // tall pages (scrollable) first; short, static pages pushed to the far right.
+  const deck = [...pages]
+    .slice(0, 7)
+    .sort((a, b) => (b.ratio ?? WINDOW_RATIO) - (a.ratio ?? WINDOW_RATIO))
   return (
     // full-bleed: break out of the centered container to the whole viewport
     <div className="relative left-1/2 mt-10 w-screen -translate-x-1/2 overflow-hidden">
@@ -121,17 +90,17 @@ function PerspectiveStack({ pages }: { pages: { key: string; label: string; src:
         className="mx-auto"
         style={{ perspective: '2200px', perspectiveOrigin: '50% 30%' }}
       >
-        {/* the tilted + leaned plane the screens lie on */}
+        {/* the tilted + leaned plane the screens lie on (straightened ~7°) */}
         <div
-          className="mx-auto flex justify-center gap-[2.2vw] px-[4vw] pb-[6vw] pt-[2vw]"
+          className="mx-auto flex items-start justify-center gap-[2.2vw] px-[4vw] pb-[6vw] pt-[2vw]"
           style={{
             transformStyle: 'preserve-3d',
-            transform: 'rotateX(46deg) rotateZ(-32deg) scale(1.04)',
+            transform: 'rotateX(39deg) rotateZ(-25deg) scale(1.04)',
             transformOrigin: '50% 40%',
           }}
         >
-          {deck.map((pg) => (
-            <AngledScreen key={pg.key} page={pg} reduce={!!reduce} />
+          {deck.map((pg, i) => (
+            <AngledScreen key={pg.key} page={pg} reduce={!!reduce} index={i} />
           ))}
         </div>
       </div>
@@ -148,78 +117,45 @@ function PerspectiveStack({ pages }: { pages: { key: string; label: string; src:
   )
 }
 
-/** One page screenshot lying on the plane: a tall window whose content slowly
- *  auto-scrolls; no device chrome, clean rounded corners. */
-function AngledScreen({ page, reduce }: { page: { key: string; label: string; src: string }; reduce: boolean }) {
+/** One page screenshot lying on the plane; no device chrome, clean rounded
+ *  corners. Tall pages get a fixed-height window and auto-scroll their content
+ *  up and down; short pages get a window sized to the image and stay static. */
+function AngledScreen({ page, reduce, index }: { page: DeckPage; reduce: boolean; index: number }) {
+  const ratio = page.ratio ?? WINDOW_RATIO
+  const scrolls = ratio > WINDOW_RATIO + 0.15
+  // how far the tall image must travel inside the fixed window, as a % of img height
+  const travelPct = scrolls ? (1 - WINDOW_RATIO / ratio) * 100 : 0
+  // stagger the scroll phase so the columns don't move in lockstep
+  const delay = -(index * 2.6)
   return (
     <figure className="relative m-0 w-[13vw] min-w-[140px] shrink-0">
       <div
-        className="relative h-[34vw] max-h-[640px] min-h-[300px] overflow-hidden rounded-[14px] bg-white"
-        style={{ boxShadow: '0 40px 80px -30px rgba(0,0,0,0.85), 0 10px 24px -12px rgba(0,0,0,0.6)' }}
+        className={`relative overflow-hidden rounded-[14px] bg-white ${
+          scrolls ? 'h-[34vw] max-h-[640px] min-h-[300px]' : ''
+        }`}
+        style={{
+          boxShadow: '0 40px 80px -30px rgba(0,0,0,0.85), 0 10px 24px -12px rgba(0,0,0,0.6)',
+          // short pages: window height follows the image's own aspect
+          ...(scrolls ? {} : { aspectRatio: `1 / ${ratio}` }),
+        }}
       >
-        {/* the tall page scrolls within the window */}
-        <div className={reduce ? '' : 'pxmk-vscroll'}>
+        <div
+          className={scrolls && !reduce ? 'pxmk-vscroll' : ''}
+          style={
+            scrolls && !reduce
+              ? ({ ['--pxmk-travel' as string]: `-${travelPct}%`, animationDelay: `${delay}s` } as React.CSSProperties)
+              : undefined
+          }
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={page.src} alt={`${page.label} — pandaexpress.com`} draggable={false} className="block w-full select-none" />
         </div>
       </div>
       <style>{`
-        .pxmk-vscroll{animation:pxmk-vscroll 22s linear infinite alternate}
-        @keyframes pxmk-vscroll{from{transform:translateY(0)}to{transform:translateY(calc(-100% + 34vw))}}
+        .pxmk-vscroll{animation:pxmk-vscroll 26s ease-in-out infinite alternate}
+        @keyframes pxmk-vscroll{from{transform:translateY(0)}to{transform:translateY(var(--pxmk-travel,0))}}
         @media (prefers-reduced-motion: reduce){.pxmk-vscroll{animation:none}}
       `}</style>
-    </figure>
-  )
-}
-
-/** Food cutout tile. `red` = Panda-red field; otherwise a dark card. */
-function FoodTile({ src, caption, big, red }: { src: string; caption: string; big?: boolean; red?: boolean }) {
-  return (
-    <figure
-      className={`relative m-0 h-full overflow-hidden rounded-2xl border ${
-        red ? 'border-transparent bg-[var(--px-red)]' : 'border-white/12 bg-white/[0.05]'
-      }`}
-    >
-      <div className="flex h-full items-center justify-center p-4">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={src}
-          alt={caption}
-          loading="lazy"
-          className={`${big ? 'w-[82%]' : 'w-[80%]'} object-contain drop-shadow-[0_18px_30px_rgba(0,0,0,0.4)]`}
-        />
-      </div>
-      <figcaption className={`absolute bottom-3 left-4 ${big ? 'text-base' : 'text-[13px]'} font-medium text-white/90`}>
-        {caption}
-      </figcaption>
-    </figure>
-  )
-}
-
-/** A real pandaexpress.com page screenshot in a browser frame. Falls back to a
- *  clean labeled placeholder until the screenshot file is dropped in. */
-function ShotTile({ shot, wide }: { shot: { key: string; label: string; src: string }; wide?: boolean }) {
-  const [ok, setOk] = useState(true)
-  const hasShot = !!shot.src && ok
-  return (
-    <figure className="m-0 h-full overflow-hidden rounded-2xl border border-white/12 bg-white">
-      <BrowserBar url="pandaexpress.com" />
-      <div className={`overflow-hidden bg-neutral-100 ${wide ? 'aspect-[1440/520]' : 'h-[calc(100%-37px)]'}`}>
-        {hasShot ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={shot.src}
-            alt={`pandaexpress.com — ${shot.label}`}
-            loading="lazy"
-            onError={() => setOk(false)}
-            className="block h-full w-full object-cover object-top"
-          />
-        ) : (
-          <div className="flex h-full min-h-[160px] w-full items-center justify-center">
-            <span className="br-data text-[11px] uppercase tracking-wide text-neutral-400">{shot.label}</span>
-          </div>
-        )}
-      </div>
     </figure>
   )
 }
@@ -244,19 +180,6 @@ function LiveLink() {
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return <span className="br-data text-xs font-semibold uppercase tracking-[0.18em] text-[#ff5a4d]">{children}</span>
-}
-
-function BrowserBar({ url }: { url?: string }) {
-  return (
-    <div className="flex items-center gap-2 border-b border-black/10 bg-neutral-50 px-3 py-2">
-      <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
-      <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
-      <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
-      {url ? (
-        <span className="br-data ml-3 truncate rounded bg-white px-2.5 py-0.5 text-[11px] text-neutral-500">{url}</span>
-      ) : null}
-    </div>
-  )
 }
 
 /** Opacity/transform reveal on scroll; static under reduced-motion. */

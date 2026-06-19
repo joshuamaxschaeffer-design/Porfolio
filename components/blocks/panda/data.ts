@@ -202,15 +202,17 @@ export const marketing = {
     eyebrow: 'THE UX',
     title: 'Cohesive Site UX',
     body: 'The focus: communicate the brand while driving orders. Every page shares one structure and voice, with the path to ordering always a tap away.',
-    /** real pandaexpress.com full-page captures (public/panda/marketing/live). */
+    /** real pandaexpress.com full-page captures (public/panda/marketing/live).
+     *  `ratio` = image height / width (drives the deck: tall pages auto-scroll,
+     *  short pages render shorter + static and are ordered last/far-right). */
     pages: [
-      { key: 'home', label: 'Homepage', src: '/panda/marketing/live/home.webp' },
-      { key: 'food', label: 'Our Food', src: '/panda/marketing/live/our-food.webp' },
-      { key: 'innovation', label: 'Innovation', src: '/panda/marketing/live/innovation.webp' },
-      { key: 'family', label: 'Our Family', src: '/panda/marketing/live/our-family.webp' },
-      { key: 'shop', label: 'Our Shop', src: '/panda/marketing/live/our-shop.webp' },
-      { key: 'philosophy', label: 'Food Philosophy', src: '/panda/marketing/live/philosophy.webp' },
-      { key: 'values', label: 'Our Values', src: '/panda/marketing/live/our-values.webp' },
+      { key: 'home', label: 'Homepage', src: '/panda/marketing/live/home.webp', ratio: 4.82 },
+      { key: 'philosophy', label: 'Food Philosophy', src: '/panda/marketing/live/philosophy.webp', ratio: 3.94 },
+      { key: 'innovation', label: 'Innovation', src: '/panda/marketing/live/innovation.webp', ratio: 2.85 },
+      { key: 'family', label: 'Our Family', src: '/panda/marketing/live/our-family.webp', ratio: 2.74 },
+      { key: 'values', label: 'Our Values', src: '/panda/marketing/live/our-values.webp', ratio: 2.72 },
+      { key: 'food', label: 'Our Food', src: '/panda/marketing/live/our-food.webp', ratio: 1.96 },
+      { key: 'shop', label: 'Our Shop', src: '/panda/marketing/live/our-shop.webp', ratio: 1.47 },
     ],
     /** the site map / UX flow diagram */
     sitemap: { src: '/panda/marketing/ux/sitemap.webp', alt: 'Marketing site map and UX flow', label: 'Site map' },
