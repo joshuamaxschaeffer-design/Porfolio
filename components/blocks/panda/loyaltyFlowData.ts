@@ -10,7 +10,7 @@ export interface Flow { id: string; title: string; blurb: string; platform: "mob
 export const FLOWS: Flow[] = [
   {
     "id": "flow7",
-    "title": "Flow 7 · Mobile · receipt scan",
+    "title": "Flow 1 · Mobile · receipt scan",
     "blurb": "Native-app receipt scan into sign-in, confirmation, the join gate and rewards.",
     "platform": "mobile",
     "nodes": [
@@ -26,7 +26,7 @@ export const FLOWS: Flow[] = [
         "id": "0:18751",
         "type": "entry",
         "label": "Receipt QR",
-        "role": "Entry point.",
+        "role": "The flow starts here.",
         "nx": 0,
         "ny": 0.081
       },
@@ -48,25 +48,25 @@ export const FLOWS: Flow[] = [
       },
       {
         "id": "0:18792",
-        "type": "event",
-        "label": "Artboard",
-        "role": "Artboard — branch.",
+        "type": "api",
+        "label": "Punchh",
+        "role": "Punchh associates the scanned transaction to the logged-in user so the points are credited.",
         "nx": 0.786,
         "ny": 0.788
       },
       {
         "id": "0:18798",
-        "type": "event",
-        "label": "Artboard",
-        "role": "Artboard — branch.",
+        "type": "api",
+        "label": "Punchh",
+        "role": "Punchh API ties the transaction to the logged-in user (after the standard Azure + mParticle sign-in).",
         "nx": 0.78,
         "ny": 0.583
       },
       {
         "id": "0:18804",
-        "type": "event",
-        "label": "Artboard",
-        "role": "Artboard — branch.",
+        "type": "api",
+        "label": "Cache · Azure",
+        "role": "Cache stores the Punchh transaction ID; Azure sign-in with a ?loyalty param sets the loyalty flag to true.",
         "nx": 0.721,
         "ny": 0.248
       },
@@ -233,13 +233,23 @@ export const FLOWS: Flow[] = [
         "to": "0:18777"
       },
       {
-        "from": "0:18798",
-        "to": "37:16908",
+        "from": "0:18697",
+        "to": "0:20761",
         "api": true
       },
       {
-        "from": "0:18697",
-        "to": "0:20761",
+        "from": "0:20707",
+        "to": "0:18792",
+        "api": true
+      },
+      {
+        "from": "0:19206",
+        "to": "0:18798",
+        "api": true
+      },
+      {
+        "from": "0:19206",
+        "to": "0:18804",
         "api": true
       }
     ]
@@ -262,7 +272,7 @@ export const FLOWS: Flow[] = [
         "id": "0:18748",
         "type": "entry",
         "label": "Tabletop QR",
-        "role": "Entry point.",
+        "role": "The flow starts here.",
         "nx": 0,
         "ny": 0.257
       },
@@ -653,7 +663,7 @@ export const FLOWS: Flow[] = [
         "id": "0:14989",
         "type": "entry",
         "label": "Tabletop QR",
-        "role": "Entry point.",
+        "role": "The flow starts here.",
         "nx": 0,
         "ny": 0.324
       },
@@ -748,19 +758,11 @@ export const FLOWS: Flow[] = [
       },
       {
         "id": "0:18787",
-        "type": "event",
-        "label": "Artboard",
-        "role": "Artboard — branch.",
+        "type": "api",
+        "label": "mParticle",
+        "role": "mParticle logs the sign-in action (Cache / mParticle).",
         "nx": 0.836,
         "ny": 0.116
-      },
-      {
-        "id": "0:18790",
-        "type": "event",
-        "label": "Artboard",
-        "role": "Artboard — branch.",
-        "nx": 0.83,
-        "ny": 0.683
       },
       {
         "id": "0:45684",
@@ -869,6 +871,11 @@ export const FLOWS: Flow[] = [
         "from": "0:14986",
         "to": "0:45684",
         "api": true
+      },
+      {
+        "from": "94:13280",
+        "to": "0:18787",
+        "api": true
       }
     ]
   },
@@ -908,7 +915,7 @@ export const FLOWS: Flow[] = [
         "id": "0:18754",
         "type": "entry",
         "label": "Receipt QR",
-        "role": "Entry point.",
+        "role": "The flow starts here.",
         "nx": 0,
         "ny": 0.043
       },
@@ -922,25 +929,25 @@ export const FLOWS: Flow[] = [
       },
       {
         "id": "0:18795",
-        "type": "event",
-        "label": "Artboard",
-        "role": "Artboard — branch.",
+        "type": "api",
+        "label": "Punchh",
+        "role": "Punchh associates the scanned transaction to the logged-in user so the points are credited.",
         "nx": 0.652,
         "ny": 0.779
       },
       {
         "id": "0:18801",
-        "type": "event",
-        "label": "Artboard",
-        "role": "Artboard — branch.",
+        "type": "api",
+        "label": "Punchh",
+        "role": "Punchh API ties the transaction to the logged-in user (after the standard Azure + mParticle sign-in).",
         "nx": 0.652,
         "ny": 0.298
       },
       {
         "id": "0:18809",
-        "type": "event",
-        "label": "Artboard",
-        "role": "Artboard — branch.",
+        "type": "api",
+        "label": "Cache · Azure",
+        "role": "Cache stores the Punchh transaction ID; Azure sign-in with a ?loyalty param sets the loyalty flag to true.",
         "nx": 0.524,
         "ny": 0.18
       },
@@ -1098,20 +1105,30 @@ export const FLOWS: Flow[] = [
         "to": "0:18833"
       },
       {
-        "from": "0:18809",
-        "to": "37:17265",
+        "from": "0:18699",
+        "to": "0:20762",
         "api": true
       },
       {
-        "from": "0:18699",
-        "to": "0:20762",
+        "from": "0:16855",
+        "to": "0:18795",
+        "api": true
+      },
+      {
+        "from": "0:26985",
+        "to": "0:18801",
+        "api": true
+      },
+      {
+        "from": "0:18701",
+        "to": "0:18809",
         "api": true
       }
     ]
   },
   {
     "id": "flow6",
-    "title": "Flow 6 · Mobile web · location & pilot gating",
+    "title": "Flow 5 · Mobile web · location & pilot gating",
     "blurb": "Mobile-web tabletop entry: location, pilot check, then enroll or “Rewards Coming Soon.”",
     "platform": "mobile-web",
     "nodes": [
@@ -1199,7 +1216,7 @@ export const FLOWS: Flow[] = [
         "id": "4:44455",
         "type": "entry",
         "label": "Tabletop QR",
-        "role": "Entry point.",
+        "role": "The flow starts here.",
         "nx": 0.065,
         "ny": 0.367
       },
@@ -1293,19 +1310,11 @@ export const FLOWS: Flow[] = [
       },
       {
         "id": "4:46331",
-        "type": "event",
-        "label": "Artboard",
-        "role": "Artboard — branch.",
+        "type": "api",
+        "label": "mParticle",
+        "role": "mParticle logs the sign-in action (Cache / mParticle).",
         "nx": 0.956,
         "ny": 0.113
-      },
-      {
-        "id": "4:46334",
-        "type": "event",
-        "label": "Artboard",
-        "role": "Artboard — branch.",
-        "nx": 0.963,
-        "ny": 0.708
       },
       {
         "id": "4:48128",
@@ -1415,12 +1424,17 @@ export const FLOWS: Flow[] = [
         "from": "4:44459",
         "to": "4:46336",
         "api": true
+      },
+      {
+        "from": "4:14178",
+        "to": "4:46331",
+        "api": true
       }
     ]
   },
   {
     "id": "flow8",
-    "title": "Out of range · Mobile",
+    "title": "Flow 6 · Mobile · out of range",
     "blurb": "The out-of-range path: post-scan confirmation, join gate and fallback when not near a pilot store.",
     "platform": "mobile",
     "nodes": [
@@ -1445,7 +1459,7 @@ export const FLOWS: Flow[] = [
         "id": "4:49720",
         "type": "entry",
         "label": "Receipt QR",
-        "role": "Entry point.",
+        "role": "The flow starts here.",
         "nx": 0,
         "ny": 0.081
       },
@@ -1459,25 +1473,25 @@ export const FLOWS: Flow[] = [
       },
       {
         "id": "4:49734",
-        "type": "event",
-        "label": "Artboard",
-        "role": "Artboard — branch.",
+        "type": "api",
+        "label": "Punchh",
+        "role": "Punchh associates the scanned transaction to the logged-in user so the points are credited.",
         "nx": 0.852,
         "ny": 0.788
       },
       {
         "id": "4:49737",
-        "type": "event",
-        "label": "Artboard",
-        "role": "Artboard — branch.",
+        "type": "api",
+        "label": "Punchh",
+        "role": "Punchh API ties the transaction to the logged-in user (after the standard Azure + mParticle sign-in).",
         "nx": 0.846,
         "ny": 0.583
       },
       {
         "id": "4:49740",
-        "type": "event",
-        "label": "Artboard",
-        "role": "Artboard — branch.",
+        "type": "api",
+        "label": "Cache · Azure",
+        "role": "Cache stores the Punchh transaction ID; Azure sign-in with a ?loyalty param sets the loyalty flag to true.",
         "nx": 0.852,
         "ny": 0.256
       },
@@ -1628,6 +1642,21 @@ export const FLOWS: Flow[] = [
       {
         "from": "4:49717",
         "to": "4:50779",
+        "api": true
+      },
+      {
+        "from": "4:50725",
+        "to": "4:49734",
+        "api": true
+      },
+      {
+        "from": "4:58910",
+        "to": "4:49737",
+        "api": true
+      },
+      {
+        "from": "4:49963",
+        "to": "4:49740",
         "api": true
       }
     ]

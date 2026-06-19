@@ -36,13 +36,11 @@ export function NodeGlyph({
     )
   }
   switch (type) {
-    case 'entry': // QR code
+    case 'entry': // Start — right-facing arrow
       return (
         <svg {...p}>
-          <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1.8" />
-          <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1.8" />
-          <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1.8" />
-          <path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20v1" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          <path d="M4 12h13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <path d="M13 6.5 19.5 12 13 17.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
         </svg>
       )
     case 'event': // branch / decision — a fork, clearly not a device
@@ -67,7 +65,7 @@ export function NodeGlyph({
 }
 
 export const TYPE_LABEL: Record<FlowNodeType, string> = {
-  entry: 'Entry',
+  entry: 'Start',
   screen: 'Screen',
   event: 'Event',
   api: 'Backend / API',

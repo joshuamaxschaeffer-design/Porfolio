@@ -57,32 +57,9 @@ export function LoyaltyQrSection({ intro }: { intro?: string } = {}) {
           ))}
         </div>
 
-        {/* tabs */}
-        <div role="tablist" aria-label="Enrollment flows" className="mt-8 flex flex-wrap gap-2 md:mt-10">
-          {FLOWS.map((f) => {
-            const active = f.id === tab
-            return (
-              <button
-                key={f.id}
-                role="tab"
-                aria-selected={active}
-                aria-controls={`panel-${f.id}`}
-                id={`tab-${f.id}`}
-                onClick={() => setTab(f.id)}
-                className={`rounded-full border px-3.5 py-2 text-[12.5px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-white md:text-[13px] ${
-                  active ? 'border-white bg-white text-[var(--px-red)]' : 'border-white/30 bg-white/10 text-white hover:bg-white/20'
-                }`}
-              >
-                {f.title.replace(/^Flow \d+ · /, '')}
-                <span className="ml-1.5 opacity-60">{f.nodes.filter((n) => n.type === 'screen').length}</span>
-              </button>
-            )
-          })}
-        </div>
-
-        {/* active flow panel */}
-        <div role="tabpanel" id={`panel-${flow.id}`} aria-labelledby={`tab-${flow.id}`} className="mt-5 md:mt-6">
-          <FlowDetail flow={flow} />
+        {/* active flow panel (the tab row lives in the flow header, top-right) */}
+        <div role="tabpanel" id={`panel-${flow.id}`} aria-labelledby={`tab-${flow.id}`} className="mt-8 md:mt-10">
+          <FlowDetail flow={flow} tab={tab} setTab={setTab} />
         </div>
       </div>
     </section>
@@ -118,40 +95,65 @@ function computeLayout(flow: Flow) {
   return { pos, cols, maxRows }
 }
 
-function FlowDetail({ flow }: { flow: Flow }) {
+function FlowDetail({ flow, tab, setTab }: { flow: Flow; tab: string; setTab: (id: string) => void }) {
   const [active, setActive] = useState<string | null>(null)
   const nById = useMemo(() => Object.fromEntries(flow.nodes.map((n) => [n.id, n])), [flow])
   const act = active ? nById[active] : null
   const device = deviceOf(flow)
   const { pos, cols, maxRows } = useMemo(() => computeLayout(flow), [flow])
-  const PADX = 52, PADY = 40
+  const PADX = 54, PADY = 44
   const colW = cols > 1 ? (VBW - 2 * PADX) / (cols - 1) : 0
   const rowPitch = maxRows > 1 ? (VBH - 2 * PADY) / (maxRows - 1) : 0
   const px = (id: string) => PADX + pos[id].col * colW
   const py = (id: string) => { const r = pos[id]; const span = (r.rows - 1) * rowPitch; return VBH / 2 - span / 2 + r.row * rowPitch }
+  const NR = 17 // node radius (design units) used to inset edge ends
 
   return (
     <div>
-      <div className="mb-3">
-        <h3 className="text-[16px] font-semibold text-white md:text-[18px]">{flow.title}</h3>
-        <p className="text-[12.5px] text-white/60">{flow.blurb}</p>
+      {/* header: flow title (left) + flow pills / table of contents (top-right) */}
+      <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+        <h3 className="shrink-0 text-[16px] font-semibold text-white md:text-[19px]">{flow.title}</h3>
+        <div role="tablist" aria-label="Enrollment flows" className="flex flex-wrap gap-x-4 gap-y-1.5 md:max-w-[62%] md:justify-end">
+          {FLOWS.map((f) => {
+            const active2 = f.id === tab
+            return (
+              <button
+                key={f.id}
+                role="tab"
+                aria-selected={active2}
+                aria-controls={`panel-${f.id}`}
+                id={`tab-${f.id}`}
+                onClick={() => setTab(f.id)}
+                className={`text-[12.5px] font-medium outline-none transition-colors focus-visible:underline ${active2 ? 'text-white' : 'text-white/55 hover:text-white/85'}`}
+              >
+                <span className={active2 ? 'border-b-2 border-white pb-0.5' : ''}>{f.title.replace(/^Flow \d+ · /, '').replace(/ · /g, ' ')}</span>
+              </button>
+            )
+          })}
+        </div>
       </div>
 
       {/* graph — always fits the width */}
       <div className="relative w-full" style={{ aspectRatio: `${VBW} / ${VBH}` }} onMouseLeave={() => setActive(null)}>
         <svg viewBox={`0 0 ${VBW} ${VBH}`} className="absolute inset-0 h-full w-full" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
           <defs>
-            <marker id="lqfa2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="rgba(255,255,255,0.6)" /></marker>
+            <marker id="lqfa2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="3" markerHeight="3" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="rgba(255,255,255,0.65)" /></marker>
           </defs>
           {flow.edges.map((e, i) => {
             const a = nById[e.from], b = nById[e.to]
             if (!a || !b || !pos[e.from] || !pos[e.to]) return null
-            const ax = px(e.from), ay = py(e.from), bx = px(e.to), by = py(e.to)
+            const ax = px(e.from), ay = py(e.from)
+            let bx = px(e.to), by = py(e.to)
+            // inset the end so the arrow stops just before the target node (not inside it)
+            const tIsScreen = b.type === 'screen'
+            const inset = (tIsScreen ? NR * 1.15 : NR) + 4
+            const dx = bx - ax, dy = by - ay, len = Math.hypot(dx, dy) || 1
+            bx -= (dx / len) * inset; by -= (dy / len) * inset
             const mx = (ax + bx) / 2
             const related = active && (e.from === active || e.to === active)
             const op = active ? (related ? 1 : 0.1) : e.api ? 0.32 : 0.5
             return (
-              <path key={i} d={`M ${ax} ${ay} C ${mx} ${ay}, ${mx} ${by}, ${bx} ${by}`} fill="none" stroke="rgba(255,255,255,0.65)" strokeWidth={related ? 2.2 : 1.3} strokeDasharray={e.api ? '4 4' : undefined} markerEnd="url(#lqfa2)" style={{ transition: 'opacity .2s, stroke-width .2s' }} opacity={op} />
+              <path key={i} d={`M ${ax} ${ay} C ${mx} ${ay}, ${mx} ${by}, ${bx} ${by}`} fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth={related ? 2 : 1.3} strokeDasharray={e.api ? '4 4' : undefined} markerEnd="url(#lqfa2)" style={{ transition: 'opacity .2s, stroke-width .2s' }} opacity={op} />
             )
           })}
         </svg>
@@ -160,10 +162,10 @@ function FlowDetail({ flow }: { flow: Flow }) {
           const isActive = active === n.id
           const dim = active && !isActive
           const isScreen = n.type === 'screen'
-          // screens render bigger than events/api
-          const w = isScreen ? T.w * 1.18 : T.w
+          // screens are a touch bigger; ALL nodes are square tiles (no aspect squashing)
+          const w = isScreen ? T.w * 1.28 : T.w
           const leftPct = ((px(n.id) - w / 2) / VBW) * 100
-          const topPct = ((py(n.id) - (isScreen ? w * 1.5 : w) / 2) / VBH) * 100
+          const topPct = ((py(n.id) - w / 2) / VBH) * 100
           const wPct = (w / VBW) * 100
           const tn = tone(n.type)
           return (
@@ -174,23 +176,22 @@ function FlowDetail({ flow }: { flow: Flow }) {
               onFocus={() => setActive(n.id)}
               onClick={() => setActive(isActive ? null : n.id)}
               aria-label={`${n.label} — ${TYPE_LABEL[n.type]}`}
-              className="absolute flex items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-white"
+              className="absolute flex aspect-square items-center justify-center outline-none focus-visible:ring-2 focus-visible:ring-white"
               style={{
                 left: `${leftPct}%`,
                 top: `${topPct}%`,
                 width: `${wPct}%`,
-                aspectRatio: isScreen ? '2 / 3' : '1 / 1',
                 zIndex: isActive ? 50 : isScreen ? 20 : 10,
-                borderRadius: isScreen ? '6px' : '7px',
+                borderRadius: '8px',
                 background: tn.glow,
-                boxShadow: `inset 0 0 0 ${n.type === 'entry' || isScreen ? 1.8 : 1.4}px ${tn.ring}`,
-                transform: isActive ? 'scale(1.2)' : 'scale(1)',
+                boxShadow: `inset 0 0 0 ${n.type === 'entry' || isScreen ? 1.9 : 1.4}px ${tn.ring}`,
+                transform: isActive ? 'scale(1.18)' : 'scale(1)',
                 transition: 'transform .15s, opacity .2s',
                 opacity: dim ? 0.3 : 1,
                 cursor: 'pointer',
               }}
             >
-              <NodeGlyph type={n.type} device={device} className={`${isScreen ? 'h-[62%] w-[62%]' : 'h-1/2 w-1/2'} text-white`} />
+              <NodeGlyph type={n.type} device={device} className={`${isScreen ? 'h-[64%] w-[64%]' : 'h-1/2 w-1/2'} text-white`} />
             </button>
           )
         })}
@@ -200,13 +201,16 @@ function FlowDetail({ flow }: { flow: Flow }) {
           const leftPctC = (px(act.id) / VBW) * 100
           const onRight = leftPctC > 52
           const topPctC = Math.min(86, Math.max(10, (py(act.id) / VBH) * 100))
+          // wider card for landscape (desktop) screens so the whole screen shows undistorted
+          const wide = act.thumb && device === 'desktop'
           return (
-            <div className="pointer-events-none absolute z-[60] w-[230px] md:w-[260px]" style={{ top: `${topPctC}%`, ...(onRight ? { right: `${100 - leftPctC + 2.4}%` } : { left: `${leftPctC + 2.4}%` }), transform: 'translateY(-50%)' }}>
+            <div className={`pointer-events-none absolute z-[60] ${wide ? 'w-[300px] md:w-[340px]' : 'w-[228px] md:w-[252px]'}`} style={{ top: `${topPctC}%`, ...(onRight ? { right: `${100 - leftPctC + 2.4}%` } : { left: `${leftPctC + 2.4}%` }), transform: 'translateY(-50%)' }}>
               <div className="overflow-hidden rounded-[12px] border border-white/25 bg-[#7a1418]/95 shadow-[0_16px_40px_rgba(0,0,0,0.45)] backdrop-blur-sm">
                 {act.thumb && (
-                  <div className="flex h-[300px] items-center justify-center border-b border-white/15 bg-[#5e1015] p-4">
+                  <div className={`flex items-center justify-center border-b border-white/15 bg-[#5e1015] p-3.5 ${wide ? 'h-[210px]' : 'h-[300px]'}`}>
+                    {/* whole screen, never cropped — fit inside the window */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={`${THUMB}/${act.thumb}@2x.webp`} alt={act.label} className="h-full w-auto rounded-[6px] shadow-[0_10px_26px_rgba(0,0,0,0.5)]" />
+                    <img src={`${THUMB}/${act.thumb}@2x.webp`} alt={act.label} className="max-h-full max-w-full rounded-[6px] object-contain shadow-[0_10px_26px_rgba(0,0,0,0.5)]" />
                   </div>
                 )}
                 <div className="p-3.5">
@@ -224,8 +228,6 @@ function FlowDetail({ flow }: { flow: Flow }) {
           )
         })()}
       </div>
-
-      {!act && <p className="mt-4 text-[13px] leading-snug text-white/55 md:text-[14px]">{copy.detailHint}</p>}
     </div>
   )
 }
