@@ -95,7 +95,9 @@ function PerspectiveStack({ pages }: { pages: DeckPage[] }) {
           className="mx-auto flex items-start justify-center gap-[2.2vw] px-[4vw] pb-[6vw] pt-[2vw]"
           style={{
             transformStyle: 'preserve-3d',
-            transform: 'rotateX(39deg) rotateZ(-25deg) scale(1.04)',
+            // translateX recenters the plane: the rotateZ lean shifts the mass
+            // left, so nudge it back right so nothing clips on the left edge.
+            transform: 'translateX(6vw) rotateX(39deg) rotateZ(-25deg) scale(0.94)',
             transformOrigin: '50% 40%',
           }}
         >
@@ -128,7 +130,7 @@ function AngledScreen({ page, reduce, index }: { page: DeckPage; reduce: boolean
   // stagger the scroll phase so the columns don't move in lockstep
   const delay = -(index * 2.6)
   return (
-    <figure className="relative m-0 w-[13vw] min-w-[140px] shrink-0">
+    <figure className="relative m-0 w-[13vw] min-w-[96px] shrink-0">
       <div
         className={`relative overflow-hidden rounded-[14px] bg-white ${
           scrolls ? 'h-[34vw] max-h-[640px] min-h-[300px]' : ''
