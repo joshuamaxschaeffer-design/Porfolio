@@ -343,8 +343,8 @@ export const mvp = {
     { from: 'location', to: 'bag', color: 'orange', label: 'Continue', labelAt: { x: 2040, y: 758 }, fromSide: 'bottom', fromSlot: 2, fromOf: 2, toSide: 'top', toSlot: 2, toOf: 2, via: [[2254, 758], [1834, 758]] },
     // ── category branch (red) ──
     { from: 'menu', to: 'category', color: 'purple', label: 'Tap a Category', label2: 'Location preselected', labelAt: { x: 740, y: 1110 }, fromSide: 'right', fromSlot: 2, fromOf: 2, toSide: 'top', via: [[1021, 1110]] },
-    { from: 'category', to: 'quantity', color: 'purple', label: 'Tap Product', fromSide: 'right', fromSlot: 1, fromOf: 2, toSide: 'left' },
-    { from: 'quantity', to: 'category', color: 'purple', label: 'Add Product', caption: { text: 'Product is added to My Bag', x: 1252, y: 1548 }, fromSide: 'left', toSide: 'right', fromSlot: 2, fromOf: 2, toSlot: 2, toOf: 2 },
+    { from: 'category', to: 'quantity', color: 'purple', label: 'Tap Product', labelAt: { x: 1249, y: 1378 }, fromSide: 'right', fromSlot: 1, fromOf: 3, toSide: 'left', toSlot: 1, toOf: 2 },
+    { from: 'quantity', to: 'category', color: 'purple', label: 'Add Product', labelAt: { x: 1249, y: 1466 }, caption: { text: 'Product is added to My Bag', x: 1249, y: 1556 }, fromSide: 'left', toSide: 'right', fromSlot: 2, fromOf: 2, toSlot: 3, toOf: 3 },
     { from: 'category', to: 'bag', color: 'purple', label: 'Tap Bag Icon', labelAt: { x: 1229, y: 1300 }, fromSide: 'right', fromSlot: 2, fromOf: 2, toSide: 'bottom', via: [[1789, 1300]] },
     // ── return loop (grey): My Bag → down → left → up → Menu ──
     { from: 'bag', to: 'menu', color: 'blue', label: 'Add more', labelAt: { x: 1981, y: 1095 }, label2: 'Will send to scrolled location', label2At: { x: 1299, y: 1684 }, fromSide: 'bottom', fromSlot: 2, fromOf: 2, toSide: 'bottom', via: [[1834, 1684], [511, 1684]] },

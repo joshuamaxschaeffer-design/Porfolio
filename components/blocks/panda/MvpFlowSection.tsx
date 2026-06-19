@@ -27,12 +27,12 @@ import { ComponentLibrariesSection } from './ComponentLibrariesSection'
  * pauses on hover/focus; honours prefers-reduced-motion.
  */
 
-// path colours
+// path colours — matched to the Figma legend
 const COLOR: Record<MvpColor, string> = {
-  grey: '#8A8F9A',
-  gold: '#C79016',
-  red: '#D02B2E',
-  blue: '#2E86DE',
+  green: '#4CB050',  // Add a Promotion
+  blue: '#29A9E0',   // Add a Product (main spine)
+  purple: '#9356C4', // Add from Category
+  orange: '#E8941C', // Choose Location
 }
 // dim (unselected) line + card colour
 const DIM_LINE = '#d8d8de'
@@ -96,18 +96,45 @@ function outDir(side: Side): Pt {
  *  `via` waypoints). The endpoints are derived from the CARDS, so lines always
  *  start/end exactly on a card edge. Auto-routes one orthogonal elbow when no
  *  via is given. */
+/** Snap a polyline so EVERY segment is purely horizontal or vertical (no
+ *  diagonals). Where two consecutive points differ in both x and y, insert an
+ *  L-corner. The corner direction follows the incoming segment's axis. */
+function orthogonalize(pts: Pt[]): Pt[] {
+  const out: Pt[] = [pts[0]]
+  for (let i = 1; i < pts.length; i++) {
+    const p = out[out.length - 1]
+    const q = pts[i]
+    const dx = Math.abs(q[0] - p[0]), dy = Math.abs(q[1] - p[1])
+    if (dx > 0.5 && dy > 0.5) {
+      // decide corner: keep moving along the previous segment's axis first
+      const prev = out.length >= 2 ? out[out.length - 2] : null
+      const prevVertical = prev ? Math.abs(prev[0] - p[0]) < 0.5 : false
+      const corner: Pt = prevVertical ? [p[0], q[1]] : [q[0], p[1]]
+      out.push(corner)
+    }
+    out.push(q)
+  }
+  return out
+}
+
 function resolvePts(e: MvpEdge): Pt[] {
-  const a = anchor(e.from, e.fromSide, e.fromSlot, e.fromOf)
-  const b = anchor(e.to, e.toSide, e.toSlot, e.toOf)
-  if (e.via && e.via.length) return [a, ...(e.via as Pt[]), b]
-  const [aox, aoy] = outDir(e.fromSide)
-  const [box, boy] = outDir(e.toSide)
-  const STUB = 26
-  const a1: Pt = [a[0] + aox * STUB, a[1] + aoy * STUB]
-  const b1: Pt = [b[0] + box * STUB, b[1] + boy * STUB]
-  if (Math.abs(a[0] - b[0]) < 1 || Math.abs(a[1] - b[1]) < 1) return [a, b]
-  if (e.fromSide === 'top' || e.fromSide === 'bottom') return [a, a1, [b1[0], a1[1]], b1, b]
-  return [a, a1, [a1[0], b1[1]], b1, b]
+  const a: Pt = e.fromPoint ?? anchor(e.from, e.fromSide, e.fromSlot, e.fromOf)
+  const b: Pt = e.toPoint ?? anchor(e.to, e.toSide, e.toSlot, e.toOf)
+  let pts: Pt[]
+  if (e.via && e.via.length) {
+    pts = [a, ...(e.via as Pt[]), b]
+  } else if (Math.abs(a[0] - b[0]) < 1 || Math.abs(a[1] - b[1]) < 1) {
+    pts = [a, b]
+  } else {
+    const [aox, aoy] = outDir(e.fromSide)
+    const STUB = 26
+    const a1: Pt = [a[0] + aox * STUB, a[1] + aoy * STUB]
+    // route along the source axis first, then into the target
+    pts = e.fromSide === 'top' || e.fromSide === 'bottom'
+      ? [a, a1, [b[0], a1[1]], b]
+      : [a, a1, [a1[0], b[1]], b]
+  }
+  return orthogonalize(pts)
 }
 
 /** Arrow geometry shared by line + triangle so they meet cleanly:
@@ -229,12 +256,16 @@ function NodeCard({ node, lit }: { node: MvpNode; lit: boolean }) {
   const lines: string[] = []
   let cur = ''
   for (const wd of words) {
-    if ((cur + ' ' + wd).trim().length > 15) { if (cur) lines.push(cur); cur = wd }
+    if ((cur + ' ' + wd).trim().length > 13) { if (cur) lines.push(cur); cur = wd }
     else cur = (cur + ' ' + wd).trim()
   }
   if (cur) lines.push(cur)
-  const fs = lines.length >= 3 ? 19 : 21
-  const lineH = 25
+  // width-aware font: shrink so the widest line fits inside the card (with pad)
+  const maxChars = Math.max(...lines.map((l) => l.length))
+  const avail = w - 24
+  let fs = lines.length >= 3 ? 19 : 21
+  if (maxChars * (fs * 0.56) > avail) fs = Math.max(15, Math.floor(avail / (maxChars * 0.56)))
+  const lineH = fs + 4
   const y0 = labelCy - ((lines.length - 1) * lineH) / 2
   const phoneBody = lit ? '#ffffff' : '#f1f2f4'
   return (
