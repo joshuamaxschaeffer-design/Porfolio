@@ -302,11 +302,6 @@ export function MvpLaunchBento({
           </div>
         </div>
       </div>
-
-      {/* quiet sourced footnote */}
-      <p className="br-data mt-6 max-w-3xl text-[11.5px] leading-relaxed text-[var(--br-muted-2)] md:mt-8">
-        {d.source}
-      </p>
     </>
   )
 
