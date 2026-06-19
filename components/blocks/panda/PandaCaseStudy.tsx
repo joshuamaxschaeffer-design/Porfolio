@@ -17,7 +17,7 @@ const NAV_ITEMS: SectionNavItem[] = [
   { id: 'challenge', title: 'The Challenge' },
   { id: 'releases', title: 'Two Products, One Pivot' },
   { id: 'mvp', title: 'Act I — MVP' },
-  { id: 'premium-rewards', title: 'Act II — Rewards' },
+  { id: 'premium-rewards', title: 'Rewards Program' },
   { id: 'loyalty-qr', title: 'Loyalty QR' },
   { id: 'marketing', title: 'The Brand Online' },
   { id: 'outcomes', title: 'Outcomes' },

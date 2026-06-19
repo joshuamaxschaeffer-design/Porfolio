@@ -93,7 +93,7 @@ export const releases = {
  * fireworks animate on and off across the top.
  * ───────────────────────────────────────────────────────────────────────── */
 export const premiumRewards = {
-  heading: 'PREMIUM REWARDS APP',
+  heading: 'REWARDS PROGRAM',
   intro:
     'The rewards app came in two phases. First, a better, more native version of the launch app. Then a full rewards program: planned, designed, tested, and rolled out to every location.',
 }
