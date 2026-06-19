@@ -1,24 +1,36 @@
 import { OverviewSection } from './OverviewSection'
 import { ScopeCarouselSection } from './ScopeCarouselSection'
+import { AppSection } from './AppSection'
+import { CrmSection } from './CrmSection'
+import { FlavorPagesSection } from './FlavorPagesSection'
+import { BrandingSection } from './BrandingSection'
+import { InStoreSection } from './InStoreSection'
+import { UiUxSection } from './UiUxSection'
+import { WebNeedsSection } from './WebNeedsSection'
 import { OutcomesSection } from './OutcomesSection'
+import { AppStoreSection } from './AppStoreSection'
 import { SectionNav, type SectionNavItem } from '../baserate/SectionNav'
-import { MagneticCTA } from '../shared/MagneticCTA'
-import { cta } from './data'
 
 /**
- * Wingstop case study — REBUILD in progress (2026-06-19, per the verbatim spec
- * "Wingstop Instructions (VERBATIM).md"). Being rebuilt section by section:
- *   1 Overview · 2 Scope carousel (draggable, jump-pills) · … · Outcomes ·
- *   App Store release.
- * Sections 2–8 (Wingstop App / CRM / Flavor Pages / Branding / In-Store /
- * UI-UX / Web Needs) land incrementally. Outcomes + a closing CTA bookend for
- * now so the page is always shippable.
+ * Wingstop case study — full REBUILD per the verbatim spec
+ * ("Wingstop Instructions (VERBATIM).md", 2026-06-19). Section order:
+ *   Overview · 1 Scope · 2 Wingstop App (green) · 3 CRM · 4 Flavor Pages
+ *   (black) · 5 Branding · 6 In-Store · 7 UI/UX Updates · 8 Additional Web ·
+ *   9 Outcomes · 10 App Store release.
  */
 
 const NAV_ITEMS: SectionNavItem[] = [
   { id: 'overview', title: 'Overview' },
   { id: 'scope', title: 'Scope' },
+  { id: 'app', title: 'Wingstop App' },
+  { id: 'crm', title: 'CRM' },
+  { id: 'flavor-pages', title: 'Flavor Pages' },
+  { id: 'branding', title: 'Branding' },
+  { id: 'in-store', title: 'In-Store' },
+  { id: 'ui-ux', title: 'UI/UX Updates' },
+  { id: 'web-needs', title: 'Additional Web' },
   { id: 'outcomes', title: 'Outcomes' },
+  { id: 'app-store', title: 'App Store' },
 ]
 
 export interface WingstopCaseStudyProps {
@@ -45,15 +57,15 @@ export function WingstopCaseStudy(props: WingstopCaseStudyProps = {}) {
         scope={props.scope?.length ? props.scope.map((s) => s.label) : undefined}
       />
       <ScopeCarouselSection />
+      <AppSection />
+      <CrmSection />
+      <FlavorPagesSection />
+      <BrandingSection />
+      <InStoreSection />
+      <UiUxSection />
+      <WebNeedsSection />
       <OutcomesSection intro={props.outcomesIntro} />
-      <MagneticCTA
-        eyebrow={cta.eyebrow}
-        headline={cta.headline}
-        ctaLabel={cta.ctaLabel}
-        ctaHref={cta.ctaHref}
-        links={cta.links}
-        tone="ink"
-      />
+      <AppStoreSection />
     </article>
   )
 }

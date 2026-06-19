@@ -121,6 +121,285 @@ export const scope = {
   ],
 }
 
+/**
+ * SECTION 2 — Wingstop App (green field). A feature carousel (key features as
+ * pages, 3-go-right like Panda rewards) + a Component Library card + the desktop
+ * site + a bento of all the app work using App Store release imagery.
+ */
+export const app = {
+  eyebrow: 'THE WINGSTOP APP',
+  heading: 'The native ordering app, end to end',
+  intro: 'I designed the full ordering experience as a system of features — browse, customize, cart, account — then built the component library that kept it consistent.',
+  pills: ['Features', 'Components', 'Desktop', 'Shipped'],
+  /** A few KEY features, each shown as app screens (3-go-right carousel). */
+  features: [
+    {
+      eyebrow: 'ORDERING',
+      title: 'Browse and build an order',
+      body: 'The core flow: pick wings, flavors, sides and drinks, with photography leading every step.',
+      screens: [
+        '/wingstop/product/m-product-1.webp',
+        '/wingstop/product/m-product-2.webp',
+        '/wingstop/product/m-product-3.webp',
+      ],
+    },
+    {
+      eyebrow: 'FLAVOR CUSTOMIZATION',
+      title: 'Customize by flavor and heat',
+      body: 'Split the count across flavors, set sides, and upgrade — the whole build-your-meal experience.',
+      screens: [
+        '/wingstop/usability/step-1-flavors.webp',
+        '/wingstop/usability/step-1b-quantities.webp',
+        '/wingstop/usability/step-2-side.webp',
+      ],
+    },
+    {
+      eyebrow: 'CART & CHECKOUT',
+      title: 'From cart to confirmed',
+      body: 'A streamlined cart, special requests, and a checkout that gets out of the way.',
+      screens: [
+        '/wingstop/product/m-product-4.webp',
+        '/wingstop/product/m-cart.webp',
+        '/wingstop/product/m-checkout.webp',
+      ],
+    },
+  ],
+  /** Component library card (Panda/Baserate style). */
+  components: {
+    eyebrow: 'COMPONENT LIBRARY',
+    title: 'One system, every screen',
+    body: 'A library of buttons, inputs, flavor chips, cards and bars — so the team could ship feature after feature on-brand.',
+    swatches: ['#00843D', '#23c265', '#0c0d0d', '#f1b228', '#ffffff'],
+    icons: [
+      '/wingstop/flavor-icons/atomic.svg',
+      '/wingstop/flavor-icons/lemon-pepper.svg',
+      '/wingstop/flavor-icons/garlic-parm.svg',
+      '/wingstop/flavor-icons/hawaiian.svg',
+    ],
+  },
+  /** Desktop site — a mockup or two stacked. */
+  desktop: {
+    eyebrow: 'DESKTOP SITE',
+    title: 'Scaled to the web',
+    body: 'The same ordering system, reflowed for desktop.',
+    screens: ['/wingstop/flavor/d-lemon-pepper.webp', '/wingstop/flavor/d-garlic-parm.webp'],
+  },
+  /** Bento of all the app work — App Store release imagery. */
+  bento: {
+    eyebrow: 'SHIPPED',
+    title: 'Live on the App Store',
+    body: 'The app launched in 2019 and became the highest-rated way to order Wingstop.',
+    images: [
+      '/wingstop/appstore/x-1.webp',
+      '/wingstop/appstore/x-2.webp',
+      '/wingstop/appstore/x-3.webp',
+      '/wingstop/appstore/x-4.webp',
+      '/wingstop/appstore/x-5.webp',
+    ],
+  },
+}
+
+/**
+ * SECTION 3 — CRM. Module 1: the scope of all CRM work as a scroll-driven
+ * sliding row of email mockups (taller, with top-down food). Module 2: the
+ * modular/animated side as a Samsung-style grid carousel of CRM gifs (white).
+ */
+export const crmSection = {
+  eyebrow: 'CRM',
+  heading: 'A modular email system, a year of campaigns',
+  intro: 'I designed a modular CRM system so the team could assemble campaign after campaign from shared blocks — promotions, delivery, game-day, onboarding.',
+  /** Scroll-slide row of all the email work. */
+  scope: {
+    eyebrow: 'THE SCOPE',
+    title: 'Campaign after campaign',
+    emails: [
+      '/wingstop/crm/crm-25days.webp',
+      '/wingstop/crm/crm-60wings.webp',
+      '/wingstop/crm/crm-5off.webp',
+      '/wingstop/crm/crm-bignight.webp',
+      '/wingstop/crm/crm-biggame.webp',
+      '/wingstop/crm/crm-freedelivery.webp',
+      '/wingstop/crm/crm-welcome.webp',
+    ],
+    food: ['/wingstop/food/top-wings.webp', '/wingstop/food/top-fries.webp', '/wingstop/food/top-sauce.webp'],
+  },
+  /** Modular + animated: a grid carousel of the CRM gifs. */
+  animated: {
+    eyebrow: 'MODULAR & ANIMATED',
+    title: 'Built to move',
+    body: 'Animated modules — flavor reveals, emoji reactions, explosions — that made the emails pop in the inbox.',
+    gifs: [
+      { src: '/wingstop/crmgif/flavor-combos.gif', label: 'Flavor combos' },
+      { src: '/wingstop/crmgif/face-emoji.gif', label: 'Emoji reactions' },
+      { src: '/wingstop/crmgif/explosion.gif', label: 'Flavor explosion' },
+      { src: '/wingstop/crmgif/zoom.gif', label: 'Delivery zoom' },
+    ],
+  },
+}
+
+/**
+ * SECTION 4 — Flavor Pages. Cinematic BLACK section: 3 flavor pages mocked in
+ * perspective (Samsung "Product and landing pages" style) + a module with the
+ * Lemon Pepper flavor-page video, autoplaying on arrival.
+ */
+export const flavorPages = {
+  eyebrow: 'FLAVOR PAGES',
+  heading: 'Flavor, art-directed',
+  intro: 'Photography-forward flavor pages that turn the menu into a reason to order. I art-directed the whole set, from the heat scale to the hero shots.',
+  pages: [
+    '/wingstop/flavor/d-lemon-pepper.webp',
+    '/wingstop/flavor/d-garlic-parm.webp',
+    '/wingstop/flavor/d-louisiana-rub.webp',
+  ],
+  video: {
+    eyebrow: 'IN MOTION',
+    title: 'Designed to move',
+    body: 'The flavor pages animated as you scrolled — here is the Lemon Pepper page in motion.',
+    src: '/wingstop/video/flavor-lemon-pepper.mp4',
+    poster: '/wingstop/flavor/m-lemon-pepper.webp',
+  },
+}
+
+/** SECTION 6 — In-Store screens (2 tall boards side by side). */
+export const inStoreSection = {
+  eyebrow: 'IN-STORE SCREENS',
+  heading: 'Designed for the wall, too',
+  intro: 'The flavor-first system reached the restaurants. I designed the digital menu boards — vertical and horizontal — that were implemented in stores.',
+  boards: [
+    { src: '/wingstop/instore/board-1.webp', label: 'Combos & group packs' },
+    { src: '/wingstop/instore/board-2.webp', label: 'Extras & drinks' },
+  ],
+}
+
+/** SECTION 8 — Additional web needs (Samsung-style grid carousel). */
+export const webNeeds = {
+  eyebrow: 'ADDITIONAL WEB NEEDS',
+  heading: 'Everything around the order',
+  intro: 'Beyond the core experience, the team and I shipped the supporting surfaces across the site — store-finder, locations, and careers.',
+  items: [
+    { src: '/wingstop/location/loc-1.webp', label: 'Locations' },
+    { src: '/wingstop/location/loc-finder.webp', label: 'Store finder' },
+    { src: '/wingstop/location/loc-2.webp', label: 'Location detail' },
+    { src: '/wingstop/careers/careers.webp', label: 'Careers' },
+    { src: '/wingstop/careers/restaurant.webp', label: 'Restaurant careers' },
+    { src: '/wingstop/careers/corporate.webp', label: 'Corporate careers' },
+  ],
+}
+
+/** SECTION 10 — App Store release (download link + Group 12 mockup right). */
+export const appStore = {
+  eyebrow: 'SHIPPED',
+  heading: 'Live on the App Store',
+  intro: 'The flavor-first app launched in 2019 and became one of the highest-rated ways to order in the category.',
+  mockup: '/wingstop/appstore/group-12.webp',
+  appStoreUrl: 'https://apps.apple.com/us/app/wingstop/id556467500',
+  googlePlayUrl: 'https://play.google.com/store/apps/details?id=com.wingstop',
+}
+
+/**
+ * SECTION 5 — Branding. The flavor icons as dimensional 3D chips that rotate
+ * subtly on scroll (SD-Studio-style; CSS-3D stand-in for now), then a flat grid
+ * noting they had to match Wingstop's existing icon style.
+ */
+export const branding = {
+  eyebrow: 'BRANDING',
+  heading: 'A flavor icon system, in three dimensions',
+  intro: 'Every flavor needed its own mark. I designed an icon for each one and matched it to Wingstop’s existing icon language, then rendered them as a dimensional set.',
+  chips: [
+    { src: '/wingstop/flavor-icons/atomic.svg', name: 'Atomic', color: '#c4151c' },
+    { src: '/wingstop/flavor-icons/lemon-pepper.svg', name: 'Lemon Pepper', color: '#c7c531' },
+    { src: '/wingstop/flavor-icons/garlic-parm.svg', name: 'Garlic Parm', color: '#e3c98a' },
+    { src: '/wingstop/flavor-icons/mango-habanero.svg', name: 'Mango Habanero', color: '#f08a21' },
+    { src: '/wingstop/flavor-icons/hawaiian.svg', name: 'Hawaiian', color: '#23c265' },
+    { src: '/wingstop/flavor-icons/louisiana-rub.svg', name: 'Louisiana Rub', color: '#df3a23' },
+  ],
+  gridEyebrow: 'MATCHED TO THE BRAND',
+  gridNote: 'The full set, drawn to sit alongside Wingstop’s existing iconography.',
+  grid: [
+    '/wingstop/flavor-icons/hawaiian.svg',
+    '/wingstop/flavor-icons/lemon-pepper.svg',
+    '/wingstop/flavor-icons/garlic-parm.svg',
+    '/wingstop/flavor-icons/mild.svg',
+    '/wingstop/flavor-icons/original-hot.svg',
+    '/wingstop/flavor-icons/louisiana-rub.svg',
+    '/wingstop/flavor-icons/cajun.svg',
+    '/wingstop/flavor-icons/spicy-korean.svg',
+    '/wingstop/flavor-icons/mango-habanero.svg',
+    '/wingstop/flavor-icons/bbq.svg',
+    '/wingstop/flavor-icons/old-bay.svg',
+    '/wingstop/flavor-icons/atomic.svg',
+  ],
+}
+
+/**
+ * SECTION 7 — UI/UX Updates. Module 1: a 4-flow UX diagram (Panda Loyalty-QR
+ * style) with arrows screen→screen and screens revealed on hover. Module 2:
+ * dark mode as a receding stack (Baserate Scalability style, black). Module 3:
+ * "UI improvement" — Panda side-scroll carousel of 3 screens + autoplay video.
+ */
+export const uiux = {
+  eyebrow: 'UI/UX UPDATES',
+  heading: 'The thinking behind the screens',
+  intro: 'The redesign was built on real UX work — flows for every key task, a full dark mode, and a measurable usability overhaul.',
+  flows: [
+    {
+      name: 'Order a meal',
+      steps: [
+        { src: '/wingstop/usability/step-1-flavors.webp', label: 'Choose flavors' },
+        { src: '/wingstop/usability/step-1b-quantities.webp', label: 'Set quantities' },
+        { src: '/wingstop/usability/step-2-side.webp', label: 'Choose a side' },
+        { src: '/wingstop/usability/step-5-review.webp', label: 'Review' },
+      ],
+    },
+    {
+      name: 'Build a side',
+      steps: [
+        { src: '/wingstop/usability/step-2-side.webp', label: 'Pick a side' },
+        { src: '/wingstop/usability/step-4-upgrade.webp', label: 'Upgrade' },
+        { src: '/wingstop/ux/new-mobile.webp', label: 'Confirm' },
+      ],
+    },
+    {
+      name: 'Add a drink',
+      steps: [
+        { src: '/wingstop/usability/step-3-drink.webp', label: 'Choose a drink' },
+        { src: '/wingstop/ux/new-mobile.webp', label: 'Added' },
+      ],
+    },
+    {
+      name: 'Old vs new',
+      steps: [
+        { src: '/wingstop/ux/old-mobile.webp', label: '2019 flow' },
+        { src: '/wingstop/ux/new-mobile.webp', label: 'Redesigned' },
+      ],
+    },
+  ],
+  darkMode: {
+    eyebrow: 'DARK MODE',
+    title: 'The whole app, after dark',
+    body: 'A full dark theme so the food photography only got richer. Every screen, re-themed.',
+    screens: [
+      '/wingstop/darkmode/dm-1.webp',
+      '/wingstop/darkmode/dm-2.webp',
+      '/wingstop/darkmode/dm-3.webp',
+      '/wingstop/darkmode/dm-4.webp',
+      '/wingstop/darkmode/dm-checkout.webp',
+    ],
+  },
+  improvement: {
+    eyebrow: 'UI IMPROVEMENT',
+    title: 'A complicated order, made simple',
+    body: 'A measured usability overhaul of the build-your-meal flow. Here it is in motion.',
+    screens: [
+      '/wingstop/usability/step-1-flavors.webp',
+      '/wingstop/usability/step-2-side.webp',
+      '/wingstop/usability/step-4-upgrade.webp',
+    ],
+    video: '/wingstop/video/ux-walkthrough.mp4',
+    poster: '/wingstop/usability/step-1-flavors.webp',
+  },
+}
+
 /** SECTION 2 — The full app, across platforms (foundational, built first). */
 export const appFoundation = {
   eyebrow: 'THE FOUNDATION',
