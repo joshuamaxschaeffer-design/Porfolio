@@ -29,66 +29,16 @@ const CHECK = (
 export function RewardsCapstoneSection() {
   return (
     <section id="rewards-capstone" aria-label="The whole rewards program" className="w-full">
-      <OptionA />
-      <Label letter="B" name="By the numbers" />
       <OptionB />
-      <Label letter="C" name="Feature marquee" />
-      <OptionC />
-      <Label letter="D" name="Trophy moment" />
       <OptionD />
     </section>
-  )
-}
-
-function Label({ letter, name }: { letter: string; name: string }) {
-  return (
-    <div className="bg-[var(--px-red)]">
-      <div className="mx-auto flex w-full max-w-[1180px] items-center gap-3 px-6 py-5 sm:px-8">
-        <span className="br-data rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--px-red)]">
-          Option {letter}
-        </span>
-        <span className="br-data text-xs uppercase tracking-[0.18em] text-white/50">{name}</span>
-        <span className="h-px flex-1 bg-white/20" />
-      </div>
-    </div>
-  )
-}
-
-/* ═══ OPTION A — Feature grid (gold-checked capability cards) ═══════════════ */
-function OptionA() {
-  return (
-    <div className="relative isolate w-full overflow-hidden bg-[var(--px-red)] py-20 text-white lg:py-28">
-      <Sparkles />
-      <div className="relative mx-auto w-full max-w-[1180px] px-6 sm:px-8">
-        <Reveal className="max-w-[640px]">
-          <Eyebrow>{d.eyebrow}</Eyebrow>
-          <h2 className="mt-3 text-[32px] font-semibold leading-[1.05] sm:text-[46px]">{d.title}</h2>
-          <p className="mt-4 max-w-[54ch] text-[15px] leading-relaxed text-white/80 sm:text-lg">{d.body}</p>
-        </Reveal>
-        <div className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {d.features.map((f, i) => (
-            <Reveal key={f} delay={i * 45}>
-              <div className="flex items-center gap-3 rounded-xl border border-white/15 bg-white/[0.06] px-4 py-3 backdrop-blur-sm">
-                <span
-                  className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[var(--px-red)]"
-                  style={{ backgroundColor: GOLD }}
-                >
-                  {CHECK}
-                </span>
-                <span className="text-[15px] leading-tight text-white/90">{f}</span>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </div>
   )
 }
 
 /* ═══ OPTION B — By the numbers (count-up stats) ════════════════════════════ */
 function OptionB() {
   return (
-    <div className="relative isolate w-full overflow-hidden bg-[var(--px-red)] py-20 text-white lg:py-28">
+    <div className="relative isolate w-full overflow-hidden bg-[var(--px-red)] pb-12 pt-20 text-white lg:pb-16 lg:pt-28">
       <Sparkles />
       <div className="relative mx-auto w-full max-w-[1180px] px-6 text-center sm:px-8">
         <Reveal>
@@ -112,61 +62,14 @@ function OptionB() {
   )
 }
 
-/* ═══ OPTION C — Feature marquee (scrolling perk rows) ══════════════════════ */
-function OptionC() {
-  // split features into two rows that drift opposite directions
-  const half = Math.ceil(d.features.length / 2)
-  const rowA = d.features.slice(0, half)
-  const rowB = d.features.slice(half)
-  return (
-    <div className="relative isolate w-full overflow-hidden bg-[var(--px-red)] py-20 text-white lg:py-24">
-      <div className="relative mx-auto mb-10 w-full max-w-[1180px] px-6 sm:px-8">
-        <Reveal className="max-w-[640px]">
-          <Eyebrow>{d.eyebrow}</Eyebrow>
-          <h2 className="mt-3 text-[32px] font-semibold leading-[1.05] sm:text-[46px]">{d.title}</h2>
-        </Reveal>
-      </div>
-      <Marquee items={rowA} />
-      <div className="h-4" />
-      <Marquee items={rowB} reverse />
-    </div>
-  )
-}
-
-function Marquee({ items, reverse }: { items: string[]; reverse?: boolean }) {
-  // duplicate the list so the loop is seamless
-  const loop = [...items, ...items]
-  return (
-    <div className="group relative flex overflow-hidden" aria-hidden>
-      <div
-        className="flex shrink-0 items-center gap-4 pr-4"
-        style={{ animation: `pxcap-marquee 26s linear infinite`, animationDirection: reverse ? 'reverse' : 'normal' }}
-      >
-        {loop.map((f, i) => (
-          <span key={i} className="flex items-center gap-4 whitespace-nowrap">
-            <span className="text-[28px] font-semibold text-white/90 sm:text-[40px]">{f}</span>
-            <span className="text-[28px] sm:text-[40px]" style={{ color: GOLD }}>
-              ✦
-            </span>
-          </span>
-        ))}
-      </div>
-      <style>{`@keyframes pxcap-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-        @media (prefers-reduced-motion: reduce){[style*="pxcap-marquee"]{animation:none!important}}`}</style>
-    </div>
-  )
-}
-
 /* ═══ OPTION D — Trophy moment (centered hero w/ reveal + radial burst) ═════ */
 function OptionD() {
   return (
-    <div className="relative isolate w-full overflow-hidden bg-[var(--px-red)] py-20 text-white lg:py-28">
-      <Sparkles />
+    <div className="relative isolate w-full overflow-hidden bg-[var(--px-red)] pb-20 pt-4 text-white lg:pb-28">
       <div className="relative mx-auto grid w-full max-w-[1180px] grid-cols-1 items-center gap-12 px-6 sm:px-8 lg:grid-cols-2 lg:gap-16">
         {/* copy */}
         <Reveal>
-          <Eyebrow>{d.eyebrow}</Eyebrow>
-          <h2 className="mt-3 text-[34px] font-semibold leading-[1.04] sm:text-[52px]">{d.title}</h2>
+          <h2 className="text-[34px] font-semibold leading-[1.04] sm:text-[52px]">{d.title}</h2>
           <p className="mt-4 max-w-[48ch] text-[15px] leading-relaxed text-white/80 sm:text-lg">{d.body}</p>
           <p className="br-data mt-5 text-sm uppercase tracking-[0.14em]" style={{ color: GOLD }}>
             {d.kicker}
