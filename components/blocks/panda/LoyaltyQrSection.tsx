@@ -178,19 +178,93 @@ function FlowCard({ flow, onOpen }: { flow: Flow; onOpen: () => void }) {
 }
 
 /* ── DETAIL: one flow's full node graph + hover popovers ── */
-const VBW = 1000
-const VBH = 560
+const VBW = 1080
+const VBH = 460
 const T = { w: 30, h: 30 } // icon node footprint (design px)
+
+/* Layered DAG layout: column = longest-path depth from an entry; within each
+ * column, rows are spread evenly across the height. Produces clean left-to-right
+ * lanes with no dead middle / no overlap, instead of the raw Figma clustering. */
+function computeLayout(flow: Flow) {
+  const ids = flow.nodes.map((n) => n.id)
+  const idset = new Set(ids)
+  const outAdj: Record<string, string[]> = {}
+  const indeg: Record<string, number> = {}
+  ids.forEach((id) => { outAdj[id] = []; indeg[id] = 0 })
+  flow.edges.forEach((e) => {
+    if (idset.has(e.from) && idset.has(e.to) && e.from !== e.to) {
+      outAdj[e.from].push(e.to); indeg[e.to]++
+    }
+  })
+  // seeds = entry-type nodes, else any node with indegree 0, else first node
+  let seeds = flow.nodes.filter((n) => n.type === 'entry').map((n) => n.id)
+  if (!seeds.length) seeds = ids.filter((id) => indeg[id] === 0)
+  if (!seeds.length) seeds = [ids[0]]
+  // longest-path depth via relaxation (graph may have cycles → cap iterations)
+  const depth: Record<string, number> = {}
+  ids.forEach((id) => (depth[id] = 0))
+  seeds.forEach((s) => (depth[s] = 0))
+  for (let iter = 0; iter < ids.length; iter++) {
+    let changed = false
+    for (const id of ids) {
+      for (const nx of outAdj[id]) {
+        if (depth[nx] < depth[id] + 1) { depth[nx] = depth[id] + 1; changed = true }
+      }
+    }
+    if (!changed) break
+  }
+  // group by column
+  const colMap: Record<number, string[]> = {}
+  ids.forEach((id) => { (colMap[depth[id]] = colMap[depth[id]] || []).push(id) })
+  const cols = Math.max(...ids.map((id) => depth[id])) + 1
+  // order rows within a column to reduce crossings: by average depth-position of
+  // neighbors in the previous column (barycenter), fallback to stable order.
+  const pos: Record<string, { col: number; row: number; rows: number }> = {}
+  const rowOf: Record<string, number> = {}
+  for (let c = 0; c < cols; c++) {
+    const colIds = colMap[c] || []
+    // barycenter using already-placed previous column
+    const score = (id: string) => {
+      const preds = flow.edges.filter((e) => e.to === id && depth[e.from] === c - 1 && rowOf[e.from] != null)
+      if (!preds.length) return Number.MAX_SAFE_INTEGER // keep new branches stable at end
+      return preds.reduce((a, e) => a + rowOf[e.from], 0) / preds.length
+    }
+    const ordered = colIds
+      .map((id, i) => ({ id, s: score(id), i }))
+      .sort((a, b) => (a.s - b.s) || (a.i - b.i))
+      .map((o) => o.id)
+    const rows = ordered.length
+    ordered.forEach((id, r) => {
+      // center shorter columns: if fewer rows than max, offset so they sit mid-height
+      pos[id] = { col: c, row: r, rows }
+      rowOf[id] = r
+    })
+  }
+  const maxRows = Math.max(1, ...Object.values(colMap).map((a) => a.length))
+  return { pos, cols, maxRows }
+}
 
 function FlowDetail({ flow, onBack }: { flow: Flow; onBack: () => void }) {
   const [active, setActive] = useState<string | null>(null)
   const nById = useMemo(() => Object.fromEntries(flow.nodes.map((n) => [n.id, n])), [flow])
   const act = active ? nById[active] : null
 
-  // place nodes from normalized coords with padding
-  const PAD = 60
-  const px = (nx: number) => PAD + nx * (VBW - 2 * PAD)
-  const py = (ny: number) => PAD + ny * (VBH - 2 * PAD)
+  // ── Computed layered layout (replaces raw Figma coords, which clustered the
+  //    nodes into two bands with a dead middle). Column = longest-path depth from
+  //    an entry; rows are spread evenly to fill the height. ──
+  const { pos, cols, maxRows } = useMemo(() => computeLayout(flow), [flow])
+  const PADX = 56
+  const PADY = 44
+  const colW = cols > 1 ? (VBW - 2 * PADX) / (cols - 1) : 0
+  // consistent vertical pitch across columns; each column is centered.
+  const rowPitch = maxRows > 1 ? (VBH - 2 * PADY) / (maxRows - 1) : 0
+  const px = (id: string) => PADX + pos[id].col * colW
+  const py = (id: string) => {
+    const r = pos[id]
+    const span = (r.rows - 1) * rowPitch
+    const top = VBH / 2 - span / 2
+    return top + r.row * rowPitch
+  }
 
   return (
     <div>
@@ -227,8 +301,8 @@ function FlowDetail({ flow, onBack }: { flow: Flow; onBack: () => void }) {
             </defs>
             {flow.edges.map((e, i) => {
               const a = nById[e.from], b = nById[e.to]
-              if (!a || !b) return null
-              const ax = px(a.nx), ay = py(a.ny), bx = px(b.nx), by = py(b.ny)
+              if (!a || !b || !pos[e.from] || !pos[e.to]) return null
+              const ax = px(e.from), ay = py(e.from), bx = px(e.to), by = py(e.to)
               const mx = (ax + bx) / 2
               const related = active && (e.from === active || e.to === active)
               const op = active ? (related ? 1 : 0.12) : 0.5
@@ -251,8 +325,8 @@ function FlowDetail({ flow, onBack }: { flow: Flow; onBack: () => void }) {
           {flow.nodes.map((n) => {
             const isActive = active === n.id
             const dim = active && !isActive
-            const leftPct = ((px(n.nx) - T.w / 2) / VBW) * 100
-            const topPct = ((py(n.ny) - T.h / 2) / VBH) * 100
+            const leftPct = ((px(n.id) - T.w / 2) / VBW) * 100
+            const topPct = ((py(n.id) - T.h / 2) / VBH) * 100
             const wPct = (T.w / VBW) * 100
             const tone = nodeTone(n.type)
             return (
@@ -282,64 +356,79 @@ function FlowDetail({ flow, onBack }: { flow: Flow; onBack: () => void }) {
               </button>
             )
           })}
+
+          {/* floating detail card — appears beside the active node (flips L/R) */}
+          {act && (() => {
+            const nodeLeftPct = (px(act.id) / VBW) * 100
+            const onRightHalf = nodeLeftPct > 52
+            const nodeTopPct = (py(act.id) / VBH) * 100
+            // clamp vertical so the card stays in view
+            const topClamped = Math.min(86, Math.max(8, nodeTopPct))
+            return (
+              <div
+                className="pointer-events-none absolute z-[60] w-[230px] md:w-[260px]"
+                style={{
+                  top: `${topClamped}%`,
+                  ...(onRightHalf
+                    ? { right: `${100 - nodeLeftPct + 2.4}%` }
+                    : { left: `${nodeLeftPct + 2.4}%` }),
+                  transform: 'translateY(-50%)',
+                }}
+              >
+                <div className="overflow-hidden rounded-[12px] border border-white/25 bg-[#7a1418]/95 shadow-[0_16px_40px_rgba(0,0,0,0.45)] backdrop-blur-sm">
+                  {act.thumb && (
+                    <div className="flex max-h-[150px] justify-center overflow-hidden border-b border-white/15 bg-black/25">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={`${THUMB}/${act.thumb}@2x.webp`} alt={act.label} className="w-full object-cover object-top" />
+                    </div>
+                  )}
+                  <div className="p-3.5">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span
+                        className="inline-flex h-5 w-5 items-center justify-center rounded-[5px]"
+                        style={{ boxShadow: `inset 0 0 0 1px ${nodeTone(act.type).ring}`, background: nodeTone(act.type).glow }}
+                      >
+                        <NodeGlyph type={act.type} className="h-3.5 w-3.5 text-white" />
+                      </span>
+                      <h4 className="text-[15px] font-semibold text-white">{act.label}</h4>
+                      <span className="rounded-full bg-white/12 px-1.5 py-0.5 text-[9.5px] font-bold uppercase tracking-wide text-white/80">
+                        {TYPE_LABEL[act.type]}
+                      </span>
+                    </div>
+                    {act.role && <p className="mt-2 text-[12.5px] leading-snug text-white/85">{act.role}</p>}
+                    {act.detail && <p className="mt-1.5 text-[11.5px] leading-snug text-white/70">{act.detail}</p>}
+                    {act.notes && act.notes.length > 0 && (
+                      <div className="mt-2.5 flex flex-col gap-1.5">
+                        {act.notes.map((nt, i) => (
+                          <p key={i} className="flex items-start gap-1.5 text-[11px] leading-snug text-white/75">
+                            <span
+                              className="mt-[1px] shrink-0 rounded px-1.5 py-[1px] text-[9px] font-bold uppercase tracking-wide"
+                              style={{
+                                color: nt.kind === 'api' ? 'rgb(190,220,255)' : 'rgba(255,255,255,0.9)',
+                                background: nt.kind === 'api' ? 'rgba(120,180,255,0.18)' : 'rgba(255,255,255,0.14)',
+                              }}
+                            >
+                              {nt.kind === 'api' ? nt.label : 'Note'}
+                            </span>
+                            <span>{nt.detail}</span>
+                          </p>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )
+          })()}
         </div>
       </div>
 
-      {/* detail popover panel */}
-      <div className="mt-5 min-h-[120px] rounded-[14px] border border-white/20 bg-black/15 p-5 md:mt-6">
-        {act ? (
-          <div className="flex flex-col gap-3 md:flex-row md:gap-5">
-            {act.thumb && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={`${THUMB}/${act.thumb}@2x.webp`}
-                alt={act.label}
-                className="h-44 w-auto self-start rounded-[8px] border border-white/25 bg-black/20 md:h-52"
-              />
-            )}
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <span
-                  className="inline-flex h-6 w-6 items-center justify-center rounded-[5px]"
-                  style={{ boxShadow: `inset 0 0 0 1px ${nodeTone(act.type).ring}`, background: nodeTone(act.type).glow }}
-                >
-                  <NodeGlyph type={act.type} className="h-4 w-4 text-white" />
-                </span>
-                <h4 className="text-[18px] font-semibold text-white">{act.label}</h4>
-                <span className="rounded-full bg-white/12 px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-wide text-white/80">
-                  {TYPE_LABEL[act.type]}
-                </span>
-              </div>
-              {act.role && <p className="mt-2 text-[14.5px] leading-snug text-white/85">{act.role}</p>}
-              {act.detail && (
-                <p className="mt-2 text-[13px] leading-snug text-white/70">{act.detail}</p>
-              )}
-              {act.notes && act.notes.length > 0 && (
-                <div className="mt-3 flex flex-col gap-2">
-                  {act.notes.map((nt, i) => (
-                    <p key={i} className="inline-flex items-start gap-1.5 text-[12.5px] leading-snug text-white/70">
-                      <span
-                        className="mt-[1px] shrink-0 rounded px-1.5 py-[1px] text-[10px] font-bold uppercase tracking-wide"
-                        style={{
-                          color: nt.kind === 'api' ? 'rgb(190,220,255)' : 'rgba(255,255,255,0.9)',
-                          background: nt.kind === 'api' ? 'rgba(120,180,255,0.18)' : 'rgba(255,255,255,0.14)',
-                        }}
-                      >
-                        {nt.kind === 'api' ? nt.label : 'Note'}
-                      </span>
-                      <span>{nt.detail}</span>
-                    </p>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        ) : (
-          <p className="text-[14px] leading-snug text-white/65 md:text-[15px]">
-            {copy.detailHint}
-          </p>
-        )}
-      </div>
+      {/* rest hint (only when nothing hovered) */}
+      {!act && (
+        <p className="mt-4 text-[13px] leading-snug text-white/55 md:text-[14px]">
+          {copy.detailHint}
+        </p>
+      )}
     </div>
   )
 }
