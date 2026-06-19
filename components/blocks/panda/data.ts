@@ -105,6 +105,8 @@ export const premiumRewards = {
  * Milestone tiers are taken from the real redeem screen.
  * ───────────────────────────────────────────────────────────────────────── */
 export const rewardsPlatform = {
+  /** short labels for the carousel jump-pills, in order */
+  pills: ['Earning', 'Moments of Surprise', 'The Reward Store'],
   /** Beat 1 — earning */
   earn: {
     eyebrow: 'EARNING',
@@ -199,8 +201,10 @@ export const loyaltyQr = {
   ],
   mapHint:
     'Every screen in the enrollment journey, wired in the order the prototype actually runs (verified against the Figma file). Hover or tap any screen to enlarge it and see its role — and the backend work happening behind it.',
+  detailHint:
+    'Each node is one screen, decision, backend call or design note. Hover or tap any node to see the real screen, its role, and the API / annotation attached to it.',
   footnote:
-    'Shown collapsed to one tile per state; the live file carries 25+ screens across the app, mobile web and desktop. The hardest stretch runs from sign-in to points-credited: Cache holds the receipt’s transaction across the auth redirect, Azure authenticates and flips the loyalty flag on, mParticle logs the event, and Punchh ties the transaction to the account so the points appear — all behind a single “Thanks for scanning” screen.',
+    'This is the actual prototype — five flow variants across the app, mobile web and desktop, every screen, branch, backend call and design note. The hardest stretch runs from sign-in to points-credited: Cache holds the receipt’s transaction across the auth redirect, Azure authenticates and flips the loyalty flag on, mParticle logs the event, and Punchh ties the transaction to the account so the points appear — all behind a single “Thanks for scanning” screen.',
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -248,6 +252,8 @@ export interface MvpEdge {
   label2?: string
   /** manual pill center (Figma px); defaults to the polyline midpoint */
   labelAt?: { x: number; y: number }
+  /** manual center for the 2nd pill (else offset from the first) */
+  label2At?: { x: number; y: number }
   /** plain (non-pill) caption under the edge */
   caption?: { text: string; x: number; y: number }
 }
@@ -313,7 +319,7 @@ export const mvp = {
     { from: 'category', to: 'quantity', color: 'red', label: 'Tap Product', pts: [[1122, 1404], [1376, 1404]] },
     { from: 'quantity', to: 'category', color: 'red', label: 'Add Product', caption: { text: 'Product is added to My Bag', x: 1252, y: 1548 }, pts: [[1376, 1483], [1122, 1483]] },
     { from: 'category', to: 'bag', color: 'red', label: 'Tap Bag Icon', labelAt: { x: 1229, y: 1320 }, pts: [[1122, 1320], [1789, 1320], [1789, 1178]] },
-    { from: 'bag', to: 'menu', color: 'grey', label: 'Add more', label2: 'Will send to scrolled location', labelAt: { x: 1981, y: 1091 }, pts: [[2084, 1178], [2084, 1684], [511, 1684], [511, 1178]] },
+    { from: 'bag', to: 'menu', color: 'grey', label: 'Add more', labelAt: { x: 1981, y: 1091 }, label2: 'Will send to scrolled location', label2At: { x: 1299, y: 1684 }, pts: [[2084, 1178], [2084, 1684], [511, 1684], [511, 1178]] },
   ] as MvpEdge[],
   scenarios: [
     { id: 'promo', title: 'Add a promotion', color: 'gold', blurb: 'Tap a featured promo on the homepage; the item is added and the order continues to checkout.', path: ['home', 'promoNotif', 'productSel', 'bag', 'checkout', 'confirmation'] },
