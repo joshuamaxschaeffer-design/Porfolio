@@ -207,7 +207,7 @@ export const loyaltyQr = {
     'End-to-end UX architecture',
   ],
   detailHint:
-    'Each node is one screen, decision, backend call or design note. Hover or tap any node to see the real screen, its role, and the API or annotation attached to it.',
+    'Each node is a screen, an event (branch) or a backend call. Hover or tap any node to see the real screen and its role.',
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
