@@ -43,6 +43,23 @@ export function MarketingSection() {
           </p>
         </Reveal>
 
+        {/* THE UX — the page designs as a receding perspective deck */}
+        <div className="mt-14">
+          <Reveal className="max-w-[640px]">
+            <Eyebrow>{defaults.ux.eyebrow}</Eyebrow>
+            <h3 className="mt-2 text-xl font-semibold leading-tight text-white sm:text-2xl">
+              {defaults.ux.title}
+            </h3>
+            <p className="mt-3 max-w-[56ch] text-[15px] leading-relaxed text-white/70">
+              I designed every brand page from the ground up — structure, content order, and the
+              connections between them.
+            </p>
+          </Reveal>
+          <Reveal>
+            <PerspectiveStack pages={defaults.ux.pages} />
+          </Reveal>
+        </div>
+
         {/* bento: big food hero (2x2) + page screenshots + food cutouts */}
         <div className="mt-12 grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4 lg:auto-rows-[230px]">
           {/* big food hero on a red field — spans 2x2 */}
@@ -85,6 +102,61 @@ export function MarketingSection() {
 }
 
 /* ── tiles ─────────────────────────────────────────────────────────────────── */
+
+/* ── perspective UX deck ─────────────────────────────────────────────────────
+ * The blue/white page wireframes as a receding 3D stack that faces slightly
+ * LEFT (rotateY), each card stepped right + back + scaled so they recede,
+ * spread out enough to read each page's top. Every card is cropped to the SAME
+ * height (top-anchored) so the deck is even. Front card fully lit; deeper cards
+ * dim + blur for depth. Reduced-motion users still get the stepped layout.
+ * ──────────────────────────────────────────────────────────────────────────── */
+function PerspectiveStack({ pages }: { pages: { key: string; label: string; src: string }[] }) {
+  const deck = pages.slice(0, 5) // strongest 5, front-to-back
+  const n = deck.length
+  return (
+    <div className="relative mx-auto mt-8 w-full max-w-[1100px]" style={{ perspective: '1800px', perspectiveOrigin: '50% 40%' }}>
+      <div className="relative" style={{ height: 'clamp(320px, 42vw, 520px)', transformStyle: 'preserve-3d' }}>
+        {deck.map((p, i) => {
+          const depth = i / Math.max(1, n - 1) // 0 (front) .. 1 (back)
+          const left = `${depth * 13 * (n - 1)}%`
+          const scale = 1 - depth * 0.1
+          const z = -depth * 220
+          const ty = depth * 26
+          const dim = depth * 0.42
+          const blur = depth * 1.4
+          return (
+            <figure
+              key={p.key}
+              className="absolute left-0 top-0 m-0 overflow-hidden rounded-xl border border-white/12 bg-white shadow-[0_30px_70px_-24px_rgba(0,0,0,0.7)]"
+              style={{
+                width: 'min(62%, 620px)',
+                height: '100%',
+                left,
+                transform: `translateZ(${z}px) translateY(${ty}px) rotateY(-18deg) scale(${scale})`,
+                transformOrigin: 'left center',
+                zIndex: n - i,
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={p.src}
+                alt={`${p.label} page design`}
+                loading="lazy"
+                draggable={false}
+                className="block h-full w-full object-cover object-top"
+                style={{ filter: blur ? `brightness(${1 - dim}) blur(${blur}px)` : undefined }}
+              />
+              {dim > 0 ? (
+                <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: `rgba(13,13,15,${dim})` }} />
+              ) : null}
+            </figure>
+          )
+        })}
+      </div>
+      <p className="mt-4 text-[13px] text-white/45">Homepage, Our Food, Innovation, Our Family, Our Shop — one connected system.</p>
+    </div>
+  )
+}
 
 /** Food cutout tile. `red` = Panda-red field; otherwise a dark card. */
 function FoodTile({ src, caption, big, red }: { src: string; caption: string; big?: boolean; red?: boolean }) {
