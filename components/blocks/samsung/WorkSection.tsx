@@ -38,31 +38,12 @@ export function WorkSection({ intro }: { intro?: string } = {}) {
         <Workstream tag="In-Store Experience" title={inStore.title} body={inStore.body} />
       </div>
 
-      {/* BIG table render — sits directly on the section background (#7) */}
-      <div className="br-container pt-10 md:pt-14">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={`${W}/${inStore.device.file}`}
-          alt={inStore.device.alt}
-          width={inStore.device.w}
-          height={inStore.device.h}
-          className="mx-auto block w-full max-w-[1320px]"
-        />
-      </div>
+      {/* BIG table acting as a backdrop; the takeover screens overlap up onto
+          it, matching the Behance composition (#2). */}
+      <TableWithScreens />
 
-      {/* 3 takeover screens — large, stacked, staggered L/R, grey rail behind (#8) */}
-      <StaggeredScreens />
-
-      {/* ── 3 · S7 store locator — full-bleed grey popout overlay ────────── */}
-      <div className="br-container pt-24 md:pt-32">
-        <p className="br-data text-[12px] font-semibold uppercase tracking-[0.2em] text-[var(--sg-blue)]">
-          S7 Store Locator
-        </p>
-        <p className="mt-3 max-w-2xl text-[15px] leading-normal text-[var(--sg-muted)] md:text-base">
-          Full-page design and UI for the S7 launch, locating a nearby store to buy the device.
-        </p>
-      </div>
-      <div className="pt-10 md:pt-14">
+      {/* ── 3 · S7 store locator — full-bleed grey overlay, copy on the right ── */}
+      <div className="pt-24 md:pt-32">
         <StoreLocatorPopout />
       </div>
 
@@ -73,46 +54,67 @@ export function WorkSection({ intro }: { intro?: string } = {}) {
           title="Hundreds of posts, one feed"
           body="Photo editing and device mockups for the brand’s social channels: phones, tablets, and Gear across launches, holidays, and carrier co-ops. A sample of the hundreds produced; drag to explore."
         />
-        <div className="mt-10">
-          <SocialCarousel />
-        </div>
+      </div>
+      {/* full-bleed rail so it never clips at the container edge (drag to center) */}
+      <div className="mt-10">
+        <SocialCarousel />
+      </div>
 
+      <div className="br-container">
         <div className="mt-16 border-l-2 border-[var(--sg-blue)] bg-white/[0.03] p-6 backdrop-blur-sm md:mt-20 md:p-8">
           <p className="max-w-4xl text-[15px] leading-relaxed text-[var(--sg-muted)] md:text-lg">
             {defaults.closer}
           </p>
         </div>
+        {/* 100px clearance below the closer before the next section (#5) */}
+        <div className="h-[64px] md:h-[100px]" />
       </div>
     </section>
   )
 }
 
 /**
- * StaggeredScreens — the 3 in-store takeover captures, LARGE, stacked
- * vertically and staggered left/right, with a thin grey rectangle running
- * behind them to connect the set (per Joshua's Behance example, #8/#9).
+ * TableWithScreens — the BIG in-store table acting as a backdrop, with the 3
+ * takeover screens overlapping UP onto it and then staggering down the page
+ * (Behance composition, #2/#8). A thin grey rail runs behind the screen column
+ * to connect the set. The first screen pulls up with a negative margin so it
+ * sits partly on top of the table.
  */
-function StaggeredScreens() {
-  // each screen alternates which side it hugs; the rail sits behind the column.
+function TableWithScreens() {
   const aligns = ['md:mr-auto', 'md:ml-auto', 'md:mr-auto'] // left, right, left
   return (
-    <div className="relative pt-16 md:pt-24">
-      {/* connecting grey rail — thin vertical rectangle centered behind */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-white/10 md:w-[2px]"
-      />
-      <div className="br-container relative flex flex-col gap-12 md:gap-20">
-        {inStore.screens.map((s, i) => (
-          <figure
-            key={s.file}
-            className={`w-full overflow-hidden ring-1 ring-[var(--sg-line)] md:w-[78%] ${aligns[i]}`}
-            style={{ boxShadow: '0 40px 80px -30px rgba(0,0,0,0.6)' }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`${W}/${s.file}`} alt={s.alt} loading="lazy" className="block w-full" />
-          </figure>
-        ))}
+    <div className="relative">
+      {/* BIG table, near full-bleed, on the bare section background */}
+      <div className="br-container pt-10 md:pt-16">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={`${W}/${inStore.device.file}`}
+          alt={inStore.device.alt}
+          width={inStore.device.w}
+          height={inStore.device.h}
+          className="mx-auto block w-full max-w-[1700px]"
+        />
+      </div>
+
+      {/* screens overlap up onto the table, then stagger down */}
+      <div className="relative z-10 -mt-[12%] md:-mt-[14%]">
+        {/* connecting grey rail behind the screen column */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute left-1/2 top-[8%] h-[84%] w-px -translate-x-1/2 bg-white/12 md:w-[2px]"
+        />
+        <div className="br-container relative flex flex-col gap-14 md:gap-24">
+          {inStore.screens.map((s, i) => (
+            <figure
+              key={s.file}
+              className={`w-full overflow-hidden ring-1 ring-[var(--sg-line)] md:w-[82%] ${aligns[i]}`}
+              style={{ boxShadow: '0 50px 90px -28px rgba(0,0,0,0.7)' }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={`${W}/${s.file}`} alt={s.alt} loading="lazy" className="block w-full" />
+            </figure>
+          ))}
+        </div>
       </div>
     </div>
   )

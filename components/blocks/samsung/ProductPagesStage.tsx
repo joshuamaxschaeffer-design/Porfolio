@@ -77,7 +77,7 @@ export function ProductPagesStage() {
       </div>
 
       {/* tall band so the big pages can overflow top + bottom */}
-      <div className="relative grid min-h-[680px] grid-cols-1 items-center gap-8 lg:min-h-[860px] lg:grid-cols-[1.4fr_1fr]">
+      <div className="relative grid min-h-[720px] grid-cols-1 items-center gap-8 lg:min-h-[1020px] lg:grid-cols-[1.55fr_1fr]">
         {/* LEFT: the angled, receding page fan (clipped by the band). Its own
             column clips horizontally so the big pages never run under the copy. */}
         <div
@@ -85,7 +85,7 @@ export function ProductPagesStage() {
           style={{ perspective: '2200px', perspectiveOrigin: '40% 50%' }}
         >
           <div
-            className="absolute left-[2%] top-1/2 flex items-center gap-5 md:gap-7"
+            className="absolute left-[3%] top-1/2 flex items-center gap-2 md:gap-3"
             style={{
               transform: 'translateY(-50%) rotateX(10deg) rotateY(-32deg) rotateZ(8deg)',
               transformStyle: 'preserve-3d',
@@ -94,8 +94,9 @@ export function ProductPagesStage() {
             {webPages.shots.map((s, i) => {
               const dir = i % 2 === 0 ? 1 : -1
               // far-left (i=0) sits farthest back + smallest; near (last) largest
-              const depth = webPages.shots.length - 1 - i // 0..n-1, larger = nearer
-              const scale = 0.78 + depth * 0.13
+              // leftmost (Gear, i=0) sits FARTHEST back + smallest; phone nearest.
+              const near = i // 0 = far/small ... n-1 = near/large
+              const scale = 0.82 + near * 0.16
               return (
                 <ParallaxPage
                   key={s.file}
@@ -103,7 +104,7 @@ export function ProductPagesStage() {
                   alt={s.alt}
                   offset={progress * amp * dir}
                   scale={scale}
-                  z={(depth - 1) * 120}
+                  z={(near - 1) * 150}
                 />
               )
             })}
@@ -145,7 +146,7 @@ function ParallaxPage({
     <figure
       className="relative shrink-0 overflow-hidden ring-1 ring-white/20"
       style={{
-        width: 'clamp(200px, 20vw, 330px)',
+        width: 'clamp(300px, 32vw, 520px)',
         transform: `translateY(${offset}px) translateZ(${z}px) scale(${scale})`,
         transformOrigin: 'center center',
         boxShadow: '0 50px 90px -28px rgba(0,0,0,0.6), 0 12px 28px -10px rgba(0,0,0,0.5)',

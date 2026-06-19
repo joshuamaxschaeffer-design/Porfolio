@@ -216,7 +216,13 @@ export function SocialCarousel() {
         </div>
       </div>
 
-      <div className="mt-5 flex items-center justify-between">
+      <div
+        className="mt-5 flex items-center justify-between"
+        style={{
+          paddingLeft: 'max(24px, calc((100vw - 1443px) / 2 + 80px))',
+          paddingRight: 'max(24px, calc((100vw - 1443px) / 2 + 80px))',
+        }}
+      >
         <p className="br-data text-[11px] uppercase tracking-[0.14em] text-[var(--br-muted-2)]">
           Drag, swipe, or scroll → · a sample of the social mockups
         </p>
@@ -234,19 +240,24 @@ export function SocialCarousel() {
            gap). Heights are explicit so aspect-ratio derives WIDTH (no circular
            h-full ↔ aspect-ratio feedback). */
         .sg-social-track {
-          --sg-h: 460px;
-          --sg-gap: 16px;
+          --sg-h: 690px;
+          --sg-gap: 20px;
           --sg-sq: calc((var(--sg-h) - var(--sg-gap)) / 2);
           padding-bottom: 2px;
         }
-        @media (max-width: 1023px) { .sg-social-track { --sg-h: 380px; } }
-        @media (max-width: 639px)  { .sg-social-track { --sg-h: 300px; --sg-gap: 12px; } }
+        @media (max-width: 1023px) { .sg-social-track { --sg-h: 540px; } }
+        @media (max-width: 639px)  { .sg-social-track { --sg-h: 420px; --sg-gap: 14px; } }
         .sg-social-grid {
           display: flex;
           flex-direction: row;
           gap: var(--sg-gap);
           width: max-content;
           height: var(--sg-h);
+          /* left gutter aligns the first tile with the page container; right
+             pad lets the last tile breathe past the edge (full-bleed rail).
+             Matches br-container: max-w 1443 + 80px gutter on wide screens. */
+          padding-left: max(24px, calc((100vw - 1443px) / 2 + 80px));
+          padding-right: max(24px, calc((100vw - 1443px) / 2 + 80px));
         }
         .sg-social-col { display: flex; flex-direction: column; align-items: flex-start; gap: var(--sg-gap); height: var(--sg-h); }
         /* Explicit height AND width (both derived from --sg-h) so layout never
