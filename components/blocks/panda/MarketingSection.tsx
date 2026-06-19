@@ -1,15 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import {
-  motion,
-  useReducedMotion,
-  useScroll,
-  useSpring,
-  useTransform,
-  useMotionValue,
-  type MotionValue,
-} from 'motion/react'
+import { useReducedMotion } from 'motion/react'
 import { marketing as defaults } from './data'
 
 /**
@@ -208,11 +200,9 @@ function uxProject(z: number, frontX: number, vpX: number) {
   const k = 1 - s
   return { s, x: frontX + (vpX - frontX) * k, y: UX_FRONT_Y + (UX_VP_Y - UX_FRONT_Y) * k }
 }
-const uxDarken = (d: number) => Math.max(0, Math.min(0.92, (d - 1) * 0.24))
 const uxBlur = (d: number) => Math.max(0, (d - 1) * 7)
 
 function WireframeStack({ pages }: { pages: { key: string; label: string; src: string }[] }) {
-  const reduce = useReducedMotion()
   const stageRef = useRef<HTMLDivElement>(null)
   const [mobile, setMobile] = useState(false)
   useEffect(() => {
@@ -225,18 +215,18 @@ function WireframeStack({ pages }: { pages: { key: string; label: string; src: s
   const frontX = mobile ? 30 : 22 // front card sits left; deck recedes right
   const vpX = mobile ? 96 : UX_VP_X
 
-  const { scrollYProgress } = useScroll({ target: stageRef, offset: ['start end', 'center center'] })
-  const p = useSpring(scrollYProgress, { stiffness: 110, damping: 30, mass: 0.6 })
-  const gap = useTransform(p, [0, 1], [UX_GAP_MIN, UX_GAP_MAX])
-  const gapStatic = useMotionValue(UX_GAP_MAX)
-  const gapMV = reduce ? gapStatic : gap
+  // NOTE: Motion's useScroll({target}) is frozen by this site's Lenis smooth
+  // scroll, so a scroll-driven gap leaves the derived darken/blur stuck (all
+  // cards rendered black). The deck is decorative, so use a fixed, fully-spread
+  // gap and derive depth from each card's static index — correct + Safe.
+  const gap = UX_GAP_MAX
 
   const deck = pages.slice(0, 5)
   const n = deck.length
   return (
     <div ref={stageRef} className="relative mx-auto mt-8 h-[clamp(420px,54vw,720px)] w-full max-w-[1200px]">
       {deck.map((pg, i) => (
-        <WireframeCard key={pg.key} page={pg} index={i} gap={gapMV} total={n} frontX={frontX} vpX={vpX} />
+        <WireframeCard key={pg.key} page={pg} index={i} gap={gap} total={n} frontX={frontX} vpX={vpX} />
       ))}
       {/* vignette: the far/right portion dissolves into the section black */}
       <div
@@ -261,38 +251,33 @@ function WireframeCard({
 }: {
   page: { key: string; label: string; src: string }
   index: number
-  gap: MotionValue<number>
+  gap: number
   total: number
   frontX: number
   vpX: number
 }) {
-  const d = useTransform(gap, (g) => (index * g) / UX_GAP_MAX)
-  const proj = useTransform(gap, (g) => uxProject(index * g, frontX, vpX))
-  const left = useTransform(proj, (pr) => `${pr.x}%`)
-  const top = useTransform(proj, (pr) => `${pr.y}%`)
-  const scale = useTransform(proj, (pr) => pr.s)
-  const darken = useTransform(d, (dd) => uxDarken(dd))
-  // static blur from settled depth (gap=GAP_MAX → d=index) — Safari perf
+  // settled depth from the static spread (gap = GAP_MAX → d = index)
+  const d = (index * gap) / UX_GAP_MAX
+  const proj = uxProject(index * gap, frontX, vpX)
+  // keep the back wireframes readable: lighter darken than the live-pages deck
+  const darken = Math.max(0, Math.min(0.5, (d - 1) * 0.16))
   const q = (v: number, step: number) => Math.round(v / step) * step
-  const blurOuter = `blur(${q(uxBlur(index) * 0.45, 2)}px)`
-  const blurInner = `blur(${q(uxBlur(index) * 0.55, 2)}px)`
+  const blurOuter = `blur(${q(uxBlur(index) * 0.4, 2)}px)`
+  const blurInner = `blur(${q(uxBlur(index) * 0.5, 2)}px)`
   return (
-    <motion.div
+    <div
       className="absolute"
       style={{
-        left,
-        top,
+        left: `${proj.x}%`,
+        top: `${proj.y}%`,
         width: 'min(34%, 360px)', // tall, narrow portrait page
-        x: '-50%',
-        y: '-50%',
-        scale,
+        transform: `translate(-50%, -50%) scale(${proj.s})`,
         zIndex: total - index,
         filter: blurOuter,
-        willChange: 'transform',
       }}
     >
       {/* clean clipped corners, no border (a translucent edge + blur = halo) */}
-      <motion.div
+      <div
         className="relative overflow-hidden rounded-xl bg-white"
         style={{ boxShadow: '0 30px 70px -28px rgba(0,0,0,0.7)', filter: blurInner }}
       >
@@ -301,9 +286,9 @@ function WireframeCard({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={page.src} alt={`${page.label} page design`} draggable={false} className="block w-full select-none" />
         </div>
-        <motion.div className="pointer-events-none absolute inset-0 bg-[#0d0d0f]" style={{ opacity: darken }} />
-      </motion.div>
-    </motion.div>
+        <div className="pointer-events-none absolute inset-0 bg-[#0d0d0f]" style={{ opacity: darken }} />
+      </div>
+    </div>
   )
 }
 
