@@ -84,9 +84,8 @@ function TableWithScreens() {
   const aligns = ['md:mr-auto', 'md:ml-auto', 'md:mr-auto'] // left, right, left
   return (
     <div className="relative">
-      {/* BIG table — 2× scale, full-bleed beyond the container; half the space
-          above it (#2). Negative inline margins let it exceed br-container. */}
-      <div className="pt-5 md:pt-8">
+      {/* BIG table — pulled up ~300px to close the gap above it (#2 r5). */}
+      <div className="-mt-[160px] md:-mt-[300px]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={`${W}/${inStore.device.file}`}
@@ -97,8 +96,8 @@ function TableWithScreens() {
         />
       </div>
 
-      {/* screens overlap up onto the table, then stagger down */}
-      <div className="relative z-10 -mt-[12%] md:-mt-[14%]">
+      {/* screens pulled up ~450px so they sit ON TOP of the table image (#3 r5) */}
+      <div className="relative z-10 -mt-[260px] md:-mt-[450px]">
         {/* connecting grey rail behind the screen column */}
         <div
           aria-hidden

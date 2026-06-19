@@ -78,27 +78,26 @@ export function ProductPagesStage() {
 
       {/* tall band so the big pages can overflow top + bottom */}
       <div className="relative grid min-h-[720px] grid-cols-1 items-center gap-8 lg:min-h-[1020px] lg:grid-cols-[1.55fr_1fr]">
-        {/* LEFT: the angled, receding page fan (clipped by the band). Its own
-            column clips horizontally so the big pages never run under the copy. */}
+        {/* LEFT: the angled, receding page fan. NO horizontal clip — the fan
+            fills the whole left background and bleeds off the left edge; it may
+            sit slightly under the copy (per Joshua). */}
         <div
-          className="relative order-2 h-full overflow-hidden lg:order-1"
-          style={{ perspective: '2200px', perspectiveOrigin: '40% 50%' }}
+          className="relative order-2 h-full lg:order-1"
+          style={{ perspective: '2200px', perspectiveOrigin: '50% 50%' }}
         >
-          {/* Right-anchored (Gear→Tab→Note left-to-right). The near/large Note
-              page sits at the right and stays in view; the smaller Gear/Tab
-              pages bleed OFF the left edge — so nothing ever clips on the
-              right. Right edge is pulled in so the Note page has room. */}
+          {/* Right-anchored, rendered Note→Tab→Gear left-to-right so the GEAR
+              page lands FARTHEST RIGHT and largest/nearest; the others recede
+              and bleed off the left. */}
           <div
-            className="absolute right-[6%] top-1/2 flex items-center gap-5 md:gap-7"
+            className="absolute right-[2%] top-1/2 flex items-center gap-5 md:gap-7"
             style={{
               transform: 'translateY(-50%) rotateX(10deg) rotateY(-32deg) rotateZ(8deg)',
               transformStyle: 'preserve-3d',
             }}
           >
-            {webPages.shots.map((s, i) => {
+            {[...webPages.shots].reverse().map((s, i, arr) => {
               const dir = i % 2 === 0 ? 1 : -1
-              // far-left (i=0) sits farthest back + smallest; near (last) largest
-              // leftmost (Gear, i=0) sits FARTHEST back + smallest; phone nearest.
+              // i=0 (leftmost, Note) = farthest/smallest; last (Gear) = nearest/largest
               const near = i // 0 = far/small ... n-1 = near/large
               const scale = 0.82 + near * 0.16
               return (

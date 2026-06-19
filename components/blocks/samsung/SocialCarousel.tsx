@@ -122,9 +122,7 @@ function ControlsRow({
         paddingRight: 'max(24px, calc((100vw - 1443px) / 2 + 80px))',
       }}
     >
-      <p className="br-data text-[11px] uppercase tracking-[0.14em] text-[var(--br-muted-2)]">
-        Drag or swipe → · a sample of the social mockups
-      </p>
+      <div />
       <div className="hidden gap-2 sm:flex">
         <CarouselButton dir={-1} disabled={!canLeft} onClick={onLeft} />
         <CarouselButton dir={1} disabled={!canRight} onClick={onRight} />
