@@ -409,10 +409,11 @@ function DesktopDiagram({ activeId, progress, reduced }: DiagramProps) {
           const { lit } = edgeState(ed)
           const pillPos = ed.labelAt ? ([ed.labelAt.x, ed.labelAt.y] as Pt) : edgeMid(resolvePts(ed))
           const els: React.ReactNode[] = []
-          if (ed.label) els.push(<Pill key={`p-${i}`} x={pillPos[0]} y={pillPos[1]} lines={[ed.label]} color={ed.color} lit={lit} />)
+          const pillColor = ed.labelColor ?? ed.color
+          if (ed.label) els.push(<Pill key={`p-${i}`} x={pillPos[0]} y={pillPos[1]} lines={ed.label.split('\n')} color={pillColor} lit={lit} />)
           if (ed.label2) {
             const a2: Pt = ed.label2At ? [ed.label2At.x, ed.label2At.y] : secondAnchor(pillPos, ed.label ?? '')
-            els.push(<Pill key={`p2-${i}`} x={a2[0]} y={a2[1]} lines={[ed.label2]} color={ed.color} lit={lit} />)
+            els.push(<Pill key={`p2-${i}`} x={a2[0]} y={a2[1]} lines={[ed.label2]} color={pillColor} lit={lit} />)
           }
           if (ed.caption) {
             els.push(

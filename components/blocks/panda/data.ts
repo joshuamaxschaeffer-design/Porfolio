@@ -320,6 +320,9 @@ export interface MvpEdge {
   labelAt?: { x: number; y: number }
   /** manual center for the 2nd pill (else offset from the first) */
   label2At?: { x: number; y: number }
+  /** override the pill colour (else uses the edge `color`). e.g. an action pill
+   *  like "Location Selected" that sits over several differently-coloured lines. */
+  labelColor?: MvpColor
   /** plain (non-pill) caption under the edge */
   caption?: { text: string; x: number; y: number }
 }
@@ -391,19 +394,20 @@ export const mvp = {
 
     // ── INTO restaurant BOTTOM: two risers from the rails, "No location selected"
     //    pill sits on them (26287 blue x838, 26288 purple x868). ──
-    // L8 blue rail→restaurant riser — vertical x838 up into restaurant BOTTOM. Carries the pill.
-    { from: 'product', to: 'restaurant', color: 'blue', label: 'No location selected', labelAt: { x: 850, y: 690 }, fromPoint: [838, 761.5], toPoint: [838, 617] },
+    // L8 blue rail→restaurant riser — vertical x838 up into restaurant BOTTOM. Carries the (orange) pill.
+    { from: 'product', to: 'restaurant', color: 'blue', label: 'No location selected', labelColor: 'orange', labelAt: { x: 850, y: 690 }, fromPoint: [838, 761.5], toPoint: [838, 617] },
     // L9 category rail→restaurant riser (purple) — vertical x868 up into restaurant BOTTOM (26288)
     { from: 'category', to: 'restaurant', color: 'purple', fromPoint: [868, 814.5], toPoint: [868, 617] },
 
-    // ── OUT of restaurant RIGHT: THREE stacked colour lines sharing the
-    //    "Location Selected" pill. Each resolves a different flow. ──
-    // L6a green → up into productSel BOTTOM (promo flow). Top rail y451.
-    { from: 'restaurant', to: 'productSel', color: 'green', label: 'Location Selected', labelAt: { x: 1036, y: 448 }, fromPoint: [951, 451], toPoint: [1320, 348], via: [[1240, 451], [1240, 388], [1320, 388]] },
-    // L6b blue → right then down into Product Page TOP (product flow). Middle rail y471.5.
-    { from: 'restaurant', to: 'product', color: 'blue', fromPoint: [951, 471.5], toPoint: [1320, 640], via: [[1300, 471.5], [1300, 600], [1320, 600]] },
-    // L6c purple → down into category area (category flow). Bottom rail y492, drops at x1031.
-    { from: 'restaurant', to: 'category', color: 'purple', fromPoint: [951, 492], toPoint: [1021, 976], via: [[1031, 492], [1031, 900], [1021, 900]] },
+    // ── OUT of restaurant RIGHT: THREE stacked colour lines. The orange
+    //    "Location Selected" pill (2-line) overlaps all three — it's the action
+    //    that activates them. Each line: right, then ONE turn up/down. ──
+    // L6a green → right to x1320, up ONCE into productSel BOTTOM (promo flow). y451.
+    { from: 'restaurant', to: 'productSel', color: 'green', label: 'Location\nSelected', labelColor: 'orange', labelAt: { x: 1041, y: 471.5 }, fromPoint: [951, 451], toPoint: [1320, 348], via: [[1320, 451]] },
+    // L6b blue → right to x1320, down ONCE into Product Page TOP (product flow). y471.5.
+    { from: 'restaurant', to: 'product', color: 'blue', fromPoint: [951, 471.5], toPoint: [1320, 640], via: [[1320, 471.5]] },
+    // L6c purple → right to category center x1021, down ONCE into category TOP (one clean vertical). y492.
+    { from: 'restaurant', to: 'category', color: 'purple', fromPoint: [951, 492], toPoint: [1021, 976], via: [[1021, 492]] },
 
     // L19 bag→location "Change handoff mode or location" — up from bag top to y408, right INTO location LEFT (26270)
     { from: 'bag', to: 'location', color: 'orange', label: 'Change handoff mode or location', labelAt: { x: 1791, y: 518.5 }, fromPoint: [1789, 640], toPoint: [2124, 408], via: [[1789, 408]] },
