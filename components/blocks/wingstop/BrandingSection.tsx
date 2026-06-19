@@ -51,10 +51,10 @@ export function BrandingSection() {
           {defaults.grid.map((src, i) => (
             <li
               key={src + i}
-              className="flex aspect-square items-center justify-center rounded-xl border border-white/12 bg-white/[0.04]"
+              className="flex aspect-square items-center justify-center rounded-xl border border-white/12 bg-white/[0.06]"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt="" className="h-8 w-8 object-contain [filter:brightness(0)_invert(1)] opacity-90" />
+              <img src={src} alt="" className="h-9 w-9 object-contain" />
             </li>
           ))}
         </ul>
@@ -111,11 +111,13 @@ function Chip({ chip, index }: { chip: { src: string; name: string; color: strin
           boxShadow: `0 20px 40px rgba(0,0,0,0.5), inset 0 1px 0 ${chip.color}40`,
         }}
       >
+        {/* The flavor SVGs are a green disc + white glyph — render as-is (no
+            invert) so the glyph stays legible; just lift them with a shadow. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={chip.src}
           alt={chip.name}
-          className="h-[44%] w-[44%] object-contain [filter:brightness(0)_invert(1)_drop-shadow(0_2px_4px_rgba(0,0,0,0.5))]"
+          className="h-[52%] w-[52%] object-contain [filter:drop-shadow(0_3px_6px_rgba(0,0,0,0.55))]"
           style={{ transform: 'translateZ(18px)' }}
         />
       </div>
