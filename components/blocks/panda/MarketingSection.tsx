@@ -193,19 +193,61 @@ function AngledScreen({ page, reduce, index }: { page: DeckPage; reduce: boolean
  * (perspective + rotateX/preserve-3d) made Chrome fail to rasterize the tall
  * wireframes that get scaled down in the plane — they painted solid black even
  * though the image data was fine. A 2D fan avoids that GPU path and renders
- * reliably while still reading as a stacked, angled deck. Each card steps right,
- * tilts a touch more, shrinks (via width), and darkens with depth. */
+ * reliably while still reading as a stacked, angled deck.
+ *
+ * The fan EXPANDS on scroll: progress is computed manually from the stage's
+ * getBoundingClientRect (Motion's useScroll({target}) is frozen by this site's
+ * Lenis smooth scroll). At progress 0 the cards sit in a tight near-stack; as
+ * the section scrolls through the viewport they spread out to the right.
+ * Generous vertical headroom + no top clip; rotated layers promoted to their
+ * own compositor layer (translateZ) so the edges anti-alias cleanly. */
 function WireframeStack({ pages }: { pages: { key: string; label: string; src: string }[] }) {
   const deck = pages.slice(0, 5)
+  const stageRef = useRef<HTMLDivElement>(null)
+  const [p, setP] = useState(0) // 0 = tight stack, 1 = fully spread
+
+  useEffect(() => {
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    if (reduce) {
+      setP(1)
+      return
+    }
+    let raf = 0
+    const tick = () => {
+      raf = 0
+      const el = stageRef.current
+      if (!el) return
+      const r = el.getBoundingClientRect()
+      const vh = window.innerHeight || 1
+      // 0 when the stage top is at the bottom of the viewport, 1 once it has
+      // risen to ~40% up the viewport — a gentle expand as it scrolls in.
+      const prog = (vh - r.top) / (vh * 0.6)
+      setP(Math.max(0, Math.min(1, prog)))
+    }
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(tick)
+    }
+    tick()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      if (raf) cancelAnimationFrame(raf)
+    }
+  }, [])
+
   return (
-    <div className="relative mt-10 flex w-full justify-center overflow-hidden pb-6 pt-2">
-      <div className="relative h-[clamp(300px,40vw,520px)] w-full max-w-[1100px]">
+    // no overflow-hidden here — let the fan breathe so the top corners aren't clipped
+    <div className="relative mt-10 flex w-full justify-center">
+      <div ref={stageRef} className="relative h-[clamp(340px,44vw,560px)] w-full max-w-[1100px]">
         {deck.map((pg, i) => {
-          // front card largest on the left; each successive card steps right,
-          // a bit smaller, tilted slightly more, tucked behind the previous one.
-          const widthPct = 30 - i * 2.5 // 30, 27.5, 25, 22.5, 20
-          const leftPct = 6 + i * 16 // 6, 22, 38, 54, 70
-          const rotate = -8 + i * 1.6 // gentle left-lean, easing toward upright
+          // tight stack at p=0 → spread at p=1. front card largest on the left;
+          // each card steps right, tilts a touch more, shrinks, darkens w/ depth.
+          const widthPct = 30 - i * 2.4
+          const spread = 8 + i * (5 + 11 * p) // step grows with progress
+          const leftPct = spread
+          const rotate = -7 + i * (0.8 + 1.0 * p)
           const darken = Math.min(0.45, i * 0.11)
           return (
             <figure
@@ -214,14 +256,22 @@ function WireframeStack({ pages }: { pages: { key: string; label: string; src: s
               style={{
                 left: `${leftPct}%`,
                 width: `${widthPct}%`,
-                transform: `translateY(-50%) rotate(${rotate}deg)`,
+                transform: `translate3d(0,-50%,0) rotate(${rotate}deg)`,
                 transformOrigin: 'center bottom',
+                transition: 'left 0.18s ease-out, transform 0.18s ease-out',
                 zIndex: deck.length - i,
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden',
               }}
             >
               <div
-                className="relative aspect-[360/560] overflow-hidden rounded-[12px] bg-white ring-1 ring-black/5"
-                style={{ boxShadow: '0 26px 60px -26px rgba(0,0,0,0.8)' }}
+                className="relative aspect-[360/560] overflow-hidden rounded-[12px] bg-white"
+                style={{
+                  boxShadow: '0 26px 60px -26px rgba(0,0,0,0.8)',
+                  // hairline instead of ring; smooths the rotated edge
+                  outline: '1px solid rgba(255,255,255,0.06)',
+                  outlineOffset: '-1px',
+                }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
