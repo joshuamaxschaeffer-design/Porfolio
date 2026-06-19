@@ -84,8 +84,12 @@ export function ProductPagesStage() {
           className="relative order-2 h-full overflow-hidden lg:order-1"
           style={{ perspective: '2200px', perspectiveOrigin: '40% 50%' }}
         >
+          {/* Right-anchored (Gear→Tab→Note left-to-right). The near/large Note
+              page sits at the right and stays in view; the smaller Gear/Tab
+              pages bleed OFF the left edge — so nothing ever clips on the
+              right. Right edge is pulled in so the Note page has room. */}
           <div
-            className="absolute left-[3%] top-1/2 flex items-center gap-2 md:gap-3"
+            className="absolute right-[6%] top-1/2 flex items-center gap-5 md:gap-7"
             style={{
               transform: 'translateY(-50%) rotateX(10deg) rotateY(-32deg) rotateZ(8deg)',
               transformStyle: 'preserve-3d',

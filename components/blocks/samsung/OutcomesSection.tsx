@@ -107,7 +107,7 @@ export function OutcomesSection({ intro }: { intro?: string } = {}) {
         <h2 className="text-[13px] font-semibold uppercase tracking-[0.22em] text-[var(--sg-blue)]">
           {data.heading}
         </h2>
-        <p className="mt-4 max-w-3xl text-[22px] font-medium leading-snug text-[var(--sg-ink)] md:text-[30px]">{lead}</p>
+        <p className="mt-4 max-w-5xl text-[22px] font-medium leading-snug text-[var(--sg-ink)] md:text-[30px]">{lead}</p>
 
         {/* Stat grid — big count-up numbers, 3×2 on desktop */}
         <div className="mt-12 grid grid-cols-1 gap-x-10 gap-y-10 sm:grid-cols-2 md:mt-16 md:grid-cols-3 md:gap-y-14">

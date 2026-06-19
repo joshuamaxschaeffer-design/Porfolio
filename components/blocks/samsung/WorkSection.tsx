@@ -84,15 +84,16 @@ function TableWithScreens() {
   const aligns = ['md:mr-auto', 'md:ml-auto', 'md:mr-auto'] // left, right, left
   return (
     <div className="relative">
-      {/* BIG table, near full-bleed, on the bare section background */}
-      <div className="br-container pt-10 md:pt-16">
+      {/* BIG table — 2× scale, full-bleed beyond the container; half the space
+          above it (#2). Negative inline margins let it exceed br-container. */}
+      <div className="pt-5 md:pt-8">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={`${W}/${inStore.device.file}`}
           alt={inStore.device.alt}
           width={inStore.device.w}
           height={inStore.device.h}
-          className="mx-auto block w-full max-w-[1700px]"
+          className="mx-auto block w-full max-w-[2400px]"
         />
       </div>
 

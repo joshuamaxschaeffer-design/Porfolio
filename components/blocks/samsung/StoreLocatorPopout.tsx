@@ -73,12 +73,15 @@ export function StoreLocatorPopout() {
               />
             </figure>
 
-            {/* IN FRONT: the FIND A STORE panel popping out over the locator area,
-                further left + down, scroll-grows */}
+            {/* IN FRONT: the FIND A STORE panel pops out and FULLY COVERS the
+                locator that lives on the back page (so the map reads once).
+                Pushed further left + bigger to blanket the back page's locator
+                region. scroll-grows. */}
             <figure
-              className="absolute left-[16%] top-[42%] w-[78%] overflow-hidden ring-1 ring-black/10"
+              className="absolute left-[2%] top-[38%] w-[102%] overflow-hidden ring-1 ring-black/10"
               style={{
                 transform: `rotateX(10deg) rotateY(4deg) rotateZ(-5deg) scale(${scale}) translateY(${lift}px)`,
+                transformOrigin: 'left center',
                 transformStyle: 'preserve-3d',
                 boxShadow: '0 70px 120px -30px rgba(20,30,50,0.6), 0 24px 56px -18px rgba(20,30,50,0.45)',
               }}
