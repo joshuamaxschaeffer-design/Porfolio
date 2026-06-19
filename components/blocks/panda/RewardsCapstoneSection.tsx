@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { rewardsCapstone as d } from './data'
 import { Sparkles } from './Sparkles'
-import { RewardsRadial } from './RewardsRadial'
 
 /**
  * REWARDS CAPSTONE — a celebratory close to the Rewards Program chapter:
@@ -70,44 +69,27 @@ function OptionB() {
 function OptionD() {
   return (
     <div className="relative isolate w-full overflow-hidden bg-[var(--px-red)] pb-20 pt-4 text-white lg:pb-28">
-      <div className="relative mx-auto grid w-full max-w-[1180px] grid-cols-1 items-center gap-12 px-6 sm:px-8 lg:grid-cols-2 lg:gap-16">
-        {/* copy */}
-        <Reveal>
-          <h2
-            className="text-[34px] font-semibold leading-[1.04] text-white sm:text-[52px]"
-            style={{ textWrap: 'balance' } as React.CSSProperties}
-          >
-            {d.title}
-          </h2>
-          <p className="mt-4 max-w-[48ch] text-[15px] leading-relaxed text-white/80 sm:text-lg">{d.body}</p>
-          <p className="br-data mt-5 text-sm uppercase tracking-[0.14em]" style={{ color: GOLD }}>
-            {d.kicker}
-          </p>
-          <ul className="mt-6 grid grid-cols-1 gap-2 sm:grid-cols-2">
-            {d.features.slice(0, 8).map((f) => (
-              <li key={f} className="flex items-center gap-2.5 text-[14px] text-white/85">
-                <span className="flex h-5 w-5 items-center justify-center rounded-full text-[var(--px-red)]" style={{ backgroundColor: GOLD }}>
-                  {CHECK}
-                </span>
-                {f}
-              </li>
-            ))}
-          </ul>
-        </Reveal>
-
-        {/* the Good Fortune reveal screen bursting from a radial */}
-        <Reveal delay={120}>
-          <div className="relative mx-auto aspect-square w-full max-w-[420px]">
-            <RewardsRadial className="pointer-events-none absolute inset-0 z-0 h-full w-full" />
-            <div className="absolute left-1/2 top-1/2 z-10 w-[46%] -translate-x-1/2 -translate-y-1/2">
-              <div className="overflow-hidden rounded-[14%/6.5%] bg-white shadow-[0_24px_60px_-16px_rgba(0,0,0,0.6)] ring-1 ring-black/5">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/panda/rewards/good-fortune-awaits.webp" alt="Good Fortune reward reveal" loading="lazy" className="block w-full" />
-              </div>
-            </div>
-          </div>
-        </Reveal>
-      </div>
+      {/* full-width header — spans the same column as the desktop screen below */}
+      <Reveal className="relative mx-auto w-full max-w-[1080px] px-6 sm:px-8">
+        <h2 className="max-w-[20ch] text-[40px] font-semibold leading-[1.03] text-white sm:text-[58px] lg:text-[68px]">
+          {d.title}
+        </h2>
+        <p className="mt-5 max-w-[60ch] text-[16px] leading-relaxed text-white/80 sm:text-xl">{d.body}</p>
+        <p className="br-data mt-5 text-sm uppercase tracking-[0.14em]" style={{ color: GOLD }}>
+          {d.kicker}
+        </p>
+        {/* feature list spread wide — up to four columns across the full width */}
+        <ul className="mt-8 grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
+          {d.features.slice(0, 12).map((f) => (
+            <li key={f} className="flex items-center gap-2.5 text-[14px] text-white/85 sm:text-[15px]">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[var(--px-red)]" style={{ backgroundColor: GOLD }}>
+                {CHECK}
+              </span>
+              {f}
+            </li>
+          ))}
+        </ul>
+      </Reveal>
 
       {/* the program on the big screen too — a desktop redemption view, framed
           in a browser window, closing the "whole program" note on the web. */}
