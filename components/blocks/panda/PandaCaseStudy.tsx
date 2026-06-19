@@ -73,6 +73,9 @@ export function PandaCaseStudy(props: PandaCaseStudyProps = {}) {
       {/* Opens the rewards chapter — full-bleed red hero with the scaled-up
           two-phone mockup + animated gold sparkles/fireworks. */}
       <PremiumRewardsSection intro={props.premiumRewardsIntro} />
+      {/* Loyalty QR enrollment — interactive flow board (6 flows, per-screen
+          hover). Sits between the rewards hero and the rewards-platform detail. */}
+      <LoyaltyQrSection intro={props.loyaltyQrIntro} />
       {/* Rewards-platform beats on the same red field: earning, moments of
           surprise, the reward store, and the native-experience note. Continues
           the celebratory register set by the hero. */}
@@ -80,10 +83,6 @@ export function PandaCaseStudy(props: PandaCaseStudyProps = {}) {
       {/* Celebratory capstone to the rewards chapter — "look at everything we
           built into it." 4 stacked layout options (A/B/C/D) for review. */}
       <RewardsCapstoneSection />
-      {/* Loyalty QR enrollment — red "blueprint" band: the branching receipt-QR
-          userflow + the Cache→Azure→mParticle→Punchh backend handoff. Verified
-          against the Figma prototype graph (REST API). */}
-      <LoyaltyQrSection intro={props.loyaltyQrIntro} />
       {/* Compact marketing-site coda — proves the brand-site workstream (nav/IA
           redesign + page family) after the product story, before Outcomes. */}
       <MarketingSection />

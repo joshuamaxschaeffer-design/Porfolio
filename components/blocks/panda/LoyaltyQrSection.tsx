@@ -38,10 +38,15 @@ export function LoyaltyQrSection({ intro }: { intro?: string } = {}) {
           <p className="mt-4 text-[15px] leading-snug text-white/90 md:text-[19px] md:leading-snug">{intro ?? copy.intro}</p>
         </div>
 
-        {/* proof chips */}
+        {/* proof tags — Baserate informational-pill aesthetic (thin outline, 4px radius, uppercase) */}
         <ul className="mt-7 flex flex-wrap gap-2.5 md:mt-8 md:gap-3">
           {copy.chips.map((c) => (
-            <li key={c} className="rounded-full border border-white/30 bg-white/10 px-3.5 py-1.5 text-[12.5px] font-semibold text-white md:text-[13.5px]">{c}</li>
+            <li
+              key={c}
+              className="rounded-[4px] border border-white/40 px-3 py-1.5 text-[11.5px] font-semibold uppercase tracking-[0.06em] text-white/90 md:text-[12.5px]"
+            >
+              {c}
+            </li>
           ))}
         </ul>
 
@@ -110,11 +115,11 @@ function FlowDetail({ flow, tab, setTab }: { flow: Flow; tab: string; setTab: (i
 
   return (
     <div>
-      {/* header: flow title (left) + flow pills / table of contents (top-right) */}
-      <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+      {/* header: flow title (left) + Flow 1-6 jump-pills (top-right) */}
+      <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <h3 className="shrink-0 text-[16px] font-semibold text-white md:text-[19px]">{flow.title}</h3>
-        <div role="tablist" aria-label="Enrollment flows" className="flex flex-wrap gap-x-4 gap-y-1.5 md:max-w-[62%] md:justify-end">
-          {FLOWS.map((f) => {
+        <div role="tablist" aria-label="Enrollment flows" className="flex flex-wrap gap-2 md:justify-end">
+          {FLOWS.map((f, i) => {
             const active2 = f.id === tab
             return (
               <button
@@ -124,9 +129,12 @@ function FlowDetail({ flow, tab, setTab }: { flow: Flow; tab: string; setTab: (i
                 aria-controls={`panel-${f.id}`}
                 id={`tab-${f.id}`}
                 onClick={() => setTab(f.id)}
-                className={`text-[12.5px] font-medium outline-none transition-colors focus-visible:underline ${active2 ? 'text-white' : 'text-white/55 hover:text-white/85'}`}
+                className={`shrink-0 whitespace-nowrap rounded-full border px-3.5 py-1.5 text-[12.5px] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-white ${
+                  active2 ? 'border-transparent font-medium text-[var(--px-red)]' : 'border-white/35 text-white/75 hover:border-white/60 hover:text-white'
+                }`}
+                style={active2 ? { backgroundColor: '#E8B23A' } : undefined}
               >
-                <span className={active2 ? 'border-b-2 border-white pb-0.5' : ''}>{f.title.replace(/^Flow \d+ · /, '').replace(/ · /g, ' ')}</span>
+                {`Flow ${i + 1}`}
               </button>
             )
           })}
