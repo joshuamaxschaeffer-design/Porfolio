@@ -52,25 +52,8 @@ export function OverviewSection(props: OverviewProps) {
         style={{ background: 'linear-gradient(90deg, #0c0d0d 32%, transparent 72%)' }}
       />
 
-      {/* Floating food cut-outs (decoration). */}
-      {floaters?.[0] && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={floaters[0].src}
-          alt=""
-          aria-hidden
-          className="pointer-events-none absolute right-[8%] top-[14%] z-[1] hidden w-[110px] rotate-[-12deg] drop-shadow-[0_18px_30px_rgba(0,0,0,0.5)] lg:block"
-        />
-      )}
-      {floaters?.[1] && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={floaters[1].src}
-          alt=""
-          aria-hidden
-          className="pointer-events-none absolute bottom-[16%] right-[34%] z-[1] hidden w-[120px] rotate-[8deg] drop-shadow-[0_18px_30px_rgba(0,0,0,0.5)] xl:block"
-        />
-      )}
+      {/* Floating food is NOT placed here — per spec it only goes on flat
+          backgrounds, never on top of another food image (the hero photo). */}
 
       <div className="br-container relative z-[2] pt-16 pb-20 md:pt-24 md:pb-[160px]">
         {/* Typographic wordmark until brand assets land */}

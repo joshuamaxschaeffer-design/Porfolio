@@ -19,8 +19,8 @@
 export const overview = {
   client: 'Wingstop',
   dateRange: '2019 — 2022',
-  lead: 'Wingstop’s menu had outgrown its ordering experience — eleven flavors, endless bundle math, and a different menu at every store. I led the redesign of the app around the thing people actually crave: flavor. It shipped a year before COVID, then carried the business the day dining rooms closed.',
-  role: 'Lead Designer & Art Director (Hathway, now Bounteous). I owned the flavor-first ordering experience end to end — UX strategy, working prototypes, and the art direction of the photography-forward menu — then led and mentored a team of designers (junior through senior) who built it out across platforms, campaigns, and in-store screens.',
+  lead: 'I led the redesign of Wingstop’s ordering experience across mobile, web, and in-store, built around flavor.',
+  role: 'Lead Designer & Art Director (Hathway, now Bounteous). I owned the UX and art direction end to end, then led and mentored a team of designers who built it out across platforms, campaigns, and in-store screens.',
   scope: [
     'Mobile + Web App UI/UX',
     'Art Direction',
@@ -35,6 +35,89 @@ export const overview = {
     { src: '/wingstop/food/float-fry.webp', alt: '' },
     { src: '/wingstop/food/float-wing.webp', alt: '' },
     { src: '/wingstop/food/float-fry-group.webp', alt: '' },
+  ],
+}
+
+/**
+ * SECTION 1 — Scope. A draggable, equal-height carousel of every workstream,
+ * modelled on the Panda "Full Rewards App" rail (RewardsPlatformSection):
+ * native scroll + mouse-drag momentum + jump-pills. Topic = the scope of
+ * everything done across Wingstop's digital presence.
+ */
+export const scope = {
+  eyebrow: 'THE SCOPE',
+  heading: 'A redesign that touched every part of Wingstop’s digital presence',
+  intro: 'One flavor-first system, carried across the native app, the website, in-store screens, and a year of campaigns. Drag through it.',
+  pills: ['MVP App', 'Desktop Site', 'CRM', 'Flavor Pages', 'Branding', 'In-Store', 'UI Updates', 'Web Needs'],
+  modules: [
+    {
+      key: 'mvp',
+      tone: 'green', // solid green background
+      eyebrow: 'MVP APP',
+      title: 'Wingstop App',
+      body: 'The native ordering app, designed mobile-first across the whole flow.',
+      device: '/wingstop/devices/two-devices.webp',
+    },
+    {
+      key: 'desktop',
+      eyebrow: 'DESKTOP SITE',
+      title: 'The full website',
+      body: 'The ordering experience scaled to desktop, end to end.',
+      desktop: '/wingstop/flavor/d-lemon-pepper.webp',
+    },
+    {
+      key: 'crm',
+      eyebrow: 'CRM',
+      title: 'A year of campaigns',
+      body: 'A modular email system powering promotions, delivery, and onboarding.',
+      emails: [
+        '/wingstop/crm/crm-25days.webp',
+        '/wingstop/crm/crm-bignight.webp',
+        '/wingstop/crm/crm-biggame.webp',
+      ],
+    },
+    {
+      key: 'flavor',
+      eyebrow: 'FLAVOR PAGES',
+      title: 'Flavor-first menu',
+      body: 'Photography-forward pages that make every flavor the hero.',
+      desktop: '/wingstop/flavor/d-garlic-parm.webp',
+    },
+    {
+      key: 'branding',
+      eyebrow: 'BRANDING',
+      title: 'A flavor icon system',
+      body: 'An icon designed for every flavor, matched to the Wingstop brand.',
+      icons: [
+        '/wingstop/flavor-icons/atomic.svg',
+        '/wingstop/flavor-icons/lemon-pepper.svg',
+        '/wingstop/flavor-icons/garlic-parm.svg',
+        '/wingstop/flavor-icons/mango-habanero.svg',
+        '/wingstop/flavor-icons/hawaiian.svg',
+        '/wingstop/flavor-icons/louisiana-rub.svg',
+      ],
+    },
+    {
+      key: 'instore',
+      eyebrow: 'IN-STORE',
+      title: 'Digital menu boards',
+      body: 'Vertical and horizontal screens, implemented in restaurants.',
+      boards: ['/wingstop/instore/board-1.webp', '/wingstop/instore/board-2.webp'],
+    },
+    {
+      key: 'ui',
+      eyebrow: 'UI UPDATES',
+      title: 'A full dark mode',
+      body: 'The whole app re-themed so the food photography only got richer.',
+      device: '/wingstop/darkmode/dm-1.webp',
+    },
+    {
+      key: 'web',
+      eyebrow: 'ADDITIONAL WEB NEEDS',
+      title: 'Everything around it',
+      body: 'Store-finder, location, and supporting pages across the site.',
+      stacked: ['/wingstop/location/loc-1.webp', '/wingstop/location/loc-finder.webp'],
+    },
   ],
 }
 
