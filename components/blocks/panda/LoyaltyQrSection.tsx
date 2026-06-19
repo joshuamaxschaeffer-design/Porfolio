@@ -87,16 +87,22 @@ function computeLayout(flow: Flow) {
   // shove the whole flow rightward and leave the left empty).
   const maxConnected = Math.max(0, ...ids.filter((id) => !orphan(id)).map((id) => depth[id]))
   ids.forEach((id) => { if (orphan(id)) depth[id] = maxConnected })
-  // a node fed ONLY by orphans still needs to sit to their right
+  // a node fed ONLY by orphans still needs to sit to their right —
+  // but NEVER drag the entry (a stray node pointing back into Start must not
+  // pull Start to the far right; the entry is a seed and stays leftmost).
   for (let it = 0; it < ids.length; it++) {
     let ch = false
     for (const id of ids) if (orphan(id)) for (const nx of out[id]) {
+      if (entryIds.has(nx)) continue
       const preds = flow.edges.filter((e) => e.to === nx)
       const onlyOrphanFed = preds.length > 0 && preds.every((e) => orphan(e.from))
       if (onlyOrphanFed && depth[nx] < depth[id] + 1) { depth[nx] = depth[id] + 1; ch = true }
     }
     if (!ch) break
   }
+  // Pin every entry to the leftmost column (Start always sits far left), and
+  // make sure nothing connected ends up to the left of it.
+  entryIds.forEach((id) => (depth[id] = 0))
   // normalize so the leftmost column is 0 (every flow spans the full width)
   const minD = Math.min(...ids.map((id) => depth[id]))
   if (minD > 0) ids.forEach((id) => (depth[id] -= minD))
