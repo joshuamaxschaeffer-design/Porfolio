@@ -140,10 +140,10 @@ function StoreBadge({
   )
 }
 
-/** A lightweight white phone frame around a bare 750×1624 app screen. */
+/** A bare 750×1624 app screen in a clean 4px-radius frame. */
 function AppPhone({ src, alt }: { src: string; alt: string }) {
   return (
-    <div className="relative aspect-[750/1624] w-full overflow-hidden rounded-[14%/6.5%] bg-white shadow-[0_18px_44px_-14px_rgba(0,0,0,0.32)] ring-1 ring-black/10">
+    <div className="relative aspect-[750/1624] w-full overflow-hidden rounded-[4px] bg-white shadow-[0_18px_44px_-14px_rgba(0,0,0,0.32)] ring-1 ring-black/10">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={src} alt={alt} loading="lazy" className="block h-full w-full object-cover" />
     </div>
@@ -195,31 +195,59 @@ export function OutcomesSection({ intro }: { intro?: string } = {}) {
               </div>
             </div>
 
-            {/* right — two unused app screens + the Panda Express app icon */}
-            <div className="flex items-center justify-center gap-5 sm:gap-7 lg:shrink-0">
-              {data.platforms.screens.map((s, i) => (
-                <div key={s.src} className={i === 1 ? 'mt-8 w-[34%] max-w-[150px] sm:w-[150px]' : 'w-[34%] max-w-[150px] sm:w-[150px]'}>
-                  <AppPhone src={s.src} alt={s.alt} />
-                </div>
-              ))}
-              <div className="w-[22%] max-w-[104px] sm:w-[104px]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={data.platforms.appIcon}
-                  alt="Panda Express app icon"
-                  loading="lazy"
-                  className="block w-full drop-shadow-[0_14px_28px_rgba(0,0,0,0.16)]"
-                />
-              </div>
-            </div>
+            {/* right — an overlapping horizontal stack: the iOS-style app icon
+                sits front, at the bottom-left; the two app screens fan up and to
+                the right behind it, each nudged ~40px right + a little higher and
+                tucked partly behind the one in front. */}
+            <PlatformStack screens={data.platforms.screens} appIcon={data.platforms.appIcon} />
           </div>
         </div>
-
-        {/* Source footnote — public figures, quietly cited */}
-        <p className="br-data mt-12 max-w-4xl text-[12px] leading-relaxed text-[var(--br-muted-2)] md:mt-16">
-          {data.sources}
-        </p>
       </div>
     </section>
+  )
+}
+
+/**
+ * The closing platform composition. Elements (icon + 2 phones) overlap left→right:
+ * icon front-and-lowest at the left, phones receding up-and-right behind it,
+ * offset ~40px horizontally each. Bigger phones (~35% up from the prior 150px).
+ */
+function PlatformStack({
+  screens,
+  appIcon,
+}: {
+  screens: { src: string; alt: string }[]
+  appIcon: string
+}) {
+  const PHONE_W = 200 // ~35% larger than the previous 150px
+  const ICON = 116
+  const STEP = 40 // horizontal overlap step
+  // phone heights from the 750×1624 frame, so we can size the stage
+  const phoneH = Math.round((PHONE_W * 1624) / 750)
+  const stageW = ICON + STEP * 2 + PHONE_W
+  const stageH = phoneH + 36
+  return (
+    <div className="mx-auto lg:mx-0 lg:shrink-0" style={{ width: stageW, maxWidth: '100%' }}>
+      <div className="relative" style={{ width: stageW, height: stageH }}>
+        {/* back phone — furthest right + highest, lowest z */}
+        <div className="absolute" style={{ left: ICON + STEP * 2 - 86, top: 0, width: PHONE_W, zIndex: 1 }}>
+          <AppPhone src={screens[1].src} alt={screens[1].alt} />
+        </div>
+        {/* front phone — middle, nudged right of the icon, mid z */}
+        <div className="absolute" style={{ left: ICON - 40, top: 18, width: PHONE_W, zIndex: 2 }}>
+          <AppPhone src={screens[0].src} alt={screens[0].alt} />
+        </div>
+        {/* app icon — front, bottom-left, highest z */}
+        <div className="absolute" style={{ left: 0, bottom: 0, width: ICON, zIndex: 3 }}>
+          <div
+            className="overflow-hidden bg-white shadow-[0_18px_40px_-12px_rgba(0,0,0,0.28)] ring-1 ring-black/5"
+            style={{ borderRadius: '22.37%', padding: ICON * 0.11 }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={appIcon} alt="Panda Express app icon" loading="lazy" className="block w-full" />
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
