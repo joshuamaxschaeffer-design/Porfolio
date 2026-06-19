@@ -1,80 +1,122 @@
 /**
  * Samsung case study — content defaults.
  * Same pattern as the Panda/Wingstop builds: all copy lives here; the Payload
- * block only carries optional overrides. Outcomes stats sourced from public
- * reporting (verified June 2026):
- *  - IDC Worldwide Quarterly Mobile Phone Tracker (318.1M shipped 2014; #1 by
- *    annual shipments throughout 2013–2017)
- *  - Reuters / launch press, Oct 2013 (Galaxy S4: 40M in 6 months, 327
- *    carriers, 155 countries; fastest-selling Android of its time)
- *  - Samsung @ CES 2017 (Gear VR: 5M+ headsets in use)
- *  - Reuters, Nov 2013 ($14B marketing budget — "biggest in history")
- * The 8-launch count is biographical (S4→S7 edge, Note 3→7), not external.
+ * block only carries optional overrides.
+ *
+ * Tone (per Joshua, 2026-06-19): this was his FIRST design job — frame it as a
+ * learning experience, do NOT exaggerate outcomes. The role: web/product pages,
+ * helping build an in-store experience UI, and hundreds of social mockups
+ * (photo editing + device compositing). Outcomes lead with his own output;
+ * Samsung's corporate scale appears only as labelled context, not as credit.
+ * The one external figure is IDC (Samsung #1 smartphone maker, 2013–2017).
  */
 
 export const overview = {
   client: 'Samsung',
   dateRange: '2013 — 2017',
-  lead: 'Before product systems and rewards programs, I was a designer inside the biggest consumer-electronics marketing machine on earth. At Razorfish, working on Samsung Mobile, I saw each new Galaxy before the world did — and helped build the launch pages, social content, and in-store experiences that introduced them to it.',
-  role: 'Designer — Razorfish, for Samsung Mobile. Early career: launch and product pages for each new Galaxy under pre-announcement NDA, photo editing and mockups for Instagram and Facebook, and UI for in-store experiences — including an interactive table advertising Samsung’s VR, Gear, and phones.',
+  lead: 'This was my first real design job — and a fast one to learn on. At Razorfish, working on the Samsung Mobile account, I designed product and landing pages, helped build the UI for an in-store experience, and produced hundreds of social posts: photo editing, device mockups, and a steady feed for one of the biggest brands on the platform.',
+  role: 'Junior / mid designer — Razorfish, on the Samsung Mobile account. Early-career work: web design for product and launch pages, contributing to the UI for an interactive in-store experience, and hundreds of social media mockups spanning photo editing and device compositing.',
   scope: [
-    'Launch & Product Pages',
-    'Social Media Content',
-    'Photo Editing & Mockups',
-    'In-Store Experiences',
-    'Interactive Table UI',
-    'VR & Wearables',
+    'Web & Product Pages',
+    'Social Media Mockups',
+    'Photo Editing & Compositing',
+    'In-Store Experience UI',
+    'Device Mockups',
   ],
 }
 
 export const brief = {
   heading: 'THE BRIEF',
-  intro: 'Working on Samsung Mobile meant designing for three constraints at once: total secrecy before each announcement, day-one global scale after it, and a launch calendar that never stopped moving.',
+  intro: 'As a junior designer on the account, I learned the craft inside real constraints: brand guidelines I had to hit exactly, a launch calendar that never stopped, and a social feed that was hungry every single day.',
   problems: [
     {
       tag: '01',
-      title: 'Secrecy as a workflow',
-      body: 'We saw each Galaxy before its announcement. Designing under NDA meant locked-down assets and launch pages built for phones that officially didn’t exist yet.',
+      title: 'A brand bible to hit',
+      body: 'Samsung Mobile work meant matching a strict global brand system — type, color, product photography rules — on every page and post. A great place to learn precision early.',
     },
     {
       tag: '02',
-      title: 'Day-one scale',
-      body: 'Nothing shipped small. A product page went live to the world’s largest phone audience the moment a keynote ended — there was no soft launch, ever.',
+      title: 'A feed that never sleeps',
+      body: 'Social was constant. Hundreds of mockups over the years — photo edits and device composites — kept Galaxy phones, tablets, and Gear in the feed across launches and promotions.',
     },
     {
       tag: '03',
       title: 'A calendar that never stops',
-      body: 'Galaxy S in the spring, Note in the fall, Gear and VR in between. Every launch overlapped the next one’s prep, for four straight years.',
+      body: 'Galaxy S in the spring, Note in the fall, Gear and Tab in between. New product work overlapped the last campaign’s wrap-up, for several years running.',
     },
   ],
 }
 
 export const work = {
   heading: 'THE WORK',
-  intro: 'Three workstreams, one story per launch — the web pages that announced each phone, the social engine that kept it in the feed, and the retail experiences that put it in people’s hands.',
-  rows: [
-    {
-      tag: 'LAUNCH & PRODUCT PAGES',
-      title: 'Pages for phones that didn’t exist yet',
-      body: 'For each new Galaxy — S4 through S7 edge, Note 3 through 7 — we designed the landing and product pages behind the keynote, ready to flip live the second the announcement ended.',
-      placeholder: 'Launch page designs — in progress',
-    },
-    {
-      tag: 'SOCIAL ENGINE',
-      title: 'Feeding Instagram and Facebook',
-      body: 'Photo editing and mockups for Samsung Mobile’s social channels — translating studio product shots into a daily stream of posts for one of the most-followed brands on either platform.',
-      placeholder: 'Social content + mockups — in progress',
-    },
-    {
-      tag: 'IN-STORE + TABLE UI',
-      title: 'The table that sold the ecosystem',
-      body: 'Interactive UI for an in-store table experience advertising Samsung’s VR, Gear wearables, and phones — retail theater guests could put their hands on, demoing the whole ecosystem in one surface.',
-      placeholder: 'Table UI screens — in progress',
-    },
-  ],
+  intro: 'Three kinds of work across the account: the product and landing pages, the in-store experience I helped build, and the social feed I produced hundreds of mockups for.',
   closer:
-    'Four years, eight flagship launches, one lesson that stuck: design lands hardest when the whole machine — web, social, retail — tells a single story.',
+    'It was the job where I learned the fundamentals — brand discipline, production speed, and how web, retail, and social all have to tell the same story.',
 }
+
+/**
+ * Work imagery — the real assets (Joshua's, 2013–17), optimized to WebP in
+ * /public/samsung/work. Grouped by workstream so the Work section can lay each
+ * out at its true aspect ratio (no forcing widescreen captures into phone
+ * frames). Dimensions are the post-optimization pixel sizes.
+ */
+export const webPages = {
+  tag: 'WEB & PRODUCT PAGES',
+  title: 'Product and landing pages',
+  body: 'Long-scroll product pages for Galaxy phones and tablets — building high-fidelity layouts around a handful of supplied product shots, on a brand system I had to match exactly.',
+  shots: [
+    { file: 'landing-1.webp', w: 1100, h: 2954, alt: 'Samsung Gear Fit product page — “Fit for Your Active Lifestyle”' },
+    { file: 'landing-3.webp', w: 1100, h: 2897, alt: 'Samsung Galaxy Tab S product page — “Slim Design, Stunning Performance”' },
+    { file: 'landing-2.webp', w: 1100, h: 2731, alt: 'Samsung Galaxy Note 3 product page — “Big Screen, Big Difference”' },
+  ],
+}
+
+export const inStore = {
+  tag: 'IN-STORE EXPERIENCE',
+  title: 'A table that demoed the ecosystem',
+  body: 'I helped design the UI for an interactive, table-mounted retail experience — VR 360° video, a Gear Fit step-count game, and an S7 store locator — that combined video with hands-on takeovers.',
+  // The physical table render (transparent bg) leads, then the flat screens.
+  device: { file: 'table-device.webp', w: 1800, h: 1666, alt: 'Interactive in-store table with the Galaxy S7 + Gear VR experience on screen' },
+  screens: [
+    { file: 'table-1.webp', w: 1600, h: 900, alt: 'In-store table screen — choose a Galaxy S7 “splash” reveal' },
+    { file: 'table-3.webp', w: 1600, h: 900, alt: 'In-store table screen — tap to raise your Gear Fit step count' },
+    { file: 'table-2.webp', w: 1600, h: 900, alt: 'In-store table screen — “Off Day” meal calculator with Gear Fit' },
+  ],
+  locator: { file: 'store-locator-module.webp', w: 1400, h: 722, alt: 'S7 store-locator module — find a store near you' },
+}
+
+/**
+ * Social mockups — a curated 10 of the hundreds produced for the account.
+ * Files live in /public/samsung/social (optimized WebP). The squares are the
+ * native Facebook/Instagram crop (603²); gear-header is a wide web banner.
+ */
+export interface SocialItem {
+  /** stable key used by the carousel layout */
+  slug: string
+  /** filename in /public/samsung/social */
+  file: string
+  /** intrinsic px width (post-optimization) */
+  w: number
+  /** intrinsic px height */
+  h: number
+  alt: string
+  /** short hover caption */
+  caption: string
+}
+
+export const socialItems: SocialItem[] = [
+  { slug: 'gold3', file: 'gold3.webp', w: 603, h: 603, alt: 'Galaxy S5 gold — front, edge, and back across five carriers', caption: 'Galaxy S5 · carrier lineup' },
+  { slug: 'gold', file: 'gold.webp', w: 603, h: 603, alt: 'Galaxy S5 in gold, charcoal, and white, stacked', caption: 'Galaxy S5 · three finishes' },
+  { slug: 'gold2', file: 'gold2.webp', w: 603, h: 603, alt: 'Galaxy S5 gold back — camera and dimpled texture macro', caption: 'Galaxy S5 · macro' },
+  { slug: 'gear-header', file: 'gear-header.webp', w: 1327, h: 370, alt: 'Samsung Gear web banner — “The Next Big Thing Is Here”', caption: 'Gear · web banner' },
+  { slug: 'gear-s-front', file: 'gear-s-front.webp', w: 603, h: 603, alt: 'Samsung Gear S smartwatch, front, on a blue gradient', caption: 'Gear S · social' },
+  { slug: 'gear-s-angle', file: 'gear-s-angle.webp', w: 603, h: 603, alt: 'Samsung Gear S smartwatch at a three-quarter angle', caption: 'Gear S · angle' },
+  { slug: 'men-fashion', file: 'men-fashion.webp', w: 603, h: 603, alt: 'Galaxy Note in hand showing a men’s fashion article', caption: 'Note · lifestyle' },
+  { slug: 'att-note3', file: 'att-note3.webp', w: 603, h: 603, alt: 'Galaxy S4 + Gear holiday post, co-branded with AT&T', caption: 'Holiday · AT&T co-op' },
+  { slug: 'bestbuy-holiday', file: 'bestbuy-holiday.webp', w: 603, h: 603, alt: 'Galaxy Note 10.1 holiday illustration post, co-branded with Best Buy', caption: 'Holiday · Best Buy co-op' },
+  { slug: 's5-white-camera', file: 's5-white-camera.webp', w: 603, h: 603, alt: 'Galaxy S5 white back — camera macro', caption: 'Galaxy S5 · camera' },
+  { slug: 'galaxy-tab-s', file: 'galaxy-tab-s.webp', w: 603, h: 603, alt: 'Samsung Galaxy Tab S — front display and slim profile', caption: 'Galaxy Tab S' },
+]
 
 export interface SamsungStat {
   /** numeric target the count-up animates to */
@@ -89,46 +131,27 @@ export interface SamsungStat {
 }
 
 export const outcomes = {
-  heading: 'OUTCOMES',
-  lead: 'These aren’t my numbers — they’re the scale of the machine this work shipped inside. Four years designing for the largest audience in consumer tech.',
+  heading: 'WHAT I TOOK AWAY',
+  lead: 'I won’t pretend a junior designer moved these numbers — that work belonged to a huge team. But producing at this volume, on a brand this exacting, is where I learned the craft. Here’s the takeaway, honestly framed.',
   stats: [
+    {
+      value: 100,
+      suffix: '+',
+      label: 'Social Mockups',
+      description: 'My own output over the run — photo edits and device composites for the brand’s social feed. The sample above is a small slice.',
+    },
+    {
+      value: 4,
+      label: 'Years on the Account',
+      description: 'My first design job, on the Samsung Mobile account at Razorfish — long enough to learn production speed and brand discipline.',
+    },
     {
       value: 1,
       prefix: '#',
-      label: 'Smartphone Maker',
-      description: 'Samsung led global smartphone shipments every year of this run (IDC).',
-    },
-    {
-      value: 318,
-      suffix: 'M',
-      label: 'Phones Shipped, 2014',
-      description: 'Annual shipments at the era’s peak — the audience every launch page served (IDC).',
-    },
-    {
-      value: 40,
-      suffix: 'M',
-      label: 'Galaxy S4s in 6 Months',
-      description: 'The fastest-selling Android phone of its time — launched on 327 carriers across 155 countries.',
-    },
-    {
-      value: 5,
-      suffix: 'M+',
-      label: 'Gear VR Headsets',
-      description: 'In use by CES 2017 — the device the in-store table UI demoed and sold.',
-    },
-    {
-      value: 14,
-      prefix: '$',
-      suffix: 'B',
-      label: 'Marketing Engine',
-      description: 'Samsung’s 2013 marketing budget — reported at the time as the biggest in history.',
-    },
-    {
-      value: 8,
-      label: 'Flagship Launches',
-      description: 'Galaxy S4 through S7 edge and Note 3 through 7 — each designed under pre-announcement NDA.',
+      label: 'Smartphone Maker (Context)',
+      description: 'For context, not credit: Samsung led global smartphone shipments through these years (IDC). It was a serious brand to learn on.',
     },
   ] as SamsungStat[],
   sources:
-    'Sources: IDC Worldwide Quarterly Mobile Phone Tracker · Samsung / Reuters launch reporting, 2013 · Samsung @ CES 2017 · Reuters marketing reporting, 2013',
+    'Context figure: IDC Worldwide Quarterly Mobile Phone Tracker (Samsung #1 by annual smartphone shipments, 2013–2017). Output figures are my own estimate from the period.',
 }

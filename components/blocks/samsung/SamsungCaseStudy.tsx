@@ -26,12 +26,14 @@ export interface SamsungCaseStudyProps {
 }
 
 /**
- * Samsung case study — lean 4-section layout (per Joshua, 2026-06-10):
- * Overview · The Brief · The Work · Outcomes (fully built, era-scale stats
- * honestly framed). Early-career work at Razorfish for Samsung Mobile,
- * 2013–2017: launch/product pages under NDA, social content, in-store
- * experiences incl. the VR/Gear/phones table UI. Reuses the br-* editorial
- * system with the accent swapped to Samsung blue via --sg-blue.
+ * Samsung case study — lean 4-section layout: Overview · The Brief · The Work ·
+ * What I Took Away. Joshua's FIRST design job, at Razorfish on the Samsung
+ * Mobile account (2013–17), framed as a learning experience (per Joshua,
+ * 2026-06-19 — do NOT exaggerate outcomes). The Work shows the REAL assets at
+ * native aspect ratios: product/landing pages, the in-store experience UI he
+ * helped build, and a draggable bento carousel of the social mockups (a sample
+ * of the hundreds produced). Reuses the br-* editorial system with the accent
+ * swapped to Samsung blue via --sg-blue.
  */
 export function SamsungCaseStudy(props: SamsungCaseStudyProps = {}) {
   return (
