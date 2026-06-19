@@ -28,7 +28,7 @@ export function LoyaltyQrSection({ intro }: { intro?: string } = {}) {
       data-anim="loyalty-qr-section"
       className="relative isolate w-full overflow-hidden border-y border-white/20 bg-[var(--px-red)]"
     >
-      <div className="mx-auto w-full max-w-[1600px] px-5 py-14 md:px-10 md:py-20">
+      <div className="br-container py-14 md:py-20">
         {/* header */}
         <div className="max-w-[64ch]">
           <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-white/70">Panda Rewards · Loyalty Pilot</p>
@@ -50,18 +50,6 @@ export function LoyaltyQrSection({ intro }: { intro?: string } = {}) {
           ))}
         </ul>
 
-        {/* legend */}
-        <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-[11.5px] text-white/70 md:mt-9">
-          {(['entry', 'screen', 'event', 'api'] as const).map((t) => (
-            <span key={t} className="inline-flex items-center gap-1.5">
-              <span className="inline-flex h-6 w-6 items-center justify-center rounded-[6px]" style={{ boxShadow: `inset 0 0 0 1px ${tone(t).ring}`, background: tone(t).glow }}>
-                <NodeGlyph type={t} device={deviceOf(flow)} className="h-4 w-4 text-white" />
-              </span>
-              {TYPE_LABEL[t]}
-            </span>
-          ))}
-        </div>
-
         {/* active flow panel (the tab row lives in the flow header, top-right) */}
         <div role="tabpanel" id={`panel-${flow.id}`} aria-labelledby={`tab-${flow.id}`} className="mt-8 md:mt-10">
           <FlowDetail flow={flow} tab={tab} setTab={setTab} />
@@ -82,10 +70,17 @@ function computeLayout(flow: Flow) {
   const out: Record<string, string[]> = {}; const indeg: Record<string, number> = {}
   ids.forEach((id) => { out[id] = []; indeg[id] = 0 })
   flow.edges.forEach((e) => { if (idset.has(e.from) && idset.has(e.to) && e.from !== e.to) { out[e.from].push(e.to); indeg[e.to]++ } })
-  let seeds = flow.nodes.filter((n) => n.type === 'entry').map((n) => n.id)
+  const entryIds = new Set(flow.nodes.filter((n) => n.type === 'entry').map((n) => n.id))
+  let seeds = [...entryIds]
   if (!seeds.length) seeds = ids.filter((id) => indeg[id] === 0)
   if (!seeds.length) seeds = [ids[0]]
   const depth: Record<string, number> = {}; ids.forEach((id) => (depth[id] = 0)); seeds.forEach((s) => (depth[s] = 0))
+  for (let it = 0; it < ids.length; it++) { let ch = false; for (const id of ids) for (const nx of out[id]) if (depth[nx] < depth[id] + 1) { depth[nx] = depth[id] + 1; ch = true }; if (!ch) break }
+  // Push disconnected / orphan nodes (no incoming edge, not an entry) to the FAR RIGHT
+  // instead of letting them pile up at column 0. (Floating screens + unattached APIs.)
+  const maxReached = Math.max(0, ...ids.map((id) => depth[id]))
+  ids.forEach((id) => { if (indeg[id] === 0 && !entryIds.has(id)) depth[id] = maxReached })
+  // re-relax so any node attached to a moved orphan (e.g. an API on a floating screen) follows it
   for (let it = 0; it < ids.length; it++) { let ch = false; for (const id of ids) for (const nx of out[id]) if (depth[nx] < depth[id] + 1) { depth[nx] = depth[id] + 1; ch = true }; if (!ch) break }
   const colMap: Record<number, string[]> = {}; ids.forEach((id) => { (colMap[depth[id]] = colMap[depth[id]] || []).push(id) })
   const cols = Math.max(...ids.map((id) => depth[id])) + 1
@@ -139,6 +134,18 @@ function FlowDetail({ flow, tab, setTab }: { flow: Flow; tab: string; setTab: (i
             )
           })}
         </div>
+      </div>
+
+      {/* legend — sits below the flow title, above the graph */}
+      <div className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-[11.5px] text-white/70 md:mb-7">
+        {(['entry', 'screen', 'event', 'api'] as const).map((t) => (
+          <span key={t} className="inline-flex items-center gap-1.5">
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-[6px]" style={{ boxShadow: `inset 0 0 0 1px ${tone(t).ring}`, background: tone(t).glow }}>
+              <NodeGlyph type={t} device={device} className="h-4 w-4 text-white" />
+            </span>
+            {TYPE_LABEL[t]}
+          </span>
+        ))}
       </div>
 
       {/* graph — always fits the width */}
