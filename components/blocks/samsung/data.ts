@@ -14,7 +14,7 @@
 export const overview = {
   client: 'Samsung',
   dateRange: '2013 — 2017',
-  lead: 'This was my first real design job — and a fast one to learn on. At Razorfish, working on the Samsung Mobile account, I designed product and landing pages, helped build the UI for an in-store experience, and produced hundreds of social posts: photo editing, device mockups, and a steady feed for one of the biggest brands on the platform.',
+  lead: 'A first real design job — and a fast one to learn on. At Razorfish, on the Samsung Mobile account: product and landing pages, the UI for an in-store experience, and hundreds of social posts — photo editing, device mockups, and a steady feed for one of the biggest brands on the platform.',
   role: 'Junior / mid designer — Razorfish, on the Samsung Mobile account. Early-career work: web design for product and launch pages, contributing to the UI for an interactive in-store experience, and hundreds of social media mockups spanning photo editing and device compositing.',
   scope: [
     'Web & Product Pages',
@@ -27,7 +27,7 @@ export const overview = {
 
 export const brief = {
   heading: 'THE BRIEF',
-  intro: 'As a junior designer on the account, I learned the craft inside real constraints: brand guidelines I had to hit exactly, a launch calendar that never stopped, and a social feed that was hungry every single day.',
+  intro: 'A junior seat on the account meant learning the craft inside real constraints: brand guidelines to hit exactly, a launch calendar that never stopped, and a social feed that was hungry every single day.',
   problems: [
     {
       tag: '01',
@@ -49,9 +49,9 @@ export const brief = {
 
 export const work = {
   heading: 'THE WORK',
-  intro: 'Three kinds of work across the account: the product and landing pages, the in-store experience I helped build, and the social feed I produced hundreds of mockups for.',
+  intro: 'Three kinds of work across the account: the product and landing pages, the in-store experience, and the social feed behind hundreds of mockups.',
   closer:
-    'It was the job where I learned the fundamentals — brand discipline, production speed, and how web, retail, and social all have to tell the same story.',
+    'The job where the fundamentals clicked — brand discipline, production speed, and how web, retail, and social all have to tell the same story.',
 }
 
 /**
@@ -63,7 +63,7 @@ export const work = {
 export const webPages = {
   tag: 'WEB & PRODUCT PAGES',
   title: 'Product and landing pages',
-  body: 'Long-scroll product pages for Galaxy phones and tablets — building high-fidelity layouts around a handful of supplied product shots, on a brand system I had to match exactly.',
+  body: 'Long-scroll product pages for Galaxy phones and tablets — high-fidelity layouts built around a handful of supplied product shots, on a brand system to match exactly.',
   shots: [
     { file: 'landing-1.webp', w: 1100, h: 2954, alt: 'Samsung Gear Fit product page — “Fit for Your Active Lifestyle”' },
     { file: 'landing-3.webp', w: 1100, h: 2897, alt: 'Samsung Galaxy Tab S product page — “Slim Design, Stunning Performance”' },
@@ -74,7 +74,7 @@ export const webPages = {
 export const inStore = {
   tag: 'IN-STORE EXPERIENCE',
   title: 'A table that demoed the ecosystem',
-  body: 'I helped design the UI for an interactive, table-mounted retail experience — VR 360° video, a Gear Fit step-count game, and an S7 store locator — that combined video with hands-on takeovers.',
+  body: 'UI for an interactive, table-mounted retail experience — VR 360° video, a Gear Fit step-count game, and an S7 store locator — combining video with hands-on takeovers.',
   // The physical table render (transparent bg) leads, then the flat screens.
   device: { file: 'table-device.webp', w: 1800, h: 1666, alt: 'Interactive in-store table with the Galaxy S7 + Gear VR experience on screen' },
   screens: [
@@ -131,19 +131,19 @@ export interface SamsungStat {
 }
 
 export const outcomes = {
-  heading: 'WHAT I TOOK AWAY',
-  lead: 'I won’t pretend a junior designer moved these numbers — that work belonged to a huge team. But producing at this volume, on a brand this exacting, is where I learned the craft. Here’s the takeaway, honestly framed.',
+  heading: 'THE TAKEAWAY',
+  lead: 'No pretending a junior designer moved these numbers — that work belonged to a huge team. But producing at this volume, on a brand this exacting, is where the craft got built. Honestly framed.',
   stats: [
     {
       value: 100,
       suffix: '+',
       label: 'Social Mockups',
-      description: 'My own output over the run — photo edits and device composites for the brand’s social feed. The sample above is a small slice.',
+      description: 'Personal output over the run — photo edits and device composites for the brand’s social feed. The sample above is a small slice.',
     },
     {
       value: 4,
       label: 'Years on the Account',
-      description: 'My first design job, on the Samsung Mobile account at Razorfish — long enough to learn production speed and brand discipline.',
+      description: 'A first design job, on the Samsung Mobile account at Razorfish — long enough to build production speed and brand discipline.',
     },
     {
       value: 1,
@@ -153,5 +153,5 @@ export const outcomes = {
     },
   ] as SamsungStat[],
   sources:
-    'Context figure: IDC Worldwide Quarterly Mobile Phone Tracker (Samsung #1 by annual smartphone shipments, 2013–2017). Output figures are my own estimate from the period.',
+    'Context figure: IDC Worldwide Quarterly Mobile Phone Tracker (Samsung #1 by annual smartphone shipments, 2013–2017). Output figures are an estimate from the period.',
 }

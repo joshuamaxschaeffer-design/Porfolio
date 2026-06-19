@@ -23,8 +23,6 @@ const P = '/samsung/social'
 type Cell =
   | { kind: 'stack'; top: string; bottom: string }
   | { kind: 'feature'; item: string }
-  // wide banner strip (top, half height) + a square beneath it
-  | { kind: 'wideStack'; banner: string; bottom: string }
 
 function bySlug(slug: string): SocialItem {
   const it = socialItems.find((s) => s.slug === slug)
@@ -32,16 +30,16 @@ function bySlug(slug: string): SocialItem {
   return it
 }
 
-/** Column layout — left → right reading order of the mosaic. 10 squares + the
- *  wide Gear banner = 11 tiles across 6 columns. */
+/** Column layout — left → right reading order of the mosaic. 10 square tiles
+ *  (the wide Gear banner was removed per Joshua, 2026-06-19 — uniform tiles). */
 const COLUMNS: Cell[] = [
   { kind: 'feature', item: 'gold3' }, // hero: S5 carrier lineup
   { kind: 'stack', top: 'gold', bottom: 'gold2' }, // S5 finishes + macro
-  { kind: 'wideStack', banner: 'gear-header', bottom: 'gear-s-front' }, // Gear banner + Gear S
-  { kind: 'stack', top: 'gear-s-angle', bottom: 's5-white-camera' }, // Gear S angle + S5 camera
+  { kind: 'stack', top: 'gear-s-front', bottom: 'gear-s-angle' }, // Gear S pair
   { kind: 'feature', item: 'men-fashion' }, // Note lifestyle in-hand
   { kind: 'stack', top: 'att-note3', bottom: 'bestbuy-holiday' }, // retail co-ops
   { kind: 'feature', item: 'galaxy-tab-s' }, // Tab S
+  { kind: 'feature', item: 's5-white-camera' }, // S5 camera macro
 ]
 
 export function SocialCarousel() {
@@ -272,14 +270,6 @@ function Column({ col }: { col: Cell }) {
     return (
       <div className="sg-social-col">
         <Tile item={bySlug(col.top)} aspect="square" />
-        <Tile item={bySlug(col.bottom)} aspect="square" />
-      </div>
-    )
-  }
-  if (col.kind === 'wideStack') {
-    return (
-      <div className="sg-social-col">
-        <Tile item={bySlug(col.banner)} aspect="wide" />
         <Tile item={bySlug(col.bottom)} aspect="square" />
       </div>
     )

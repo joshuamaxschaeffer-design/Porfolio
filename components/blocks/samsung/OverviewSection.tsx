@@ -1,5 +1,4 @@
 import { overview as defaults } from './data'
-import { GradientBackdrop } from './GradientBackdrop'
 
 interface OverviewProps {
   dateRange?: string
@@ -9,10 +8,10 @@ interface OverviewProps {
 }
 
 /**
- * Section 1 — dark cinematic hero. The real white Samsung wordmark (traced SVG)
- * centered up top, "2013 — 16" in blue beneath it, the intro line large and
- * airy, then role + scope. A faint gradient wash bleeds in behind so the dark
- * hero isn't flat (echoes the Behance title card).
+ * Section 1 — Overview. WHITE title card (per Joshua, 2026-06-19) so the dark
+ * Samsung wordmark reads boldly against it, left-aligned to match the other
+ * case studies (Panda/Wingstop). Big logo, restrained lead, then role + scope.
+ * The dark cinematic treatment kicks in from The Brief onward.
  */
 export function OverviewSection(props: OverviewProps) {
   const dateRange = props.dateRange ?? defaults.dateRange
@@ -21,42 +20,35 @@ export function OverviewSection(props: OverviewProps) {
   const scope = props.scope ?? defaults.scope
 
   return (
-    <section id="overview" className="relative overflow-hidden">
-      {/* faint ambient wash, low + behind */}
-      <GradientBackdrop intensity={0.22} className="[mask-image:radial-gradient(120%_90%_at_50%_0%,black,transparent_70%)]" />
-
-      <div className="br-container relative pt-20 pb-20 text-center md:pt-28 md:pb-28">
-        {/* real Samsung wordmark, white */}
+    <section id="overview" className="bg-white text-[#16181d]">
+      <div className="br-container pt-16 pb-20 md:pt-24 md:pb-28">
+        {/* big dark wordmark */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/samsung/brand/samsung-wordmark.svg"
+          src="/samsung/brand/samsung-wordmark-ink.svg"
           alt="Samsung"
-          className="mx-auto h-7 w-auto opacity-95 md:h-9"
+          className="h-12 w-auto md:h-[68px]"
         />
-        <p
-          className="br-data mt-4 text-[13px] font-medium uppercase tracking-[0.5em] text-[var(--sg-blue)] md:text-sm"
-        >
+        <p className="br-data mt-4 text-[13px] font-medium uppercase tracking-[0.4em] text-[var(--sg-blue)] md:text-sm">
           2013 — 16
         </p>
 
-        <p className="mx-auto mt-12 max-w-4xl text-[26px] font-medium leading-[1.18] text-[var(--sg-ink)] md:mt-16 md:text-[44px]">
+        <p className="mt-10 max-w-3xl text-[20px] font-medium leading-snug text-[#16181d] md:mt-12 md:text-[26px]">
           {lead}
         </p>
 
-        <div className="mx-auto mt-12 grid max-w-3xl grid-cols-1 gap-8 text-left sm:grid-cols-[auto_1fr] sm:gap-12 md:mt-16">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--sg-muted-2)]">Role</p>
-            <p className="mt-2 text-[15px] leading-normal text-[var(--sg-muted)]">{role}</p>
-          </div>
+        <div className="mt-10 max-w-3xl md:mt-12">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#9aa0aa]">Role</p>
+          <p className="mt-2 text-[15px] leading-normal text-[#4b515c]">{role}</p>
         </div>
 
-        <div className="mx-auto mt-8 max-w-3xl text-left">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--sg-muted-2)]">Scope</p>
+        <div className="mt-7 max-w-3xl">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#9aa0aa]">Scope</p>
           <ul className="mt-3 flex flex-wrap gap-2">
             {scope.map((s) => (
               <li
                 key={s}
-                className="br-data rounded-full border border-[var(--sg-line)] bg-white/[0.03] px-3.5 py-1.5 text-[13px] uppercase tracking-[0.04em] text-[var(--sg-muted)] backdrop-blur-sm"
+                className="br-data rounded-full border border-[#e2e4e9] px-3.5 py-1.5 text-[13px] uppercase tracking-[0.04em] text-[#4b515c]"
               >
                 {s}
               </li>
