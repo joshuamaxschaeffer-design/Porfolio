@@ -46,7 +46,7 @@ function OptionB() {
         <div className="rounded-[20px] border border-white/25 bg-white/[0.06] px-6 py-12 text-center backdrop-blur-sm sm:px-10 sm:py-14 lg:px-14">
           <Reveal>
             <Eyebrow>{d.eyebrow}</Eyebrow>
-            <h2 className="mx-auto mt-3 max-w-[18ch] text-[32px] font-semibold leading-[1.05] sm:text-[46px]">
+            <h2 className="mx-auto mt-3 max-w-[18ch] text-[32px] font-semibold leading-[1.05] text-white sm:text-[46px]">
               A whole lot of program.
             </h2>
           </Reveal>
@@ -73,7 +73,7 @@ function OptionD() {
       <div className="relative mx-auto grid w-full max-w-[1180px] grid-cols-1 items-center gap-12 px-6 sm:px-8 lg:grid-cols-2 lg:gap-16">
         {/* copy */}
         <Reveal>
-          <h2 className="text-[34px] font-semibold leading-[1.04] sm:text-[52px]">{d.title}</h2>
+          <h2 className="text-[34px] font-semibold leading-[1.04] text-white sm:text-[52px]">{d.title}</h2>
           <p className="mt-4 max-w-[48ch] text-[15px] leading-relaxed text-white/80 sm:text-lg">{d.body}</p>
           <p className="br-data mt-5 text-sm uppercase tracking-[0.14em]" style={{ color: GOLD }}>
             {d.kicker}

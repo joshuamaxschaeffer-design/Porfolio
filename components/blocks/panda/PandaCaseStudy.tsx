@@ -16,11 +16,11 @@ import { SectionNav, type SectionNavItem } from '../baserate/SectionNav'
 const NAV_ITEMS: SectionNavItem[] = [
   { id: 'overview', title: 'Overview' },
   { id: 'challenge', title: 'The Challenge' },
-  { id: 'releases', title: 'Two Products, One Pivot' },
-  { id: 'mvp', title: 'Act I — MVP' },
-  { id: 'premium-rewards', title: 'Rewards Program' },
+  { id: 'releases', title: '2020 Pivot' },
+  { id: 'mvp', title: 'MVP Fast Launch' },
+  { id: 'premium-rewards', title: 'Full Rewards App' },
   { id: 'loyalty-qr', title: 'Loyalty QR' },
-  { id: 'marketing', title: 'The Brand Online' },
+  { id: 'marketing', title: 'Marketing Site' },
   { id: 'outcomes', title: 'Outcomes' },
 ]
 

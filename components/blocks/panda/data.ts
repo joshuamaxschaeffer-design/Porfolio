@@ -50,7 +50,7 @@ export const challenge = {
 }
 
 export const releases = {
-  heading: 'TWO PRODUCTS, ONE PIVOT',
+  heading: '2020 PIVOT',
   intro:
     'When COVID hit, mobile ordering went from roadmap to lifeline. We changed plans: ship a minimal ordering app in three months, then a full rewards app the next year. The marketing site ran in parallel the whole time.',
   phasesLabel: '2 PHASES',
@@ -93,7 +93,7 @@ export const releases = {
  * fireworks animate on and off across the top.
  * ───────────────────────────────────────────────────────────────────────── */
 export const premiumRewards = {
-  heading: 'REWARDS PROGRAM',
+  heading: 'FULL REWARDS APP',
   intro:
     'The rewards app came in two phases. First, a better, more native version of the launch app. Then a full rewards program: planned, designed, tested, and rolled out to every location.',
 }
@@ -348,7 +348,7 @@ export const MVP_VBH = 1420
  * _previews/panda-mvp-figma-geometry.md.
  */
 export const mvp = {
-  heading: 'MVP FAST-LAUNCH',
+  heading: 'MVP FAST LAUNCH',
   intro:
     'The MVP was focused on streamlining barebones ordering, with other features like curbside pickup as a fast follow.',
   callout: {

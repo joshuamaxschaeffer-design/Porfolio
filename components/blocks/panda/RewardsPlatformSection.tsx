@@ -32,7 +32,7 @@ export function RewardsPlatformSection() {
           editorial column (br-container: max-w-1443 + 80px pad) so it lines up
           with the rest of the case study, the rail, and the pills. */}
       <header className="mx-auto max-w-[1443px] px-6 md:px-20">
-        <h2 className="text-[32px] font-semibold leading-tight sm:text-[40px]">{defaults.heading}</h2>
+        <h2 className="text-[32px] font-semibold leading-tight text-white sm:text-[40px]">{defaults.heading}</h2>
       </header>
 
       {/* The Premium Rewards hero above is the section banner; here the cards
@@ -305,7 +305,7 @@ function Module({
     <article className={`flex w-[86vw] max-w-[920px] flex-col overflow-hidden rounded-2xl border border-white/20 bg-white/[0.06] p-7 backdrop-blur-sm sm:w-[78vw] sm:p-9 lg:w-[820px] ${CARD_H}`}>
       <header className="max-w-[60ch]">
         <Eyebrow>{eyebrow}</Eyebrow>
-        <h3 className="mt-2 text-2xl font-semibold leading-tight sm:text-[30px]">{title}</h3>
+        <h3 className="mt-2 text-2xl font-semibold leading-tight text-white sm:text-[30px]">{title}</h3>
         <p className="mt-3 text-[15px] leading-relaxed text-white/80 sm:text-base">{body}</p>
       </header>
       <div className="mt-6 flex min-h-0 flex-1 items-center justify-center">
