@@ -158,25 +158,34 @@ export const rewardsPlatform = {
 export const marketing = {
   heading: 'THE BRAND ONLINE',
   intro:
-    'Alongside the apps, I redesigned the Panda Express marketing site: a clearer navigation and a connected family of brand pages.',
-  nav: {
-    eyebrow: 'NAVIGATION',
-    title: 'From a flat bar to a guided menu',
-    body: 'The old nav was a single row of links. The redesign groups the site into clear paths, so guests can find food, values, and the shop without guessing.',
-    before: { src: '/panda/marketing/nav-current.webp', alt: 'Current Panda Express navigation — a flat row of links', label: 'Before' },
-    after: { src: '/panda/marketing/nav-recommended.webp', alt: 'Redesigned navigation with grouped dropdown menus', label: 'After' },
+    'Alongside the apps, I designed the Panda Express marketing site end to end — from the UX of every brand page to the live, shipped experience.',
+  /** UX section — the full page wireframes/comps I designed (real exports). */
+  ux: {
+    eyebrow: 'THE UX',
+    title: 'Designing every page',
+    body: 'I mapped the full site and designed each brand page from the ground up: structure, content order, and the connections between them. Drag to browse the page designs.',
+    /** tall page comps (public/panda/marketing/ux). label is shown under each. */
+    pages: [
+      { key: 'home', label: 'Homepage', src: '/panda/marketing/ux/home.webp' },
+      { key: 'food', label: 'Our Food', src: '/panda/marketing/ux/food.webp' },
+      { key: 'innovation', label: 'Innovation', src: '/panda/marketing/ux/innovation.webp' },
+      { key: 'family', label: 'Our Family', src: '/panda/marketing/ux/family.webp' },
+      { key: 'shop', label: 'Our Shop', src: '/panda/marketing/ux/shop.webp' },
+      { key: 'philosophy', label: 'Food Philosophy', src: '/panda/marketing/ux/philosophy.webp' },
+    ],
+    /** the site map / UX flow diagram */
+    sitemap: { src: '/panda/marketing/ux/sitemap.webp', alt: 'Marketing site map and UX flow', label: 'Site map' },
   },
-  pages: {
-    eyebrow: 'THE PAGE SYSTEM',
-    title: 'One brand, a connected set of pages',
-    body: 'Homepage, Our Food, Innovation, Values, and Shop were designed as a family: shared layout, shared voice, each with its own focus.',
-    /** asset-slotted page renders — drop clean exports here */
-    items: [
-      { key: 'homepage', label: 'Homepage', src: '' },
-      { key: 'our-food', label: 'Our Food', src: '' },
-      { key: 'innovation', label: 'Innovation', src: '' },
-      { key: 'values', label: 'Values', src: '' },
-      { key: 'shop', label: 'Shop', src: '' },
+  /** Live-site section — the shipped experience (real panda.com captures). */
+  live: {
+    eyebrow: 'LIVE & SHIPPED',
+    title: 'Still live on pandaexpress.com',
+    body: 'The design shipped and is still the live Panda Express site today — the same structure and system, with seasonal promotions swapped into the same templates.',
+    cta: { label: 'Visit pandaexpress.com', href: 'https://www.pandaexpress.com/' },
+    /** real panda.com screenshots in a browser frame — asset-slotted until captured */
+    shots: [
+      { key: 'home', label: 'Homepage', src: '' },
+      { key: 'menu', label: 'Menu', src: '' },
     ],
   },
 }
@@ -242,12 +251,22 @@ export interface MvpNode {
   box: [number, number, number, number]
 }
 
+export type MvpSide = 'top' | 'right' | 'bottom' | 'left'
+
 export interface MvpEdge {
   from: string
   to: string
   color: MvpColor
-  /** explicit orthogonal polyline waypoints in Figma px; arrow at last pt. */
-  pts: [number, number][]
+  /** start anchor: which side of `from`, and which evenly-spaced slot (1..of) */
+  fromSide: MvpSide
+  fromSlot?: number
+  fromOf?: number
+  /** end anchor: which side of `to`, which slot */
+  toSide: MvpSide
+  toSlot?: number
+  toOf?: number
+  /** optional manual mid-waypoints (Figma px) for non-trivial routing */
+  via?: [number, number][]
   label?: string
   label2?: string
   /** manual pill center (Figma px); defaults to the polyline midpoint */
@@ -300,26 +319,32 @@ export const mvp = {
     { id: 'quantity',     label: 'Choose Quantity Popup',              screen: 'quantity',     color: 'red',  box: [1376, 1278, 200, 291] },
   ] as MvpNode[],
   edges: [
-    { from: 'home', to: 'menu', color: 'grey', label: 'Scroll', pts: [[259, 1055], [411, 1055]] },
-    { from: 'menu', to: 'product', color: 'grey', label: 'Tap a Product', label2: 'Location preselected', pts: [[611, 1055], [1228, 1055]] },
-    { from: 'product', to: 'bag', color: 'grey', label: 'Add Product', pts: [[1428, 1055], [1689, 1055]] },
-    { from: 'bag', to: 'checkout', color: 'grey', label: 'Check Out', pts: [[1889, 1055], [2124, 1055]] },
-    { from: 'checkout', to: 'confirmation', color: 'grey', label: 'Check Out', pts: [[2324, 1055], [2546, 1055]] },
-    { from: 'home', to: 'promoNotif', color: 'gold', label: 'Tap a Promo', labelAt: { x: 159, y: 565 }, pts: [[159, 933], [159, 486], [411, 486], [411, 500]] },
-    { from: 'promoNotif', to: 'productSel', color: 'gold', label: 'Tap a Product', label2: 'Location preselected', pts: [[611, 486], [1228, 486], [1228, 500]] },
-    { from: 'productSel', to: 'bag', color: 'gold', label: 'Add Product', labelAt: { x: 1525, y: 486 }, pts: [[1428, 500], [1620, 500], [1620, 933]] },
-    { from: 'promoNotif', to: 'restaurant', color: 'gold', label: 'No location selected', labelAt: { x: 760, y: 565 }, pts: [[850, 486], [850, 619]] },
-    { from: 'restaurant', to: 'productSel', color: 'blue', label: 'Location Selected', labelAt: { x: 1045, y: 716 }, pts: [[951, 716], [1130, 716], [1130, 641]] },
-    { from: 'restaurant', to: 'product', color: 'blue', pts: [[951, 800], [1130, 800], [1130, 933]] },
-    { from: 'productNoLoc', to: 'restaurant', color: 'grey', label: 'No location selected', labelAt: { x: 760, y: 977 }, pts: [[838, 1055], [838, 910]] },
-    { from: 'categoryNoLoc', to: 'restaurant', color: 'red', pts: [[868, 1108], [868, 910]] },
-    { from: 'bag', to: 'location', color: 'blue', label: 'Change handoff mode or location', labelAt: { x: 1789, y: 800 }, pts: [[1789, 933], [1789, 701], [2224, 701], [2224, 612]] },
-    { from: 'location', to: 'bag', color: 'blue', label: 'Continue', labelAt: { x: 2035, y: 758 }, pts: [[2164, 612], [2164, 758], [1864, 758], [1864, 933]] },
-    { from: 'menu', to: 'category', color: 'red', label: 'Tap a Category', label2: 'Location preselected', labelAt: { x: 730, y: 1108 }, pts: [[611, 1108], [1021, 1108], [1021, 1269]] },
-    { from: 'category', to: 'quantity', color: 'red', label: 'Tap Product', pts: [[1122, 1404], [1376, 1404]] },
-    { from: 'quantity', to: 'category', color: 'red', label: 'Add Product', caption: { text: 'Product is added to My Bag', x: 1252, y: 1548 }, pts: [[1376, 1483], [1122, 1483]] },
-    { from: 'category', to: 'bag', color: 'red', label: 'Tap Bag Icon', labelAt: { x: 1229, y: 1320 }, pts: [[1122, 1320], [1789, 1320], [1789, 1178]] },
-    { from: 'bag', to: 'menu', color: 'grey', label: 'Add more', labelAt: { x: 1981, y: 1091 }, label2: 'Will send to scrolled location', label2At: { x: 1299, y: 1684 }, pts: [[2084, 1178], [2084, 1684], [511, 1684], [511, 1178]] },
+    // ── main spine (grey) — straight, centered side anchors ──
+    { from: 'home', to: 'menu', color: 'grey', label: 'Scroll', fromSide: 'right', toSide: 'left' },
+    { from: 'menu', to: 'product', color: 'grey', label: 'Tap a Product', label2: 'Location preselected', fromSide: 'right', fromSlot: 1, fromOf: 2, toSide: 'left', toSlot: 1, toOf: 2 },
+    { from: 'product', to: 'bag', color: 'grey', label: 'Add Product', fromSide: 'right', fromSlot: 1, fromOf: 2, toSide: 'left', toSlot: 1, toOf: 2 },
+    { from: 'bag', to: 'checkout', color: 'grey', label: 'Check Out', fromSide: 'right', fromSlot: 1, fromOf: 2, toSide: 'left', toSlot: 1, toOf: 2 },
+    { from: 'checkout', to: 'confirmation', color: 'grey', label: 'Check Out', fromSide: 'right', toSide: 'left' },
+    // ── promo branch (gold) ──
+    { from: 'home', to: 'promoNotif', color: 'gold', label: 'Tap a Promo', labelAt: { x: 159, y: 565 }, fromSide: 'top', toSide: 'left', via: [[159, 486], [411, 486]] },
+    { from: 'promoNotif', to: 'productSel', color: 'gold', label: 'Tap a Product', label2: 'Location preselected', fromSide: 'right', toSide: 'left' },
+    { from: 'productSel', to: 'bag', color: 'gold', label: 'Add Product', labelAt: { x: 1560, y: 486 }, fromSide: 'right', toSide: 'top', toSlot: 1, toOf: 2, via: [[1640, 500], [1640, 800]] },
+    // ── no-location detour into the restaurant popup (rises off the rails) ──
+    { from: 'product', to: 'restaurant', color: 'grey', label: 'No location selected', labelAt: { x: 770, y: 980 }, fromSide: 'left', toSide: 'bottom', toSlot: 1, toOf: 2, via: [[838, 1055], [838, 980]] },
+    { from: 'category', to: 'restaurant', color: 'red', fromSide: 'top', toSide: 'bottom', toSlot: 2, toOf: 2, via: [[1021, 1175], [880, 1175], [880, 980]] },
+    // ── restaurant resolves location → product pages (blue) ──
+    { from: 'restaurant', to: 'productSel', color: 'blue', label: 'Location Selected', labelAt: { x: 1050, y: 712 }, fromSide: 'right', fromSlot: 1, fromOf: 2, toSide: 'bottom', via: [[1130, 712]] },
+    { from: 'restaurant', to: 'product', color: 'blue', fromSide: 'right', fromSlot: 2, fromOf: 2, toSide: 'top', via: [[1160, 820]] },
+    // ── bag ↔ location handoff (blue) ──
+    { from: 'bag', to: 'location', color: 'blue', label: 'Change handoff mode or location', labelAt: { x: 1789, y: 802 }, fromSide: 'top', toSide: 'bottom', toSlot: 1, toOf: 2, via: [[1789, 701], [2204, 701]] },
+    { from: 'location', to: 'bag', color: 'blue', label: 'Continue', labelAt: { x: 2040, y: 758 }, fromSide: 'bottom', fromSlot: 2, fromOf: 2, toSide: 'top', toSlot: 2, toOf: 2, via: [[2254, 758], [1834, 758]] },
+    // ── category branch (red) ──
+    { from: 'menu', to: 'category', color: 'red', label: 'Tap a Category', label2: 'Location preselected', labelAt: { x: 740, y: 1110 }, fromSide: 'right', fromSlot: 2, fromOf: 2, toSide: 'top', via: [[1021, 1110]] },
+    { from: 'category', to: 'quantity', color: 'red', label: 'Tap Product', fromSide: 'right', fromSlot: 1, fromOf: 2, toSide: 'left' },
+    { from: 'quantity', to: 'category', color: 'red', label: 'Add Product', caption: { text: 'Product is added to My Bag', x: 1252, y: 1548 }, fromSide: 'left', toSide: 'right', fromSlot: 2, fromOf: 2, toSlot: 2, toOf: 2 },
+    { from: 'category', to: 'bag', color: 'red', label: 'Tap Bag Icon', labelAt: { x: 1229, y: 1300 }, fromSide: 'right', fromSlot: 2, fromOf: 2, toSide: 'bottom', via: [[1789, 1300]] },
+    // ── return loop (grey): My Bag → down → left → up → Menu ──
+    { from: 'bag', to: 'menu', color: 'grey', label: 'Add more', labelAt: { x: 1981, y: 1095 }, label2: 'Will send to scrolled location', label2At: { x: 1299, y: 1684 }, fromSide: 'bottom', fromSlot: 2, fromOf: 2, toSide: 'bottom', via: [[1834, 1684], [511, 1684]] },
   ] as MvpEdge[],
   scenarios: [
     { id: 'promo', title: 'Add a promotion', color: 'gold', blurb: 'Tap a featured promo on the homepage; the item is added and the order continues to checkout.', path: ['home', 'promoNotif', 'productSel', 'bag', 'checkout', 'confirmation'] },
