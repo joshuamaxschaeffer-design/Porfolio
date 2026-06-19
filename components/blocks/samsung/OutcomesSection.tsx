@@ -102,12 +102,12 @@ export function OutcomesSection({ intro }: { intro?: string } = {}) {
   const lead = intro ?? data.lead
 
   return (
-    <section id="outcomes" className="bg-white">
+    <section id="outcomes" className="border-t border-[var(--sg-line)] bg-[var(--sg-bg-2)]">
       <div className="br-container pt-16 pb-20 md:pt-24 md:pb-[140px]">
-        <h2 className="text-[32px] font-medium uppercase leading-none text-[var(--br-ink)] md:text-[40px]">
-          4. {data.heading}
+        <h2 className="text-[13px] font-semibold uppercase tracking-[0.22em] text-[var(--sg-blue)]">
+          {data.heading}
         </h2>
-        <p className="mt-3 max-w-3xl text-lg text-[var(--br-muted)] md:text-[22px]">{lead}</p>
+        <p className="mt-4 max-w-3xl text-[22px] font-medium leading-snug text-[var(--sg-ink)] md:text-[30px]">{lead}</p>
 
         {/* Stat grid — big count-up numbers, 3×2 on desktop */}
         <div className="mt-12 grid grid-cols-1 gap-x-10 gap-y-10 sm:grid-cols-2 md:mt-16 md:grid-cols-3 md:gap-y-14">
