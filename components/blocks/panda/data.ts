@@ -135,6 +135,11 @@ export const rewardsPlatform = {
     title: 'Points, redeemed for real food',
     body: 'Points convert straight into menu rewards. The ladder runs from a small upgrade to a full meal, so there is always a next goal in reach.',
     redeem: { src: '/panda/rewards/redeem-premium-entree.webp', alt: 'Redeem 200 points to upgrade to a premium entrée' },
+    /** two real redemption screens — the rewards list + a single reward detail */
+    screens: [
+      { src: '/panda/rewards/redeem-list.webp', alt: 'Redeem Your Rewards — the points ladder from a premium entrée to a bigger plate' },
+      { src: '/panda/rewards/redeem-upgrade.webp', alt: 'Reward detail — upgrade Bowl to Plate, redeemed online' },
+    ],
     tiers: [
       { points: 200, label: 'Upgrade to Premium Entrée' },
       { points: 250, label: 'Upgrade Bowl to Plate' },
@@ -159,7 +164,7 @@ export const rewardsPlatform = {
  * ───────────────────────────────────────────────────────────────────────── */
 export const rewardsCapstone = {
   eyebrow: 'THE WHOLE PROGRAM',
-  title: 'A rewards program worth coming back for',
+  title: 'A rewards program worth coming back for',
   body: 'Earning, surprises, redemption, and a way to pay — a complete loyalty experience designed end to end.',
   /** every capability shipped into the program (feature grid / checklist / marquee) */
   features: [
@@ -503,6 +508,12 @@ export const outcomes = {
     eyebrow: 'STILL SHIPPING',
     title: 'Live on iOS and Android',
     body: 'Years on, the app the team launched is still the one in guests’ pockets — continuously updated on both stores.',
+    /** two app screens shown beside the badges + the app icon */
+    screens: [
+      { src: '/panda/rewards/bag-rewards.webp', alt: 'In-app bag with coupons, rewards, and offers applied at checkout' },
+      { src: '/panda/rewards/claim-offers.webp', alt: 'Claim Now — member offers in the app' },
+    ],
+    appIcon: '/panda/rewards/panda-logo.webp',
     links: [
       {
         store: 'App Store',

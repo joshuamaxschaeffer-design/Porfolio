@@ -73,7 +73,12 @@ function OptionD() {
       <div className="relative mx-auto grid w-full max-w-[1180px] grid-cols-1 items-center gap-12 px-6 sm:px-8 lg:grid-cols-2 lg:gap-16">
         {/* copy */}
         <Reveal>
-          <h2 className="text-[34px] font-semibold leading-[1.04] text-white sm:text-[52px]">{d.title}</h2>
+          <h2
+            className="text-[34px] font-semibold leading-[1.04] text-white sm:text-[52px]"
+            style={{ textWrap: 'balance' } as React.CSSProperties}
+          >
+            {d.title}
+          </h2>
           <p className="mt-4 max-w-[48ch] text-[15px] leading-relaxed text-white/80 sm:text-lg">{d.body}</p>
           <p className="br-data mt-5 text-sm uppercase tracking-[0.14em]" style={{ color: GOLD }}>
             {d.kicker}
@@ -103,6 +108,28 @@ function OptionD() {
           </div>
         </Reveal>
       </div>
+
+      {/* the program on the big screen too — a desktop redemption view, framed
+          in a browser window, closing the "whole program" note on the web. */}
+      <Reveal delay={80} className="relative mx-auto mt-14 w-full max-w-[1080px] px-6 sm:px-8 lg:mt-20">
+        <figure className="m-0 overflow-hidden rounded-[16px] bg-white shadow-[0_40px_90px_-30px_rgba(0,0,0,0.65)] ring-1 ring-black/10">
+          <div className="flex items-center gap-2 border-b border-black/10 bg-neutral-50 px-4 py-2.5">
+            <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+            <span className="br-data ml-3 truncate rounded bg-white px-2.5 py-0.5 text-[11px] text-neutral-500">
+              pandaexpress.com/rewards
+            </span>
+          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/panda/rewards/desktop-redemption.webp"
+            alt="Panda Rewards redemption on the desktop site — the reward catalog with points and menu rewards"
+            loading="lazy"
+            className="block w-full"
+          />
+        </figure>
+      </Reveal>
     </div>
   )
 }

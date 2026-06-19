@@ -361,7 +361,7 @@ function StoreModule() {
   const d = defaults.store
   return (
     <Module eyebrow={d.eyebrow} title={d.title} body={d.body}>
-      <div className="grid grid-cols-1 items-center gap-8 sm:grid-cols-[minmax(0,1fr)_200px] sm:gap-10">
+      <div className="grid grid-cols-1 items-center gap-8 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-10">
         <ol className="order-2 flex flex-col gap-2 sm:order-1">
           {d.tiers.map((t) => (
             <li
@@ -379,8 +379,17 @@ function StoreModule() {
             </li>
           ))}
         </ol>
-        <div className="order-1 mx-auto w-[46%] max-w-[172px] sm:order-2 sm:w-full sm:max-w-[180px]">
-          <Phone src={d.redeem.src} alt={d.redeem.alt} />
+        {/* two real redemption screens: the rewards list + a reward detail,
+            the second tucked behind/below for a layered pair */}
+        <div className="order-1 flex items-end justify-center gap-3 sm:order-2 sm:gap-4">
+          {d.screens.map((s, i) => (
+            <div
+              key={s.src}
+              className={i === 0 ? 'w-[42%] max-w-[150px] sm:w-[150px]' : 'mb-6 w-[38%] max-w-[134px] sm:w-[134px]'}
+            >
+              <Phone src={s.src} alt={s.alt} priority={i === 0} />
+            </div>
+          ))}
         </div>
       </div>
     </Module>

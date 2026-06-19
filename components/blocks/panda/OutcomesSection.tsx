@@ -140,6 +140,16 @@ function StoreBadge({
   )
 }
 
+/** A lightweight white phone frame around a bare 750×1624 app screen. */
+function AppPhone({ src, alt }: { src: string; alt: string }) {
+  return (
+    <div className="relative aspect-[750/1624] w-full overflow-hidden rounded-[14%/6.5%] bg-white shadow-[0_18px_44px_-14px_rgba(0,0,0,0.32)] ring-1 ring-black/10">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={src} alt={alt} loading="lazy" className="block h-full w-full object-cover" />
+    </div>
+  )
+}
+
 export function OutcomesSection({ intro }: { intro?: string } = {}) {
   const data = defaults
   const lead = intro ?? data.lead
@@ -160,9 +170,11 @@ export function OutcomesSection({ intro }: { intro?: string } = {}) {
         </div>
 
         {/* Platform availability — still live on both stores, with the real
-            listings linked. Sits below the stat grid as the closing note. */}
+            listings linked. Sits below the stat grid as the closing note.
+            Left: copy + store badges. Right: two app screens + the app icon. */}
         <div className="mt-14 border-t border-[var(--br-line)] pt-10 md:mt-20 md:pt-12">
-          <div className="md:flex md:items-end md:justify-between md:gap-10">
+          <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-16">
+            {/* left — copy, then the store badges directly beneath it */}
             <div className="max-w-2xl">
               <p className="br-data text-[12px] font-semibold uppercase tracking-[0.14em] text-[var(--px-red)]">
                 {data.platforms.eyebrow}
@@ -176,11 +188,29 @@ export function OutcomesSection({ intro }: { intro?: string } = {}) {
               <p className="mt-3 text-[15px] leading-snug text-[var(--br-muted)] md:text-base">
                 {data.platforms.body}
               </p>
+              <div className="mt-7 flex flex-wrap gap-3">
+                {data.platforms.links.map((l) => (
+                  <StoreBadge key={l.store} store={l.store} label={l.label} href={l.href} />
+                ))}
+              </div>
             </div>
-            <div className="mt-6 flex flex-wrap gap-3 md:mt-0 md:shrink-0">
-              {data.platforms.links.map((l) => (
-                <StoreBadge key={l.store} store={l.store} label={l.label} href={l.href} />
+
+            {/* right — two unused app screens + the Panda Express app icon */}
+            <div className="flex items-center justify-center gap-5 sm:gap-7 lg:shrink-0">
+              {data.platforms.screens.map((s, i) => (
+                <div key={s.src} className={i === 1 ? 'mt-8 w-[34%] max-w-[150px] sm:w-[150px]' : 'w-[34%] max-w-[150px] sm:w-[150px]'}>
+                  <AppPhone src={s.src} alt={s.alt} />
+                </div>
               ))}
+              <div className="w-[22%] max-w-[104px] sm:w-[104px]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={data.platforms.appIcon}
+                  alt="Panda Express app icon"
+                  loading="lazy"
+                  className="block w-full drop-shadow-[0_14px_28px_rgba(0,0,0,0.16)]"
+                />
+              </div>
             </div>
           </div>
         </div>
