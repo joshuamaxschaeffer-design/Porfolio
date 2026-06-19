@@ -74,14 +74,32 @@ function computeLayout(flow: Flow) {
   let seeds = [...entryIds]
   if (!seeds.length) seeds = ids.filter((id) => indeg[id] === 0)
   if (!seeds.length) seeds = [ids[0]]
+  // depth of the CONNECTED graph only (from the entry seeds). Orphans stay at 0 for now.
+  const orphan = (id: string) => indeg[id] === 0 && !entryIds.has(id)
   const depth: Record<string, number> = {}; ids.forEach((id) => (depth[id] = 0)); seeds.forEach((s) => (depth[s] = 0))
-  for (let it = 0; it < ids.length; it++) { let ch = false; for (const id of ids) for (const nx of out[id]) if (depth[nx] < depth[id] + 1) { depth[nx] = depth[id] + 1; ch = true }; if (!ch) break }
-  // Push disconnected / orphan nodes (no incoming edge, not an entry) to the FAR RIGHT
-  // instead of letting them pile up at column 0. (Floating screens + unattached APIs.)
-  const maxReached = Math.max(0, ...ids.map((id) => depth[id]))
-  ids.forEach((id) => { if (indeg[id] === 0 && !entryIds.has(id)) depth[id] = maxReached })
-  // re-relax so any node attached to a moved orphan (e.g. an API on a floating screen) follows it
-  for (let it = 0; it < ids.length; it++) { let ch = false; for (const id of ids) for (const nx of out[id]) if (depth[nx] < depth[id] + 1) { depth[nx] = depth[id] + 1; ch = true }; if (!ch) break }
+  for (let it = 0; it < ids.length; it++) {
+    let ch = false
+    for (const id of ids) { if (orphan(id)) continue; for (const nx of out[id]) if (!orphan(nx) && depth[nx] < depth[id] + 1) { depth[nx] = depth[id] + 1; ch = true } }
+    if (!ch) break
+  }
+  // Park disconnected / orphan nodes on the FAR RIGHT (rightmost connected column),
+  // WITHOUT letting their depth propagate back into the connected chain (that would
+  // shove the whole flow rightward and leave the left empty).
+  const maxConnected = Math.max(0, ...ids.filter((id) => !orphan(id)).map((id) => depth[id]))
+  ids.forEach((id) => { if (orphan(id)) depth[id] = maxConnected })
+  // a node fed ONLY by orphans still needs to sit to their right
+  for (let it = 0; it < ids.length; it++) {
+    let ch = false
+    for (const id of ids) if (orphan(id)) for (const nx of out[id]) {
+      const preds = flow.edges.filter((e) => e.to === nx)
+      const onlyOrphanFed = preds.length > 0 && preds.every((e) => orphan(e.from))
+      if (onlyOrphanFed && depth[nx] < depth[id] + 1) { depth[nx] = depth[id] + 1; ch = true }
+    }
+    if (!ch) break
+  }
+  // normalize so the leftmost column is 0 (every flow spans the full width)
+  const minD = Math.min(...ids.map((id) => depth[id]))
+  if (minD > 0) ids.forEach((id) => (depth[id] -= minD))
   const colMap: Record<number, string[]> = {}; ids.forEach((id) => { (colMap[depth[id]] = colMap[depth[id]] || []).push(id) })
   const cols = Math.max(...ids.map((id) => depth[id])) + 1
   const pos: Record<string, { col: number; row: number; rows: number }> = {}; const rowOf: Record<string, number> = {}
