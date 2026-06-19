@@ -181,13 +181,18 @@ function FlowDetail({ flow, tab, setTab }: { flow: Flow; tab: string; setTab: (i
           {flow.edges.map((e, i) => {
             const a = nById[e.from], b = nById[e.to]
             if (!a || !b || !pos[e.from] || !pos[e.to]) return null
-            const ax = px(e.from), ay = py(e.from)
+            let ax = px(e.from), ay = py(e.from)
             let bx = px(e.to), by = py(e.to)
-            // inset the end so the arrow stops just before the target node (not inside it)
+            // inset BOTH ends to each node's edge: the line starts at the source
+            // box edge (not its centre) and the arrow stops just before the target.
             const tIsScreen = b.type === 'screen'
-            const inset = (tIsScreen ? NR * 1.15 : NR) + 4
-            const dx = bx - ax, dy = by - ay, len = Math.hypot(dx, dy) || 1
-            bx -= (dx / len) * inset; by -= (dy / len) * inset
+            const sIsScreen = a.type === 'screen'
+            const dx0 = bx - ax, dy0 = by - ay, len = Math.hypot(dx0, dy0) || 1
+            const ux = dx0 / len, uy = dy0 / len
+            const tInset = (tIsScreen ? NR * 1.15 : NR) + 4
+            const sInset = (sIsScreen ? NR * 1.15 : NR) + 2
+            ax += ux * sInset; ay += uy * sInset
+            bx -= ux * tInset; by -= uy * tInset
             const mx = (ax + bx) / 2
             const related = active && (e.from === active || e.to === active)
             const op = active ? (related ? 1 : 0.1) : e.api ? 0.32 : 0.5
