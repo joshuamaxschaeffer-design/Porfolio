@@ -188,35 +188,40 @@ function AngledScreen({ page, reduce, index }: { page: DeckPage; reduce: boolean
  * layers; NO border/edge-mask — a radial vignette dissolves the far cards into
  * the black. Reduced-motion → settled (fully spread, static).
  * ──────────────────────────────────────────────────────────────────────────── */
-/* The blue UX wireframes as a receding, overlapping stack. Built with the SAME
- * single-parent-3D-plane technique as the live-pages deck below (a per-card
- * filter/scale/clip context made Chrome paint the tall wireframes black), so it
- * renders reliably: one tilted plane, simple <img> children, depth via a
- * darkening overlay only. Cards overlap (negative margins) so they read as a
- * stacked deck rather than a spaced row. Reduced-motion safe (static pose). */
+/* The blue UX wireframes as an overlapping, slightly-fanned stack.
+ * IMPORTANT: this uses only 2D transforms (rotate + translate). A 3D plane
+ * (perspective + rotateX/preserve-3d) made Chrome fail to rasterize the tall
+ * wireframes that get scaled down in the plane — they painted solid black even
+ * though the image data was fine. A 2D fan avoids that GPU path and renders
+ * reliably while still reading as a stacked, angled deck. Each card steps right,
+ * tilts a touch more, shrinks (via width), and darkens with depth. */
 function WireframeStack({ pages }: { pages: { key: string; label: string; src: string }[] }) {
   const deck = pages.slice(0, 5)
   return (
-    <div className="relative mt-10 w-full overflow-hidden">
-      <div className="mx-auto" style={{ perspective: '2200px', perspectiveOrigin: '50% 35%' }}>
-        {/* the tilted + leaned plane the wireframes lie on */}
-        <div
-          className="flex items-start justify-center pb-[3vw] pt-[1vw]"
-          style={{
-            transformStyle: 'preserve-3d',
-            transform: 'rotateX(34deg) rotateZ(-22deg) scale(0.96)',
-            transformOrigin: '50% 40%',
-          }}
-        >
-          {deck.map((pg, i) => (
+    <div className="relative mt-10 flex w-full justify-center overflow-hidden pb-6 pt-2">
+      <div className="relative h-[clamp(300px,40vw,520px)] w-full max-w-[1100px]">
+        {deck.map((pg, i) => {
+          // front card largest on the left; each successive card steps right,
+          // a bit smaller, tilted slightly more, tucked behind the previous one.
+          const widthPct = 30 - i * 2.5 // 30, 27.5, 25, 22.5, 20
+          const leftPct = 6 + i * 16 // 6, 22, 38, 54, 70
+          const rotate = -8 + i * 1.6 // gentle left-lean, easing toward upright
+          const darken = Math.min(0.45, i * 0.11)
+          return (
             <figure
               key={pg.key}
-              className="relative m-0 w-[16vw] min-w-[120px] max-w-[230px] shrink-0"
-              style={{ marginLeft: i === 0 ? 0 : '-3.2vw', zIndex: deck.length - i }}
+              className="absolute top-1/2 m-0"
+              style={{
+                left: `${leftPct}%`,
+                width: `${widthPct}%`,
+                transform: `translateY(-50%) rotate(${rotate}deg)`,
+                transformOrigin: 'center bottom',
+                zIndex: deck.length - i,
+              }}
             >
               <div
-                className="relative h-[26vw] max-h-[460px] min-h-[260px] overflow-hidden rounded-[12px] bg-white"
-                style={{ boxShadow: '0 30px 70px -28px rgba(0,0,0,0.8)' }}
+                className="relative aspect-[360/560] overflow-hidden rounded-[12px] bg-white ring-1 ring-black/5"
+                style={{ boxShadow: '0 26px 60px -26px rgba(0,0,0,0.8)' }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -226,26 +231,16 @@ function WireframeStack({ pages }: { pages: { key: string; label: string; src: s
                   loading="lazy"
                   className="block w-full select-none"
                 />
-                {/* depth darken on the receding cards (front stays clear) */}
                 <div
                   aria-hidden
                   className="pointer-events-none absolute inset-0 bg-[#0d0d0f]"
-                  style={{ opacity: Math.min(0.5, i * 0.12) }}
+                  style={{ opacity: darken }}
                 />
               </div>
             </figure>
-          ))}
-        </div>
+          )
+        })}
       </div>
-      {/* edge vignettes so the plane dissolves into the section black */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            'linear-gradient(to right, #0d0d0f 0%, rgba(13,13,15,0) 12%, rgba(13,13,15,0) 88%, #0d0d0f 100%), linear-gradient(to bottom, rgba(13,13,15,0) 60%, #0d0d0f 98%)',
-        }}
-      />
     </div>
   )
 }
