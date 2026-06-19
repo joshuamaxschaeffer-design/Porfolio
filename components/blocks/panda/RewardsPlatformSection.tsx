@@ -26,15 +26,12 @@ export function RewardsPlatformSection() {
     <section
       id="rewards-platform"
       aria-label="The rewards platform"
-      className="relative isolate w-full overflow-hidden bg-[var(--px-red)] pb-20 pt-4 text-white lg:pb-24"
+      className="relative isolate w-full overflow-hidden bg-[var(--px-red)] pb-20 pt-14 text-white lg:pb-24"
     >
       {/* Section title — sits above the carousel, aligned to the editorial
           column (max-w-1180 + px-8) so it lines up with the rail and pills. */}
       <header className="mx-auto max-w-[1180px] px-6 sm:px-8">
-        <span className="br-data text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: GOLD }}>
-          {defaults.eyebrow}
-        </span>
-        <h2 className="mt-2 text-[32px] font-semibold leading-tight sm:text-[40px]">{defaults.heading}</h2>
+        <h2 className="text-[32px] font-semibold leading-tight sm:text-[40px]">{defaults.heading}</h2>
       </header>
 
       {/* The Premium Rewards hero above is the section banner; here the cards
