@@ -48,19 +48,6 @@ export function MarketingSection() {
       </div>
       <UxGallery />
 
-      {/* site map */}
-      <div className="mx-auto mt-12 w-full max-w-[1100px] px-6 sm:px-8">
-        <Reveal>
-          <figure className="m-0 overflow-hidden rounded-xl border border-[var(--br-line)] bg-[var(--br-bg-2,#f4f4f5)]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={defaults.ux.sitemap.src} alt={defaults.ux.sitemap.alt} loading="lazy" className="block w-full" />
-          </figure>
-          <figcaption className="mt-2 text-[13px] text-[var(--br-muted-2,#71717a)]">
-            {defaults.ux.sitemap.label} — the full site mapped before design.
-          </figcaption>
-        </Reveal>
-      </div>
-
       {/* 2 — LIVE & SHIPPED */}
       <div className="mx-auto mt-20 w-full max-w-[1100px] px-6 sm:px-8">
         <Reveal className="max-w-[640px]">
