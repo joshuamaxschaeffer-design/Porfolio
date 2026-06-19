@@ -51,8 +51,7 @@ export function MarketingSection() {
               {defaults.ux.title}
             </h3>
             <p className="mt-3 max-w-[56ch] text-[15px] leading-relaxed text-white/70">
-              I designed every brand page from the ground up — structure, content order, and the
-              connections between them.
+              {defaults.ux.body}
             </p>
           </Reveal>
           <Reveal>
@@ -115,10 +114,10 @@ function PerspectiveStack({ pages }: { pages: { key: string; label: string; src:
   const n = deck.length
   return (
     <div className="relative mx-auto mt-8 w-full max-w-[1100px]" style={{ perspective: '1800px', perspectiveOrigin: '50% 40%' }}>
-      <div className="relative" style={{ height: 'clamp(320px, 42vw, 520px)', transformStyle: 'preserve-3d' }}>
+      <div className="relative" style={{ height: 'clamp(560px, 72vw, 920px)', transformStyle: 'preserve-3d' }}>
         {deck.map((p, i) => {
           const depth = i / Math.max(1, n - 1) // 0 (front) .. 1 (back)
-          const left = `${depth * 13 * (n - 1)}%`
+          const left = `${depth * 17 * (n - 1)}%`
           const scale = 1 - depth * 0.1
           const z = -depth * 220
           const ty = depth * 26
@@ -129,7 +128,7 @@ function PerspectiveStack({ pages }: { pages: { key: string; label: string; src:
               key={p.key}
               className="absolute left-0 top-0 m-0 overflow-hidden rounded-xl border border-white/12 bg-white shadow-[0_30px_70px_-24px_rgba(0,0,0,0.7)]"
               style={{
-                width: 'min(62%, 620px)',
+                width: 'min(31%, 320px)',
                 height: '100%',
                 left,
                 transform: `translateZ(${z}px) translateY(${ty}px) rotateY(-18deg) scale(${scale})`,

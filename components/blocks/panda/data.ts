@@ -196,12 +196,12 @@ export const rewardsCapstone = {
 export const marketing = {
   heading: 'THE BRAND ONLINE',
   intro:
-    'Alongside the apps, I designed the Panda Express marketing site end to end — from the UX of every brand page to the live, shipped experience.',
-  /** UX section — the full page wireframes/comps I designed (real exports). */
+    'The brand needed more than an app. The marketing site was rebuilt end to end — every page, from first wireframe to the live experience guests use today.',
+  /** UX section — full page designs for the brand site. */
   ux: {
     eyebrow: 'THE UX',
-    title: 'Designing every page',
-    body: 'I mapped the full site and designed each brand page from the ground up: structure, content order, and the connections between them. Drag to browse the page designs.',
+    title: 'A page system, not one-off pages',
+    body: 'Every brand page was mapped as one connected system — shared structure, a consistent content rhythm, and clear paths between them.',
     /** tall page comps (public/panda/marketing/ux). label is shown under each. */
     pages: [
       { key: 'home', label: 'Homepage', src: '/panda/marketing/ux/home.webp' },
@@ -218,7 +218,7 @@ export const marketing = {
   live: {
     eyebrow: 'LIVE & SHIPPED',
     title: 'Still live on pandaexpress.com',
-    body: 'The design shipped and is still the live Panda Express site today — the same navigation, the same "We Wok For You" ordering flow, the same page system I designed, with seasonal promotions swapped into the same templates.',
+    body: 'Years later, this is still the Panda Express site guests use — the same navigation, the same "We Wok For You" ordering flow, the same page system. Seasonal promotions simply swap into the templates it was built on.',
     cta: { label: 'Visit pandaexpress.com', href: 'https://www.pandaexpress.com/' },
   },
   /**
