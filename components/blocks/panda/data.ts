@@ -107,7 +107,7 @@ export const premiumRewards = {
 export const rewardsPlatform = {
   /** section title shown above the carousel */
   eyebrow: 'ACT II — REWARDS',
-  heading: 'Rewards Program',
+  heading: 'Full Rewards App',
   /** short labels for the carousel jump-pills, in order */
   pills: ['Earning', 'Moments of Surprise', 'The Reward Store'],
   /** Beat 1 — earning */
