@@ -109,7 +109,7 @@ function StatCell({ stat, index }: { stat: MvpBentoStat; index: number }) {
   return (
     <div
       ref={ref}
-      className={`flex h-full flex-col justify-between ${CARD} p-6 md:p-7`}
+      className={`flex h-full flex-col justify-between ${CARD} p-6 md:px-7 md:py-5`}
     >
       <CornerGlow />
       <div className="relative flex items-center gap-2.5">
@@ -126,7 +126,7 @@ function StatCell({ stat, index }: { stat: MvpBentoStat; index: number }) {
         </p>
       </div>
       <p
-        className="mt-7 whitespace-nowrap text-[44px] font-medium leading-none tracking-[-0.01em] text-[var(--br-ink)] md:mt-10 md:text-[52px]"
+        className="mt-5 whitespace-nowrap text-[44px] font-medium leading-none tracking-[-0.01em] text-[var(--br-ink)] md:mt-7 md:text-[52px]"
         style={{ fontFamily: 'var(--br-font-heading)' }}
       >
         {stat.prefix}
@@ -231,8 +231,9 @@ export function MvpLaunchBento({
             aria-hidden
             className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-2/3 bg-gradient-to-t from-[rgba(120,12,14,0.92)] via-[rgba(150,18,20,0.55)] to-transparent"
           />
-          {/* copy — overlaid at the bottom, over the red */}
-          <div className="p-7 md:p-8">
+          {/* copy — overlaid at the bottom, over the red (a touch more bottom
+              padding lifts it off the edge as the cell tightens) */}
+          <div className="p-7 pb-9 md:p-8 md:pb-11">
             <p className="br-data text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-white/70">
               {d.flagship.eyebrow}
             </p>
