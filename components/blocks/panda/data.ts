@@ -288,13 +288,15 @@ export interface MvpScenario {
 }
 
 export const MVP_VBW = 2862
-export const MVP_VBH = 1750
+export const MVP_VBH = 1420
 
 /**
- * 1:1 with Figma 311-26243. Node boxes are literal Figma frame coords; the
- * component renders in a 2862×1750 viewBox and scales to fit. Colors SWAPPED
- * from the source legend: spine / Add-a-Product = grey · Add-a-Promotion =
- * gold · Add-from-Category = red · Choose-Location = blue.
+ * 1:1 with Figma 311-26243. Node boxes + connector routes are LITERAL Figma
+ * frame coords (decoded from get_metadata bounding boxes); component renders in
+ * a 2862×1420 viewBox and scales to fit. Colors are Joshua's original legend:
+ * green = Add a Promotion · blue = Add a Product (main spine) · purple = Add
+ * from Category · orange = Choose Location. Geometry spec:
+ * _previews/panda-mvp-figma-geometry.md.
  */
 export const mvp = {
   heading: 'MVP FAST-LAUNCH',
@@ -305,49 +307,71 @@ export const mvp = {
     body: 'The UX for ordering was mapped for 4 core scenarios, ensuring each scenario was simple and clear to the user.',
   },
   hint: 'Pick a scenario to trace its path — every one converges on the same checkout spine.',
+  // Boxes are EXACT Figma frame coords (node 311-26243).
   nodes: [
-    { id: 'home',         label: 'Homepage',                            screen: 'home',         color: 'blue', box: [59, 933, 200, 245] },
-    { id: 'menu',         label: 'Menu On Homepage',                    screen: 'menu',         color: 'blue', box: [411, 933, 200, 245] },
-    { id: 'product',      label: 'Product Page',                        screen: 'product',      color: 'blue', box: [1228, 933, 200, 245] },
-    { id: 'bag',          label: 'My Bag',                              screen: 'bag',          color: 'blue', box: [1689, 933, 200, 245] },
-    { id: 'checkout',     label: 'Checkout',                            screen: 'checkout',     color: 'blue', box: [2124, 933, 200, 245] },
-    { id: 'confirmation', label: 'Confirmation',                        screen: 'confirmation', color: 'blue', box: [2546, 933, 200, 245] },
-    { id: 'promoNotif',   label: 'Product added notification on menu.', screen: 'home',         color: 'green', box: [411, 359, 200, 282] },
-    { id: 'productSel',   label: 'Product Page with item selected.',    screen: 'productSel',   color: 'green', box: [1228, 359, 200, 282] },
-    { id: 'restaurant',   label: 'Choose Restaurant Popup',            screen: 'popup',        color: 'orange', box: [751, 619, 200, 291] },
-    { id: 'location',     label: 'Location Page',                       screen: 'location',     color: 'orange', box: [2124, 612, 200, 245] },
-    { id: 'category',     label: 'NomNom Category Page',               screen: 'category',     color: 'purple',  box: [921, 1269, 201, 245] },
-    { id: 'quantity',     label: 'Choose Quantity Popup',              screen: 'quantity',     color: 'purple',  box: [1376, 1278, 200, 291] },
+    { id: 'home',         label: 'Homepage',                            screen: 'home',         color: 'blue',   box: [59, 640, 200, 245] },
+    { id: 'menu',         label: 'Menu On Homepage',                    screen: 'menu',         color: 'blue',   box: [411, 640, 200, 245] },
+    { id: 'product',      label: 'Product Page',                        screen: 'product',      color: 'blue',   box: [1228, 640, 200, 245] },
+    { id: 'bag',          label: 'My Bag',                              screen: 'bag',          color: 'blue',   box: [1689, 640, 200, 245] },
+    { id: 'checkout',     label: 'Checkout',                            screen: 'checkout',     color: 'blue',   box: [2124, 640, 200, 245] },
+    { id: 'confirmation', label: 'Confirmation',                        screen: 'confirmation', color: 'blue',   box: [2546, 640, 200, 245] },
+    { id: 'promoNotif',   label: 'Product added notification on menu.', screen: 'home',         color: 'green',  box: [411, 66, 200, 282] },
+    { id: 'productSel',   label: 'Product Page with item selected.',    screen: 'productSel',   color: 'green',  box: [1228, 66, 200, 282] },
+    { id: 'restaurant',   label: 'Choose Restaurant Popup',            screen: 'popup',        color: 'orange', box: [751, 326, 200, 291] },
+    { id: 'location',     label: 'Location Page',                       screen: 'location',     color: 'orange', box: [2124, 319, 200, 245] },
+    { id: 'category',     label: 'NomNom Category Page',               screen: 'category',     color: 'purple', box: [921, 976, 201, 245] },
+    { id: 'quantity',     label: 'Choose Quantity Popup',              screen: 'quantity',     color: 'purple', box: [1376, 985, 200, 291] },
   ] as MvpNode[],
+  // Every edge's geometry is decoded from the Figma `Path 2` connectors (exact
+  // bends, rails, arrow sides). See _previews/panda-mvp-figma-geometry.md.
   edges: [
-    // ── main spine (grey) — straight, centered side anchors ──
-    { from: 'home', to: 'menu', color: 'blue', label: 'Scroll', fromSide: 'right', toSide: 'left' },
-    { from: 'menu', to: 'product', color: 'blue', label: 'Tap a Product', label2: 'Location preselected', fromSide: 'right', fromSlot: 1, fromOf: 2, toSide: 'left', toSlot: 1, toOf: 2 },
-    { from: 'product', to: 'bag', color: 'blue', label: 'Add Product', fromSide: 'right', fromSlot: 1, fromOf: 2, toSide: 'left', toSlot: 1, toOf: 2 },
-    { from: 'bag', to: 'checkout', color: 'blue', label: 'Check Out', fromSide: 'right', fromSlot: 1, fromOf: 2, toSide: 'left', toSlot: 1, toOf: 2 },
-    { from: 'checkout', to: 'confirmation', color: 'blue', label: 'Check Out', fromSide: 'right', toSide: 'left' },
-    // ── promo branch (gold) ──
-    { from: 'home', to: 'promoNotif', color: 'green', label: 'Tap a Promo', labelAt: { x: 159, y: 565 }, fromSide: 'top', toSide: 'left', via: [[159, 486], [411, 486]] },
-    { from: 'promoNotif', to: 'productSel', color: 'green', label: 'Tap a Product', label2: 'Location preselected', fromSide: 'right', toSide: 'left' },
-    { from: 'productSel', to: 'bag', color: 'green', label: 'Add Product', labelAt: { x: 1545, y: 500 }, fromSide: 'right', toPoint: [1745, 933], via: [[1745, 500]] },
-    // ── no-location detour: branches UP off the rails (between the 2 pills) ──
-    { from: 'product', to: 'restaurant', color: 'blue', label: 'No location selected', labelAt: { x: 818, y: 980 }, fromPoint: [818, 1055], fromSide: 'top', toSide: 'bottom', toSlot: 1, toOf: 2 },
-    { from: 'category', to: 'restaurant', color: 'purple', fromPoint: [884, 1108], fromSide: 'top', toSide: 'bottom', toSlot: 2, toOf: 2 },
-    // ── restaurant resolves location → product pages (orange), clean split ──
-    // Shared riser at x=1130: up-branch into green item-page BOTTOM, down-branch
-    // into blue Product Page TOP. Pill sits on the restaurant's right stub.
-    { from: 'restaurant', to: 'productSel', color: 'orange', label: 'Location Selected', labelAt: { x: 1041, y: 692 }, fromSide: 'right', fromSlot: 1, fromOf: 3, toPoint: [1328, 641], via: [[1130, 692], [1130, 641]] },
-    { from: 'restaurant', to: 'product', color: 'orange', fromSide: 'right', fromSlot: 2, fromOf: 3, toPoint: [1328, 933], via: [[1130, 765], [1130, 933]] },
-    // ── bag ↔ location handoff (blue) ──
-    { from: 'bag', to: 'location', color: 'orange', label: 'Change handoff mode or location', labelAt: { x: 1789, y: 802 }, fromSide: 'top', toSide: 'bottom', toSlot: 1, toOf: 2, via: [[1789, 701], [2204, 701]] },
-    { from: 'location', to: 'bag', color: 'orange', label: 'Continue', labelAt: { x: 2040, y: 758 }, fromSide: 'bottom', fromSlot: 2, fromOf: 2, toSide: 'top', toSlot: 2, toOf: 2, via: [[2254, 758], [1834, 758]] },
-    // ── category branch (red) ──
-    { from: 'menu', to: 'category', color: 'purple', label: 'Tap a Category', label2: 'Location preselected', labelAt: { x: 740, y: 1110 }, fromSide: 'right', fromSlot: 2, fromOf: 2, toSide: 'top', via: [[1021, 1110]] },
-    { from: 'category', to: 'quantity', color: 'purple', label: 'Tap Product', labelAt: { x: 1249, y: 1378 }, fromSide: 'right', fromSlot: 1, fromOf: 3, toSide: 'left', toSlot: 1, toOf: 2 },
-    { from: 'quantity', to: 'category', color: 'purple', label: 'Add Product', labelAt: { x: 1249, y: 1466 }, caption: { text: 'Product is added to My Bag', x: 1249, y: 1556 }, fromSide: 'left', toSide: 'right', fromSlot: 2, fromOf: 2, toSlot: 3, toOf: 3 },
-    { from: 'category', to: 'bag', color: 'purple', label: 'Tap Bag Icon', labelAt: { x: 1229, y: 1300 }, fromSide: 'right', fromSlot: 2, fromOf: 2, toSide: 'bottom', via: [[1789, 1300]] },
-    // ── return loop (grey): My Bag → down → left → up → Menu ──
-    { from: 'bag', to: 'menu', color: 'blue', label: 'Add more', labelAt: { x: 1981, y: 1095 }, label2: 'Will send to scrolled location', label2At: { x: 1299, y: 1684 }, fromSide: 'bottom', fromSlot: 2, fromOf: 2, toSide: 'bottom', via: [[1834, 1684], [511, 1684]] },
+    // L1 home→menu "Scroll" — straight horiz rail y761.5 (26462)
+    { from: 'home', to: 'menu', color: 'blue', label: 'Scroll', labelAt: { x: 318.5, y: 761.5 }, fromPoint: [259, 761.5], toPoint: [411, 761.5] },
+    // L10 menu→product "Tap a Product"/"Location preselected" — straight rail y761.5 (26467/26395)
+    { from: 'menu', to: 'product', color: 'blue', label: 'Tap a Product', labelAt: { x: 723.5, y: 761.5 }, label2: 'Location preselected', label2At: { x: 1021.5, y: 761.5 }, fromPoint: [611, 761.5], toPoint: [1228, 761.5] },
+    // L11 product→bag "Add Product" — straight rail y761.5 (26463)
+    { from: 'product', to: 'bag', color: 'blue', label: 'Add Product', labelAt: { x: 1525, y: 761.5 }, fromPoint: [1428, 761.5], toPoint: [1689, 761.5] },
+    // L12 bag→checkout "Check Out" — straight rail y741.5 (above center) (26470)
+    { from: 'bag', to: 'checkout', color: 'blue', label: 'Check Out', labelAt: { x: 1985.5, y: 741.5 }, fromPoint: [1889, 741.5], toPoint: [2124, 741.5] },
+    // L13 checkout→confirmation "Check Out" — straight rail y761.5 (26471)
+    { from: 'checkout', to: 'confirmation', color: 'blue', label: 'Check Out', labelAt: { x: 2411.5, y: 761.5 }, fromPoint: [2324, 761.5], toPoint: [2546, 761.5] },
+
+    // L2 home→promoNotif "Tap a Promo" — up from home top to y193.5, right into promoNotif L (26276)
+    { from: 'home', to: 'promoNotif', color: 'green', label: 'Tap a Promo', labelAt: { x: 151, y: 460.5 }, fromPoint: [151, 640], toPoint: [411, 193.5], via: [[151, 193.5]] },
+    // L3 promoNotif→productSel "Tap a Product"/"Location preselected" — straight rail y193.5 (26283)
+    { from: 'promoNotif', to: 'productSel', color: 'green', label: 'Tap a Product', labelAt: { x: 723.5, y: 193.5 }, label2: 'Location preselected', label2At: { x: 1021.5, y: 193.5 }, fromPoint: [611, 193.5], toPoint: [1228, 193.5] },
+    // L5 productSel→bag "Add Product" — right from productSel R to x1745, down into bag TOP (26277)
+    { from: 'productSel', to: 'bag', color: 'green', label: 'Add Product', labelAt: { x: 1525, y: 193.5 }, fromPoint: [1428, 193.5], toPoint: [1745, 640], via: [[1745, 193.5]] },
+
+    // L4 promo-rail→restaurant "No location selected" upper — drop x850 between the two promo pills into restaurant TOP (26310)
+    { from: 'promoNotif', to: 'restaurant', color: 'green', label: 'No location selected', labelAt: { x: 850, y: 248.5 }, fromPoint: [850, 193.5], toPoint: [850, 326] },
+    // L8 blue rail→restaurant riser — vertical x838 up into restaurant BOTTOM (26287)
+    { from: 'product', to: 'restaurant', color: 'blue', fromPoint: [838, 761.5], toPoint: [838, 617] },
+    // L9 category rail→restaurant riser (purple) — vertical x868 up into restaurant BOTTOM (26288)
+    { from: 'category', to: 'restaurant', color: 'purple', fromPoint: [868, 814.5], toPoint: [868, 617] },
+
+    // L6 restaurant→productSel "Location Selected" UP-branch — stub right y459.5, shared riser x1031 up, into productSel BOTTOM (26245/26244/26284)
+    { from: 'restaurant', to: 'productSel', color: 'orange', label: 'Location Selected', labelAt: { x: 1036, y: 448 }, fromPoint: [951, 459.5], toPoint: [1320, 348], via: [[1031, 459.5], [1031, 388], [1320, 388]] },
+    // L7 restaurant→product "Location Selected" DOWN-branch — shared riser x1031 down, into product TOP (26285)
+    { from: 'restaurant', to: 'product', color: 'orange', fromPoint: [951, 575], toPoint: [1320, 640], via: [[1031, 575], [1031, 700], [1320, 700]] },
+
+    // L19 bag→location "Change handoff mode or location" — up from bag top to y408, right into location (26270)
+    { from: 'bag', to: 'location', color: 'orange', label: 'Change handoff mode or location', labelAt: { x: 1791, y: 518.5 }, fromPoint: [1789, 640], toPoint: [2124, 466], via: [[1789, 408], [2204, 408]] },
+    // L20 location→bag "Continue" return — from location L down/left into bag TOP (26271), stacked parallel to L19
+    { from: 'location', to: 'bag', color: 'orange', label: 'Continue', labelAt: { x: 2007, y: 465.5 }, fromPoint: [2124, 487], toPoint: [1834, 640], via: [[1834, 487]] },
+
+    // L14 menu→category "Tap a Category"/"Location preselected" — lower rail y814.5 (26468), feeds drop
+    { from: 'menu', to: 'category', color: 'purple', label: 'Tap a Category', labelAt: { x: 730, y: 814.5 }, label2: 'Location preselected', label2At: { x: 1021.5, y: 814.5 }, fromPoint: [611, 814.5], toPoint: [1021, 976], via: [[1021, 814.5]] },
+    // L16 category→quantity "Tap Product" — straight rail y1110.5 (26464)
+    { from: 'category', to: 'quantity', color: 'purple', label: 'Tap Product', labelAt: { x: 1224.5, y: 1109.5 }, fromPoint: [1122, 1110.5], toPoint: [1376, 1110.5] },
+    // L17 quantity→category "Add Product" return — LOWER rail y1189.5 (26465)
+    { from: 'quantity', to: 'category', color: 'purple', label: 'Add Product', labelAt: { x: 1226, y: 1190.5 }, caption: { text: 'Product is added to My Bag', x: 1252.5, y: 1247 }, fromPoint: [1376, 1189.5], toPoint: [1122, 1189.5] },
+    // L18 category→bag "Tap Bag Icon" — right then UP into bag BOTTOM (26466)
+    { from: 'category', to: 'bag', color: 'purple', label: 'Tap Bag Icon', labelAt: { x: 1229.5, y: 1036.5 }, fromPoint: [1122, 1037], toPoint: [1789, 885], via: [[1789, 1037]] },
+
+    // L21 bag→menu return — exit bag RIGHT at y798, right to x2084 (under "Add more"),
+    // down to bottom rail y1391, left to x511, up into menu BOTTOM. 4 bends, two pills (26278)
+    { from: 'bag', to: 'menu', color: 'blue', label: 'Add more', labelAt: { x: 1982.5, y: 798.5 }, label2: 'Will send to scrolled location', label2At: { x: 1298.5, y: 1391 }, fromPoint: [1889, 798.5], toPoint: [511, 885], via: [[2084, 798.5], [2084, 1391], [511, 1391]] },
   ] as MvpEdge[],
   scenarios: [
     { id: 'promo', title: 'Add a promotion', color: 'green', blurb: 'Tap a featured promo on the homepage; the item is added and the order continues to checkout.', path: ['home', 'promoNotif', 'productSel', 'bag', 'checkout', 'confirmation'] },
