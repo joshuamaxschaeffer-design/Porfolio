@@ -27,8 +27,6 @@ import { ComponentLibrariesSection } from './ComponentLibrariesSection'
  * pauses on hover/focus; honours prefers-reduced-motion.
  */
 
-const AUTOPLAY_MS = 2200
-
 // path colours
 const COLOR: Record<MvpColor, string> = {
   grey: '#8A8F9A',
@@ -73,30 +71,38 @@ function prefersReducedMotion() {
 type Pt = [number, number]
 const nodeById = new Map<string, MvpNode>(defaults.nodes.map((n) => [n.id, n]))
 
-/** polyline `d`, with the final point pulled back by INSET so the arrow sits
- *  just off the target card. */
-const INSET = 14
-function edgeD(pts: Pt[]): string {
-  const a = pts[pts.length - 2]
-  const b = pts[pts.length - 1]
+/** Arrow geometry shared by line + triangle so they meet cleanly:
+ *  INSET = gap from target card to the arrow TIP.
+ *  ARROW = triangle length (the LINE stops here, at the triangle base). */
+const INSET = 10
+const ARROW = 24
+const ARROW_W = 13
+function lastDir(pts: Pt[]): { ux: number; uy: number } {
+  const a = pts[pts.length - 2], b = pts[pts.length - 1]
   const dx = b[0] - a[0], dy = b[1] - a[1]
   const len = Math.hypot(dx, dy) || 1
-  const bb: Pt = [b[0] - (dx / len) * INSET, b[1] - (dy / len) * INSET]
-  const all = [...pts.slice(0, -1), bb]
+  return { ux: dx / len, uy: dy / len }
+}
+function arrowTip(pts: Pt[]): Pt {
+  const b = pts[pts.length - 1]
+  const { ux, uy } = lastDir(pts)
+  return [b[0] - ux * INSET, b[1] - uy * INSET]
+}
+/** polyline `d` — ends exactly at the arrow BASE (no overshoot past the head) */
+function edgeD(pts: Pt[]): string {
+  const tip = arrowTip(pts)
+  const { ux, uy } = lastDir(pts)
+  const base: Pt = [tip[0] - ux * ARROW, tip[1] - uy * ARROW]
+  const all = [...pts.slice(0, -1), base]
   return 'M ' + all.map((p) => `${p[0]} ${p[1]}`).join(' L ')
 }
-/** solid triangle arrowhead at the (inset) end of a polyline */
+/** solid triangle arrowhead — tip at arrowTip, base ARROW behind it */
 function arrowPoly(pts: Pt[]): string {
-  const a = pts[pts.length - 2]
-  const b = pts[pts.length - 1]
-  const dx = b[0] - a[0], dy = b[1] - a[1]
-  const len = Math.hypot(dx, dy) || 1
-  const ux = dx / len, uy = dy / len
-  const tipX = b[0] - ux * INSET, tipY = b[1] - uy * INSET
-  const s = 26, w = 15
-  const baseX = tipX - ux * s, baseY = tipY - uy * s
+  const tip = arrowTip(pts)
+  const { ux, uy } = lastDir(pts)
+  const baseX = tip[0] - ux * ARROW, baseY = tip[1] - uy * ARROW
   const px = -uy, py = ux
-  return `${tipX.toFixed(1)},${tipY.toFixed(1)} ${(baseX + px * w).toFixed(1)},${(baseY + py * w).toFixed(1)} ${(baseX - px * w).toFixed(1)},${(baseY - py * w).toFixed(1)}`
+  return `${tip[0].toFixed(1)},${tip[1].toFixed(1)} ${(baseX + px * ARROW_W).toFixed(1)},${(baseY + py * ARROW_W).toFixed(1)} ${(baseX - px * ARROW_W).toFixed(1)},${(baseY - py * ARROW_W).toFixed(1)}`
 }
 /** midpoint of the longest segment — default pill anchor */
 function edgeMid(pts: Pt[]): Pt {
@@ -111,32 +117,75 @@ function edgeMid(pts: Pt[]): Pt {
 /* ── device screen UI, drawn at absolute coords inside a sx/sy/sw/sh box.
  *    (No nested <svg>/percent sizing — keeps it robust across renderers.) ── */
 function ScreenUI({ screen, sx, sy, sw, sh }: { screen: MvpScreen; sx: number; sy: number; sw: number; sh: number }) {
-  const blue = '#2BA7E0'
-  // logical 70×62 → absolute
-  const X = (lx: number) => sx + (lx / 70) * sw
-  const Y = (ly: number) => sy + (ly / 62) * sh
-  const W = (lw: number) => (lw / 70) * sw
-  const H = (lh: number) => (lh / 62) * sh
-  const R = (lx: number, ly: number, lw: number, lh: number, rad = 2) => (
-    <rect x={X(lx)} y={Y(ly)} width={W(lw)} height={H(lh)} rx={rad} fill={blue} key={`${lx}-${ly}-${lw}`} />
+  const blue = '#3BA9E8'        // tile fill (Figma light blue)
+  const dark = '#1577C2'        // header bar (darker blue)
+  // logical 100×150 screen → absolute
+  const X = (lx: number) => sx + (lx / 100) * sw
+  const Y = (ly: number) => sy + (ly / 150) * sh
+  const W = (lw: number) => (lw / 100) * sw
+  const H = (lh: number) => (lh / 150) * sh
+  const R = (lx: number, ly: number, lw: number, lh: number, f = blue, rad = 3) => (
+    <rect x={X(lx)} y={Y(ly)} width={W(lw)} height={H(lh)} rx={rad} fill={f} key={`${lx}-${ly}-${lw}-${f}`} />
   )
+  // GRID screens (Homepage / Menu / Product / Category):
+  // dark header bar, wide banner, then a 3×3 tile grid.
   if (screen === 'home' || screen === 'menu' || screen === 'product' || screen === 'category') {
-    return (<>{R(6, 4, 58, 8)}{R(6, 18, 26, 18)}{R(38, 18, 26, 18)}{R(6, 40, 26, 18)}{R(38, 40, 26, 18)}</>)
+    const tiles: React.ReactNode[] = []
+    const gx0 = 12, gy0 = 58, cell = 22, gap = 5
+    for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) {
+      tiles.push(R(gx0 + c * (cell + gap), gy0 + r * (cell + gap), cell, cell, blue, 3))
+    }
+    return (
+      <>
+        {R(12, 12, 76, 14, dark, 3)}{/* dark header */}
+        {R(12, 32, 76, 18, blue, 3)}{/* banner */}
+        {tiles}
+      </>
+    )
   }
+  // POPUP / ITEM screens (Product-with-item / Restaurant / Quantity):
+  // big image block up top, then a couple of lines + a button.
   if (screen === 'productSel' || screen === 'popup' || screen === 'quantity') {
-    return (<>{R(6, 4, 58, 30)}{R(6, 40, 40, 6)}{R(6, 50, 58, 6)}</>)
+    return (
+      <>
+        {R(12, 12, 76, 56, blue, 4)}{/* image */}
+        {R(12, 76, 50, 7, dark, 3)}
+        {R(12, 90, 76, 7, blue, 3)}
+        {R(12, 104, 76, 7, blue, 3)}
+        {R(12, 124, 76, 14, dark, 4)}{/* button */}
+      </>
+    )
   }
-  return (<>{R(6, 4, 58, 8)}{R(6, 18, 58, 7)}{R(6, 30, 58, 7)}{R(6, 42, 36, 7)}</>)
+  // LIST screens (My Bag / Checkout / Confirmation / Location):
+  // stacked wide bars + smaller rows.
+  return (
+    <>
+      {R(12, 14, 76, 14, blue, 3)}
+      {R(12, 34, 76, 14, blue, 3)}
+      {R(12, 56, 50, 8, dark, 3)}
+      {R(12, 70, 50, 8, blue, 3)}
+      {R(12, 86, 76, 16, dark, 4)}
+    </>
+  )
 }
 
-/* ── one node = colored card, device on top, label inside ────────────────── */
+/* ── one node = card, device on top, label inside.
+ *    Highlighted: card filled in path colour, white device, white label.
+ *    Unhighlighted: WHITE card + hairline outline, light device, ink label. ── */
 function NodeCard({ node, lit }: { node: MvpNode; lit: boolean }) {
   const [x, y, w, h] = node.box
-  const fill = lit ? COLOR[node.color] : DIM_CARD
-  // device zone (upper ~52%), label zone (lower)
-  const dw = w * 0.40, dh = h * 0.40
-  const dx = x + (w - dw) / 2, dy = y + h * 0.10
-  const labelCy = y + h * 0.78
+  const cardFill = lit ? COLOR[node.color] : '#ffffff'
+  const cardStroke = lit ? 'none' : '#e2e3e8'
+  const labelColor = lit ? '#ffffff' : 'var(--br-ink)'
+  // device: tall phone (~0.6 ratio), centered, upper area
+  const dw = w * 0.46
+  const dh = dw * 1.5
+  const dx = x + (w - dw) / 2, dy = y + h * 0.085
+  // screen sits inside the phone body with chrome around it; home button below
+  const sPad = dw * 0.12
+  const ssx = dx + sPad, ssw = dw - sPad * 2
+  const ssy = dy + dh * 0.07, ssh = dh * 0.80
+  const labelCy = y + h * 0.80
   const words = node.label.split(' ')
   const lines: string[] = []
   let cur = ''
@@ -148,12 +197,14 @@ function NodeCard({ node, lit }: { node: MvpNode; lit: boolean }) {
   const fs = lines.length >= 3 ? 19 : 21
   const lineH = 25
   const y0 = labelCy - ((lines.length - 1) * lineH) / 2
+  const phoneBody = lit ? '#ffffff' : '#f1f2f4'
   return (
     <g style={{ transition: 'opacity .35s' }}>
-      <rect x={x} y={y} width={w} height={h} rx={22} fill={fill} />
-      {/* white device + UI drawn at absolute coords */}
-      <rect x={dx} y={dy} width={dw} height={dh} rx={10} fill="#ffffff" />
-      <ScreenUI screen={node.screen} sx={dx + dw * 0.12} sy={dy + dh * 0.12} sw={dw * 0.76} sh={dh * 0.76} />
+      <rect x={x} y={y} width={w} height={h} rx={22} fill={cardFill} stroke={cardStroke} strokeWidth={1.5} />
+      {/* phone body + screen UI + home button */}
+      <rect x={dx} y={dy} width={dw} height={dh} rx={12} fill={phoneBody} />
+      <ScreenUI screen={node.screen} sx={ssx} sy={ssy} sw={ssw} sh={ssh} />
+      <circle cx={x + w / 2} cy={dy + dh - dh * 0.05} r={dw * 0.05} fill="#d7dadf" />
       {/* clip stray fills from rounding — none expected now */}
       {lines.map((l, i) => (
         <text
@@ -208,74 +259,86 @@ function activeEdgeKeys(path: string[]): string[] {
   return keys
 }
 
+/** second-pill anchor: offset from the first along the edge's local direction
+ *  (to the right on a horizontal segment, downward otherwise). */
+function secondAnchor(a: Pt, label: string): Pt {
+  // chained pills always sit to the right on the horizontal rails in the source
+  const gap = label.length * 11 + 34
+  return [a[0] + gap / 2 + 130, a[1]]
+}
+
 function DesktopDiagram({ activeId, progress, reduced }: DiagramProps) {
   const { nodes, edges, scenarios } = defaults
+  const isAll = activeId === 'all'
   const scenario = scenarios.find((s) => s.id === activeId) ?? scenarios[0]
   const keys = useMemo(() => activeEdgeKeys(scenario.path), [scenario.path])
-  const litNodeIds = useMemo(() => new Set(scenario.path), [scenario.path])
-  const revealed = reduced ? keys.length : progress
-  // node is "reached" once an edge arriving at it is revealed (or it's the start)
+  const revealed = reduced || isAll ? keys.length : progress
   const reachedNodeIds = useMemo(() => {
+    if (isAll) return new Set(nodes.map((n) => n.id))
     const s = new Set<string>([scenario.path[0]])
     for (let i = 0; i < revealed && i < keys.length; i++) s.add(scenario.path[i + 1])
     return s
-  }, [scenario.path, keys.length, revealed])
+  }, [isAll, nodes, scenario.path, keys.length, revealed])
 
-  // map edge key -> edge for active lookup
   const edgeByKey = useMemo(() => {
     const m = new Map<string, MvpEdge>()
     edges.forEach((e) => m.set(`${e.from}->${e.to}`, e))
     return m
   }, [edges])
 
+  // is an edge lit? (All → always, in its own colour; scenario → on the path & revealed)
+  const edgeState = (ed: MvpEdge): { lit: boolean; color: string } => {
+    if (isAll) return { lit: true, color: COLOR[ed.color] }
+    const idx = keys.indexOf(`${ed.from}->${ed.to}`)
+    return { lit: idx >= 0 && idx < revealed, color: COLOR[scenario.color] }
+  }
+
   return (
     <svg viewBox={`0 0 ${MVP_VBW} ${MVP_VBH}`} className="h-auto w-full" role="img" aria-label="Panda Express ordering UX flow">
-      {/* layer 1 — ALL edges dim */}
+      {/* layer 1 — dim base for edges that are NOT lit (white w/ hairline) */}
       <g>
-        {edges.map((ed, i) => (
-          <g key={`dim-${i}`}>
-            <path d={edgeD(ed.pts)} fill="none" stroke={DIM_LINE} strokeWidth={6} strokeLinecap="round" strokeLinejoin="round" />
-            <polygon points={arrowPoly(ed.pts)} fill={DIM_LINE} />
-          </g>
-        ))}
-      </g>
-
-      {/* layer 2 — active path edges, in scenario colour, revealed in order */}
-      <g>
-        {keys.map((k, i) => {
-          const ed = edgeByKey.get(k)
-          if (!ed) return null
-          const on = i < revealed
-          const col = COLOR[scenario.color]
+        {edges.map((ed, i) => {
+          if (edgeState(ed).lit) return null
           return (
-            <g key={`lit-${i}`} style={{ opacity: on ? 1 : 0, transition: reduced ? 'none' : 'opacity .26s ease-in-out' }}>
-              <path d={edgeD(ed.pts)} fill="none" stroke={col} strokeWidth={7} strokeLinecap="round" strokeLinejoin="round" />
-              <polygon points={arrowPoly(ed.pts)} fill={col} />
+            <g key={`dim-${i}`}>
+              <path d={edgeD(ed.pts)} fill="none" stroke="#e4e5ea" strokeWidth={5} strokeLinecap="round" strokeLinejoin="round" />
+              <polygon points={arrowPoly(ed.pts)} fill="#e4e5ea" />
             </g>
           )
         })}
       </g>
 
-      {/* layer 3 — nodes (dim, then lit when reached) */}
+      {/* layer 2 — lit edges in colour (All = own colour; scenario = path colour) */}
+      <g>
+        {edges.map((ed, i) => {
+          const { lit, color } = edgeState(ed)
+          if (!lit) return null
+          return (
+            <g key={`lit-${i}`} style={{ transition: reduced ? 'none' : 'opacity .26s ease-in-out' }}>
+              <path d={edgeD(ed.pts)} fill="none" stroke={color} strokeWidth={6} strokeLinecap="round" strokeLinejoin="round" />
+              <polygon points={arrowPoly(ed.pts)} fill={color} />
+            </g>
+          )
+        })}
+      </g>
+
+      {/* layer 3 — nodes (white when unhighlighted, colour when reached) */}
       <g>
         {nodes.map((n) => (
-          <g key={n.id} style={{ opacity: 1 }}>
-            <NodeCard node={n} lit={reachedNodeIds.has(n.id)} />
-          </g>
+          <NodeCard key={n.id} node={n} lit={reachedNodeIds.has(n.id)} />
         ))}
       </g>
 
-      {/* layer 4 — pills + captions (dim, lit on active path) */}
+      {/* layer 4 — pills + captions. Two-part labels = TWO separate pills. */}
       <g>
         {edges.map((ed, i) => {
-          const k = `${ed.from}->${ed.to}`
-          const onPathIdx = keys.indexOf(k)
-          const lit = onPathIdx >= 0 && onPathIdx < revealed
-          const anchor = ed.labelAt ? [ed.labelAt.x, ed.labelAt.y] as Pt : edgeMid(ed.pts)
+          const { lit } = edgeState(ed)
+          const anchor = ed.labelAt ? ([ed.labelAt.x, ed.labelAt.y] as Pt) : edgeMid(ed.pts)
           const els: React.ReactNode[] = []
-          if (ed.label) {
-            const lines = ed.label2 ? [ed.label, ed.label2] : [ed.label]
-            els.push(<Pill key={`p-${i}`} x={anchor[0]} y={anchor[1]} lines={lines} color={ed.color} lit={lit} />)
+          if (ed.label) els.push(<Pill key={`p-${i}`} x={anchor[0]} y={anchor[1]} lines={[ed.label]} color={ed.color} lit={lit} />)
+          if (ed.label2) {
+            const a2: Pt = ed.label2At ? [ed.label2At.x, ed.label2At.y] : secondAnchor(anchor, ed.label ?? '')
+            els.push(<Pill key={`p2-${i}`} x={a2[0]} y={a2[1]} lines={[ed.label2]} color={ed.color} lit={lit} />)
           }
           if (ed.caption) {
             els.push(
@@ -345,19 +408,23 @@ function MobileFlow({ activeId, progress, reduced }: DiagramProps) {
   )
 }
 
-/* ── scenario selector chips (active = its path colour) ──────────────────── */
+/* ── scenario selector chips: "All" (shows every flow) + one per scenario ─── */
 function ScenarioChips({ activeId, onPick }: { activeId: string; onPick: (id: string) => void }) {
+  const chips: { id: string; title: string; color: MvpColor | 'ink' }[] = [
+    { id: 'all', title: 'All', color: 'ink' },
+    ...defaults.scenarios.map((s) => ({ id: s.id, title: s.title, color: s.color })),
+  ]
   return (
     <div className="flex flex-wrap gap-2.5" role="tablist" aria-label="Ordering scenarios">
-      {defaults.scenarios.map((s, i) => {
-        const active = s.id === activeId
-        const col = COLOR[s.color]
+      {chips.map((c) => {
+        const active = c.id === activeId
+        const col = c.color === 'ink' ? 'var(--br-ink)' : COLOR[c.color]
         return (
           <button
-            key={s.id}
+            key={c.id}
             role="tab"
             aria-selected={active}
-            onClick={() => onPick(s.id)}
+            onClick={() => onPick(c.id)}
             className="group flex items-center gap-2 rounded-full border px-4 py-2 text-[14px] font-medium leading-none transition-colors duration-200 md:text-[15px]"
             style={{
               borderColor: active ? col : 'var(--br-line)',
@@ -365,13 +432,10 @@ function ScenarioChips({ activeId, onPick }: { activeId: string; onPick: (id: st
               color: active ? 'white' : 'var(--br-muted)',
             }}
           >
-            <span
-              className="br-data grid h-5 w-5 place-items-center rounded-full text-[11px] transition-colors duration-200"
-              style={{ background: active ? 'rgba(255,255,255,0.24)' : 'var(--br-bg-2)', color: active ? 'white' : col }}
-            >
-              {i + 1}
-            </span>
-            {s.title}
+            {c.id !== 'all' && (
+              <span className="h-2.5 w-2.5 rounded-full" style={{ background: active ? 'rgba(255,255,255,0.7)' : col }} />
+            )}
+            {c.title}
           </button>
         )
       })}
@@ -386,44 +450,32 @@ export function MvpFlowSection({ intro }: { intro?: string } = {}) {
   const data = defaults
   const { ref, inView } = useInViewOnce<HTMLDivElement>()
   const [reduced, setReduced] = useState(false)
-  const [activeIdx, setActiveIdx] = useState(0)
+  // default view = "all" (every flow shown in full colour); chips drill in.
+  const [activeId, setActiveId] = useState<string>('all')
   const [progress, setProgress] = useState(0)
   const [paused, setPaused] = useState(false)
-  const [userPicked, setUserPicked] = useState(false)
 
   const scenarios = data.scenarios
-  const activeId = scenarios[activeIdx].id
-  const steps = scenarios[activeIdx].path.length - 1 // edges to reveal
+  const scenario = scenarios.find((s) => s.id === activeId)
+  const steps = scenario ? scenario.path.length - 1 : 0 // edges to reveal
 
   useEffect(() => setReduced(prefersReducedMotion()), [])
 
+  // sequential reveal only for a specific scenario (not "all"); no auto-cycle.
   useEffect(() => {
-    if (!inView) return
-    if (reduced) { setProgress(steps); return }
+    if (activeId === 'all' || !scenario) return
+    if (!inView || reduced) { setProgress(steps); return }
     if (paused) return
     if (progress < steps) {
-      const t = setTimeout(() => setProgress((p) => p + 1), 300)
+      const t = setTimeout(() => setProgress((p) => p + 1), 280)
       return () => clearTimeout(t)
     }
-    if (!userPicked) {
-      const t = setTimeout(() => {
-        setActiveIdx((i) => (i + 1) % scenarios.length)
-        setProgress(0)
-      }, AUTOPLAY_MS)
-      return () => clearTimeout(t)
-    }
-  }, [inView, reduced, paused, progress, steps, userPicked, scenarios.length])
+  }, [activeId, scenario, inView, reduced, paused, progress, steps])
 
-  const pick = useCallback(
-    (id: string) => {
-      const idx = scenarios.findIndex((s) => s.id === id)
-      if (idx < 0) return
-      setUserPicked(true)
-      setActiveIdx(idx)
-      setProgress(reduced ? scenarios[idx].path.length - 1 : 0)
-    },
-    [scenarios, reduced],
-  )
+  const pick = useCallback((id: string) => {
+    setActiveId(id)
+    setProgress(0)
+  }, [])
 
   const lead = intro ?? data.intro
 
