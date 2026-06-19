@@ -35,7 +35,7 @@ export function LoyaltyQrSection({ intro }: { intro?: string } = {}) {
           <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-white/70">
             Panda Rewards · Loyalty Pilot
           </p>
-          <h2 className="mt-3 text-[30px] font-semibold uppercase leading-none tracking-wide text-white md:text-[44px]">
+          <h2 className="mt-3 whitespace-nowrap text-[clamp(22px,5.2vw,38px)] font-semibold uppercase leading-none tracking-tight text-white">
             {copy.heading}
           </h2>
           <p className="mt-4 text-[15px] leading-snug text-white/90 md:text-[19px] md:leading-snug">
@@ -78,25 +78,15 @@ export function LoyaltyQrSection({ intro }: { intro?: string } = {}) {
             <Overview onOpen={setOpenFlow} />
           )}
         </div>
-
-        <p className="mt-8 text-[12.5px] leading-normal text-white/55 md:mt-10 md:max-w-[82ch]">
-          {copy.footnote}
-        </p>
       </div>
     </section>
   )
 }
 
-/* ── OVERVIEW: 5 flow cards, each a compact icon strip + screen peek ── */
+/* ── OVERVIEW: the 6 prototype flows as glass cards (connected mini-journeys) ── */
 function Overview({ onOpen }: { onOpen: (id: string) => void }) {
   return (
     <div>
-      <div className="mb-4 flex items-baseline justify-between gap-3">
-        <p className="text-[12px] font-bold uppercase tracking-[0.12em] text-white/60">
-          The whole board — {FLOWS.length} prototype flows · {FLOWS.reduce((a, f) => a + f.nodes.length, 0)} screens &amp; steps
-        </p>
-        <p className="text-[11px] text-white/45">click a flow to open it →</p>
-      </div>
       <div className="grid grid-cols-1 gap-3.5 md:grid-cols-2 lg:grid-cols-3">
         {FLOWS.map((f) => (
           <FlowCard key={f.id} flow={f} onOpen={() => onOpen(f.id)} />
@@ -112,66 +102,50 @@ function FlowCard({ flow, onOpen }: { flow: Flow; onOpen: () => void }) {
     flow.nodes.forEach((n) => (c[n.type] = (c[n.type] || 0) + 1))
     return c
   }, [flow])
-  // a few key screen thumbs to peek
-  const peeks = flow.nodes.filter((n) => n.type === 'screen' && n.thumb).slice(0, 4)
-  // ordered icon strip (first ~14 nodes)
-  const strip = flow.nodes.slice(0, 16)
+  // ordered connected journey (first ~13 nodes), shown as icons joined by connectors
+  const strip = flow.nodes.slice(0, 13)
+  const more = flow.nodes.length - strip.length
   return (
     <button
       type="button"
       onClick={onOpen}
-      className="group flex flex-col rounded-[14px] border border-white/20 bg-black/15 p-4 text-left outline-none transition-colors hover:border-white/45 hover:bg-black/25 focus-visible:border-white"
+      className="group flex flex-col rounded-[18px] border border-white/15 bg-white/[0.07] p-5 text-left outline-none backdrop-blur-[6px] transition-all [box-shadow:0_6px_18px_rgba(0,0,0,0.16)] hover:-translate-y-0.5 hover:border-white/30 hover:bg-white/[0.11] hover:[box-shadow:0_12px_30px_rgba(0,0,0,0.24)] focus-visible:border-white"
     >
-      <div className="flex items-start justify-between gap-2">
-        <div>
-          <h3 className="text-[16px] font-semibold text-white md:text-[17px]">{flow.title}</h3>
-          <p className="mt-0.5 text-[12px] capitalize text-white/55">{flow.platform.replace('-', ' ')}</p>
-        </div>
-        <span className="rounded-full bg-white/12 px-2 py-0.5 text-[11px] font-semibold text-white/80">
-          {flow.nodes.length} nodes
+      <div className="flex items-start justify-between gap-3">
+        <h3 className="text-[15.5px] font-semibold leading-snug text-white md:text-[16.5px]">{flow.title}</h3>
+        <span className="shrink-0 rounded-full border border-white/20 bg-white/10 px-2.5 py-0.5 text-[11px] font-semibold text-white/80">
+          {flow.nodes.length}
         </span>
       </div>
-      <p className="mt-2 text-[13px] leading-snug text-white/75">{flow.blurb}</p>
+      <p className="mt-2 text-[13px] leading-snug text-white/70">{flow.blurb}</p>
 
-      {/* icon strip */}
-      <div className="mt-3 flex flex-wrap items-center gap-1">
+      {/* connected mini-journey — icons joined by connector segments */}
+      <div className="mt-4 flex flex-wrap items-center gap-y-2">
         {strip.map((n, i) => (
           <span key={n.id} className="inline-flex items-center">
             <span
-              className="inline-flex h-6 w-6 items-center justify-center rounded-[6px]"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-[7px]"
               style={{ boxShadow: `inset 0 0 0 1px ${nodeTone(n.type).ring}`, background: nodeTone(n.type).glow }}
             >
-              <NodeGlyph type={n.type} className="h-3.5 w-3.5 text-white" />
+              <NodeGlyph type={n.type} className="h-4 w-4 text-white" />
             </span>
-            {i < strip.length - 1 && <span className="mx-[1px] h-px w-1.5 bg-white/30" />}
+            {i < strip.length - 1 && <span className="h-px w-2.5 bg-white/35" />}
           </span>
         ))}
-        {flow.nodes.length > strip.length && (
-          <span className="ml-1 text-[11px] text-white/55">+{flow.nodes.length - strip.length}</span>
+        {more > 0 && (
+          <span className="ml-1.5 inline-flex items-center text-[11px] font-medium text-white/55">
+            <span className="mr-1 h-px w-2.5 bg-white/35" />+{more}
+          </span>
         )}
       </div>
 
-      {/* screen peek */}
-      <div className="mt-3 flex gap-1.5">
-        {peeks.map((n) => (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            key={n.id}
-            src={`${THUMB}/${n.thumb}.webp`}
-            alt=""
-            loading="lazy"
-            className="h-16 w-auto rounded-[5px] border border-white/15 opacity-80 transition-opacity group-hover:opacity-100"
-          />
-        ))}
-      </div>
-
-      <div className="mt-3 flex items-center gap-3 text-[11px] text-white/50">
+      <div className="mt-4 flex items-center gap-3 text-[11px] text-white/50">
         <span>{counts.screen || 0} screens</span>
         <span>{counts.decision || 0} decisions</span>
-        {(counts.api || counts.note) && (
-          <span>{(counts.api || 0) + (counts.note || 0)} notes/APIs</span>
-        )}
-        <span className="ml-auto font-semibold text-white/75 group-hover:text-white">Open →</span>
+        {(counts.api || counts.note) ? (
+          <span>{(counts.api || 0) + (counts.note || 0)} notes / APIs</span>
+        ) : null}
+        <span className="ml-auto font-semibold text-white/75 transition-colors group-hover:text-white">Open →</span>
       </div>
     </button>
   )

@@ -1,99 +1,118 @@
-// AUTO-GENERATED from the Loyalty-QR-Enrollment Figma file (verified prototype graph).
-// 5 prototype flows, every wired node. Do not hand-edit positions; regenerate from the model script.
+// AUTO-GENERATED from the Loyalty-QR-Enrollment Figma file.
+// 6 prototype flows grouped by the file's own flowStartingPoints (Flow 2-7),
+// using reachability from each flow start (NOT connected components — Flow 5
+// overlaps Flow 4, which is why a component-based grouping wrongly merged them).
 export type FlowNodeType = "entry" | "screen" | "decision" | "api" | "note"
 export interface FlowNote { kind: "api" | "note"; label: string; detail: string }
-export interface FlowNode {
-  id: string
-  type: FlowNodeType
-  label: string
-  role?: string
-  thumb?: string
-  detail?: string
-  notes?: FlowNote[]
-  nx: number
-  ny: number
-}
+export interface FlowNode { id: string; type: FlowNodeType; label: string; role?: string; thumb?: string; detail?: string; notes?: FlowNote[]; nx: number; ny: number }
 export interface FlowEdge { from: string; to: string; label?: string }
-export interface Flow {
-  id: string
-  title: string
-  blurb: string
-  platform: "mobile" | "mobile-web" | "desktop" | "mixed"
-  nodes: FlowNode[]
-  edges: FlowEdge[]
-}
-
+export interface Flow { id: string; title: string; blurb: string; platform: "mobile" | "mobile-web" | "desktop" | "mixed"; nodes: FlowNode[]; edges: FlowEdge[] }
 export const FLOWS: Flow[] = [
   {
-    "id": "flow1",
-    "title": "Mobile · receipt scan",
-    "blurb": "Mobile receipt-QR scan into sign-in, confirmation and rewards.",
-    "platform": "mixed",
+    "id": "flow2",
+    "title": "Flow 2 · Mobile · location & pilot gating",
+    "blurb": "Mobile tabletop entry with full location + pilot gating before enrollment.",
+    "platform": "mobile",
     "nodes": [
       {
-        "id": "4:29792",
-        "type": "screen",
-        "label": "Loading",
-        "thumb": "loading",
-        "role": "A “Good Fortune Awaits” splash while state resolves.",
-        "nx": 0.592,
-        "ny": 0.826
-      },
-      {
-        "id": "4:44475",
-        "type": "decision",
-        "label": "Not Pilot",
-        "role": "Branch — store not in the pilot.",
-        "nx": 0.737,
-        "ny": 0.821
-      },
-      {
-        "id": "4:83983",
-        "type": "screen",
-        "label": "Loading",
-        "thumb": "loading",
-        "role": "A “Good Fortune Awaits” splash while state resolves.",
-        "nx": 0.384,
-        "ny": 0.857,
-        "notes": [
-          {
-            "kind": "api",
-            "label": "Firebase",
-            "detail": "Firebase redirects route the scanned QR to the right enrollment entry."
-          }
-        ]
+        "id": "0:18748",
+        "type": "entry",
+        "label": "Tabletop QR",
+        "role": "Entry — scanning a QR at the table.",
+        "nx": 0,
+        "ny": 0.185
       },
       {
         "id": "0:18694",
         "type": "decision",
         "label": "If App",
-        "role": "Branch — did they open the native app?",
-        "nx": 0.109,
-        "ny": 0.047
+        "role": "Branch — opened the native app?",
+        "nx": 0.107,
+        "ny": 0.185
       },
       {
         "id": "0:18757",
         "type": "decision",
         "label": "Non Loyalty",
-        "role": "Branch — account isn’t a loyalty member.",
-        "nx": 0.172,
-        "ny": 0.047
+        "role": "Branch — not a loyalty member.",
+        "nx": 0.202,
+        "ny": 0.185
       },
       {
-        "id": "0:18839",
+        "id": "0:18829",
+        "type": "decision",
+        "label": "If Loyalty",
+        "role": "Branch — already a member.",
+        "nx": 0.202,
+        "ny": 0.851
+      },
+      {
+        "id": "0:18761",
+        "type": "decision",
+        "label": "Location known",
+        "role": "Branch — is location known?",
+        "nx": 0.358,
+        "ny": 0.08
+      },
+      {
+        "id": "0:18824",
+        "type": "decision",
+        "label": "Location unknown",
+        "role": "Branch — location not yet known.",
+        "nx": 0.358,
+        "ny": 0.343
+      },
+      {
+        "id": "0:18827",
+        "type": "decision",
+        "label": "Location blocked",
+        "role": "Branch — permission denied; fall back to ZIP.",
+        "nx": 0.358,
+        "ny": 0.654
+      },
+      {
+        "id": "0:20653",
         "type": "screen",
-        "label": "Confirm loc.",
-        "thumb": "confirm",
-        "role": "Share GPS or enter a ZIP to confirm the store.",
-        "nx": 0.363,
-        "ny": 0.102,
+        "label": "Rewards",
+        "thumb": "rewards",
+        "role": "The payoff — Good Fortune Points and the Scan tab.",
         "notes": [
           {
             "kind": "note",
             "label": "Note",
+            "detail": "“While on this page, disable the location popup, even though they are at a pilot location.”"
+          },
+          {
+            "kind": "api",
+            "label": "Firebase",
+            "detail": "Firebase redirects route the scanned QR to the right enrollment entry."
+          },
+          {
+            "kind": "note",
+            "label": "Note",
             "detail": "• Location enabled ,"
+          },
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "Design note: “Create a version of this for logged-in users where we don’t ask for email — it’ll be prepopulated.”"
+          },
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "Design note: “Should be ‘My Rewards’.”"
           }
-        ]
+        ],
+        "nx": 1,
+        "ny": 1
+      },
+      {
+        "id": "0:18763",
+        "type": "decision",
+        "label": "Artboard",
+        "role": "Decision point.",
+        "nx": 0.61,
+        "ny": 0.015
       },
       {
         "id": "0:18902",
@@ -101,8 +120,6 @@ export const FLOWS: Flow[] = [
         "label": "Confirm loc.",
         "thumb": "confirm",
         "role": "Share GPS or enter a ZIP to confirm the store.",
-        "nx": 0.363,
-        "ny": 0.064,
         "notes": [
           {
             "kind": "api",
@@ -114,290 +131,100 @@ export const FLOWS: Flow[] = [
             "label": "Note",
             "detail": "• Location enabled ,"
           }
-        ]
+        ],
+        "nx": 0.49,
+        "ny": 0.343
       },
       {
-        "id": "4:30146",
+        "id": "0:18839",
         "type": "screen",
-        "label": "Loading",
-        "thumb": "loading",
-        "role": "A “Good Fortune Awaits” splash while state resolves.",
-        "nx": 0.384,
-        "ny": 0.905
-      },
-      {
-        "id": "4:44449",
-        "type": "decision",
-        "label": "Non Loyalty",
-        "role": "Branch — account isn’t a loyalty member.",
-        "nx": 0.134,
-        "ny": 0.854
-      },
-      {
-        "id": "4:44462",
-        "type": "decision",
-        "label": "Location known",
-        "role": "Branch — do we already have their location?",
-        "nx": 0.237,
-        "ny": 0.84
-      },
-      {
-        "id": "4:44468",
-        "type": "decision",
-        "label": "Location blocked",
-        "role": "Branch — location permission denied; fall back to ZIP.",
-        "nx": 0.237,
-        "ny": 0.911
-      },
-      {
-        "id": "4:44465",
-        "type": "decision",
-        "label": "Location unknown",
-        "role": "Branch — location not yet known.",
-        "nx": 0.237,
-        "ny": 0.869
-      },
-      {
-        "id": "4:44455",
-        "type": "entry",
-        "label": "Tabletop QR",
-        "role": "Entry — scanning a QR at the table (tabletop enrollment).",
-        "nx": 0.071,
-        "ny": 0.854
-      },
-      {
-        "id": "4:46329",
-        "type": "decision",
-        "label": "If Loyalty",
-        "role": "Branch — already a loyalty member.",
-        "nx": 0.134,
-        "ny": 0.937
-      },
-      {
-        "id": "4:44459",
-        "type": "decision",
-        "label": "If App/Web",
-        "role": "Branch — app vs web channel.",
-        "nx": 0,
-        "ny": 0.854
-      },
-      {
-        "id": "4:44470",
-        "type": "decision",
-        "label": "If Pilot",
-        "role": "Branch — is this store in the pilot?",
-        "nx": 0.737,
-        "ny": 0.855
-      },
-      {
-        "id": "4:44489",
-        "type": "decision",
-        "label": "If Guest",
-        "role": "Branch — guest path.",
-        "nx": 0.819,
-        "ny": 0.855
-      },
-      {
-        "id": "4:44491",
-        "type": "decision",
-        "label": "If Logged In",
-        "role": "Branch — logged-in path.",
-        "nx": 0.819,
-        "ny": 0.919
-      },
-      {
-        "id": "4:44481",
-        "type": "decision",
-        "label": "Guest",
-        "role": "Branch — not signed in.",
-        "nx": 0.819,
-        "ny": 0.821
-      },
-      {
-        "id": "4:44485",
-        "type": "decision",
-        "label": "Logged-in non-member",
-        "role": "Branch — signed in but not a member.",
-        "nx": 0.819,
-        "ny": 0.793
-      },
-      {
-        "id": "4:14721",
-        "type": "screen",
-        "label": "Loading",
-        "thumb": "loading",
-        "role": "A “Good Fortune Awaits” splash while state resolves.",
-        "nx": 1,
-        "ny": 0.804
-      },
-      {
-        "id": "4:14178",
-        "type": "screen",
-        "label": "Loading",
-        "thumb": "loading",
-        "role": "A “Good Fortune Awaits” splash while state resolves.",
-        "nx": 1,
-        "ny": 0.747
-      },
-      {
-        "id": "4:21959",
-        "type": "screen",
-        "label": "Loading",
-        "thumb": "loading",
-        "role": "A “Good Fortune Awaits” splash while state resolves.",
-        "nx": 1,
-        "ny": 0.941
-      },
-      {
-        "id": "4:48128",
-        "type": "screen",
-        "label": "Rewards",
-        "thumb": "rewards",
-        "role": "The payoff — Good Fortune Points and the Scan tab.",
-        "nx": 1,
-        "ny": 1
-      },
-      {
-        "id": "0:18748",
-        "type": "entry",
-        "label": "Receipt QR",
-        "role": "Entry — scanning a QR at the table (tabletop enrollment).",
-        "nx": 0.038,
-        "ny": 0.047
-      },
-      {
-        "id": "0:18761",
-        "type": "decision",
-        "label": "Location known",
-        "role": "Branch — do we already have their location?",
-        "nx": 0.275,
-        "ny": 0.035
-      },
-      {
-        "id": "0:18824",
-        "type": "decision",
-        "label": "Location unknown",
-        "role": "Branch — location not yet known.",
-        "nx": 0.275,
-        "ny": 0.064
-      },
-      {
-        "id": "0:18827",
-        "type": "decision",
-        "label": "Location blocked",
-        "role": "Branch — location permission denied; fall back to ZIP.",
-        "nx": 0.275,
-        "ny": 0.099
-      },
-      {
-        "id": "0:18763",
-        "type": "decision",
-        "label": "(loading)",
-        "role": "Decision point.",
-        "nx": 0.442,
-        "ny": 0.028
+        "label": "Confirm loc.",
+        "thumb": "confirm",
+        "role": "Share GPS or enter a ZIP to confirm the store.",
+        "notes": [
+          {
+            "kind": "api",
+            "label": "Punchh",
+            "detail": "Punchh associates the scanned transaction to the logged-in user so the points are credited."
+          },
+          {
+            "kind": "api",
+            "label": "Firebase",
+            "detail": "Firebase redirects route the scanned QR to the right enrollment entry."
+          },
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "• Location enabled ,"
+          },
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "“Great news! The Panda Express near you is testing our new rewards program. Start collecting Good Fortune and receive your free welcome gift, now!”"
+          }
+        ],
+        "nx": 0.49,
+        "ny": 0.681
       },
       {
         "id": "0:18773",
         "type": "decision",
         "label": "Not Pilot",
         "role": "Branch — store not in the pilot.",
-        "nx": 0.524,
-        "ny": 0.026
+        "nx": 0.734,
+        "ny": 0
       },
       {
         "id": "0:18783",
         "type": "decision",
         "label": "Pilot",
         "role": "Branch — store is in the pilot.",
-        "nx": 0.524,
-        "ny": 0.056
-      },
-      {
-        "id": "0:18775",
-        "type": "decision",
-        "label": "Logged In",
-        "role": "Branch — signed in to a Panda account.",
-        "nx": 0.612,
-        "ny": 0.098
-      },
-      {
-        "id": "0:18989",
-        "type": "screen",
-        "label": "Welcome",
-        "thumb": "intro",
-        "role": "The enrollment hook — “Great news!… testing our new rewards program.”",
-        "nx": 0.7,
-        "ny": 0.098
+        "nx": 0.734,
+        "ny": 0.267
       },
       {
         "id": "0:18814",
         "type": "decision",
         "label": "Guest",
         "role": "Branch — not signed in.",
-        "nx": 0.612,
-        "ny": 0.052
+        "nx": 0.867,
+        "ny": 0.231
+      },
+      {
+        "id": "0:18775",
+        "type": "decision",
+        "label": "Logged In",
+        "role": "Branch — signed in.",
+        "nx": 0.867,
+        "ny": 0.64
       },
       {
         "id": "0:19793",
         "type": "screen",
         "label": "Welcome",
         "thumb": "introSignin",
-        "role": "The enrollment hook — “Great news!… testing our new rewards program.”",
-        "nx": 0.7,
-        "ny": 0.051
-      },
-      {
-        "id": "37:16823",
-        "type": "decision",
-        "label": "Correct ZIP",
-        "role": "Branch — a valid pilot ZIP was entered.",
-        "nx": 0.661,
-        "ny": 0.035
-      },
-      {
-        "id": "0:18829",
-        "type": "decision",
-        "label": "If Loyalty",
-        "role": "Branch — already a loyalty member.",
-        "nx": 0.172,
-        "ny": 0.121
-      },
-      {
-        "id": "0:20653",
-        "type": "screen",
-        "label": "Rewards",
-        "thumb": "rewards",
-        "role": "The payoff — Good Fortune Points and the Scan tab.",
-        "nx": 0.7,
-        "ny": 0.138
-      },
-      {
-        "id": "39:13395",
-        "type": "screen",
-        "label": "Welcome",
-        "thumb": "introSignin",
-        "role": "The enrollment hook — “Great news!… testing our new rewards program.”",
-        "nx": 0.795,
-        "ny": 0,
+        "role": "The enrollment hook — \"Great news!… testing our new rewards program.\"",
         "notes": [
           {
             "kind": "note",
             "label": "Note",
             "detail": "• Location enabled ,"
           }
-        ]
+        ],
+        "nx": 1,
+        "ny": 0.225
+      },
+      {
+        "id": "0:18989",
+        "type": "screen",
+        "label": "Welcome",
+        "thumb": "intro",
+        "role": "The enrollment hook — \"Great news!… testing our new rewards program.\"",
+        "nx": 1,
+        "ny": 0.64
       }
     ],
     "edges": [
-      {
-        "from": "4:29792",
-        "to": "4:44475"
-      },
-      {
-        "from": "4:83983",
-        "to": "4:29792"
-      },
       {
         "from": "0:18694",
         "to": "0:18757"
@@ -405,82 +232,6 @@ export const FLOWS: Flow[] = [
       {
         "from": "0:18839",
         "to": "0:18902"
-      },
-      {
-        "from": "4:30146",
-        "to": "0:18902"
-      },
-      {
-        "from": "4:44449",
-        "to": "4:44462"
-      },
-      {
-        "from": "4:44449",
-        "to": "4:44468"
-      },
-      {
-        "from": "4:44449",
-        "to": "4:44465"
-      },
-      {
-        "from": "4:44455",
-        "to": "4:44449"
-      },
-      {
-        "from": "4:44455",
-        "to": "4:46329"
-      },
-      {
-        "from": "4:44459",
-        "to": "4:44455"
-      },
-      {
-        "from": "4:44462",
-        "to": "4:29792"
-      },
-      {
-        "from": "4:44465",
-        "to": "4:83983"
-      },
-      {
-        "from": "4:44468",
-        "to": "4:30146"
-      },
-      {
-        "from": "4:44470",
-        "to": "4:44489"
-      },
-      {
-        "from": "4:44470",
-        "to": "4:44491"
-      },
-      {
-        "from": "4:44475",
-        "to": "4:44481"
-      },
-      {
-        "from": "4:44475",
-        "to": "4:44485"
-      },
-      {
-        "from": "4:44481",
-        "to": "4:14721"
-      },
-      {
-        "from": "4:44485",
-        "to": "4:14178"
-      },
-      {
-        "from": "4:44489",
-        "to": "4:14721"
-      },
-      {
-        "from": "4:44491",
-        "to": "4:21959"
-      },
-      {
-        "from": "4:46329",
-        "to": "4:48128"
       },
       {
         "from": "0:18748",
@@ -527,10 +278,6 @@ export const FLOWS: Flow[] = [
         "to": "0:19793"
       },
       {
-        "from": "37:16823",
-        "to": "0:19793"
-      },
-      {
         "from": "0:18824",
         "to": "0:18902"
       },
@@ -551,83 +298,45 @@ export const FLOWS: Flow[] = [
         "to": "0:18763"
       },
       {
-        "from": "39:13395",
-        "to": "37:16823"
-      },
-      {
-        "from": "4:29792",
-        "to": "4:44470"
-      },
-      {
         "from": "0:18694",
         "to": "0:18829"
       }
     ]
   },
   {
-    "id": "flow2",
-    "title": "Desktop · receipt scan",
-    "blurb": "Desktop receipt-QR scan straight into the auth + loyalty branch.",
+    "id": "flow3",
+    "title": "Flow 3 · Desktop · full journey",
+    "blurb": "Desktop scan → location/pilot gate → auth → loyalty branch → rewards (the fullest variant).",
     "platform": "desktop",
     "nodes": [
       {
-        "id": "0:77",
-        "type": "screen",
-        "label": "Loading",
-        "thumb": "loading",
-        "role": "A “Good Fortune Awaits” splash while state resolves.",
-        "nx": 0.638,
-        "ny": 0.331,
-        "notes": [
-          {
-            "kind": "note",
-            "label": "Note",
-            "detail": "• Location enabled ,"
-          }
-        ]
-      },
-      {
-        "id": "0:15004",
-        "type": "decision",
-        "label": "Not Pilot",
-        "role": "Branch — store not in the pilot.",
-        "nx": 0.804,
-        "ny": 0.28
-      },
-      {
-        "id": "0:14982",
-        "type": "decision",
-        "label": "Non Loyalty",
-        "role": "Branch — account isn’t a loyalty member.",
-        "nx": 0.291,
+        "id": "0:14989",
+        "type": "entry",
+        "label": "Tabletop QR",
+        "role": "Entry — scanning a QR at the table.",
+        "nx": 0,
         "ny": 0.413
       },
       {
-        "id": "0:14992",
+        "id": "0:14986",
         "type": "decision",
-        "label": "Location known",
-        "role": "Branch — do we already have their location?",
-        "nx": 0.379,
-        "ny": 0.356
-      },
-      {
-        "id": "0:2",
-        "type": "screen",
-        "label": "Loading",
-        "thumb": "loading",
-        "role": "A “Good Fortune Awaits” splash while state resolves.",
-        "nx": 0.472,
-        "ny": 0.61
+        "label": "If Web",
+        "role": "Branch — opened the web?",
+        "nx": 0.079,
+        "ny": 0.413
       },
       {
         "id": "47:13079",
         "type": "screen",
         "label": "Loading",
         "thumb": "loading",
-        "role": "A “Good Fortune Awaits” splash while state resolves.",
-        "nx": 0.142,
-        "ny": 0.401,
+        "role": "A \"Good Fortune Awaits\" splash while state resolves.",
         "notes": [
+          {
+            "kind": "api",
+            "label": "Punchh",
+            "detail": "Punchh associates the scanned transaction to the logged-in user so the points are credited."
+          },
           {
             "kind": "api",
             "label": "Firebase",
@@ -637,38 +346,54 @@ export const FLOWS: Flow[] = [
             "kind": "note",
             "label": "Note",
             "detail": "• Location enabled ,"
+          },
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "“Great news! The Panda Express near you is testing our new rewards program. Start collecting Good Fortune and receive your free welcome gift, now!”"
           }
-        ]
+        ],
+        "nx": 0.142,
+        "ny": 0.401
       },
       {
         "id": "0:18692",
         "type": "decision",
         "label": "If Loyalty",
-        "role": "Branch — already a loyalty member.",
+        "role": "Branch — already a member.",
         "nx": 0.291,
         "ny": 0.756
       },
       {
-        "id": "0:126",
+        "id": "0:14982",
+        "type": "decision",
+        "label": "Non Loyalty",
+        "role": "Branch — not a loyalty member.",
+        "nx": 0.291,
+        "ny": 0.413
+      },
+      {
+        "id": "0:15021",
         "type": "screen",
-        "label": "Loading",
-        "thumb": "loading",
-        "role": "A “Good Fortune Awaits” splash while state resolves.",
-        "nx": 0.472,
-        "ny": 0.438,
-        "notes": [
-          {
-            "kind": "note",
-            "label": "Note",
-            "detail": "• Location enabled ,"
-          }
-        ]
+        "label": "Rewards page",
+        "thumb": "educational",
+        "role": "Education hub — How to Collect / Easy Ways to Redeem.",
+        "nx": 1,
+        "ny": 1
+      },
+      {
+        "id": "0:14992",
+        "type": "decision",
+        "label": "Location known",
+        "role": "Branch — is location known?",
+        "nx": 0.379,
+        "ny": 0.356
       },
       {
         "id": "0:14998",
         "type": "decision",
         "label": "Location blocked",
-        "role": "Branch — location permission denied; fall back to ZIP.",
+        "role": "Branch — permission denied; fall back to ZIP.",
         "nx": 0.379,
         "ny": 0.649
       },
@@ -681,28 +406,84 @@ export const FLOWS: Flow[] = [
         "ny": 0.476
       },
       {
-        "id": "0:14986",
-        "type": "decision",
-        "label": "If Web",
-        "role": "Branch — did they open the web?",
-        "nx": 0.079,
-        "ny": 0.413
+        "id": "0:77",
+        "type": "screen",
+        "label": "Loading",
+        "thumb": "loading",
+        "role": "A \"Good Fortune Awaits\" splash while state resolves.",
+        "notes": [
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "• Location enabled ,"
+          }
+        ],
+        "nx": 0.638,
+        "ny": 0.331
       },
       {
-        "id": "0:14989",
-        "type": "entry",
-        "label": "Tabletop QR",
-        "role": "Entry — scanning a QR at the table (tabletop enrollment).",
-        "nx": 0,
-        "ny": 0.413
+        "id": "0:2",
+        "type": "screen",
+        "label": "Loading",
+        "thumb": "loading",
+        "role": "A \"Good Fortune Awaits\" splash while state resolves.",
+        "notes": [
+          {
+            "kind": "api",
+            "label": "Firebase",
+            "detail": "Firebase redirects route the scanned QR to the right enrollment entry."
+          }
+        ],
+        "nx": 0.472,
+        "ny": 0.61
+      },
+      {
+        "id": "0:126",
+        "type": "screen",
+        "label": "Loading",
+        "thumb": "loading",
+        "role": "A \"Good Fortune Awaits\" splash while state resolves.",
+        "notes": [
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "• Location enabled ,"
+          }
+        ],
+        "nx": 0.472,
+        "ny": 0.438
+      },
+      {
+        "id": "0:15004",
+        "type": "decision",
+        "label": "Not Pilot",
+        "role": "Branch — store not in the pilot.",
+        "nx": 0.804,
+        "ny": 0.28
       },
       {
         "id": "0:15000",
         "type": "decision",
         "label": "If Pilot",
-        "role": "Branch — is this store in the pilot?",
+        "role": "Branch — store in the pilot?",
         "nx": 0.804,
         "ny": 0.418
+      },
+      {
+        "id": "0:15009",
+        "type": "decision",
+        "label": "Guest",
+        "role": "Branch — not signed in.",
+        "nx": 0.874,
+        "ny": 0.28
+      },
+      {
+        "id": "0:15013",
+        "type": "decision",
+        "label": "Logged-in non-member",
+        "role": "Branch — signed in, not a member.",
+        "nx": 0.874,
+        "ny": 0.106
       },
       {
         "id": "0:15017",
@@ -721,45 +502,27 @@ export const FLOWS: Flow[] = [
         "ny": 0.682
       },
       {
-        "id": "0:15009",
-        "type": "decision",
-        "label": "Guest",
-        "role": "Branch — not signed in.",
-        "nx": 0.874,
-        "ny": 0.28
-      },
-      {
-        "id": "0:15013",
-        "type": "decision",
-        "label": "Logged-in non-member",
-        "role": "Branch — signed in but not a member.",
-        "nx": 0.874,
-        "ny": 0.106
-      },
-      {
         "id": "94:13280",
         "type": "screen",
         "label": "Loading",
         "thumb": "loading",
-        "role": "A “Good Fortune Awaits” splash while state resolves.",
-        "nx": 1,
-        "ny": 0.202,
+        "role": "A \"Good Fortune Awaits\" splash while state resolves.",
         "notes": [
           {
             "kind": "note",
             "label": "Note",
             "detail": "• Location enabled ,"
           }
-        ]
+        ],
+        "nx": 1,
+        "ny": 0.202
       },
       {
         "id": "10:11439",
         "type": "screen",
         "label": "Loading",
         "thumb": "loading",
-        "role": "A “Good Fortune Awaits” splash while state resolves.",
-        "nx": 1,
-        "ny": 0,
+        "role": "A \"Good Fortune Awaits\" splash while state resolves.",
         "notes": [
           {
             "kind": "note",
@@ -771,14 +534,16 @@ export const FLOWS: Flow[] = [
             "label": "Note",
             "detail": "Design note: “Create a version of this for logged-in users where we don’t ask for email — it’ll be prepopulated.”"
           }
-        ]
+        ],
+        "nx": 1,
+        "ny": 0
       },
       {
         "id": "0:201",
         "type": "screen",
         "label": "Loading",
         "thumb": "loading",
-        "role": "A “Good Fortune Awaits” splash while state resolves.",
+        "role": "A \"Good Fortune Awaits\" splash while state resolves.",
         "nx": 1,
         "ny": 0.391
       },
@@ -787,9 +552,7 @@ export const FLOWS: Flow[] = [
         "type": "screen",
         "label": "Loading",
         "thumb": "loading",
-        "role": "A “Good Fortune Awaits” splash while state resolves.",
-        "nx": 1,
-        "ny": 0.805,
+        "role": "A \"Good Fortune Awaits\" splash while state resolves.",
         "notes": [
           {
             "kind": "note",
@@ -799,18 +562,11 @@ export const FLOWS: Flow[] = [
           {
             "kind": "note",
             "label": "Note",
-            "detail": "Design note: “Should be ‘My Rewards’.” (copy fix flagged in the file.)"
+            "detail": "Design note: “Should be ‘My Rewards’.”"
           }
-        ]
-      },
-      {
-        "id": "0:15021",
-        "type": "screen",
-        "label": "Rewards page",
-        "thumb": "educational",
-        "role": "Education hub — How to Collect / Easy Ways to Redeem.",
+        ],
         "nx": 1,
-        "ny": 1
+        "ny": 0.805
       }
     ],
     "edges": [
@@ -909,20 +665,39 @@ export const FLOWS: Flow[] = [
     ]
   },
   {
-    "id": "flow3",
-    "title": "Desktop · loyalty branch",
+    "id": "flow4",
+    "title": "Flow 4 · Desktop · receipt scan",
     "blurb": "Desktop receipt-QR scan straight into the auth + loyalty branch.",
     "platform": "desktop",
     "nodes": [
+      {
+        "id": "0:18754",
+        "type": "entry",
+        "label": "Receipt QR",
+        "role": "Entry — the diner scans the QR on their receipt.",
+        "nx": 0,
+        "ny": 0.057
+      },
+      {
+        "id": "0:18699",
+        "type": "decision",
+        "label": "If Web",
+        "role": "Branch — opened the web?",
+        "nx": 0.105,
+        "ny": 0.054
+      },
       {
         "id": "0:18701",
         "type": "screen",
         "label": "Loading",
         "thumb": "loading",
-        "role": "A “Good Fortune Awaits” splash while state resolves.",
-        "nx": 0.417,
-        "ny": 0.045,
+        "role": "A \"Good Fortune Awaits\" splash while state resolves.",
         "notes": [
+          {
+            "kind": "api",
+            "label": "Punchh",
+            "detail": "Punchh associates the scanned transaction to the logged-in user so the points are credited."
+          },
           {
             "kind": "api",
             "label": "Firebase",
@@ -934,56 +709,29 @@ export const FLOWS: Flow[] = [
             "detail": "• Location enabled ,"
           },
           {
-            "kind": "api",
-            "label": "Punchh",
-            "detail": "Punchh associates the scanned transaction to the logged-in user so the points are credited."
-          },
-          {
             "kind": "note",
             "label": "Note",
             "detail": "“Great news! The Panda Express near you is testing our new rewards program. Start collecting Good Fortune and receive your free welcome gift, now!”"
           }
-        ]
+        ],
+        "nx": 0.181,
+        "ny": 0.045
       },
       {
         "id": "0:18818",
         "type": "decision",
         "label": "Guest",
         "role": "Branch — not signed in.",
-        "nx": 0.552,
+        "nx": 0.371,
         "ny": 0.069
       },
       {
         "id": "0:18780",
         "type": "decision",
         "label": "Logged In",
-        "role": "Branch — signed in to a Panda account.",
-        "nx": 0.552,
+        "role": "Branch — signed in.",
+        "nx": 0.371,
         "ny": 0.408
-      },
-      {
-        "id": "0:18837",
-        "type": "decision",
-        "label": "Not Loyalty",
-        "role": "Branch — not a member yet.",
-        "nx": 0.607,
-        "ny": 0.418
-      },
-      {
-        "id": "0:18699",
-        "type": "decision",
-        "label": "If Web",
-        "role": "Branch — did they open the web?",
-        "nx": 0.363,
-        "ny": 0.054
-      },
-      {
-        "id": "0:18754",
-        "type": "entry",
-        "label": "Receipt QR",
-        "role": "Entry — the diner scans the QR on their receipt.",
-        "nx": 0.288,
-        "ny": 0.057
       },
       {
         "id": "0:19522",
@@ -991,40 +739,39 @@ export const FLOWS: Flow[] = [
         "label": "Confirm loc.",
         "thumb": "confirm",
         "role": "Share GPS or enter a ZIP to confirm the store.",
-        "nx": 0.785,
-        "ny": 0,
         "notes": [
           {
             "kind": "note",
             "label": "Note",
             "detail": "• Location enabled ,"
           }
-        ]
+        ],
+        "nx": 0.698,
+        "ny": 0
       },
       {
-        "id": "0:18822",
+        "id": "0:18837",
         "type": "decision",
-        "label": "Sign in",
-        "role": "Branch — routes to the Azure sign-in.",
-        "nx": 0.923,
-        "ny": 0.069
-      },
-      {
-        "id": "0:16855",
-        "type": "screen",
-        "label": "Rewards page",
-        "thumb": "educational",
-        "role": "Education hub — How to Collect / Easy Ways to Redeem.",
-        "nx": 0.68,
-        "ny": 1
+        "label": "Not Loyalty",
+        "role": "Branch — not a member yet.",
+        "nx": 0.447,
+        "ny": 0.418
       },
       {
         "id": "0:18833",
         "type": "decision",
         "label": "If Loyalty",
-        "role": "Branch — already a loyalty member.",
-        "nx": 0.607,
+        "role": "Branch — already a member.",
+        "nx": 0.447,
         "ny": 0.576
+      },
+      {
+        "id": "0:18822",
+        "type": "decision",
+        "label": "Sign in",
+        "role": "Branch — routes to Azure sign-in.",
+        "nx": 0.891,
+        "ny": 0.069
       },
       {
         "id": "0:26985",
@@ -1032,8 +779,6 @@ export const FLOWS: Flow[] = [
         "label": "How it works",
         "thumb": "howitworks",
         "role": "Benefits — 10 points / $1, monthly gift, birthday gift, offers.",
-        "nx": 0.68,
-        "ny": 0.397,
         "notes": [
           {
             "kind": "api",
@@ -1045,7 +790,25 @@ export const FLOWS: Flow[] = [
             "label": "Note",
             "detail": "• Location enabled ,"
           }
-        ]
+        ],
+        "nx": 0.551,
+        "ny": 0.397
+      },
+      {
+        "id": "0:16855",
+        "type": "screen",
+        "label": "Rewards page",
+        "thumb": "educational",
+        "role": "Education hub — How to Collect / Easy Ways to Redeem.",
+        "notes": [
+          {
+            "kind": "api",
+            "label": "Firebase",
+            "detail": "Firebase redirects route the scanned QR to the right enrollment entry."
+          }
+        ],
+        "nx": 0.551,
+        "ny": 1
       },
       {
         "id": "0:33219",
@@ -1053,15 +816,15 @@ export const FLOWS: Flow[] = [
         "label": "How it works",
         "thumb": "howitworks",
         "role": "Benefits — 10 points / $1, monthly gift, birthday gift, offers.",
-        "nx": 0.901,
-        "ny": 0.397,
         "notes": [
           {
             "kind": "note",
             "label": "Note",
             "detail": "• Location enabled ,"
           }
-        ]
+        ],
+        "nx": 0.861,
+        "ny": 0.397
       },
       {
         "id": "0:39498",
@@ -1069,16 +832,35 @@ export const FLOWS: Flow[] = [
         "label": "How it works",
         "thumb": "howitworks",
         "role": "Benefits — 10 points / $1, monthly gift, birthday gift, offers.",
+        "notes": [
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "“While on this page, disable the location popup, even though they are at a pilot location.”"
+          },
+          {
+            "kind": "api",
+            "label": "Firebase",
+            "detail": "Firebase redirects route the scanned QR to the right enrollment entry."
+          },
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "• Location enabled ,"
+          },
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "Design note: “Create a version of this for logged-in users where we don’t ask for email — it’ll be prepopulated.”"
+          },
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "Design note: “Should be ‘My Rewards’.”"
+          }
+        ],
         "nx": 1,
         "ny": 0.397
-      },
-      {
-        "id": "70:13988",
-        "type": "decision",
-        "label": "Rectangle",
-        "role": "Decision point.",
-        "nx": 0,
-        "ny": 0.686
       }
     ],
     "edges": [
@@ -1131,10 +913,6 @@ export const FLOWS: Flow[] = [
         "to": "0:39498"
       },
       {
-        "from": "70:13988",
-        "to": "0:33219"
-      },
-      {
         "from": "0:18701",
         "to": "0:18780"
       },
@@ -1145,291 +923,17 @@ export const FLOWS: Flow[] = [
     ]
   },
   {
-    "id": "flow4",
-    "title": "Out-of-range / not pilot",
-    "blurb": "When the store isn’t in the pilot — email capture and the out-of-range path.",
-    "platform": "mixed",
-    "nodes": [
-      {
-        "id": "4:52475",
-        "type": "screen",
-        "label": "Loading",
-        "thumb": "loading",
-        "role": "A “Good Fortune Awaits” splash while state resolves.",
-        "nx": 0.269,
-        "ny": 0.055,
-        "notes": [
-          {
-            "kind": "api",
-            "label": "Firebase",
-            "detail": "Firebase redirects route the scanned QR to the right enrollment entry."
-          }
-        ]
-      },
-      {
-        "id": "4:49730",
-        "type": "decision",
-        "label": "Logged In",
-        "role": "Branch — signed in to a Panda account.",
-        "nx": 0.383,
-        "ny": 0.567
-      },
-      {
-        "id": "4:49745",
-        "type": "decision",
-        "label": "Guest",
-        "role": "Branch — not signed in.",
-        "nx": 0.383,
-        "ny": 0.075
-      },
-      {
-        "id": "4:49717",
-        "type": "decision",
-        "label": "If App/Web",
-        "role": "Branch — app vs web channel.",
-        "nx": 0.183,
-        "ny": 0.092
-      },
-      {
-        "id": "4:49720",
-        "type": "entry",
-        "label": "Receipt QR",
-        "role": "Entry — the diner scans the QR on their receipt.",
-        "nx": 0,
-        "ny": 0.098
-      },
-      {
-        "id": "4:49751",
-        "type": "decision",
-        "label": "Not Loyalty",
-        "role": "Branch — not a member yet.",
-        "nx": 0.517,
-        "ny": 0.586
-      },
-      {
-        "id": "4:49749",
-        "type": "decision",
-        "label": "If Loyalty",
-        "role": "Branch — already a loyalty member.",
-        "nx": 0.517,
-        "ny": 0.887
-      },
-      {
-        "id": "4:49963",
-        "type": "screen",
-        "label": "Sign in",
-        "thumb": "signin",
-        "role": "Authenticate via Facebook, Google, Apple or email (Azure).",
-        "nx": 0.786,
-        "ny": 0
-      },
-      {
-        "id": "4:49747",
-        "type": "decision",
-        "label": "Sign in",
-        "role": "Branch — routes to the Azure sign-in.",
-        "nx": 0.989,
-        "ny": 0.139
-      },
-      {
-        "id": "4:50725",
-        "type": "screen",
-        "label": "Rewards",
-        "thumb": "rewards",
-        "role": "The payoff — Good Fortune Points and the Scan tab.",
-        "nx": 0.782,
-        "ny": 1
-      },
-      {
-        "id": "4:58910",
-        "type": "screen",
-        "label": "Out of range",
-        "thumb": "joingate",
-        "role": "Join gate / fallback when out of range.",
-        "nx": 0.782,
-        "ny": 0.561
-      },
-      {
-        "id": "4:71365",
-        "type": "screen",
-        "label": "Out of range",
-        "thumb": "joingate",
-        "role": "Join gate / fallback when out of range.",
-        "nx": 0.916,
-        "ny": 0.561
-      },
-      {
-        "id": "4:77761",
-        "type": "screen",
-        "label": "Out of range",
-        "thumb": "joingate",
-        "role": "Join gate / fallback when out of range.",
-        "nx": 1,
-        "ny": 0.561
-      }
-    ],
-    "edges": [
-      {
-        "from": "4:52475",
-        "to": "4:49730"
-      },
-      {
-        "from": "4:52475",
-        "to": "4:49745"
-      },
-      {
-        "from": "4:49717",
-        "to": "4:52475"
-      },
-      {
-        "from": "4:49720",
-        "to": "4:49717"
-      },
-      {
-        "from": "4:49730",
-        "to": "4:49751"
-      },
-      {
-        "from": "4:49730",
-        "to": "4:49749"
-      },
-      {
-        "from": "4:49745",
-        "to": "4:49963"
-      },
-      {
-        "from": "4:49747",
-        "to": "4:50725"
-      },
-      {
-        "from": "4:49749",
-        "to": "4:50725"
-      },
-      {
-        "from": "4:49751",
-        "to": "4:58910"
-      },
-      {
-        "from": "4:49963",
-        "to": "4:49747"
-      },
-      {
-        "from": "4:58910",
-        "to": "4:71365"
-      },
-      {
-        "from": "4:71365",
-        "to": "4:50725"
-      },
-      {
-        "from": "4:71365",
-        "to": "4:77761"
-      }
-    ]
-  },
-  {
     "id": "flow5",
-    "title": "Mobile · rewards path",
-    "blurb": "Mobile receipt-QR scan into sign-in, confirmation and rewards.",
-    "platform": "mobile",
+    "title": "Flow 5 · Desktop · loyalty join",
+    "blurb": "The logged-in join sub-flow: confirmation → join gate → rewards or fallback.",
+    "platform": "desktop",
     "nodes": [
       {
-        "id": "0:18697",
-        "type": "decision",
-        "label": "If App",
-        "role": "Branch — did they open the native app?",
-        "nx": 0.169,
-        "ny": 0.122
-      },
-      {
-        "id": "0:18768",
-        "type": "decision",
-        "label": "(loading)",
-        "role": "Decision point.",
-        "nx": 0.248,
-        "ny": 0.122
-      },
-      {
-        "id": "0:18751",
-        "type": "entry",
-        "label": "Receipt QR",
-        "role": "Entry — the diner scans the QR on their receipt.",
-        "nx": 0,
-        "ny": 0.127
-      },
-      {
-        "id": "0:18777",
-        "type": "decision",
-        "label": "Logged In",
-        "role": "Branch — signed in to a Panda account.",
-        "nx": 0.353,
-        "ny": 0.581
-      },
-      {
-        "id": "0:18835",
-        "type": "decision",
-        "label": "Not Loyalty",
-        "role": "Branch — not a member yet.",
-        "nx": 0.476,
-        "ny": 0.6
-      },
-      {
-        "id": "0:18831",
-        "type": "decision",
-        "label": "If Loyalty",
-        "role": "Branch — already a loyalty member.",
-        "nx": 0.476,
-        "ny": 0.891
-      },
-      {
-        "id": "0:18816",
-        "type": "decision",
-        "label": "Guest",
-        "role": "Branch — not signed in.",
-        "nx": 0.353,
-        "ny": 0.122
-      },
-      {
-        "id": "0:19424",
+        "id": "0:26985",
         "type": "screen",
-        "label": "Sign in",
-        "thumb": "signin",
-        "role": "Authenticate via Facebook, Google, Apple or email (Azure).",
-        "nx": 0.794,
-        "ny": 0,
-        "notes": [
-          {
-            "kind": "note",
-            "label": "Note",
-            "detail": "• Location enabled ,"
-          }
-        ]
-      },
-      {
-        "id": "0:18820",
-        "type": "decision",
-        "label": "Sign in",
-        "role": "Branch — routes to the Azure sign-in.",
-        "nx": 0.911,
-        "ny": 0.167
-      },
-      {
-        "id": "0:20707",
-        "type": "screen",
-        "label": "Rewards",
-        "thumb": "rewards",
-        "role": "The payoff — Good Fortune Points and the Scan tab.",
-        "nx": 0.721,
-        "ny": 1
-      },
-      {
-        "id": "0:19206",
-        "type": "screen",
-        "label": "Welcome",
-        "thumb": "intro",
-        "role": "The enrollment hook — “Great news!… testing our new rewards program.”",
-        "nx": 0.721,
-        "ny": 0.581,
+        "label": "How it works",
+        "thumb": "howitworks",
+        "role": "Benefits — 10 points / $1, monthly gift, birthday gift, offers.",
         "notes": [
           {
             "kind": "api",
@@ -1445,98 +949,392 @@ export const FLOWS: Flow[] = [
             "kind": "note",
             "label": "Note",
             "detail": "• Location enabled ,"
+          },
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "“Great news! The Panda Express near you is testing our new rewards program. Start collecting Good Fortune and receive your free welcome gift, now!”"
           }
-        ]
+        ],
+        "nx": 0,
+        "ny": 0
       },
       {
-        "id": "0:20223",
+        "id": "0:33219",
         "type": "screen",
-        "label": "Welcome",
-        "thumb": "introSignin",
-        "role": "The enrollment hook — “Great news!… testing our new rewards program.”",
-        "nx": 0.927,
-        "ny": 0.581,
+        "label": "How it works",
+        "thumb": "howitworks",
+        "role": "Benefits — 10 points / $1, monthly gift, birthday gift, offers.",
         "notes": [
           {
             "kind": "note",
             "label": "Note",
             "detail": "• Location enabled ,"
           }
-        ]
+        ],
+        "nx": 0.691,
+        "ny": 0
       },
       {
-        "id": "0:20485",
+        "id": "0:16855",
         "type": "screen",
-        "label": "Welcome",
-        "thumb": "introSignin",
-        "role": "The enrollment hook — “Great news!… testing our new rewards program.”",
+        "label": "Rewards page",
+        "thumb": "educational",
+        "role": "Education hub — How to Collect / Easy Ways to Redeem.",
+        "notes": [
+          {
+            "kind": "api",
+            "label": "Firebase",
+            "detail": "Firebase redirects route the scanned QR to the right enrollment entry."
+          }
+        ],
+        "nx": 0,
+        "ny": 1
+      },
+      {
+        "id": "0:39498",
+        "type": "screen",
+        "label": "How it works",
+        "thumb": "howitworks",
+        "role": "Benefits — 10 points / $1, monthly gift, birthday gift, offers.",
+        "notes": [
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "“While on this page, disable the location popup, even though they are at a pilot location.”"
+          },
+          {
+            "kind": "api",
+            "label": "Firebase",
+            "detail": "Firebase redirects route the scanned QR to the right enrollment entry."
+          },
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "• Location enabled ,"
+          },
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "Design note: “Create a version of this for logged-in users where we don’t ask for email — it’ll be prepopulated.”"
+          },
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "Design note: “Should be ‘My Rewards’.”"
+          }
+        ],
         "nx": 1,
-        "ny": 0.581,
-        "notes": [
-          {
-            "kind": "note",
-            "label": "Note",
-            "detail": "• Location enabled ,"
-          }
-        ]
+        "ny": 0
       }
     ],
     "edges": [
       {
-        "from": "0:18697",
-        "to": "0:18768"
+        "from": "0:26985",
+        "to": "0:33219"
       },
       {
-        "from": "0:18751",
-        "to": "0:18697"
+        "from": "0:33219",
+        "to": "0:16855"
       },
       {
-        "from": "0:18777",
-        "to": "0:18835"
+        "from": "0:33219",
+        "to": "0:39498"
+      }
+    ]
+  },
+  {
+    "id": "flow6",
+    "title": "Flow 6 · Mobile web · location & pilot gating",
+    "blurb": "Mobile-web tabletop entry: location, pilot check, then enroll or “coming soon.”",
+    "platform": "mobile-web",
+    "nodes": [
+      {
+        "id": "4:44462",
+        "type": "decision",
+        "label": "Location known",
+        "role": "Branch — is location known?",
+        "nx": 0,
+        "ny": 0.477
       },
       {
-        "from": "0:18777",
-        "to": "0:18831"
+        "id": "4:44485",
+        "type": "decision",
+        "label": "Logged-in non-member",
+        "role": "Branch — signed in, not a member.",
+        "nx": 0.762,
+        "ny": 0.236
       },
       {
-        "from": "0:18816",
-        "to": "0:19424"
+        "id": "4:29792",
+        "type": "screen",
+        "label": "Loading",
+        "thumb": "loading",
+        "role": "A \"Good Fortune Awaits\" splash while state resolves.",
+        "notes": [
+          {
+            "kind": "api",
+            "label": "Punchh",
+            "detail": "Punchh associates the scanned transaction to the logged-in user so the points are credited."
+          },
+          {
+            "kind": "api",
+            "label": "Firebase",
+            "detail": "Firebase redirects route the scanned QR to the right enrollment entry."
+          },
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "• Location enabled ,"
+          },
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "“Great news! The Panda Express near you is testing our new rewards program. Start collecting Good Fortune and receive your free welcome gift, now!”"
+          }
+        ],
+        "nx": 0.466,
+        "ny": 0.405
       },
       {
-        "from": "0:18820",
-        "to": "0:20707"
+        "id": "4:14178",
+        "type": "screen",
+        "label": "Loading",
+        "thumb": "loading",
+        "role": "A \"Good Fortune Awaits\" splash while state resolves.",
+        "notes": [
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "“While on this page, disable the location popup, even though they are at a pilot location.”"
+          },
+          {
+            "kind": "api",
+            "label": "Firebase",
+            "detail": "Firebase redirects route the scanned QR to the right enrollment entry."
+          },
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "• Location enabled ,"
+          },
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "Design note: “Create a version of this for logged-in users where we don’t ask for email — it’ll be prepopulated.”"
+          },
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "Design note: “Should be ‘My Rewards’.”"
+          }
+        ],
+        "nx": 1,
+        "ny": 0
       },
       {
-        "from": "0:18831",
-        "to": "0:20707"
+        "id": "4:44475",
+        "type": "decision",
+        "label": "Not Pilot",
+        "role": "Branch — store not in the pilot.",
+        "nx": 0.655,
+        "ny": 0.382
       },
       {
-        "from": "0:18835",
-        "to": "0:19206"
+        "id": "4:44470",
+        "type": "decision",
+        "label": "If Pilot",
+        "role": "Branch — store in the pilot?",
+        "nx": 0.655,
+        "ny": 0.555
       },
       {
-        "from": "0:19206",
-        "to": "0:20223"
+        "id": "4:44481",
+        "type": "decision",
+        "label": "Guest",
+        "role": "Branch — not signed in.",
+        "nx": 0.762,
+        "ny": 0.382
       },
       {
-        "from": "0:19424",
-        "to": "0:18820"
+        "id": "4:44489",
+        "type": "decision",
+        "label": "If Guest",
+        "role": "Branch — guest path.",
+        "nx": 0.762,
+        "ny": 0.555
       },
       {
-        "from": "0:20223",
-        "to": "0:20707"
+        "id": "4:44491",
+        "type": "decision",
+        "label": "If Logged In",
+        "role": "Branch — logged-in path.",
+        "nx": 0.762,
+        "ny": 0.887
       },
       {
-        "from": "0:20223",
-        "to": "0:20485"
+        "id": "4:14721",
+        "type": "screen",
+        "label": "Loading",
+        "thumb": "loading",
+        "role": "A \"Good Fortune Awaits\" splash while state resolves.",
+        "nx": 1,
+        "ny": 0.294
       },
       {
-        "from": "0:18768",
-        "to": "0:18816"
+        "id": "4:21959",
+        "type": "screen",
+        "label": "Loading",
+        "thumb": "loading",
+        "role": "A \"Good Fortune Awaits\" splash while state resolves.",
+        "nx": 1,
+        "ny": 1
+      }
+    ],
+    "edges": [
+      {
+        "from": "4:29792",
+        "to": "4:44475"
       },
       {
-        "from": "0:18768",
-        "to": "0:18777"
+        "from": "4:44462",
+        "to": "4:29792"
+      },
+      {
+        "from": "4:44470",
+        "to": "4:44489"
+      },
+      {
+        "from": "4:44470",
+        "to": "4:44491"
+      },
+      {
+        "from": "4:44475",
+        "to": "4:44481"
+      },
+      {
+        "from": "4:44475",
+        "to": "4:44485"
+      },
+      {
+        "from": "4:44481",
+        "to": "4:14721"
+      },
+      {
+        "from": "4:44485",
+        "to": "4:14178"
+      },
+      {
+        "from": "4:44489",
+        "to": "4:14721"
+      },
+      {
+        "from": "4:44491",
+        "to": "4:21959"
+      },
+      {
+        "from": "4:29792",
+        "to": "4:44470"
+      }
+    ]
+  },
+  {
+    "id": "flow7",
+    "title": "Flow 7 · Mobile · receipt scan",
+    "blurb": "Mobile receipt-QR scan into sign-in, confirmation and rewards.",
+    "platform": "mobile",
+    "nodes": [
+      {
+        "id": "4:49745",
+        "type": "decision",
+        "label": "Guest",
+        "role": "Branch — not signed in.",
+        "nx": 0,
+        "ny": 0.075
+      },
+      {
+        "id": "4:49963",
+        "type": "screen",
+        "label": "Sign in",
+        "thumb": "signin",
+        "role": "Authenticate via Facebook, Google, Apple or email (Azure).",
+        "notes": [
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "“While on this page, disable the location popup, even though they are at a pilot location.”"
+          },
+          {
+            "kind": "api",
+            "label": "Punchh",
+            "detail": "Punchh associates the scanned transaction to the logged-in user so the points are credited."
+          },
+          {
+            "kind": "api",
+            "label": "Firebase",
+            "detail": "Firebase redirects route the scanned QR to the right enrollment entry."
+          },
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "• Location enabled ,"
+          },
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "“Great news! The Panda Express near you is testing our new rewards program. Start collecting Good Fortune and receive your free welcome gift, now!”"
+          },
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "Design note: “Create a version of this for logged-in users where we don’t ask for email — it’ll be prepopulated.”"
+          },
+          {
+            "kind": "note",
+            "label": "Note",
+            "detail": "Design note: “Should be ‘My Rewards’.”"
+          }
+        ],
+        "nx": 0.665,
+        "ny": 0
+      },
+      {
+        "id": "4:49747",
+        "type": "decision",
+        "label": "Sign in",
+        "role": "Branch — routes to Azure sign-in.",
+        "nx": 1,
+        "ny": 0.139
+      },
+      {
+        "id": "4:50725",
+        "type": "screen",
+        "label": "Rewards",
+        "thumb": "rewards",
+        "role": "The payoff — Good Fortune Points and the Scan tab.",
+        "notes": [
+          {
+            "kind": "api",
+            "label": "Firebase",
+            "detail": "Firebase redirects route the scanned QR to the right enrollment entry."
+          }
+        ],
+        "nx": 0.659,
+        "ny": 1
+      }
+    ],
+    "edges": [
+      {
+        "from": "4:49745",
+        "to": "4:49963"
+      },
+      {
+        "from": "4:49747",
+        "to": "4:50725"
+      },
+      {
+        "from": "4:49963",
+        "to": "4:49747"
       }
     ]
   }

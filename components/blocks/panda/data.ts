@@ -200,7 +200,7 @@ export const marketing = {
 export const loyaltyQr = {
   heading: 'LOYALTY QR ENROLLMENT',
   intro:
-    'Diners enroll in Panda Rewards by scanning the QR code on their receipt. Simple promise — but each scan has to silently resolve channel, location, account state and membership, then stitch four backend systems together so the scanned order’s points land on a brand-new account. I designed the whole branching journey, every dead-end and recovery, across app, mobile web and desktop.',
+    'Scanning a receipt QR enrolls a diner in Panda Rewards. Behind that one scan, the flow resolves channel, location, account state and membership, then stitches four backend systems together so the order’s points land on a brand-new account — across app, mobile web and desktop.',
   chips: [
     '3 platforms',
     '6 flow variants',
@@ -208,12 +208,8 @@ export const loyaltyQr = {
     '25+ screens',
     'End-to-end UX architecture',
   ],
-  mapHint:
-    'Every screen in the enrollment journey, wired in the order the prototype actually runs (verified against the Figma file). Hover or tap any screen to enlarge it and see its role — and the backend work happening behind it.',
   detailHint:
-    'Each node is one screen, decision, backend call or design note. Hover or tap any node to see the real screen, its role, and the API / annotation attached to it.',
-  footnote:
-    'This is the actual prototype — five flow variants across the app, mobile web and desktop, every screen, branch, backend call and design note. The hardest stretch runs from sign-in to points-credited: Cache holds the receipt’s transaction across the auth redirect, Azure authenticates and flips the loyalty flag on, mParticle logs the event, and Punchh ties the transaction to the account so the points appear — all behind a single “Thanks for scanning” screen.',
+    'Each node is one screen, decision, backend call or design note. Hover or tap any node to see the real screen, its role, and the API or annotation attached to it.',
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
