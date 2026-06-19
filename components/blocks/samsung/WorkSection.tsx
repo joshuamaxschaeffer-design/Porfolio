@@ -6,18 +6,19 @@ import { StoreLocatorPopout } from './StoreLocatorPopout'
 const W = '/samsung/work'
 
 /**
- * Section 3 — THE WORK (dark / cinematic). Three movements:
- *  1. Product & landing pages → full pages, angled in perspective, alternating
- *     parallax, over the full-bleed sharp-edged gradient (ProductPagesStage).
- *  2. In-store experience → a BIG table render, then 3 flat staggered takeover
- *     screens, then the S7 store locator as an angled popout that grows on
- *     scroll (StoreLocatorPopout) — Behance layout.
- *  3. Social → the draggable bento carousel (uniform tiles; wide banner gone).
+ * Section 3 — THE WORK (dark / cinematic). Movements:
+ *  1. Product & landing pages → ProductPagesStage (big, left, parallax, gradient).
+ *  2. In-store experience → BIG table on the BARE section background (no
+ *     container), then 3 large takeover screens stacked + staggered L/R with a
+ *     thin grey rail connecting them.
+ *  3. S7 store locator → StoreLocatorPopout (page behind + popout over, on grey).
+ *  4. Social → the draggable bento carousel.
+ * No rounded corners anywhere (per Joshua).
  */
 export function WorkSection({ intro }: { intro?: string } = {}) {
   return (
     <section id="work" className="relative bg-[var(--sg-bg)]">
-      <div className="br-container pt-16 pb-12 md:pt-24">
+      <div className="br-container pt-16 md:pt-24">
         <h2 className="text-[13px] font-semibold uppercase tracking-[0.22em] text-[var(--sg-blue)]">
           The Work
         </h2>
@@ -26,78 +27,94 @@ export function WorkSection({ intro }: { intro?: string } = {}) {
         </p>
       </div>
 
-      {/* +100px breathing room below the intro before the gradient (#10) */}
-      <div className="h-[60px] md:h-[100px]" />
+      {/* 100px breathing room below the intro (#6) */}
+      <div className="h-[64px] md:h-[100px]" />
 
-      {/* ── 1 · Product pages — full-bleed gradient + angled parallax ────── */}
+      {/* ── 1 · Product pages ───────────────────────────────────────────── */}
       <ProductPagesStage />
 
       {/* ── 2 · In-store experience ─────────────────────────────────────── */}
-      <div className="br-container pt-20 md:pt-28">
+      <div className="br-container pt-24 md:pt-32">
         <Workstream tag="In-Store Experience" title={inStore.title} body={inStore.body} />
-
-        {/* BIG table render */}
-        <div
-          className="relative mt-12 overflow-hidden rounded-2xl border border-[var(--sg-line)] md:mt-16"
-          style={{
-            background:
-              'radial-gradient(80% 90% at 60% 30%, #1b1e24 0%, #121419 70%, #0e0f13 100%)',
-          }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={`${W}/${inStore.device.file}`}
-            alt={inStore.device.alt}
-            width={inStore.device.w}
-            height={inStore.device.h}
-            className="relative mx-auto block w-full max-w-[1200px] px-2 py-6 md:py-10"
-          />
-        </div>
-
-        {/* 3 flat, vertically staggered takeover screens (Behance structure) */}
-        <div className="mt-12 grid grid-cols-1 gap-6 md:mt-16 md:grid-cols-3 md:gap-7">
-          {inStore.screens.map((s, i) => (
-            <div key={s.file} className={i === 1 ? 'md:mt-12' : i === 2 ? 'md:mt-24' : ''}>
-              <ScreenCard file={s.file} alt={s.alt} />
-            </div>
-          ))}
-        </div>
-
-        {/* S7 store locator — angled popout, grows on scroll (#6) */}
-        <div className="mt-20 md:mt-28">
-          <p className="br-data text-[12px] font-semibold uppercase tracking-[0.2em] text-[var(--sg-blue)]">
-            S7 Store Locator
-          </p>
-          <h3 className="mt-3 max-w-2xl text-[24px] font-semibold leading-tight text-[var(--sg-ink)] md:text-[30px]">
-            Helping customers find a store
-          </h3>
-          <p className="mt-3 max-w-2xl text-[15px] leading-normal text-[var(--sg-muted)] md:text-base">
-            Full-page design and UI for the S7 launch — locating a nearby store to buy the device.
-          </p>
-          <div className="mt-12 md:mt-16">
-            <StoreLocatorPopout />
-          </div>
-        </div>
       </div>
 
-      {/* ── 3 · Social ──────────────────────────────────────────────────── */}
-      <div className="br-container pt-20 md:pt-28">
+      {/* BIG table render — sits directly on the section background (#7) */}
+      <div className="br-container pt-10 md:pt-14">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={`${W}/${inStore.device.file}`}
+          alt={inStore.device.alt}
+          width={inStore.device.w}
+          height={inStore.device.h}
+          className="mx-auto block w-full max-w-[1320px]"
+        />
+      </div>
+
+      {/* 3 takeover screens — large, stacked, staggered L/R, grey rail behind (#8) */}
+      <StaggeredScreens />
+
+      {/* ── 3 · S7 store locator — full-bleed grey popout overlay ────────── */}
+      <div className="br-container pt-24 md:pt-32">
+        <p className="br-data text-[12px] font-semibold uppercase tracking-[0.2em] text-[var(--sg-blue)]">
+          S7 Store Locator
+        </p>
+        <p className="mt-3 max-w-2xl text-[15px] leading-normal text-[var(--sg-muted)] md:text-base">
+          Full-page design and UI for the S7 launch, locating a nearby store to buy the device.
+        </p>
+      </div>
+      <div className="pt-10 md:pt-14">
+        <StoreLocatorPopout />
+      </div>
+
+      {/* ── 4 · Social ──────────────────────────────────────────────────── */}
+      <div className="br-container pt-24 md:pt-32">
         <Workstream
           tag="Social Mockups"
           title="Hundreds of posts, one feed"
-          body="Photo editing and device mockups for the brand’s social channels — phones, tablets, and Gear across launches, holidays, and carrier co-ops. A sample of the hundreds produced; drag to explore."
+          body="Photo editing and device mockups for the brand’s social channels: phones, tablets, and Gear across launches, holidays, and carrier co-ops. A sample of the hundreds produced; drag to explore."
         />
         <div className="mt-10">
           <SocialCarousel />
         </div>
 
-        <div className="mt-16 rounded-2xl border-l-2 border-[var(--sg-blue)] bg-white/[0.03] p-6 backdrop-blur-sm md:mt-20 md:p-8">
+        <div className="mt-16 border-l-2 border-[var(--sg-blue)] bg-white/[0.03] p-6 backdrop-blur-sm md:mt-20 md:p-8">
           <p className="max-w-4xl text-[15px] leading-relaxed text-[var(--sg-muted)] md:text-lg">
             {defaults.closer}
           </p>
         </div>
       </div>
     </section>
+  )
+}
+
+/**
+ * StaggeredScreens — the 3 in-store takeover captures, LARGE, stacked
+ * vertically and staggered left/right, with a thin grey rectangle running
+ * behind them to connect the set (per Joshua's Behance example, #8/#9).
+ */
+function StaggeredScreens() {
+  // each screen alternates which side it hugs; the rail sits behind the column.
+  const aligns = ['md:mr-auto', 'md:ml-auto', 'md:mr-auto'] // left, right, left
+  return (
+    <div className="relative pt-16 md:pt-24">
+      {/* connecting grey rail — thin vertical rectangle centered behind */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-white/10 md:w-[2px]"
+      />
+      <div className="br-container relative flex flex-col gap-12 md:gap-20">
+        {inStore.screens.map((s, i) => (
+          <figure
+            key={s.file}
+            className={`w-full overflow-hidden ring-1 ring-[var(--sg-line)] md:w-[78%] ${aligns[i]}`}
+            style={{ boxShadow: '0 40px 80px -30px rgba(0,0,0,0.6)' }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={`${W}/${s.file}`} alt={s.alt} loading="lazy" className="block w-full" />
+          </figure>
+        ))}
+      </div>
+    </div>
   )
 }
 
@@ -110,14 +127,5 @@ function Workstream({ tag, title, body }: { tag: string; title: string; body: st
       </h3>
       <p className="mt-3 max-w-3xl text-[15px] leading-normal text-[var(--sg-muted)] md:text-base">{body}</p>
     </div>
-  )
-}
-
-function ScreenCard({ file, alt }: { file: string; alt: string }) {
-  return (
-    <figure className="overflow-hidden rounded-xl border border-[var(--sg-line)] bg-black/40">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={`${W}/${file}`} alt={alt} loading="lazy" className="block w-full" />
-    </figure>
   )
 }

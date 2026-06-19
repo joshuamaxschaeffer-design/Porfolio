@@ -288,7 +288,7 @@ function Tile({ item, aspect }: { item: SocialItem; aspect: 'square' | 'feature'
     aspect === 'wide' ? 'sg-tile-wide' : aspect === 'feature' ? 'sg-tile-feature' : 'sg-tile-square'
   return (
     <figure
-      className={`group relative ${cls} shrink-0 overflow-hidden rounded-[14px] bg-[#0c0e13] [box-shadow:0_1px_2px_rgba(0,0,0,0.12),0_18px_40px_-22px_rgba(8,12,24,0.45)]`}
+      className={`group relative ${cls} shrink-0 overflow-hidden bg-[#0c0e13] [box-shadow:0_1px_2px_rgba(0,0,0,0.12),0_18px_40px_-22px_rgba(8,12,24,0.45)]`}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -316,7 +316,7 @@ function CarouselButton({ dir, disabled, onClick }: { dir: 1 | -1; disabled: boo
       onClick={onClick}
       disabled={disabled}
       aria-label={dir === 1 ? 'Next' : 'Previous'}
-      className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--br-line)] bg-white text-[var(--br-ink)] transition-[opacity,background,border-color] duration-200 hover:border-[var(--sg-blue)] hover:text-[var(--sg-blue)] disabled:cursor-default disabled:opacity-30 disabled:hover:border-[var(--br-line)] disabled:hover:text-[var(--br-ink)]"
+      className="flex h-10 w-10 items-center justify-center border border-white/20 bg-white/[0.04] text-white/80 transition-[opacity,background,border-color] duration-200 hover:border-[var(--sg-blue)] hover:text-[var(--sg-blue)] disabled:cursor-default disabled:opacity-25 disabled:hover:border-white/20 disabled:hover:text-white/80"
     >
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
         <path

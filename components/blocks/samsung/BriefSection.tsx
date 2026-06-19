@@ -17,7 +17,7 @@ export function BriefSection({ intro }: { intro?: string } = {}) {
           {defaults.problems.map((p) => (
             <div
               key={p.tag}
-              className="flex h-full flex-col rounded-2xl border border-[var(--sg-line)] bg-white/[0.03] p-6 backdrop-blur-sm md:p-7"
+              className="flex h-full flex-col border border-[var(--sg-line)] bg-white/[0.03] p-6 backdrop-blur-sm md:p-7"
             >
               <p
                 className="text-[28px] font-medium leading-none text-[var(--sg-blue)] md:text-[32px]"

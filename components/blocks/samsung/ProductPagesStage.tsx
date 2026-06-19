@@ -6,23 +6,21 @@ import { webPages } from './data'
 const W = '/samsung/work'
 
 /**
- * ProductPagesStage — the signature Behance "Product Pages" moment, rebuilt for
- * web (per Joshua, 2026-06-19):
- *  - the multi-color gradient fills the WHOLE section with SHARP top/bottom
- *    edges (no fuzzy mask, no grey gaps) — the blurred wash lives only INSIDE
- *    the band, clipped by overflow-hidden.
- *  - the FULL landing pages (not clipped windows) are shown at a sharp
- *    perspective angle, tilted like the reference.
- *  - each page PARALLAXES on scroll in the direction it's tilted, and adjacent
- *    pages ALTERNATE (one drifts up, the next down). Subtle (~50px).
- *
- * Parallax is driven from a scroll handler reading getBoundingClientRect (Lenis
- * smooth-scroll updates real scroll position, so rect-based math tracks it;
- * window 'scroll' fires on Lenis ticks). rAF-throttled, reduced-motion safe.
+ * ProductPagesStage — the signature Behance "Product Pages" moment (rebuilt per
+ * Joshua's 2nd feedback, 2026-06-19):
+ *  - gradient fills the WHOLE section, SHARP edges (blur clipped by overflow).
+ *  - the full landing pages sit on the LEFT, copy on the RIGHT.
+ *  - BIG — the pages overflow the top and bottom of the band (intentionally
+ *    cropped) for a cinematic, immersive feel.
+ *  - PRONOUNCED perspective: the row is rotated harder (~ +15° more than before)
+ *    and each successive page recedes (scales down) to the left so the
+ *    left-most reads farthest away.
+ *  - alternating up/down parallax on scroll, in the tilt direction.
+ *  - NO rounded corners anywhere.
  */
 export function ProductPagesStage() {
   const ref = useRef<HTMLDivElement>(null)
-  const [progress, setProgress] = useState(0) // -1 (below) .. 0 (centered) .. 1 (above)
+  const [progress, setProgress] = useState(0)
   const reduce = useRef(false)
 
   useEffect(() => {
@@ -36,7 +34,6 @@ export function ProductPagesStage() {
         if (!el) return
         const r = el.getBoundingClientRect()
         const vh = window.innerHeight
-        // 0 when the section center is at viewport center; ±1 as it leaves.
         const center = r.top + r.height / 2
         const p = (vh / 2 - center) / (vh / 2 + r.height / 2)
         setProgress(Math.max(-1, Math.min(1, p)))
@@ -52,11 +49,11 @@ export function ProductPagesStage() {
     }
   }, [])
 
-  const amp = reduce.current ? 0 : 56 // px of drift
+  const amp = reduce.current ? 0 : 64
 
   return (
     <div ref={ref} className="relative overflow-hidden bg-[#1c8aa6]">
-      {/* the blurred multi-color wash — fills the band, clipped to sharp edges */}
+      {/* blurred multi-color wash, clipped to the band (sharp top/bottom) */}
       <div
         aria-hidden
         className="pointer-events-none absolute"
@@ -79,56 +76,82 @@ export function ProductPagesStage() {
         />
       </div>
 
-      <div className="br-container relative py-20 md:py-28">
-        <div className="max-w-xl">
+      {/* tall band so the big pages can overflow top + bottom */}
+      <div className="relative grid min-h-[680px] grid-cols-1 items-center gap-8 lg:min-h-[860px] lg:grid-cols-[1.4fr_1fr]">
+        {/* LEFT: the angled, receding page fan (clipped by the band). Its own
+            column clips horizontally so the big pages never run under the copy. */}
+        <div
+          className="relative order-2 h-full overflow-hidden lg:order-1"
+          style={{ perspective: '2200px', perspectiveOrigin: '40% 50%' }}
+        >
+          <div
+            className="absolute left-[2%] top-1/2 flex items-center gap-5 md:gap-7"
+            style={{
+              transform: 'translateY(-50%) rotateX(10deg) rotateY(-32deg) rotateZ(8deg)',
+              transformStyle: 'preserve-3d',
+            }}
+          >
+            {webPages.shots.map((s, i) => {
+              const dir = i % 2 === 0 ? 1 : -1
+              // far-left (i=0) sits farthest back + smallest; near (last) largest
+              const depth = webPages.shots.length - 1 - i // 0..n-1, larger = nearer
+              const scale = 0.78 + depth * 0.13
+              return (
+                <ParallaxPage
+                  key={s.file}
+                  file={s.file}
+                  alt={s.alt}
+                  offset={progress * amp * dir}
+                  scale={scale}
+                  z={(depth - 1) * 120}
+                />
+              )
+            })}
+          </div>
+        </div>
+
+        {/* RIGHT: copy */}
+        <div className="relative order-1 px-6 pt-14 sm:px-10 lg:order-2 lg:pr-[8%] lg:pt-0">
           <p className="br-data text-[12px] font-semibold uppercase tracking-[0.2em] text-white/90">
             {webPages.tag}
           </p>
-          <h3 className="mt-3 text-[28px] font-semibold leading-tight text-white md:text-[36px]">
+          <h3 className="mt-3 text-[26px] font-semibold leading-tight text-white sm:text-[30px] md:text-[40px]">
             {webPages.title}
           </h3>
-          <p className="mt-3 max-w-md text-[15px] leading-normal text-white/85 md:text-base">
+          <p className="mt-4 max-w-md text-[15px] leading-normal text-white/85 md:text-base">
             {webPages.body}
           </p>
-        </div>
-
-        {/* angled full-page fan with alternating parallax */}
-        <div
-          className="mt-14 flex items-start justify-center gap-6 md:mt-20 md:gap-10"
-          style={{ perspective: '2400px', perspectiveOrigin: '50% 45%' }}
-        >
-          {webPages.shots.map((s, i) => {
-            const dir = i % 2 === 0 ? 1 : -1 // alternate up/down
-            return (
-              <ParallaxPage
-                key={s.file}
-                file={s.file}
-                alt={s.alt}
-                offset={progress * amp * dir}
-              />
-            )
-          })}
         </div>
       </div>
     </div>
   )
 }
 
-/** One full landing page, tilted in perspective, drifting on scroll. The drift
- *  is applied along the page's tilt (slight x with the y) so it reads as moving
- *  "in the direction it's angled." */
-function ParallaxPage({ file, alt, offset }: { file: string; alt: string; offset: number }) {
+/** One full landing page, tilted, receding, drifting on scroll. Sharp corners. */
+function ParallaxPage({
+  file,
+  alt,
+  offset,
+  scale,
+  z,
+}: {
+  file: string
+  alt: string
+  offset: number
+  scale: number
+  z: number
+}) {
   return (
     <figure
-      className="relative w-[31%] max-w-[330px] shrink-0 overflow-hidden rounded-[14px] ring-1 ring-white/20"
+      className="relative shrink-0 overflow-hidden ring-1 ring-white/20"
       style={{
-        transform: `translateY(${offset}px) rotateX(8deg) rotateY(-20deg) rotateZ(5deg)`,
-        transformStyle: 'preserve-3d',
-        boxShadow: '0 40px 70px -24px rgba(0,0,0,0.55), 0 10px 24px -10px rgba(0,0,0,0.5)',
+        width: 'clamp(200px, 20vw, 330px)',
+        transform: `translateY(${offset}px) translateZ(${z}px) scale(${scale})`,
+        transformOrigin: 'center center',
+        boxShadow: '0 50px 90px -28px rgba(0,0,0,0.6), 0 12px 28px -10px rgba(0,0,0,0.5)',
         willChange: 'transform',
       }}
     >
-      {/* full page — shown entire, scaled to the column width */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={`${W}/${file}`} alt={alt} loading="lazy" draggable={false} className="block w-full" />
       <div

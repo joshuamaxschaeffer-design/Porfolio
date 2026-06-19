@@ -48,7 +48,7 @@ export function OverviewSection(props: OverviewProps) {
             {scope.map((s) => (
               <li
                 key={s}
-                className="br-data rounded-full border border-[#e2e4e9] px-3.5 py-1.5 text-[13px] uppercase tracking-[0.04em] text-[#4b515c]"
+                className="br-data border border-[#e2e4e9] px-3.5 py-1.5 text-[13px] uppercase tracking-[0.04em] text-[#4b515c]"
               >
                 {s}
               </li>
