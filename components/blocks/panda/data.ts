@@ -200,16 +200,17 @@ export const marketing = {
   /** UX section — full page designs for the brand site. */
   ux: {
     eyebrow: 'THE UX',
-    title: 'A page system, not one-off pages',
-    body: 'Every brand page was mapped as one connected system — shared structure, a consistent content rhythm, and clear paths between them.',
-    /** tall page comps (public/panda/marketing/ux). label is shown under each. */
+    title: 'Cohesive Site UX',
+    body: 'The focus: communicate the brand while driving orders. Every page shares one structure and voice, with the path to ordering always a tap away.',
+    /** real pandaexpress.com full-page captures (public/panda/marketing/live). */
     pages: [
-      { key: 'home', label: 'Homepage', src: '/panda/marketing/ux/home.webp' },
-      { key: 'food', label: 'Our Food', src: '/panda/marketing/ux/food.webp' },
-      { key: 'innovation', label: 'Innovation', src: '/panda/marketing/ux/innovation.webp' },
-      { key: 'family', label: 'Our Family', src: '/panda/marketing/ux/family.webp' },
-      { key: 'shop', label: 'Our Shop', src: '/panda/marketing/ux/shop.webp' },
-      { key: 'philosophy', label: 'Food Philosophy', src: '/panda/marketing/ux/philosophy.webp' },
+      { key: 'home', label: 'Homepage', src: '/panda/marketing/live/home.webp' },
+      { key: 'food', label: 'Our Food', src: '/panda/marketing/live/our-food.webp' },
+      { key: 'innovation', label: 'Innovation', src: '/panda/marketing/live/innovation.webp' },
+      { key: 'family', label: 'Our Family', src: '/panda/marketing/live/our-family.webp' },
+      { key: 'shop', label: 'Our Shop', src: '/panda/marketing/live/our-shop.webp' },
+      { key: 'philosophy', label: 'Food Philosophy', src: '/panda/marketing/live/philosophy.webp' },
+      { key: 'values', label: 'Our Values', src: '/panda/marketing/live/our-values.webp' },
     ],
     /** the site map / UX flow diagram */
     sitemap: { src: '/panda/marketing/ux/sitemap.webp', alt: 'Marketing site map and UX flow', label: 'Site map' },
