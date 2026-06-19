@@ -124,18 +124,24 @@ function RewardsCarousel() {
     setActive(nearest)
   }, [])
 
-  // Size the trailing spacer so max-scroll lands the LAST module at position 1:
-  // remaining viewport to the right of a left-aligned last card = clientWidth
-  // − padLeft − lastCardWidth. That exact fill makes the scroll hit a wall with
-  // the last card at the rail (no empty over-scroll). 0 when content fits.
+  // Size the trailing spacer so max-scroll (scrollWidth − clientWidth) lands the
+  // LAST module's left edge exactly at the rail (position 1) — a hard wall, no
+  // empty over-scroll past it. Derivation: after the last card the track holds
+  // gap + spacer + right padding, and we want
+  //   scrollWidth − clientWidth === lastCard.offsetLeft − padLeft
+  // ⇒ spacer = clientWidth − lastCardWidth − gap − padLeft − padRight.
+  // 0 when the content already fits (no scroll needed).
   const measureSpacer = useCallback(() => {
     const el = trackRef.current
     if (!el) return
     const cards = el.querySelectorAll<HTMLElement>('[data-card]')
     const last = cards[cards.length - 1]
     if (!last) return
-    const padLeft = parseFloat(getComputedStyle(el).paddingLeft) || 0
-    const w = el.clientWidth - padLeft - last.offsetWidth
+    const cs = getComputedStyle(el)
+    const padLeft = parseFloat(cs.paddingLeft) || 0
+    const padRight = parseFloat(cs.paddingRight) || 0
+    const gap = parseFloat(cs.columnGap) || 0
+    const w = el.clientWidth - last.offsetWidth - gap - padLeft - padRight
     setSpacerW(Math.max(0, Math.round(w)))
   }, [])
 
