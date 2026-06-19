@@ -19,7 +19,7 @@ import { rewardsPlatform as defaults } from './data'
  */
 
 const GOLD = '#E8B23A'
-const CARD_H = 'lg:h-[560px]' // equal height across all modules on desktop
+const CARD_H = 'lg:h-[640px]' // equal height across all modules on desktop
 
 export function RewardsPlatformSection() {
   return (
@@ -28,6 +28,15 @@ export function RewardsPlatformSection() {
       aria-label="The rewards platform"
       className="relative isolate w-full overflow-hidden bg-[var(--px-red)] pb-20 pt-4 text-white lg:pb-24"
     >
+      {/* Section title — sits above the carousel, aligned to the editorial
+          column (max-w-1180 + px-8) so it lines up with the rail and pills. */}
+      <header className="mx-auto max-w-[1180px] px-6 sm:px-8">
+        <span className="br-data text-xs font-semibold uppercase tracking-[0.18em]" style={{ color: GOLD }}>
+          {defaults.eyebrow}
+        </span>
+        <h2 className="mt-2 text-[32px] font-semibold leading-tight sm:text-[40px]">{defaults.heading}</h2>
+      </header>
+
       {/* The Premium Rewards hero above is the section banner; here the cards
           carry the story. A draggable carousel of large modules + jump-pills. */}
       <RewardsCarousel />
@@ -44,6 +53,9 @@ export function RewardsPlatformSection() {
 function RewardsCarousel() {
   const trackRef = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(0)
+  // trailing-spacer width, measured so the LAST module stops exactly at
+  // position 1 (its left edge at the rail) with no empty over-scroll past it.
+  const [spacerW, setSpacerW] = useState(0)
 
   const modules = [<EarnModule key="earn" />, <SurpriseModule key="surprise" />, <StoreModule key="store" />]
   const labels = defaults.pills
@@ -112,17 +124,40 @@ function RewardsCarousel() {
     setActive(nearest)
   }, [])
 
-  useEffect(() => {
-    updateActive()
+  // Size the trailing spacer so max-scroll lands the LAST module at position 1:
+  // remaining viewport to the right of a left-aligned last card = clientWidth
+  // − padLeft − lastCardWidth. That exact fill makes the scroll hit a wall with
+  // the last card at the rail (no empty over-scroll). 0 when content fits.
+  const measureSpacer = useCallback(() => {
     const el = trackRef.current
     if (!el) return
+    const cards = el.querySelectorAll<HTMLElement>('[data-card]')
+    const last = cards[cards.length - 1]
+    if (!last) return
+    const padLeft = parseFloat(getComputedStyle(el).paddingLeft) || 0
+    const w = el.clientWidth - padLeft - last.offsetWidth
+    setSpacerW(Math.max(0, Math.round(w)))
+  }, [])
+
+  useEffect(() => {
+    updateActive()
+    measureSpacer()
+    const el = trackRef.current
+    if (!el) return
+    const onResize = () => {
+      measureSpacer()
+      updateActive()
+    }
     el.addEventListener('scroll', updateActive, { passive: true })
-    window.addEventListener('resize', updateActive)
+    window.addEventListener('resize', onResize)
+    // re-measure once images/fonts settle the card width
+    const t = window.setTimeout(measureSpacer, 250)
     return () => {
       el.removeEventListener('scroll', updateActive)
-      window.removeEventListener('resize', updateActive)
+      window.removeEventListener('resize', onResize)
+      window.clearTimeout(t)
     }
-  }, [updateActive])
+  }, [updateActive, measureSpacer])
 
   useEffect(() => () => stopMomentum(), [stopMomentum])
   useEffect(
@@ -218,11 +253,10 @@ function RewardsCarousel() {
             {m}
           </div>
         ))}
-        {/* trailing spacer so the LAST module can scroll fully left to position 1.
-            Must cover (viewport − module width − left gutter); generous is fine
-            (an empty gap to the right of the last module when fully scrolled is
-            expected). 100vw guarantees the last module reaches the left edge. */}
-        <div aria-hidden className="shrink-0" style={{ width: '100vw' }} />
+        {/* trailing spacer, JS-measured (measureSpacer) to exactly the gap that
+            lets the LAST module stop at position 1 — its left edge at the rail —
+            with no empty over-scroll past it. */}
+        <div aria-hidden className="shrink-0" style={{ width: spacerW }} />
       </div>
 
       {/* jump-pills with labels */}
@@ -263,7 +297,7 @@ function Module({
   children: React.ReactNode
 }) {
   return (
-    <article className={`flex w-[86vw] max-w-[920px] flex-col rounded-2xl border border-white/20 bg-white/[0.06] p-7 backdrop-blur-sm sm:w-[78vw] sm:p-9 lg:w-[820px] ${CARD_H}`}>
+    <article className={`flex w-[86vw] max-w-[920px] flex-col overflow-hidden rounded-2xl border border-white/20 bg-white/[0.06] p-7 backdrop-blur-sm sm:w-[78vw] sm:p-9 lg:w-[820px] ${CARD_H}`}>
       <header className="max-w-[60ch]">
         <Eyebrow>{eyebrow}</Eyebrow>
         <h3 className="mt-2 text-2xl font-semibold leading-tight sm:text-[30px]">{title}</h3>
@@ -284,7 +318,7 @@ function EarnModule() {
         {d.screens.map((s, i) => (
           <div
             key={s.src}
-            className={['w-[26%] max-w-[180px] flex-shrink-0', i === 1 ? 'mb-6 w-[29%] sm:mb-9' : 'opacity-95'].join(' ')}
+            className={['w-[22%] max-w-[150px] flex-shrink-0', i === 1 ? 'mb-5 w-[25%] max-w-[168px] sm:mb-7' : 'opacity-95'].join(' ')}
           >
             <Phone src={s.src} alt={s.alt} priority={i === 1} />
           </div>
@@ -302,10 +336,10 @@ function SurpriseModule() {
   return (
     <Module eyebrow={d.eyebrow} title={d.title} body={d.body}>
       <div className="grid grid-cols-1 items-center gap-8 sm:grid-cols-2 sm:gap-10">
-        <div className="mx-auto w-[52%] max-w-[200px] sm:ml-auto sm:mr-0">
+        <div className="mx-auto w-[48%] max-w-[172px] sm:ml-auto sm:mr-0">
           <Phone src={d.card.src} alt={d.card.alt} />
         </div>
-        <div className="relative mx-auto w-[52%] max-w-[200px] sm:ml-0">
+        <div className="relative mx-auto w-[48%] max-w-[172px] sm:ml-0">
           <div
             aria-hidden
             className="pointer-events-none absolute -inset-8 -z-10 rounded-full opacity-60 blur-2xl"
@@ -340,7 +374,7 @@ function StoreModule() {
             </li>
           ))}
         </ol>
-        <div className="order-1 mx-auto w-[50%] max-w-[200px] sm:order-2 sm:w-full">
+        <div className="order-1 mx-auto w-[46%] max-w-[172px] sm:order-2 sm:w-full sm:max-w-[180px]">
           <Phone src={d.redeem.src} alt={d.redeem.alt} />
         </div>
       </div>
