@@ -76,7 +76,7 @@ export const inStore = {
   title: 'A table that demoed the ecosystem',
   body: 'UI for an interactive, table-mounted retail experience: VR 360° video, a Gear Fit step-count game, and an S7 store locator, combining video with hands-on takeovers.',
   // The physical table render (transparent bg) leads, then the flat screens.
-  device: { file: 'table-device.webp', w: 1800, h: 1666, alt: 'Interactive in-store table with the Galaxy S7 + Gear VR experience on screen' },
+  device: { file: 'table-device.webp', w: 3226, h: 2985, alt: 'Interactive in-store table with the Galaxy S7 + Gear VR experience on screen' },
   screens: [
     { file: 'table-1.webp', w: 1600, h: 900, alt: 'In-store table screen — choose a Galaxy S7 “splash” reveal' },
     { file: 'table-3.webp', w: 1600, h: 900, alt: 'In-store table screen — tap to raise your Gear Fit step count' },
