@@ -28,9 +28,10 @@ export function RewardsPlatformSection() {
       aria-label="The rewards platform"
       className="relative isolate w-full overflow-hidden bg-[var(--px-red)] pb-20 pt-14 text-white lg:pb-24"
     >
-      {/* Section title — sits above the carousel, aligned to the editorial
-          column (max-w-1180 + px-8) so it lines up with the rail and pills. */}
-      <header className="mx-auto max-w-[1180px] px-6 sm:px-8">
+      {/* Section title — sits above the carousel, aligned to the site's
+          editorial column (br-container: max-w-1443 + 80px pad) so it lines up
+          with the rest of the case study, the rail, and the pills. */}
+      <header className="mx-auto max-w-[1443px] px-6 md:px-20">
         <h2 className="text-[32px] font-semibold leading-tight sm:text-[40px]">{defaults.heading}</h2>
       </header>
 
@@ -57,8 +58,9 @@ function RewardsCarousel() {
   const modules = [<EarnModule key="earn" />, <SurpriseModule key="surprise" />, <StoreModule key="store" />]
   const labels = defaults.pills
 
-  // left padding so the rail aligns with the editorial column (max-w-1180 + px-8)
-  const RAIL_PAD = 'calc(max(1.5rem, (100vw - 1180px) / 2 + 2rem))'
+  // left padding so the rail aligns with the editorial column (br-container:
+  // max-w-1443 + 80px pad) — matches the rest of the case study.
+  const RAIL_PAD = 'calc(max(1.5rem, (100vw - 1443px) / 2 + 5rem))'
 
   const drag = useRef({
     down: false,
@@ -263,7 +265,7 @@ function RewardsCarousel() {
       </div>
 
       {/* jump-pills with labels */}
-      <div className="br-noscrollbar mx-auto mt-6 flex max-w-[1180px] gap-2 overflow-x-auto px-6 sm:px-8" style={{ touchAction: 'pan-x pan-y' }}>
+      <div className="br-noscrollbar mx-auto mt-6 flex max-w-[1443px] gap-2 overflow-x-auto px-6 md:px-20" style={{ touchAction: 'pan-x pan-y' }}>
         {labels.map((label, i) => (
           <button
             key={label}

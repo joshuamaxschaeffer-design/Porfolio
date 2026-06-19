@@ -556,8 +556,8 @@ export function MvpFlowSection({ intro }: { intro?: string } = {}) {
 
   return (
     <section id="mvp" className="bg-white text-[var(--br-body)]">
-      {/* 2px full-width red divider marking the top of section 4 */}
-      <div className="h-[2px] w-full bg-[var(--px-red)]" aria-hidden />
+      {/* faint full-width hairline marking the top of section 4 */}
+      <div className="h-px w-full bg-[var(--br-line)]" aria-hidden />
       <div className="br-container pt-16 pb-20 md:pt-24 md:pb-[120px]">
         <h2 className="text-[32px] font-medium uppercase leading-none text-[var(--br-ink)] md:text-[40px]">
           {data.heading}

@@ -410,7 +410,7 @@ export const mvp = {
     { from: 'restaurant', to: 'category', color: 'purple', fromPoint: [951, 492], toPoint: [1021, 976], via: [[1021, 492]] },
 
     // L19 bag→location "Change handoff mode or location" — up from bag top to y408, right INTO location LEFT (26270)
-    { from: 'bag', to: 'location', color: 'orange', label: 'Change handoff mode or location', labelAt: { x: 1791, y: 518.5 }, fromPoint: [1789, 640], toPoint: [2124, 408], via: [[1789, 408]] },
+    { from: 'bag', to: 'location', color: 'orange', label: 'Change handoff mode or location', labelAt: { x: 1791, y: 565 }, fromPoint: [1789, 640], toPoint: [2124, 408], via: [[1789, 408]] },
     // L20 location→bag "Continue" return — from location LEFT, left to x1834, down INTO bag TOP (26271); pill on the horizontal run
     { from: 'location', to: 'bag', color: 'orange', label: 'Continue', labelAt: { x: 2007, y: 487 }, fromPoint: [2124, 487], toPoint: [1834, 640], via: [[1834, 487]] },
 

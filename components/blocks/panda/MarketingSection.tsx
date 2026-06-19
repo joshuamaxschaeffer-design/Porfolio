@@ -45,12 +45,12 @@ export function MarketingSection() {
 
         {/* THE UX — the page designs as a receding perspective deck */}
         <div className="mt-14">
-          <Reveal className="max-w-[640px]">
+          <Reveal>
             <Eyebrow>{defaults.ux.eyebrow}</Eyebrow>
             <h3 className="mt-2 text-xl font-semibold leading-tight text-white sm:text-2xl">
               {defaults.ux.title}
             </h3>
-            <p className="mt-3 max-w-[56ch] text-[15px] leading-relaxed text-white/70">
+            <p className="mt-3 max-w-[112ch] text-[15px] leading-relaxed text-white/70">
               {defaults.ux.body}
             </p>
           </Reveal>
@@ -114,15 +114,16 @@ function PerspectiveStack({ pages }: { pages: { key: string; label: string; src:
   const n = deck.length
   return (
     <div className="relative mx-auto mt-8 w-full max-w-[1100px]" style={{ perspective: '1800px', perspectiveOrigin: '50% 40%' }}>
-      <div className="relative" style={{ height: 'clamp(560px, 72vw, 920px)', transformStyle: 'preserve-3d' }}>
+      <div className="relative" style={{ height: 'clamp(392px, 50vw, 644px)', transformStyle: 'preserve-3d' }}>
         {deck.map((p, i) => {
           const depth = i / Math.max(1, n - 1) // 0 (front) .. 1 (back)
           const left = `${depth * 17 * (n - 1)}%`
           const scale = 1 - depth * 0.1
           const z = -depth * 220
           const ty = depth * 26
-          const dim = depth * 0.42
-          const blur = depth * 1.4
+          // darken + defocus harder as the deck recedes to the right
+          const dim = depth * 0.62
+          const blur = depth * 4.5
           return (
             <figure
               key={p.key}
@@ -152,7 +153,6 @@ function PerspectiveStack({ pages }: { pages: { key: string; label: string; src:
           )
         })}
       </div>
-      <p className="mt-4 text-[13px] text-white/45">Homepage, Our Food, Innovation, Our Family, Our Shop — one connected system.</p>
     </div>
   )
 }

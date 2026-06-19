@@ -109,7 +109,7 @@ function StatCell({ stat, index }: { stat: MvpBentoStat; index: number }) {
   return (
     <div
       ref={ref}
-      className={`flex h-full flex-col justify-between ${CARD} p-6 md:px-7 md:py-5`}
+      className={`flex h-full flex-col justify-center ${CARD} p-6 md:px-7 md:py-5`}
     >
       <CornerGlow />
       <div className="relative flex items-center gap-2.5">

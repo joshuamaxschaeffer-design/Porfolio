@@ -181,6 +181,15 @@ body {
   }
 }
 
+/* Orphan control for the Panda case study: prevent a single word from sitting
+ * alone on the last line of any body paragraph. text-wrap: pretty handles this
+ * in modern engines (Chrome 117+, Safari 17.5+) and degrades to normal wrapping
+ * elsewhere. Scoped to HTML paragraphs — SVG flow labels are hand-wrapped and
+ * unaffected. */
+.panda-article p {
+  text-wrap: pretty;
+}
+
 /* Carousels bleed past the right edge of the column. This wrapper keeps the
  * left edge aligned to the column while letting content overflow right. */
 .br-bleed-right {

@@ -51,7 +51,7 @@ export interface PandaCaseStudyProps {
 export function PandaCaseStudy(props: PandaCaseStudyProps = {}) {
   return (
     <article
-      className="br-article bg-white"
+      className="br-article panda-article bg-white"
       style={{ '--px-red': '#D02B2E' } as React.CSSProperties}
     >
       {/* Floating numbered rail — scroll-spy + jump-to-section (≥1280px only). */}

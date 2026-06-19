@@ -40,22 +40,26 @@ function OptionB() {
   return (
     <div className="relative isolate w-full overflow-hidden bg-[var(--px-red)] pb-12 pt-20 text-white lg:pb-16 lg:pt-28">
       <Sparkles />
-      <div className="relative mx-auto w-full max-w-[1180px] px-6 text-center sm:px-8">
-        <Reveal>
-          <Eyebrow>{d.eyebrow}</Eyebrow>
-          <h2 className="mx-auto mt-3 max-w-[18ch] text-[32px] font-semibold leading-[1.05] sm:text-[46px]">
-            A whole lot of program.
-          </h2>
-        </Reveal>
-        <div className="mt-12 grid grid-cols-2 gap-8 lg:grid-cols-4">
-          {d.stats.map((s, i) => (
-            <Reveal key={s.label} delay={i * 90}>
-              <div>
-                <CountUp value={s.value} suffix={s.suffix} />
-                <div className="mt-2 text-sm uppercase tracking-wide text-white/70">{s.label}</div>
-              </div>
-            </Reveal>
-          ))}
+      <div className="relative mx-auto w-full max-w-[1180px] px-6 sm:px-8">
+        {/* one bounded card so the heading + stats read as a single structured
+            unit on the red field, rather than floating loose. */}
+        <div className="rounded-[20px] border border-white/25 bg-white/[0.06] px-6 py-12 text-center backdrop-blur-sm sm:px-10 sm:py-14 lg:px-14">
+          <Reveal>
+            <Eyebrow>{d.eyebrow}</Eyebrow>
+            <h2 className="mx-auto mt-3 max-w-[18ch] text-[32px] font-semibold leading-[1.05] sm:text-[46px]">
+              A whole lot of program.
+            </h2>
+          </Reveal>
+          <div className="mt-12 grid grid-cols-2 gap-8 lg:grid-cols-4">
+            {d.stats.map((s, i) => (
+              <Reveal key={s.label} delay={i * 90}>
+                <div>
+                  <CountUp value={s.value} suffix={s.suffix} />
+                  <div className="mt-2 text-sm uppercase tracking-wide text-white/70">{s.label}</div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </div>
     </div>
