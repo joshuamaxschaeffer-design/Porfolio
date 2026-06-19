@@ -186,6 +186,17 @@ export const marketing = {
     body: 'The design shipped and is still the live Panda Express site today — the same navigation, the same "We Wok For You" ordering flow, the same page system I designed, with seasonal promotions swapped into the same templates.',
     cta: { label: 'Visit pandaexpress.com', href: 'https://www.pandaexpress.com/' },
   },
+  /**
+   * Real pandaexpress.com page screenshots for the bento tiles.
+   * DROP FILES HERE: save captures to public/panda/marketing/live/<key>.webp
+   * (or .png/.jpg and update src). Until a file exists, the tile shows a clean
+   * labeled placeholder. Suggested: full-page or top-of-page desktop shots.
+   */
+  liveShots: [
+    { key: 'home', label: 'Homepage', src: '/panda/marketing/live/home.webp' },
+    { key: 'our-food', label: 'Our Food', src: '/panda/marketing/live/our-food.webp' },
+    { key: 'our-shop', label: 'Our Shop', src: '/panda/marketing/live/our-shop.webp' },
+  ],
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -198,7 +209,7 @@ export const marketing = {
 export const loyaltyQr = {
   heading: 'LOYALTY QR ENROLLMENT',
   intro:
-    'Scanning a receipt QR enrolls a diner in Panda Rewards. Behind that one scan, the flow resolves channel, location, account state and membership, then stitches four backend systems together so the order’s points land on a brand-new account — across app, mobile web and desktop.',
+    'An example of how thorough and complex the UX work could get. Scanning a receipt QR to enroll in Panda Rewards looks like one tap — but behind it the flow resolves channel, location, account state and membership, branches into six variants, and stitches four backend systems together across app, mobile web and desktop.',
   chips: [
     '3 platforms',
     '6 flow variants',
@@ -343,29 +354,33 @@ export const mvp = {
     // L5 productSel→bag "Add Product" — right from productSel R to x1745, down into bag TOP (26277)
     { from: 'productSel', to: 'bag', color: 'green', label: 'Add Product', labelAt: { x: 1525, y: 193.5 }, fromPoint: [1428, 193.5], toPoint: [1745, 640], via: [[1745, 193.5]] },
 
-    // L4 promo-rail→restaurant "No location selected" upper — drop x850 between the two promo pills into restaurant TOP (26310)
-    { from: 'promoNotif', to: 'restaurant', color: 'green', label: 'No location selected', labelAt: { x: 850, y: 248.5 }, fromPoint: [850, 193.5], toPoint: [850, 326] },
-    // L8 blue rail→restaurant riser — vertical x838 up into restaurant BOTTOM (26287)
-    { from: 'product', to: 'restaurant', color: 'blue', fromPoint: [838, 761.5], toPoint: [838, 617] },
+    // ── INTO restaurant BOTTOM: two risers from the rails, "No location selected"
+    //    pill sits on them (26287 blue x838, 26288 purple x868). ──
+    // L8 blue rail→restaurant riser — vertical x838 up into restaurant BOTTOM. Carries the pill.
+    { from: 'product', to: 'restaurant', color: 'blue', label: 'No location selected', labelAt: { x: 850, y: 690 }, fromPoint: [838, 761.5], toPoint: [838, 617] },
     // L9 category rail→restaurant riser (purple) — vertical x868 up into restaurant BOTTOM (26288)
     { from: 'category', to: 'restaurant', color: 'purple', fromPoint: [868, 814.5], toPoint: [868, 617] },
 
-    // L6 restaurant→productSel "Location Selected" UP-branch — stub right y459.5, shared riser x1031 up, into productSel BOTTOM (26245/26244/26284)
-    { from: 'restaurant', to: 'productSel', color: 'orange', label: 'Location Selected', labelAt: { x: 1036, y: 448 }, fromPoint: [951, 459.5], toPoint: [1320, 348], via: [[1031, 459.5], [1031, 388], [1320, 388]] },
-    // L7 restaurant→product "Location Selected" DOWN-branch — shared riser x1031 down, into product TOP (26285)
-    { from: 'restaurant', to: 'product', color: 'orange', fromPoint: [951, 575], toPoint: [1320, 640], via: [[1031, 575], [1031, 700], [1320, 700]] },
+    // ── OUT of restaurant RIGHT: THREE stacked colour lines sharing the
+    //    "Location Selected" pill. Each resolves a different flow. ──
+    // L6a green → up into productSel BOTTOM (promo flow). Top rail y451.
+    { from: 'restaurant', to: 'productSel', color: 'green', label: 'Location Selected', labelAt: { x: 1036, y: 448 }, fromPoint: [951, 451], toPoint: [1320, 348], via: [[1240, 451], [1240, 388], [1320, 388]] },
+    // L6b blue → right then down into Product Page TOP (product flow). Middle rail y471.5.
+    { from: 'restaurant', to: 'product', color: 'blue', fromPoint: [951, 471.5], toPoint: [1320, 640], via: [[1300, 471.5], [1300, 600], [1320, 600]] },
+    // L6c purple → down into category area (category flow). Bottom rail y492, drops at x1031.
+    { from: 'restaurant', to: 'category', color: 'purple', fromPoint: [951, 492], toPoint: [1021, 976], via: [[1031, 492], [1031, 900], [1021, 900]] },
 
-    // L19 bag→location "Change handoff mode or location" — up from bag top to y408, right into location (26270)
-    { from: 'bag', to: 'location', color: 'orange', label: 'Change handoff mode or location', labelAt: { x: 1791, y: 518.5 }, fromPoint: [1789, 640], toPoint: [2124, 466], via: [[1789, 408], [2204, 408]] },
-    // L20 location→bag "Continue" return — from location L down/left into bag TOP (26271), stacked parallel to L19
-    { from: 'location', to: 'bag', color: 'orange', label: 'Continue', labelAt: { x: 2007, y: 465.5 }, fromPoint: [2124, 487], toPoint: [1834, 640], via: [[1834, 487]] },
+    // L19 bag→location "Change handoff mode or location" — up from bag top to y408, right INTO location LEFT (26270)
+    { from: 'bag', to: 'location', color: 'orange', label: 'Change handoff mode or location', labelAt: { x: 1791, y: 518.5 }, fromPoint: [1789, 640], toPoint: [2124, 408], via: [[1789, 408]] },
+    // L20 location→bag "Continue" return — from location LEFT, left to x1834, down INTO bag TOP (26271); pill on the horizontal run
+    { from: 'location', to: 'bag', color: 'orange', label: 'Continue', labelAt: { x: 2007, y: 487 }, fromPoint: [2124, 487], toPoint: [1834, 640], via: [[1834, 487]] },
 
     // L14 menu→category "Tap a Category"/"Location preselected" — lower rail y814.5 (26468), feeds drop
     { from: 'menu', to: 'category', color: 'purple', label: 'Tap a Category', labelAt: { x: 730, y: 814.5 }, label2: 'Location preselected', label2At: { x: 1021.5, y: 814.5 }, fromPoint: [611, 814.5], toPoint: [1021, 976], via: [[1021, 814.5]] },
     // L16 category→quantity "Tap Product" — straight rail y1110.5 (26464)
     { from: 'category', to: 'quantity', color: 'purple', label: 'Tap Product', labelAt: { x: 1224.5, y: 1109.5 }, fromPoint: [1122, 1110.5], toPoint: [1376, 1110.5] },
     // L17 quantity→category "Add Product" return — LOWER rail y1189.5 (26465)
-    { from: 'quantity', to: 'category', color: 'purple', label: 'Add Product', labelAt: { x: 1226, y: 1190.5 }, caption: { text: 'Product is added to My Bag', x: 1252.5, y: 1247 }, fromPoint: [1376, 1189.5], toPoint: [1122, 1189.5] },
+    { from: 'quantity', to: 'category', color: 'purple', label: 'Add Product', labelAt: { x: 1226, y: 1190.5 }, caption: { text: 'Product is added to My Bag', x: 1249, y: 1316 }, fromPoint: [1376, 1189.5], toPoint: [1122, 1189.5] },
     // L18 category→bag "Tap Bag Icon" — right then UP into bag BOTTOM (26466)
     { from: 'category', to: 'bag', color: 'purple', label: 'Tap Bag Icon', labelAt: { x: 1229.5, y: 1036.5 }, fromPoint: [1122, 1037], toPoint: [1789, 885], via: [[1789, 1037]] },
 
