@@ -124,10 +124,14 @@ function PerspectiveStack({ pages }: { pages: { key: string; label: string; src:
           // darken + defocus harder as the deck recedes to the right
           const dim = depth * 0.62
           const blur = depth * 4.5
+          // feather the card edges in by an amount that grows with depth, so
+          // each card dissolves into the black instead of showing a hard frame.
+          const fade = 3 + depth * 9 // % of the card inset to the transparent edge
+          const mask = `linear-gradient(to right, transparent 0, #000 ${fade}%, #000 ${100 - fade}%, transparent 100%), linear-gradient(to bottom, transparent 0, #000 ${fade}%, #000 ${100 - fade}%, transparent 100%)`
           return (
             <figure
               key={p.key}
-              className="absolute left-0 top-0 m-0 overflow-hidden rounded-xl border border-white/12 bg-white shadow-[0_30px_70px_-24px_rgba(0,0,0,0.7)]"
+              className="absolute left-0 top-0 m-0"
               style={{
                 width: 'min(31%, 320px)',
                 height: '100%',
@@ -135,6 +139,13 @@ function PerspectiveStack({ pages }: { pages: { key: string; label: string; src:
                 transform: `translateZ(${z}px) translateY(${ty}px) rotateY(-18deg) scale(${scale})`,
                 transformOrigin: 'left center',
                 zIndex: n - i,
+                // blur + brightness on the whole card so edges defocus too
+                filter: `brightness(${1 - dim})${blur ? ` blur(${blur}px)` : ''}`,
+                // feather the rectangle edges (both axes must both be opaque → composite intersect)
+                WebkitMaskImage: mask,
+                maskImage: mask,
+                WebkitMaskComposite: 'source-in',
+                maskComposite: 'intersect',
               }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -143,11 +154,10 @@ function PerspectiveStack({ pages }: { pages: { key: string; label: string; src:
                 alt={`${p.label} page design`}
                 loading="lazy"
                 draggable={false}
-                className="block h-full w-full object-cover object-top"
-                style={{ filter: blur ? `brightness(${1 - dim}) blur(${blur}px)` : undefined }}
+                className="block h-full w-full rounded-lg object-cover object-top"
               />
               {dim > 0 ? (
-                <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: `rgba(13,13,15,${dim})` }} />
+                <div aria-hidden className="pointer-events-none absolute inset-0 rounded-lg" style={{ background: `rgba(13,13,15,${dim})` }} />
               ) : null}
             </figure>
           )
