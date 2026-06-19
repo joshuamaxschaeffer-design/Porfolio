@@ -153,6 +153,41 @@ export const rewardsPlatform = {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
+ * REWARDS CAPSTONE — a celebratory close to the Rewards Program chapter:
+ * "look at everything we built into it." Lives on the red field, keeps the
+ * sparkle/gold register. FOUR layout options are stacked for review.
+ * ───────────────────────────────────────────────────────────────────────── */
+export const rewardsCapstone = {
+  eyebrow: 'THE WHOLE PROGRAM',
+  title: 'A rewards program worth coming back for',
+  body: 'Earning, surprises, redemption, and a way to pay — a complete loyalty experience designed end to end.',
+  /** every capability shipped into the program (feature grid / checklist / marquee) */
+  features: [
+    'Panda Points earning',
+    'Milestone reward tiers',
+    'Monthly Good Fortune surprise',
+    'Reward store redemption',
+    'Scan-to-earn at the register',
+    'Receipt-QR enrollment',
+    'Exclusive member offers',
+    'Stored value & reload',
+    'Order again & favorites',
+    'Profile & taste preferences',
+    'Birthday rewards',
+    'Real-time points balance',
+  ],
+  /** celebratory "what we built" counters */
+  stats: [
+    { value: 12, suffix: '+', label: 'Reward features' },
+    { value: 9, label: 'Milestone tiers' },
+    { value: 3, label: 'Platforms' },
+    { value: 6, label: 'Enrollment flows' },
+  ],
+  /** a celebratory line for the trophy/hero option */
+  kicker: 'Designed, tested, and rolled out to every location.',
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
  * MARKETING SITE — a compact coda after the product story. Proves the brand-site
  * work without slowing the app→app spine. Leads with the nav/IA redesign
  * (real crops in public/panda/marketing), then names the page system.

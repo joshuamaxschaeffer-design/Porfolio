@@ -6,6 +6,7 @@ import { MvpScatterSection } from './MvpScatterSection'
 import { MvpLaunchBento } from './MvpLaunchBento'
 import { PremiumRewardsSection } from './PremiumRewardsSection'
 import { RewardsPlatformSection } from './RewardsPlatformSection'
+import { RewardsCapstoneSection } from './RewardsCapstoneSection'
 import { LoyaltyQrSection } from './LoyaltyQrSection'
 import { MarketingSection } from './MarketingSection'
 import { OutcomesSection } from './OutcomesSection'
@@ -76,6 +77,9 @@ export function PandaCaseStudy(props: PandaCaseStudyProps = {}) {
           surprise, the reward store, and the native-experience note. Continues
           the celebratory register set by the hero. */}
       <RewardsPlatformSection />
+      {/* Celebratory capstone to the rewards chapter — "look at everything we
+          built into it." 4 stacked layout options (A/B/C/D) for review. */}
+      <RewardsCapstoneSection />
       {/* Loyalty QR enrollment — red "blueprint" band: the branching receipt-QR
           userflow + the Cache→Azure→mParticle→Punchh backend handoff. Verified
           against the Figma prototype graph (REST API). */}
