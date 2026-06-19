@@ -1,7 +1,15 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useReducedMotion } from 'motion/react'
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+  useMotionValue,
+  type MotionValue,
+} from 'motion/react'
 import { marketing as defaults } from './data'
 
 /**
@@ -37,8 +45,23 @@ export function MarketingSection() {
           </p>
         </Reveal>
 
-        {/* THE UX — the page designs as a receding perspective deck */}
+        {/* THE PAGE SYSTEM — the blue UX wireframes as a receding, blurred stack
+            (Baserate Scalability projection): the design system up front. */}
         <div className="mt-14">
+          <Reveal>
+            <Eyebrow>{defaults.ux.wireframes.eyebrow}</Eyebrow>
+            <h3 className="mt-2 text-xl font-semibold leading-tight text-white sm:text-2xl">
+              {defaults.ux.wireframes.title}
+            </h3>
+            <p className="mt-3 max-w-[112ch] text-[15px] leading-relaxed text-white/70">
+              {defaults.ux.wireframes.body}
+            </p>
+          </Reveal>
+          <WireframeStack pages={defaults.ux.wireframes.pages} />
+        </div>
+
+        {/* COHESIVE SITE UX — the real page designs laid down on a receding plane */}
+        <div className="mt-20 lg:mt-28">
           <Reveal>
             <Eyebrow>{defaults.ux.eyebrow}</Eyebrow>
             <h3 className="mt-2 text-xl font-semibold leading-tight text-white sm:text-2xl">
@@ -159,6 +182,128 @@ function AngledScreen({ page, reduce, index }: { page: DeckPage; reduce: boolean
         @media (prefers-reduced-motion: reduce){.pxmk-vscroll{animation:none}}
       `}</style>
     </figure>
+  )
+}
+
+/* ── blue UX wireframe stack (Baserate Scalability projection) ───────────────
+ * Adapted from the Baserate Scalability timeline: a real pinhole-perspective
+ * recede. Each wireframe sits at depth z = i*gap; a pinhole camera projects
+ * z → a scale s = F/(F+z) and a screen position interpolated from the front
+ * anchor toward a right-side vanishing point by (1−s), so the deck fans back to
+ * the right (reads as "facing left"). `gap` grows on scroll (GAP_MIN→GAP_MAX) —
+ * the deck expands out of a near-stack as the section scrolls in. Depth cues: a
+ * darkening overlay + a STATIC (per-card, settled-depth) blur split across two
+ * layers; NO border/edge-mask — a radial vignette dissolves the far cards into
+ * the black. Reduced-motion → settled (fully spread, static).
+ * ──────────────────────────────────────────────────────────────────────────── */
+const UX_F = 1500 // focal length (gentle shrink)
+const UX_GAP_MAX = 440 // z between cards, fully spread
+const UX_GAP_MIN = 200 // at scroll start
+const UX_VP_X = 92 // vanishing point x (stage %) — far right
+const UX_VP_Y = 26
+const UX_FRONT_Y = 50
+
+function uxProject(z: number, frontX: number, vpX: number) {
+  const s = UX_F / (UX_F + z)
+  const k = 1 - s
+  return { s, x: frontX + (vpX - frontX) * k, y: UX_FRONT_Y + (UX_VP_Y - UX_FRONT_Y) * k }
+}
+const uxDarken = (d: number) => Math.max(0, Math.min(0.92, (d - 1) * 0.24))
+const uxBlur = (d: number) => Math.max(0, (d - 1) * 7)
+
+function WireframeStack({ pages }: { pages: { key: string; label: string; src: string }[] }) {
+  const reduce = useReducedMotion()
+  const stageRef = useRef<HTMLDivElement>(null)
+  const [mobile, setMobile] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 1023px)')
+    const apply = () => setMobile(mq.matches)
+    apply()
+    mq.addEventListener('change', apply)
+    return () => mq.removeEventListener('change', apply)
+  }, [])
+  const frontX = mobile ? 30 : 22 // front card sits left; deck recedes right
+  const vpX = mobile ? 96 : UX_VP_X
+
+  const { scrollYProgress } = useScroll({ target: stageRef, offset: ['start end', 'center center'] })
+  const p = useSpring(scrollYProgress, { stiffness: 110, damping: 30, mass: 0.6 })
+  const gap = useTransform(p, [0, 1], [UX_GAP_MIN, UX_GAP_MAX])
+  const gapStatic = useMotionValue(UX_GAP_MAX)
+  const gapMV = reduce ? gapStatic : gap
+
+  const deck = pages.slice(0, 5)
+  const n = deck.length
+  return (
+    <div ref={stageRef} className="relative mx-auto mt-8 h-[clamp(420px,54vw,720px)] w-full max-w-[1200px]">
+      {deck.map((pg, i) => (
+        <WireframeCard key={pg.key} page={pg} index={i} gap={gapMV} total={n} frontX={frontX} vpX={vpX} />
+      ))}
+      {/* vignette: the far/right portion dissolves into the section black */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            'radial-gradient(120% 115% at 86% 34%, rgba(13,13,15,0) 30%, rgba(13,13,15,0.55) 62%, rgba(13,13,15,0.98) 88%)',
+        }}
+      />
+    </div>
+  )
+}
+
+function WireframeCard({
+  page,
+  index,
+  gap,
+  total,
+  frontX,
+  vpX,
+}: {
+  page: { key: string; label: string; src: string }
+  index: number
+  gap: MotionValue<number>
+  total: number
+  frontX: number
+  vpX: number
+}) {
+  const d = useTransform(gap, (g) => (index * g) / UX_GAP_MAX)
+  const proj = useTransform(gap, (g) => uxProject(index * g, frontX, vpX))
+  const left = useTransform(proj, (pr) => `${pr.x}%`)
+  const top = useTransform(proj, (pr) => `${pr.y}%`)
+  const scale = useTransform(proj, (pr) => pr.s)
+  const darken = useTransform(d, (dd) => uxDarken(dd))
+  // static blur from settled depth (gap=GAP_MAX → d=index) — Safari perf
+  const q = (v: number, step: number) => Math.round(v / step) * step
+  const blurOuter = `blur(${q(uxBlur(index) * 0.45, 2)}px)`
+  const blurInner = `blur(${q(uxBlur(index) * 0.55, 2)}px)`
+  return (
+    <motion.div
+      className="absolute"
+      style={{
+        left,
+        top,
+        width: 'min(34%, 360px)', // tall, narrow portrait page
+        x: '-50%',
+        y: '-50%',
+        scale,
+        zIndex: total - index,
+        filter: blurOuter,
+        willChange: 'transform',
+      }}
+    >
+      {/* clean clipped corners, no border (a translucent edge + blur = halo) */}
+      <motion.div
+        className="relative overflow-hidden rounded-xl bg-white"
+        style={{ boxShadow: '0 30px 70px -28px rgba(0,0,0,0.7)', filter: blurInner }}
+      >
+        {/* fixed portrait crop, top-anchored — uniform height across the deck */}
+        <div className="aspect-[360/620] w-full overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={page.src} alt={`${page.label} page design`} draggable={false} className="block w-full select-none" />
+        </div>
+        <motion.div className="pointer-events-none absolute inset-0 bg-[#0d0d0f]" style={{ opacity: darken }} />
+      </motion.div>
+    </motion.div>
   )
 }
 

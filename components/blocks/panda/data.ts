@@ -207,6 +207,21 @@ export const marketing = {
     eyebrow: 'THE UX',
     title: 'Cohesive Site UX',
     body: 'The focus: communicate the brand while driving orders. Every page shares one structure and voice, with the path to ordering always a tap away.',
+    /** wireframe sub-section — the page system designed up front, shown as a
+     *  receding/blurred stack (Baserate Scalability projection) of the blue
+     *  UX comps (public/panda/marketing/ux/*). */
+    wireframes: {
+      eyebrow: 'THE PAGE SYSTEM',
+      title: 'One system, every page',
+      body: 'Before a pixel of brand art, the site was designed as a system: a shared page architecture and component set that every template inherits.',
+      pages: [
+        { key: 'wf-home', label: 'Homepage', src: '/panda/marketing/ux/home.webp' },
+        { key: 'wf-philosophy', label: 'Food Philosophy', src: '/panda/marketing/ux/philosophy.webp' },
+        { key: 'wf-innovation', label: 'Innovation', src: '/panda/marketing/ux/innovation.webp' },
+        { key: 'wf-family', label: 'Our Family', src: '/panda/marketing/ux/family.webp' },
+        { key: 'wf-food', label: 'Our Food', src: '/panda/marketing/ux/food.webp' },
+      ],
+    },
     /** real pandaexpress.com full-page captures (public/panda/marketing/live).
      *  `ratio` = image height / width (drives the deck: tall pages auto-scroll,
      *  short pages render shorter + static and are ordered last/far-right). */
