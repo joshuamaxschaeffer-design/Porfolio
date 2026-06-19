@@ -221,27 +221,32 @@ function PlatformStack({
 }) {
   const PHONE_W = 200 // ~35% larger than the previous 150px
   const ICON = 116
-  const STEP = 40 // horizontal overlap step
   // phone heights from the 750×1624 frame, so we can size the stage
   const phoneH = Math.round((PHONE_W * 1624) / 750)
-  const stageW = ICON + STEP * 2 + PHONE_W
-  const stageH = phoneH + 36
+  // left→right diagonal: front phone tucks ~44px behind the icon's right side;
+  // the back phone steps a further ~118px right (≈ leaves a clear sliver behind
+  // the front one) and sits higher.
+  const frontLeft = ICON - 44
+  const backLeft = frontLeft + 118
+  const stageW = backLeft + PHONE_W
+  const stageH = phoneH + 40
   return (
     <div className="mx-auto lg:mx-0 lg:shrink-0" style={{ width: stageW, maxWidth: '100%' }}>
       <div className="relative" style={{ width: stageW, height: stageH }}>
         {/* back phone — furthest right + highest, lowest z */}
-        <div className="absolute" style={{ left: ICON + STEP * 2 - 86, top: 0, width: PHONE_W, zIndex: 1 }}>
+        <div className="absolute" style={{ left: backLeft, top: 0, width: PHONE_W, zIndex: 1 }}>
           <AppPhone src={screens[1].src} alt={screens[1].alt} />
         </div>
-        {/* front phone — middle, nudged right of the icon, mid z */}
-        <div className="absolute" style={{ left: ICON - 40, top: 18, width: PHONE_W, zIndex: 2 }}>
+        {/* front phone — steps right of the icon, slightly lower, mid z */}
+        <div className="absolute" style={{ left: frontLeft, top: 22, width: PHONE_W, zIndex: 2 }}>
           <AppPhone src={screens[0].src} alt={screens[0].alt} />
         </div>
-        {/* app icon — front, bottom-left, highest z */}
+        {/* app icon — iOS-style (white padding + rounded square), front,
+            bottom-left, highest z */}
         <div className="absolute" style={{ left: 0, bottom: 0, width: ICON, zIndex: 3 }}>
           <div
             className="overflow-hidden bg-white shadow-[0_18px_40px_-12px_rgba(0,0,0,0.28)] ring-1 ring-black/5"
-            style={{ borderRadius: '22.37%', padding: ICON * 0.11 }}
+            style={{ borderRadius: '22.37%', padding: Math.round(ICON * 0.11) }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={appIcon} alt="Panda Express app icon" loading="lazy" className="block w-full" />
