@@ -75,7 +75,7 @@ export function MarketingSection() {
             href={defaults.live.cta.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-5 inline-flex items-center gap-2 rounded-full bg-[var(--px-red)] px-5 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
+            className="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--px-red)] px-6 py-3 text-sm font-medium text-white transition-opacity hover:opacity-90"
           >
             {defaults.live.cta.label}
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden>
@@ -83,14 +83,6 @@ export function MarketingSection() {
             </svg>
           </a>
         </Reveal>
-
-        <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2">
-          {defaults.live.shots.map((s, i) => (
-            <Reveal key={s.key} delay={i * 90}>
-              <BrowserMock label={s.label} src={s.src} url="pandaexpress.com" />
-            </Reveal>
-          ))}
-        </div>
       </div>
     </section>
   )
@@ -227,30 +219,6 @@ function PageComp({ src, label }: { src: string; label: string }) {
         <img src={src} alt={`${label} page design`} draggable={false} loading="lazy" className="pointer-events-none block w-full" />
       </div>
     </div>
-  )
-}
-
-/** Browser-frame mockup for the live site; real screenshot or labeled slot. */
-function BrowserMock({ label, src, url }: { label: string; src: string; url: string }) {
-  return (
-    <figure className="m-0">
-      <div className="overflow-hidden rounded-xl border border-[var(--br-line)] bg-white shadow-[0_10px_30px_-12px_rgba(0,0,0,0.18)]">
-        <BrowserBar url={url} />
-        <div className="aspect-[16/10] overflow-hidden bg-[var(--br-bg-2,#f4f4f5)]">
-          {src ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={src} alt={`pandaexpress.com — ${label}`} loading="lazy" className="block h-full w-full object-cover object-top" />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center">
-              <span className="br-data text-[11px] uppercase tracking-wide text-[var(--br-muted-2,#a1a1aa)]">
-                {label}
-              </span>
-            </div>
-          )}
-        </div>
-      </div>
-      <figcaption className="mt-2 text-center text-[13px] text-[var(--br-body)]">{label}</figcaption>
-    </figure>
   )
 }
 
