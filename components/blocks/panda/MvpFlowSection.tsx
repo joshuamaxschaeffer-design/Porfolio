@@ -242,7 +242,9 @@ function NodeCard({ node, lit }: { node: MvpNode; lit: boolean }) {
   const [x, y, w, h] = node.box
   const cardFill = lit ? COLOR[node.color] : '#ffffff'
   const cardStroke = lit ? 'none' : '#e2e3e8'
-  const labelColor = lit ? '#ffffff' : 'var(--br-ink)'
+  // lit cards: white label on the colour fill. dim cards: grey label (white is
+  // invisible on the white card) — readable but clearly de-emphasised.
+  const labelColor = lit ? '#ffffff' : '#8a9099'
   // device: tall phone (~0.6 ratio), centered, upper area
   const dw = w * 0.46
   const dh = dw * 1.5
@@ -283,7 +285,7 @@ function NodeCard({ node, lit }: { node: MvpNode; lit: boolean }) {
           y={y0 + i * lineH}
           fontSize={fs}
           fontWeight={700}
-          fill="#ffffff"
+          fill={labelColor}
           textAnchor="middle"
           dominantBaseline="central"
           fontFamily="var(--br-font-body)"
