@@ -66,13 +66,13 @@ export const timeline: TimelineEntry[] = [
   {
     company: 'Journalytic · Baserate',
     role: 'Head of Design',
-    years: '2023 — Now',
+    years: '2022 — Now',
     note: 'Owned design end to end for two investor products — brand, product, marketing site, and explainer film. The work helped the founders close their seed round.',
   },
   {
     company: 'Hathway / Bounteous',
     role: 'Lead Designer · Art Director',
-    years: '2018 — 2023',
+    years: '2018 — 2022',
     note: 'Led design on the Panda Express and Wingstop apps — 4.8–4.9★, millions of reviews, 16M+ rewards members, and a digital channel that grew to 70% of sales. Plus Raising Cane’s and CBTL.',
   },
   {
