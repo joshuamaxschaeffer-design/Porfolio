@@ -15,7 +15,24 @@ export function OverviewSection(props: OverviewProps) {
   const scope = props.scope ?? defaults.scope
 
   return (
-    <section id="overview" className="br-container pt-16 pb-20 md:pt-24 md:pb-[160px]">
+    <section
+      id="overview"
+      className="ws-dark bg-[#0c0d0d]"
+      style={
+        {
+          // Cinematic black hero. Override inherited br-* tokens so all text +
+          // pills go light on the dark field; --ws-green stays the accent
+          // (reads cleanly on black).
+          '--br-ink': '#f6f7f8',
+          '--br-body': '#d4d7dd',
+          '--br-muted': '#9aa0aa',
+          '--br-muted-2': '#7c828d',
+          '--br-line': 'rgba(255,255,255,0.14)',
+          '--ws-green': '#23c265', // brighter green for accent legibility on black
+        } as React.CSSProperties
+      }
+    >
+      <div className="br-container pt-16 pb-20 md:pt-24 md:pb-[160px]">
       {/* Typographic wordmark until brand assets land */}
       <p
         className="text-[28px] font-semibold uppercase leading-none tracking-[0.02em] text-[var(--ws-green)] md:text-[34px]"
@@ -52,6 +69,7 @@ export function OverviewSection(props: OverviewProps) {
             </li>
           ))}
         </ul>
+      </div>
       </div>
     </section>
   )

@@ -3,12 +3,15 @@ import { challenge as defaults } from './data'
 /** Section 2 — menu complexity, per-store variance, group-order math. */
 export function ChallengeSection({ intro }: { intro?: string } = {}) {
   return (
-    <section id="challenge" className="bg-[var(--br-bg-2)]">
+    // Full-bleed Wingstop-green accent band. Heading + intro are forced white
+    // here (NOT via a token override — the problem cards below are white and
+    // must keep their dark ink/muted text + green tag).
+    <section id="challenge" className="bg-[var(--ws-green)]">
       <div className="br-container pt-16 pb-20 md:pt-20 md:pb-[120px]">
-        <h2 className="text-[32px] font-medium uppercase leading-none text-[var(--br-ink)] md:text-[40px]">
+        <h2 className="text-[32px] font-medium uppercase leading-none text-white md:text-[40px]">
           2. {defaults.heading}
         </h2>
-        <p className="mt-3 max-w-3xl text-lg text-[var(--br-muted)] md:text-[22px]">
+        <p className="mt-3 max-w-3xl text-lg text-white/90 md:text-[22px]">
           {intro ?? defaults.intro}
         </p>
 
