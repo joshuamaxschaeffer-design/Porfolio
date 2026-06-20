@@ -137,18 +137,19 @@ export function AppSection() {
           <h3 className="mt-2 text-2xl font-semibold text-white sm:text-[28px]">{defaults.bento.title}</h3>
           <p className="mt-2 max-w-[60ch] text-[15px] text-white/80 sm:text-base">{defaults.bento.body}</p>
         </div>
-        {/* These are the real App Store listing screenshots (portrait marketing
-            screens). Show them WHOLE in a clean uniform row, like the App Store
-            gallery — not cropped into a mismatched bento. */}
+        {/* These are the real App Store listing graphics (a phone mockup on a
+            branded background, each its own art). Show them WHOLE at a uniform
+            height so they read like the actual App Store gallery. */}
         <div className="-mx-6 flex gap-5 overflow-x-auto px-6 pb-3 md:-mx-20 md:px-20 [scrollbar-width:thin]">
           {defaults.bento.images.map((src) => (
-            <div
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
               key={src}
-              className="aspect-[1242/2208] w-[240px] shrink-0 overflow-hidden rounded-[24px] border border-white/15 bg-black [box-shadow:0_24px_50px_rgba(0,0,0,0.5)] sm:w-[270px]"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt="" loading="lazy" className="block h-full w-full object-cover object-top" />
-            </div>
+              src={src}
+              alt=""
+              loading="lazy"
+              className="h-[460px] w-auto shrink-0 rounded-[20px] border border-white/15 object-contain [box-shadow:0_24px_50px_rgba(0,0,0,0.5)]"
+            />
           ))}
         </div>
       </div>

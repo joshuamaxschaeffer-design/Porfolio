@@ -16,9 +16,9 @@ import { scope as defaults } from './data'
 
 const GREEN = '#00843D'
 const GREEN_BRIGHT = '#23c265'
-// Tighter than before: scope cards are an overview, not a deep-dive — keep them
-// dense so they don't read as empty balloons.
-const CARD = 'h-[440px] w-[78vw] max-w-[680px] sm:w-[60vw] lg:h-[460px] lg:w-[620px]'
+// Bigger, more confident cards (the page read too timid/small vs. the Samsung
+// + Baserate bar). Taller + wider so the visuals can be large and own the card.
+const CARD = 'h-[560px] w-[84vw] max-w-[820px] sm:w-[70vw] lg:h-[580px] lg:w-[760px]'
 
 export function ScopeCarouselSection() {
   return (
@@ -319,12 +319,12 @@ function ModuleVisual({ m, green }: { m: Mod; green: boolean }) {
           src={mm.device as string}
           alt={m.title}
           loading="lazy"
-          className="h-[230px] w-auto object-contain drop-shadow-[0_16px_34px_rgba(0,0,0,0.45)] sm:h-[250px]"
+          className="h-full max-h-[360px] w-auto object-contain drop-shadow-[0_18px_40px_rgba(0,0,0,0.5)]"
         />
       )
     }
     return (
-      <div className="w-[150px]">
+      <div className="h-full max-h-[360px]" style={{ aspectRatio: '750 / 1624' }}>
         <Phone src={mm.device as string} alt={m.title} />
       </div>
     )
@@ -334,13 +334,13 @@ function ModuleVisual({ m, green }: { m: Mod; green: boolean }) {
   // (the hero), cropped to a clean 16:10 window — not a clipped full page.
   if (typeof mm.desktop === 'string') {
     return (
-      <div className="w-full max-w-[440px] overflow-hidden rounded-xl border border-black/10 bg-white [box-shadow:0_16px_36px_rgba(0,0,0,0.2)]">
-        <div className="flex items-center gap-1.5 border-b border-black/5 bg-[#f3f3f5] px-3 py-2">
-          <span className="h-2 w-2 rounded-full bg-black/15" />
-          <span className="h-2 w-2 rounded-full bg-black/15" />
-          <span className="h-2 w-2 rounded-full bg-black/15" />
+      <div className="w-full max-w-[560px] overflow-hidden rounded-xl border border-black/10 bg-white [box-shadow:0_20px_44px_rgba(0,0,0,0.22)]">
+        <div className="flex items-center gap-1.5 border-b border-black/5 bg-[#f3f3f5] px-3 py-2.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-black/15" />
+          <span className="h-2.5 w-2.5 rounded-full bg-black/15" />
+          <span className="h-2.5 w-2.5 rounded-full bg-black/15" />
         </div>
-        <div className="aspect-[16/9] overflow-hidden">
+        <div className="aspect-[16/10] overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={mm.desktop as string} alt={m.title} loading="lazy" className="block w-full object-cover object-top" />
         </div>
@@ -394,18 +394,18 @@ function ModuleVisual({ m, green }: { m: Mod; green: boolean }) {
 function ThumbStack({ srcs, green }: { srcs: string[]; green: boolean }) {
   const shots = srcs.slice(0, 3)
   return (
-    <div className="relative h-[270px] w-full">
+    <div className="relative h-[380px] w-full">
       {shots.map((s, i) => (
         <div
           key={s}
-          className="absolute left-1/2 top-1/2 w-[140px] overflow-hidden rounded-xl border border-black/10 bg-white"
+          className="absolute left-1/2 top-1/2 w-[185px] overflow-hidden rounded-xl border border-black/10 bg-white"
           style={{
-            transform: `translate(calc(-50% + ${(i - 1) * 46}px), calc(-50% + ${(i - 1) * 10}px)) rotate(${(i - 1) * 6}deg)`,
+            transform: `translate(calc(-50% + ${(i - 1) * 62}px), calc(-50% + ${(i - 1) * 14}px)) rotate(${(i - 1) * 6}deg)`,
             zIndex: i,
-            boxShadow: green ? '0 16px 34px rgba(0,0,0,0.4)' : '0 16px 34px rgba(0,0,0,0.24)',
+            boxShadow: green ? '0 18px 40px rgba(0,0,0,0.42)' : '0 18px 40px rgba(0,0,0,0.26)',
           }}
         >
-          <div className="h-[250px] overflow-hidden">
+          <div className="h-[340px] overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={s} alt="" loading="lazy" className="block w-full object-cover object-top" />
           </div>
@@ -417,7 +417,7 @@ function ThumbStack({ srcs, green }: { srcs: string[]; green: boolean }) {
 
 function Phone({ src, alt }: { src: string; alt: string }) {
   return (
-    <div className="relative aspect-[750/1624] w-full overflow-hidden rounded-[14%/6.5%] bg-white shadow-[0_20px_50px_-12px_rgba(0,0,0,0.45)] ring-1 ring-black/5">
+    <div className="relative h-full w-full overflow-hidden rounded-[14%/6.5%] bg-white shadow-[0_20px_50px_-12px_rgba(0,0,0,0.45)] ring-1 ring-black/5">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
