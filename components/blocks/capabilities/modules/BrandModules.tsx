@@ -41,7 +41,7 @@ export function BrandModules({ dark = true }: { dark?: boolean }) {
         />
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5 md:gap-4">
           {[
-            { src: '/capabilities/blaze/logo-2-blaze-wordmark-white.png', label: 'Master wordmark' },
+            { src: '/capabilities/blaze/logo-1-blaze-wordmark.png', label: 'Master wordmark' },
             { src: '/capabilities/blaze/logo-3-extract-horizontal.png', label: 'Extract' },
             { src: '/capabilities/blaze/logo-4-extract-vertical.png', label: 'Extract · stacked' },
             { src: '/capabilities/blaze/logo-5-extract-appicon.png', label: 'Extract · icon' },
@@ -50,7 +50,6 @@ export function BrandModules({ dark = true }: { dark?: boolean }) {
             { src: '/capabilities/blaze/logo-10-warehouse-horizontal.png', label: 'Warehouse' },
             { src: '/capabilities/blaze/logo-11-warehouse-vertical.png', label: 'Warehouse · stacked' },
             { src: '/capabilities/blaze/logo-9-chevron-appicon.png', label: 'App icon' },
-            { src: '/capabilities/blaze/logo-6-extract-icon-white.png', label: 'Glyph' },
           ].map((l, i) => (
             <Reveal key={l.label} delay={i * 25}>
               <figure className="flex h-full flex-col">
