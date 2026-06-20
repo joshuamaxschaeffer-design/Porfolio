@@ -164,7 +164,7 @@ export const artMotion: Discipline = {
   bg: 'grey',
   title: 'Motion & Illustration',
   positioning:
-    'Interface motion, illustration systems, and animated identity — making the work move. I’ve defined entire visual languages, not just one-off assets, and a couple of these animations took on a life of their own.',
+    'Interface motion, illustration systems, and animated identity — making the work move. I’ve defined entire visual languages, not just one-off assets.',
   capabilities: [
     { icon: 'motion', label: 'Interface motion', note: 'Transitions, feedback, choreography' },
     { icon: 'illustration', label: 'Illustration systems', note: 'A documented, reusable style' },
@@ -174,13 +174,13 @@ export const artMotion: Discipline = {
     { icon: 'film', label: 'Brand film', note: '4K product & brand films' },
   ],
   stats: [
-    { value: 85, suffix: 'K+', label: 'Reddit upvotes across viral loops' },
-    { value: 230, suffix: 'K+', label: 'Imgur views across reposts' },
     { value: 2, label: 'Visual languages defined (illustration + motion)' },
+    { value: 4, suffix: 'K', label: 'Brand films produced (CBTL)' },
+    { value: 5, label: 'Brands with motion / illustration work' },
     { value: 13, suffix: '+', label: 'Years of motion & illustration' },
   ],
   statsNote:
-    'Octopus loop (“Quadtopus”) featured on Laughing Squid + reposted to 65K+ upvotes on r/oddlysatisfying; fire loop hit 88K Imgur views. Documented “2 Pillars of Illustration” + “3 Pillars of Motion” languages at Mindbody.',
+    'Documented “2 Pillars of Illustration” + “3 Pillars of Motion” languages at Mindbody; interface motion, animated identity, and 4K brand film across brands.',
 }
 
 /* ───────────────────────────────────────────────────────────────────────────
