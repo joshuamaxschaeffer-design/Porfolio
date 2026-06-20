@@ -108,8 +108,11 @@ function DarkModeStack() {
       if (!el) return
       const r = el.getBoundingClientRect()
       const vh = window.innerHeight
-      const total = r.height - vh
-      setP(reduce ? 0.4 : total > 0 ? Math.min(1, Math.max(0, -r.top / total)) : 0)
+      // center-relative progress 0→1 as the section travels up through the
+      // viewport (no pin): 0 when its top hits the bottom of the screen, 1 when
+      // its bottom leaves the top. Drives only a SUBTLE spread.
+      const prog = (vh - r.top) / (vh + r.height)
+      setP(reduce ? 0.4 : Math.min(1, Math.max(0, prog)))
     }
     const schedule = () => {
       if (!raf) raf = requestAnimationFrame(onScroll)
@@ -125,12 +128,15 @@ function DarkModeStack() {
   }, [])
 
   const F = 1500
-  const GAP = 320 + p * 320 // larger base so cards stay clearly separated, spread grows on scroll
+  // Subtle spread: the stack opens just a little as it scrolls through view —
+  // NO scroll pin (the section is a normal height and scrolls past naturally),
+  // and the spread growth is gentle (base gap + a small scroll-linked delta).
+  const GAP = 300 + p * 120
 
   return (
-    <div ref={ref} className="relative mt-16 h-[200vh] bg-[#0a0a0b]">
+    <div ref={ref} className="relative mt-16 bg-[#0a0a0b]">
       <div
-        className="ws-dark sticky top-0 h-screen overflow-hidden text-white"
+        className="ws-dark relative h-[88vh] overflow-hidden text-white md:h-[92vh]"
         style={{ '--ws-green': '#23c265' } as React.CSSProperties}
       >
         <div className="br-container pt-14">
@@ -190,9 +196,13 @@ function Improvement() {
       <h3 className="mt-2 text-2xl font-semibold text-[var(--br-ink)] sm:text-[28px]">{defaults.improvement.title}</h3>
       <p className="mt-2 max-w-[60ch] text-[15px] text-[var(--br-muted)] sm:text-base">{defaults.improvement.body}</p>
 
-      <div className="mt-8 grid grid-cols-1 items-center gap-8 lg:grid-cols-[1fr_minmax(0,300px)] lg:gap-[50px]">
-        {/* 3 screens, side-scroll on small screens */}
-        <div className="-mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-3 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 [scrollbar-width:thin]">
+      {/* Video FIRST and large (matched to the screenshot scale), screens below
+          as a supporting row. */}
+      <div className="mt-8">
+        <ImprovementVideo src={defaults.improvement.video} poster={defaults.improvement.poster} />
+
+        {/* 3 supporting screens, side-scroll on small screens */}
+        <div className="-mx-6 mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-3 md:mx-0 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible md:px-0 [scrollbar-width:thin]">
           {defaults.improvement.screens.map((s) => (
             <div
               key={s}
@@ -203,7 +213,6 @@ function Improvement() {
             </div>
           ))}
         </div>
-        <ImprovementVideo src={defaults.improvement.video} poster={defaults.improvement.poster} />
       </div>
     </div>
   )
@@ -227,8 +236,8 @@ function ImprovementVideo({ src, poster }: { src: string; poster?: string }) {
     return () => io.disconnect()
   }, [])
   return (
-    <div className="mx-auto w-[64%] max-w-[260px] overflow-hidden rounded-[14%/6.5%] bg-black shadow-[0_24px_60px_-12px_rgba(0,0,0,0.45)] ring-1 ring-black/10 lg:mx-0 lg:ml-auto">
-      <video ref={ref} className="block aspect-[750/1624] w-full object-cover" src={src} poster={poster} muted loop playsInline controls={false} preload="metadata" />
+    <div className="mx-auto w-[72%] max-w-[340px] overflow-hidden rounded-[14%/6.5%] bg-black shadow-[0_30px_70px_-12px_rgba(0,0,0,0.5)] ring-1 ring-black/10 sm:max-w-[380px]">
+      <video ref={ref} className="block aspect-[886/1920] w-full object-cover" src={src} poster={poster} muted loop playsInline controls={false} preload="metadata" />
     </div>
   )
 }

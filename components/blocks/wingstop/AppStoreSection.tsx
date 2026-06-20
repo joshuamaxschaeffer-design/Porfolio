@@ -11,7 +11,7 @@ export function AppStoreSection() {
       className="ws-dark relative w-full overflow-hidden bg-[#0c0d0d] text-white"
       style={{ '--ws-green': '#23c265' } as React.CSSProperties}
     >
-      <div className="br-container grid grid-cols-1 items-center gap-10 py-20 md:py-[120px] lg:grid-cols-[1fr_minmax(0,560px)] lg:gap-[60px]">
+      <div className="br-container grid grid-cols-1 items-center gap-10 py-20 md:py-[120px] lg:grid-cols-[0.85fr_minmax(0,960px)] lg:gap-[48px]">
         <div>
           <p className="br-data text-[14px] uppercase tracking-[0.12em] text-[var(--ws-green)]">10. {defaults.eyebrow}</p>
           <h2 className="mt-3 text-[34px] font-medium leading-[1.02] text-white md:text-[52px]">{defaults.heading}</h2>
@@ -42,7 +42,7 @@ export function AppStoreSection() {
             </a>
           </div>
         </div>
-        <div className="relative mx-auto w-full max-w-[560px] lg:ml-auto">
+        <div className="relative mx-auto w-full max-w-[960px] lg:ml-auto">
           {/* soft radial glow so the dark food composite separates from pure black */}
           <div
             aria-hidden

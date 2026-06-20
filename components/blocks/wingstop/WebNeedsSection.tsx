@@ -15,7 +15,15 @@ export function WebNeedsSection() {
         <p className="mt-3 max-w-3xl text-lg text-[var(--br-muted)] md:text-[22px]">{defaults.intro}</p>
 
         <div className="mt-10 md:mt-14">
-          <DragGrid items={defaults.items} tone="light" />
+          {/* These are landscape supporting PAGES, so the tiles are big and
+              16:10 (not the small squares the default grid used) — matching the
+              confident scale of the other carousels. */}
+          <DragGrid
+            items={defaults.items}
+            tone="light"
+            aspect="aspect-[16/10]"
+            tileClass="w-[440px] sm:w-[600px]"
+          />
         </div>
       </div>
     </section>
