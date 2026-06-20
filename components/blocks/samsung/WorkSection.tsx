@@ -84,8 +84,10 @@ function TableWithScreens() {
   const aligns = ['md:mr-auto', 'md:ml-auto', 'md:mr-auto'] // left, right, left
   return (
     <div className="relative">
-      {/* BIG table — full-res 3226px source for 2× density; 20% bigger (#1 r6). */}
-      <div className="-mt-[160px] md:-mt-[300px]">
+      {/* BIG table — full-res 3226px source for 2× density. Pull-up to close the
+          gap above it is PROPORTIONAL (% of width, like the table itself) so it
+          scales with the viewport instead of over-pulling on small screens. */}
+      <div className="-mt-[6%]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={`${W}/${inStore.device.file}`}
@@ -96,8 +98,13 @@ function TableWithScreens() {
         />
       </div>
 
-      {/* screens pulled up further so they sit ON TOP of the table (#2 r6: +300px) */}
-      <div className="relative z-10 -mt-[440px] md:-mt-[750px]">
+      {/* Screens overlap the bottom of the table. The overlap is PERCENTAGE-based
+          (relative to width, which is how the table height scales too) so the
+          screens always sit on the lower part of the table at every width and
+          never climb over the table/heading on mobile. The table's transparent
+          shadow margin (~12% bottom) means ~-14% lands the screens on the table
+          surface. */}
+      <div className="relative z-10 -mt-[14%]">
         {/* connecting grey rail behind the screen column */}
         <div
           aria-hidden
