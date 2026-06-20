@@ -109,6 +109,33 @@ export function MarketingWebModules({ dark = true }: { dark?: boolean }) {
         </div>
         <ModuleCaption dark={dark}>Lifecycle creative — a real program, not one-offs.</ModuleCaption>
       </div>
+
+      {/* Enterprise web & POS — VF Corp LMS + Blaze retail POS */}
+      <div>
+        <AnchorHeader
+          dark={dark}
+          kicker="Enterprise web & POS"
+          title="Web that has to do a job"
+          role="VF Corp · Blaze"
+          blurb="Beyond marketing sites: a workwear training platform for VF Corp (“WORK Authority” LMS) and a point-of-sale back office for Blaze retail — dense, role-driven web tools."
+        />
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-12 md:gap-6 md:items-start">
+          <div className="md:col-span-7">
+            <figure className="overflow-hidden rounded-[var(--br-card-radius)] border border-white/10 bg-white">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/capabilities/vfcorp/ux-2.webp" alt="VF Corp WORK Authority — course detail" className="aspect-[16/11] w-full object-cover object-top" loading="lazy" />
+              <figcaption className="br-data px-4 py-3 text-[11px] uppercase tracking-[0.08em] text-[var(--br-muted-2)]">VF Corp — “WORK Authority” training platform</figcaption>
+            </figure>
+          </div>
+          <div className="md:col-span-5">
+            <figure className="overflow-hidden rounded-[var(--br-card-radius)] border border-white/10 bg-white">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/capabilities/blaze/retail-1-pos-account-dashboard.webp" alt="Blaze retail POS dashboard" className="aspect-[16/11] w-full object-cover object-top" loading="lazy" />
+              <figcaption className="br-data px-4 py-3 text-[11px] uppercase tracking-[0.08em] text-[var(--br-muted-2)]">Blaze — retail POS back office</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

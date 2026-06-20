@@ -71,6 +71,52 @@ export function DesignSystemsModules({ dark = true }: { dark?: boolean }) {
         </div>
       </div>
 
+      {/* Mindbody NUTool — a major product-management feature (real desktop screens) */}
+      <div>
+        <AnchorHeader
+          dark={dark}
+          kicker="Anchor · enterprise tooling"
+          title="Mindbody — the product-management system"
+          role="Lead Product Designer"
+          blurb="One of my biggest Mindbody builds: the tool studios use to manage their retail catalog — a dense data-table admin, a full add/edit-product flow with a variant matrix, and category taxonomy. Built to stay legible under real operator load."
+        />
+        <Reveal>
+          <ImgCard src="/capabilities/mindbody-new/nutool-1.webp" alt="Mindbody NUTool — product management admin" caption="Retail product management — list + detail panel" />
+        </Reveal>
+        <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-3 md:gap-6">
+          <Reveal><ImgCard src="/capabilities/mindbody-new/nutool-2.webp" alt="Add a product form with variant matrix" caption="Add product · variant matrix" /></Reveal>
+          <Reveal delay={60}><ImgCard src="/capabilities/mindbody-new/nutool-4.webp" alt="Edit variant with product imagery" caption="Edit variant · per-location" /></Reveal>
+          <Reveal delay={120}><ImgCard src="/capabilities/mindbody-new/nutool-6.webp" alt="Category taxonomy sidebar" caption="Category taxonomy / IA" /></Reveal>
+        </div>
+        <ModuleCaption dark={dark}>A dense admin tool — designed so power users move fast without errors.</ModuleCaption>
+      </div>
+
+      {/* Toolkits & handoff — atomic-design systems across brands */}
+      <div>
+        <AnchorHeader
+          dark={dark}
+          kicker="Handoff"
+          title="Atomic systems, documented for handoff"
+          blurb="Every product ships a toolkit — atoms → molecules → organisms → templates — so other designers and engineers extend it without me. A few of the documented systems."
+        />
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-5">
+          {[
+            { src: '/capabilities/canes/toolkit-styles.webp', label: 'Raising Cane’s — styles' },
+            { src: '/capabilities/cbtl/toolkit-1.webp', label: 'CBTL — atomic toolkit' },
+            { src: '/capabilities/trees/toolkit-1.webp', label: 'Trees — UI toolkit' },
+            { src: '/capabilities/canes/toolkit-molecules.webp', label: 'Raising Cane’s — molecules' },
+          ].map((t, i) => (
+            <Reveal key={t.label} delay={i * 40}>
+              <figure className="overflow-hidden rounded-[var(--br-card-radius)] border border-white/10 bg-white">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={t.src} alt={t.label} className="aspect-[3/4] w-full object-cover object-top" loading="lazy" />
+                <figcaption className="br-data px-3 py-2 text-[10px] uppercase tracking-[0.07em] text-[var(--br-muted-2)]">{t.label}</figcaption>
+              </figure>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+
       {/* Data-viz spotlight — real Mindbody dashboards */}
       <div>
         <AnchorHeader
@@ -81,8 +127,8 @@ export function DesignSystemsModules({ dark = true }: { dark?: boolean }) {
           blurb="Reporting and analytics with documented data-viz patterns — an executive summary paired with a granular analyst view."
         />
         <div className="grid grid-cols-1 gap-6 md:grid-cols-12 md:gap-8 md:items-start">
-          <div className="md:col-span-7"><ImgCard src="/capabilities/design-systems/mb-dashboard-1.webp" alt="Mindbody analytics — sales & retention" caption="Mindbody — analytics & reporting" /></div>
-          <div className="md:col-span-5"><ImgCard src="/capabilities/design-systems/mb-dashboard-2.webp" alt="Mindbody analytics dashboard, full view" caption="Mindbody — full dashboard" /></div>
+          <div className="md:col-span-7"><ImgCard src="/capabilities/mindbody-new/patterns-1.webp" alt="Mindbody retention-marketing analytics" caption="Mindbody — retention analytics" /></div>
+          <div className="md:col-span-5"><ImgCard src="/capabilities/mindbody-new/patterns-3.webp" alt="Mindbody KPI + data-table patterns" caption="Mindbody — KPIs + data table" /></div>
         </div>
         <ModuleCaption dark={dark}>A hero chart, then the full dashboard — the white-space differentiator.</ModuleCaption>
       </div>

@@ -31,6 +31,43 @@ export function BrandModules({ dark = true }: { dark?: boolean }) {
         <ModuleCaption dark={dark}>Animated marks (Jubilee, Rosetta) loop here in the real build.</ModuleCaption>
       </div>
 
+      {/* Blaze — a full brand FAMILY (one master + sub-brands), all real logos */}
+      <div>
+        <AnchorHeader
+          dark={dark}
+          kicker="Deep dive · brand family"
+          title="Blaze — a master brand and its sub-brands"
+          blurb="Not one logo — a family. A master wordmark plus distinct identities for each product line (Extract, Center, Warehouse), each with horizontal, stacked, and app-icon lockups."
+        />
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5 md:gap-4">
+          {[
+            { src: '/capabilities/blaze/logo-2-blaze-wordmark-white.png', label: 'Master wordmark' },
+            { src: '/capabilities/blaze/logo-3-extract-horizontal.png', label: 'Extract' },
+            { src: '/capabilities/blaze/logo-4-extract-vertical.png', label: 'Extract · stacked' },
+            { src: '/capabilities/blaze/logo-5-extract-appicon.png', label: 'Extract · icon' },
+            { src: '/capabilities/blaze/logo-7-center-horizontal.png', label: 'Center' },
+            { src: '/capabilities/blaze/logo-8-center-vertical.png', label: 'Center · stacked' },
+            { src: '/capabilities/blaze/logo-10-warehouse-horizontal.png', label: 'Warehouse' },
+            { src: '/capabilities/blaze/logo-11-warehouse-vertical.png', label: 'Warehouse · stacked' },
+            { src: '/capabilities/blaze/logo-9-chevron-appicon.png', label: 'App icon' },
+            { src: '/capabilities/blaze/logo-6-extract-icon-white.png', label: 'Glyph' },
+          ].map((l, i) => (
+            <Reveal key={l.label} delay={i * 25}>
+              <figure className="flex h-full flex-col">
+                <div className="flex flex-1 items-center justify-center rounded-[var(--br-card-radius)] border border-white/10 bg-white p-5">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={l.src} alt={`Blaze — ${l.label}`} className="max-h-16 w-full object-contain" loading="lazy" />
+                </div>
+                <figcaption className="br-data mt-2 text-center text-[10px] uppercase tracking-[0.07em] text-[var(--br-muted-2)]">
+                  {l.label}
+                </figcaption>
+              </figure>
+            </Reveal>
+          ))}
+        </div>
+        <ModuleCaption dark={dark}>One system, three product lines — sub-brands that stay a family.</ModuleCaption>
+      </div>
+
       {/* How an identity gets built — REAL brand artifacts */}
       <div>
         <AnchorHeader
