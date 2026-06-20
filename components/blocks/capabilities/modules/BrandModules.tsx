@@ -1,7 +1,6 @@
 'use client'
 
 import { Reveal } from '../../../animation/Reveal'
-import { BluePlaceholder } from '../BluePlaceholder'
 import { BrandWall } from '../BrandLogo'
 import { pick } from '../brands'
 import { AnchorHeader, ModuleCaption } from './primitives'
@@ -32,25 +31,36 @@ export function BrandModules({ dark = true }: { dark?: boolean }) {
         <ModuleCaption dark={dark}>Animated marks (Jubilee, Rosetta) loop here in the real build.</ModuleCaption>
       </div>
 
-      {/* How an identity gets built — brand-agnostic artifact strip */}
+      {/* How an identity gets built — REAL brand artifacts */}
       <div>
         <AnchorHeader
           dark={dark}
           kicker="The system"
           title="What every identity ships with"
-          blurb="Each brand gets the full system — direction, logomark, clearspace, color, type, and in-context applications."
+          blurb="Each brand gets the full system — direction, logomark construction, color, and in-context applications. A few from DOPA, Rosetta & Jubilee."
         />
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5">
           {[
-            'Direction board',
-            'Logomark anatomy',
-            'Clearspace & lockups',
-            'Color system',
-            'Type scale',
-            'In-context applications',
-          ].map((label, i) => (
-            <Reveal key={label} delay={i * 30}>
-              <BluePlaceholder ratio="video" dark={dark} label={label} />
+            { src: '/capabilities/brand/dopa-construction.png', label: 'DOPA — logomark construction' },
+            { src: '/capabilities/brand/dopa-mark.png', label: 'DOPA — the mark', contain: true },
+            { src: '/capabilities/brand/dopa-appicon.png', label: 'DOPA — app icon', contain: true },
+            { src: '/capabilities/brand/rosetta-system.jpg', label: 'Rosetta — identity system' },
+            { src: '/capabilities/brand/rosetta-applied.jpg', label: 'Rosetta — applied' },
+            { src: '/capabilities/brand/jubilee-applied.jpg', label: 'Jubilee — in context' },
+          ].map((a, i) => (
+            <Reveal key={a.label} delay={i * 30}>
+              <figure className="overflow-hidden rounded-[var(--br-card-radius)] border border-white/10 bg-white">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={a.src}
+                  alt={a.label}
+                  className={`aspect-[16/10] w-full ${a.contain ? 'object-contain p-4' : 'object-cover'}`}
+                  loading="lazy"
+                />
+                <figcaption className="br-data px-4 py-3 text-[11px] uppercase tracking-[0.08em] text-[var(--br-muted-2)]">
+                  {a.label}
+                </figcaption>
+              </figure>
             </Reveal>
           ))}
         </div>
