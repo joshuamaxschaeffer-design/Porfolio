@@ -1,19 +1,31 @@
 'use client'
 
 import { Reveal } from '../../../animation/Reveal'
-import { BluePlaceholder } from '../BluePlaceholder'
-import { AnchorHeader, BlueGrid, ModuleCaption } from './primitives'
+import { AnchorHeader, ModuleCaption } from './primitives'
 
-/** A desktop frame with a phone overlapping its bottom-right — responsive pair. */
-function ResponsivePair({ label, dark }: { label: string; dark?: boolean }) {
+/** A desktop hero with a phone overlapping its corner — real responsive pair. */
+function ResponsivePair({
+  desktop,
+  mobile,
+  label,
+}: {
+  desktop: string
+  mobile: string
+  label: string
+}) {
   return (
     <Reveal>
-      <div className="relative pb-10 pr-10 md:pb-12 md:pr-12">
-        <BluePlaceholder ratio="wide" dark={dark} label={`${label} — desktop (FPO)`} />
-        <div className="absolute bottom-0 right-0 w-[28%] max-w-[150px]">
-          <BluePlaceholder ratio="phone" dark={dark} label="mobile" />
+      <div className="relative pb-12 pr-10 md:pb-14 md:pr-14">
+        <div className="overflow-hidden rounded-[var(--br-card-radius)] border border-white/10 bg-white shadow-[0_14px_40px_rgba(0,0,0,0.35)]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={desktop} alt={`${label} — desktop`} className="aspect-[16/10] w-full object-cover object-top" loading="lazy" />
+        </div>
+        <div className="absolute bottom-0 right-0 w-[26%] max-w-[140px] overflow-hidden rounded-[18px] border-2 border-white bg-white shadow-[0_10px_30px_rgba(0,0,0,0.45)]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={mobile} alt={`${label} — mobile`} className="aspect-[9/19] w-full object-cover object-top" loading="lazy" />
         </div>
       </div>
+      <p className="br-data text-[11px] uppercase tracking-[0.08em] text-white/45">{label}</p>
     </Reveal>
   )
 }
@@ -22,7 +34,7 @@ function ResponsivePair({ label, dark }: { label: string; dark?: boolean }) {
 export function MarketingWebModules({ dark = true }: { dark?: boolean }) {
   return (
     <div className="space-y-16 md:space-y-24">
-      {/* Responsive pairings */}
+      {/* Responsive pairings — real TFK + Blaze sites */}
       <div>
         <AnchorHeader
           dark={dark}
@@ -31,38 +43,56 @@ export function MarketingWebModules({ dark = true }: { dark?: boolean }) {
           role="True Food Kitchen — Lead · Blaze — Sole/Lead"
           blurb="Launch and ordering sites designed desktop-down-to-mobile. True Food Kitchen drove 30%+ of off-premise sales through online ordering within a quarter of launch."
         />
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-12">
-          <ResponsivePair dark={dark} label="True Food Kitchen — ordering web" />
-          <ResponsivePair dark={dark} label="Blaze — marketing site" />
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-14">
+          <ResponsivePair
+            desktop="/capabilities/web/tfk-home-hero.jpg"
+            mobile="/capabilities/web/tfk-mobile-hero.jpg"
+            label="True Food Kitchen — ordering site"
+          />
+          <ResponsivePair
+            desktop="/capabilities/web/blaze-home-hero.jpg"
+            mobile="/capabilities/web/blaze-mobile-hero.jpg"
+            label="Blaze — marketing site"
+          />
         </div>
       </div>
 
-      {/* Perspective deck */}
+      {/* A full page at length — real TFK seasonal */}
       <div>
-        <AnchorHeader dark={dark} kicker="Web · at length" title="Full-page, art-directed" blurb="Full website captures laid on a receding plane — the way to say “I designed the whole page,” not just a hero." />
-        <BluePlaceholder ratio="ultrawide" dark={dark} label="Perspective deck — tilted full-page captures (FPO)" />
+        <AnchorHeader dark={dark} kicker="Web · at length" title="Art-directed, top to bottom" blurb="Full pages designed as a journey — brand storytelling and conversion in one scroll." />
+        <Reveal>
+          <figure className="overflow-hidden rounded-[var(--br-card-radius)] border border-white/10 bg-white">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/capabilities/web/tfk-seasonal.png" alt="True Food Kitchen seasonal page" className="w-full object-cover" loading="lazy" />
+            <figcaption className="br-data px-4 py-3 text-[11px] uppercase tracking-[0.08em] text-[var(--br-muted-2)]">True Food Kitchen — seasonal feature</figcaption>
+          </figure>
+        </Reveal>
       </div>
 
-      {/* More web */}
+      {/* CRM / lifecycle — real DQ mailers + Chandon */}
       <div>
-        <AnchorHeader dark={dark} kicker="Breadth" title="More launch & product web" blurb="Across QSR, enterprise, and consumer brands." />
-        <BlueGrid
+        <AnchorHeader
           dark={dark}
-          cols={3}
-          ratio="wide"
-          items={['Wingstop — ordering web', 'Panda — marketing site', 'Samsung — enterprise web', 'Chandon — IG Shopping / PDP', 'Pepsi — e-comm / AR', 'PetSmart — brand / campaign', 'KFC — promo pitch']}
+          kicker="Lifecycle · CRM"
+          title="Retention, not one-off mailers"
+          blurb="A full email & lifecycle program for Dairy Queen — monthly campaigns and animated mailers — plus shoppable social for Chandon."
         />
-      </div>
-
-      {/* CRM / lifecycle */}
-      <div>
-        <AnchorHeader dark={dark} kicker="Lifecycle · CRM" title="Retention, not one-off mailers" blurb="A full email & lifecycle program for Dairy Queen — monthly campaigns and animated mailers — plus Pepsi email creative." />
-        <BlueGrid
-          dark={dark}
-          cols={4}
-          ratio="tall"
-          items={['DQ — December mailer', 'DQ — January (animated)', 'DQ — April mailer', 'Pepsi — email']}
-        />
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-5">
+          {[
+            { src: '/capabilities/web/dq-dec.jpg', label: 'DQ — December' },
+            { src: '/capabilities/web/dq-jan.jpg', label: 'DQ — January' },
+            { src: '/capabilities/web/dq-april.gif', label: 'DQ — April (animated)' },
+            { src: '/capabilities/web/chandon-ig.png', label: 'Chandon — IG Shopping' },
+          ].map((a, i) => (
+            <Reveal key={a.label} delay={i * 40}>
+              <figure className="overflow-hidden rounded-[var(--br-card-radius)] border border-white/10 bg-white">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={a.src} alt={a.label} className="aspect-[3/5] w-full object-cover object-top" loading="lazy" />
+                <figcaption className="br-data px-3 py-2 text-[10px] uppercase tracking-[0.08em] text-[var(--br-muted-2)]">{a.label}</figcaption>
+              </figure>
+            </Reveal>
+          ))}
+        </div>
         <ModuleCaption dark={dark}>Lifecycle creative — a real program, not one-offs.</ModuleCaption>
       </div>
     </div>
