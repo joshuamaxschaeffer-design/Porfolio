@@ -213,22 +213,29 @@ export function BlueRail({
   )
 }
 
-/** Numbered flow as a row of FPO phone screens with arrows between them. */
+/** A flow step: a label + optional real screen image. */
+export interface FlowStep {
+  label: string
+  src?: string
+}
+
+/** Numbered flow as a row of phone screens (real img if `src`, else FPO) + arrows. */
 export function BlueFlowRow({
   steps,
   caption,
   dark = false,
 }: {
-  steps: string[]
+  steps: (string | FlowStep)[]
   caption?: string
   dark?: boolean
 }) {
+  const norm = steps.map((s) => (typeof s === 'string' ? { label: s } : s))
   return (
     <Reveal>
       <div className="-mx-6 overflow-x-auto px-6 pb-3 md:-mx-10 md:px-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <div className="flex items-center gap-3 md:gap-4" style={{ width: 'max-content' }}>
-          {steps.map((step, i) => (
-            <div key={step} className="flex items-center gap-3 md:gap-4">
+          {norm.map((step, i) => (
+            <div key={step.label} className="flex items-center gap-3 md:gap-4">
               <div className="w-[150px] shrink-0 md:w-[180px]">
                 <div className="mb-2 flex items-center gap-2">
                   <span
@@ -243,12 +250,22 @@ export function BlueFlowRow({
                       dark ? 'text-white/55' : 'text-[var(--br-muted)]'
                     }`}
                   >
-                    {step}
+                    {step.label}
                   </span>
                 </div>
-                <BluePlaceholder ratio="phone" dark={dark} />
+                {step.src ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={step.src}
+                    alt={step.label}
+                    className="aspect-[9/19.5] w-full rounded-[14px] border border-black/5 object-cover object-top shadow-[0_8px_24px_rgba(7,14,44,0.12)]"
+                    loading="lazy"
+                  />
+                ) : (
+                  <BluePlaceholder ratio="phone" dark={dark} />
+                )}
               </div>
-              {i < steps.length - 1 && (
+              {i < norm.length - 1 && (
                 <span aria-hidden className={dark ? 'text-white/20' : 'text-[var(--br-line)]'}>
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
                     <path

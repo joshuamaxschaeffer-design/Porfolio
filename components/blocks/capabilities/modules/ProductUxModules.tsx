@@ -2,17 +2,57 @@
 
 import { Reveal } from '../../../animation/Reveal'
 import { PerspectiveDeviceGrid } from '../../shared/PerspectiveDeviceGrid'
-import { ImageCompareSlider } from '../../shared/ImageCompareSlider'
-import { BluePlaceholder } from '../BluePlaceholder'
 import { AnchorHeader, BlueRail, BlueFlowRow, ModuleCaption, ModuleCard } from './primitives'
-
-const BLUE = '#5b7fc7'
 
 /** Section 01 — Product & UX work modules (grey section, light tone). */
 export function ProductUxModules({ dark = false }: { dark?: boolean }) {
   return (
     <div className="space-y-16 md:space-y-24">
-      {/* Anchor A — Mindbody (B2B) */}
+      {/* Anchor A — Raising Cane's (consumer, mobile) — perspective grid + flow */}
+      <ModuleCard dark={dark}>
+        <AnchorHeader
+          dark={dark}
+          kicker="Anchor · Consumer"
+          title="Raising Cane’s — the “Caniac” ordering app"
+          role="Lead Designer → Art Director"
+          blurb="The full ordering product, web and native — onboarding, menu, scan-to-earn loyalty, group ordering, and checkout."
+        />
+        <Reveal>
+          <PerspectiveDeviceGrid
+            accent="#C8102E"
+            cols={4}
+            rows={2}
+            caption="Raising Cane’s — native app screens"
+            screens={[
+              { src: '/capabilities/canes/canes-onboard-1.png', alt: 'Cane’s onboarding' },
+              { src: '/capabilities/canes/canes-menu.png', alt: 'Cane’s menu' },
+              { src: '/capabilities/canes/canes-onboard-2.png', alt: 'Cane’s onboarding' },
+              { src: '/capabilities/canes/canes-account.png', alt: 'Cane’s account' },
+              { src: '/capabilities/canes/canes-onboard-3.png', alt: 'Cane’s onboarding' },
+              { src: '/capabilities/canes/canes-confirm.png', alt: 'Cane’s order confirmation' },
+              { src: '/capabilities/canes/canes-onboard-4.png', alt: 'Cane’s onboarding' },
+              { src: '/capabilities/canes/canes-home.png', alt: 'Cane’s home' },
+            ]}
+          />
+        </Reveal>
+        <div className="mt-10">
+          <p className="br-data mb-4 text-[11px] uppercase tracking-[0.12em] text-[var(--br-gold)]">The core flow</p>
+          <BlueFlowRow
+            dark={dark}
+            steps={[
+              { label: 'Onboarding', src: '/capabilities/canes/canes-onboard-1.png' },
+              { label: 'Welcome', src: '/capabilities/canes/canes-onboard-2.png' },
+              { label: 'Build the order', src: '/capabilities/canes/canes-menu.png' },
+              { label: 'Account', src: '/capabilities/canes/canes-account.png' },
+              { label: 'Confirmation', src: '/capabilities/canes/canes-confirm.png' },
+              { label: 'Home', src: '/capabilities/canes/canes-home.png' },
+            ]}
+            caption="Onboarding → menu → checkout — the real ordering flow"
+          />
+        </div>
+      </ModuleCard>
+
+      {/* Anchor B — Mindbody (B2B, desktop POS) — real desktop screens */}
       <ModuleCard dark={dark}>
         <AnchorHeader
           dark={dark}
@@ -21,41 +61,38 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
           role="UI/IXD + Design-Systems Lead"
           blurb="Point-of-sale, payments, checkout, refunds, and reconciliation for a wellness platform — dense workflows that can’t break the power user."
         />
-        <Reveal>
-          <PerspectiveDeviceGrid accent={BLUE} cols={4} rows={2} caption="Mindbody — POS / retail screens (FPO)" />
-        </Reveal>
-        <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
+        <div className="grid grid-cols-1 gap-6 md:gap-7">
           <Reveal>
-            <ImageCompareSlider
-              before={<BluePlaceholder ratio="wide" rounded={false} dark={dark} label="Original retail checkout" />}
-              after={<BluePlaceholder ratio="wide" rounded={false} dark={dark} label="Redesigned checkout" />}
-              beforeLabel="Before"
-              afterLabel="After"
-              ratio="16/9"
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/capabilities/mindbody/mb-pos-1.png"
+              alt="Mindbody point-of-sale checkout"
+              className="w-full rounded-[var(--br-card-radius)] border border-[var(--br-line)] object-cover shadow-[0_10px_30px_rgba(7,14,44,0.10)]"
+              loading="lazy"
             />
-            <ModuleCaption dark={dark}>Drag the handle — the retail checkout redesign.</ModuleCaption>
           </Reveal>
-          <Reveal delay={80}>
-            <BluePlaceholder ratio="wide" dark={dark} label="Analytics dashboard — data-viz (FPO)" />
-            <ModuleCaption dark={dark}>Reporting & analytics — dense data, made legible.</ModuleCaption>
-          </Reveal>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-7">
+            <Reveal>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/capabilities/mindbody/mb-pos-2.png"
+                alt="Mindbody retail checkout — payment"
+                className="w-full rounded-[var(--br-card-radius)] border border-[var(--br-line)] object-cover shadow-[0_10px_30px_rgba(7,14,44,0.10)]"
+                loading="lazy"
+              />
+            </Reveal>
+            <Reveal delay={80}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/capabilities/mindbody/mb-pos-3.png"
+                alt="Mindbody retail checkout — cart"
+                className="w-full rounded-[var(--br-card-radius)] border border-[var(--br-line)] object-cover shadow-[0_10px_30px_rgba(7,14,44,0.10)]"
+                loading="lazy"
+              />
+            </Reveal>
+          </div>
         </div>
-      </ModuleCard>
-
-      {/* Anchor B — Raising Cane's flow */}
-      <ModuleCard dark={dark}>
-        <AnchorHeader
-          dark={dark}
-          kicker="Anchor · Consumer"
-          title="Raising Cane’s"
-          role="Lead Designer → Art Director"
-          blurb="The full “Caniac” ordering product — web and native — from onboarding through scan-to-earn loyalty and group ordering."
-        />
-        <BlueFlowRow
-          dark={dark}
-          steps={['Onboarding', 'Find a location', 'Build the order', 'Customize (PDP)', 'Scan / Caniac Club', 'Reward → checkout']}
-          caption="Order → scan → reward — the core flow (FPO)"
-        />
+        <ModuleCaption dark={dark}>Point-of-sale & checkout across the retail counter.</ModuleCaption>
       </ModuleCard>
 
       {/* Breadth rail — full width */}
