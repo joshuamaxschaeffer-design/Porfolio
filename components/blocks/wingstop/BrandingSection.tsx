@@ -34,7 +34,7 @@ export function BrandingSection() {
 
       {/* 3D chips */}
       <div className="br-container pt-12 md:pt-16" style={{ perspective: '1200px' }}>
-        <div className="grid grid-cols-2 gap-6 sm:grid-cols-4 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-3">
           {defaults.chips.map((c, i) => (
             <Chip key={c.name} chip={c} index={i} />
           ))}
@@ -47,14 +47,14 @@ export function BrandingSection() {
           {defaults.gridEyebrow}
         </span>
         <p className="mt-2 max-w-[60ch] text-[15px] text-white/80 sm:text-base">{defaults.gridNote}</p>
-        <ul className="mt-6 grid grid-cols-4 gap-3 sm:grid-cols-6 lg:grid-cols-12">
+        <ul className="mt-6 grid grid-cols-3 gap-4 sm:grid-cols-6 sm:gap-5">
           {defaults.grid.map((src, i) => (
             <li
               key={src + i}
-              className="flex aspect-square items-center justify-center rounded-xl border border-white/12 bg-white/[0.06]"
+              className="flex aspect-square items-center justify-center rounded-2xl border border-white/12 bg-white/[0.06] p-3"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt="" className="h-9 w-9 object-contain" />
+              <img src={src} alt="" className="h-full w-full object-contain" />
             </li>
           ))}
         </ul>

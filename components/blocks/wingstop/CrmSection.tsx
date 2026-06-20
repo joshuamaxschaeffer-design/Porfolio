@@ -66,9 +66,10 @@ function CrmScopeSlide() {
 
   return (
     // Height tuned so the horizontal slide finishes right at the section bottom
-    // (no trailing empty scroll / white void). ~150vh gives a comfortable pace
-    // for the ~7 tall emails without dead space.
-    <div ref={ref} className="relative mt-10 h-[150vh] md:mt-14">
+    // (no trailing empty scroll / white void). ~120vh keeps the pin short so the
+    // viewer doesn't dwell on the centered frame; the tall email cards fill the
+    // viewport so there's no dead band below them.
+    <div ref={ref} className="relative mt-10 h-[120vh] md:mt-14">
       <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden">
         <div className="br-container">
           <span className="br-data text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ws-green)]">
@@ -102,7 +103,7 @@ function CrmScopeSlide() {
             {defaults.scope.emails.map((e) => (
               <div
                 key={e}
-                className="h-[66vh] w-[280px] shrink-0 overflow-hidden rounded-2xl border border-[var(--br-line)] bg-white [box-shadow:0_24px_54px_rgba(0,0,0,0.18)] sm:w-[320px]"
+                className="h-[74vh] w-[300px] shrink-0 overflow-hidden rounded-2xl border border-[var(--br-line)] bg-white [box-shadow:0_24px_54px_rgba(0,0,0,0.18)] sm:w-[340px]"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={e} alt="" loading="lazy" className="block w-full object-cover object-top" />
