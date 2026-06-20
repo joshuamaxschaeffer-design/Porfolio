@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { uiux as defaults } from './data'
+import { WsUxFlow } from './WsUxFlow'
 
 /**
  * SECTION 7 — UI/UX UPDATES. Three modules:
@@ -19,13 +20,9 @@ export function UiUxSection() {
         <p className="mt-3 max-w-3xl text-lg text-[var(--br-muted)] md:text-[22px]">{defaults.intro}</p>
       </div>
 
-      {/* Module 1 — four flows */}
+      {/* Module 1 — four UX flows as a hub-and-spoke DAG (Panda Loyalty-QR style) */}
       <div className="br-container pt-12 md:pt-16">
-        <div className="grid grid-cols-1 gap-x-12 gap-y-10 lg:grid-cols-2">
-          {defaults.flows.map((flow) => (
-            <Flow key={flow.name} flow={flow} />
-          ))}
-        </div>
+        <WsUxFlow />
       </div>
 
       {/* Module 2 — dark mode receding stack (black band) */}
@@ -34,63 +31,6 @@ export function UiUxSection() {
       {/* Module 3 — UI improvement carousel + video */}
       <Improvement />
     </section>
-  )
-}
-
-/** A horizontal flow of nodes with arrows; the screen pops up on hover/focus. */
-function Flow({ flow }: { flow: { name: string; steps: { src: string; label: string }[] } }) {
-  return (
-    <div>
-      <h3 className="text-[18px] font-semibold text-[var(--br-ink)]">{flow.name}</h3>
-      {/* The node row is wider than a phone (fixed-width nodes + arrows), so it
-          scrolls horizontally on small screens instead of pushing the whole
-          page sideways. Negative margin lets it bleed to the screen edge on
-          mobile; it sits inline again once there's room. */}
-      {/* Always horizontally scrollable: a 5-step flow is wider than its grid
-          column even on desktop, so we let the row scroll within the column
-          rather than push the page. Bleeds to the screen edge on mobile. */}
-      <div className="br-noscrollbar -mx-6 mt-4 flex items-stretch overflow-x-auto px-6 md:mx-0 md:px-0">
-        {flow.steps.map((s, i) => (
-          <div key={s.label + i} className="flex items-center">
-            <FlowNode step={s} />
-            {i < flow.steps.length - 1 && (
-              <span aria-hidden className="mx-2 shrink-0 text-[var(--br-muted-2)] sm:mx-3">
-                <svg width="26" height="12" viewBox="0 0 26 12" fill="none">
-                  <path d="M0 6h22M18 1l5 5-5 5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </span>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function FlowNode({ step }: { step: { src: string; label: string } }) {
-  // Desktop captures are landscape; phone captures are tall. Frame each correctly
-  // so nothing is distorted. Each node shows the ACTUAL screen (not a lettered
-  // placeholder), so the flow reads as a real screen-to-screen path.
-  const isDesktop = step.src.includes('/desktopapp/')
-  const thumbAspect = isDesktop ? 'aspect-[16/10]' : 'aspect-[750/1624]'
-  const radius = isDesktop ? 'rounded-lg' : 'rounded-[16%/9%]'
-  const width = isDesktop ? 'w-[150px] sm:w-[176px]' : 'w-[104px] sm:w-[120px]'
-  return (
-    <div className={`group flex flex-col items-center gap-2 ${width}`} tabIndex={0}>
-      <div
-        className={`w-full overflow-hidden ${radius} border border-[var(--br-line)] bg-white shadow-[0_8px_20px_rgba(0,0,0,0.10)] ring-1 ring-black/[0.03] transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-[var(--ws-green)] group-hover:shadow-[0_14px_30px_rgba(0,0,0,0.16)] group-focus:border-[var(--ws-green)]`}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={step.src}
-          alt={step.label}
-          loading="lazy"
-          draggable={false}
-          className={`block w-full object-cover object-top ${thumbAspect}`}
-        />
-      </div>
-      <span className="text-center text-[12px] leading-tight text-[var(--br-muted)]">{step.label}</span>
-    </div>
   )
 }
 
