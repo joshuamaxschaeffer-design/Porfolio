@@ -24,14 +24,14 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
             rows={2}
             caption="Raising Cane’s — native app screens"
             screens={[
-              { src: '/capabilities/canes/canes-onboard-1.png', alt: 'Cane’s onboarding' },
-              { src: '/capabilities/canes/canes-menu.png', alt: 'Cane’s menu' },
-              { src: '/capabilities/canes/canes-onboard-2.png', alt: 'Cane’s onboarding' },
-              { src: '/capabilities/canes/canes-account.png', alt: 'Cane’s account' },
-              { src: '/capabilities/canes/canes-onboard-3.png', alt: 'Cane’s onboarding' },
-              { src: '/capabilities/canes/canes-confirm.png', alt: 'Cane’s order confirmation' },
-              { src: '/capabilities/canes/canes-onboard-4.png', alt: 'Cane’s onboarding' },
-              { src: '/capabilities/canes/canes-home.png', alt: 'Cane’s home' },
+              { src: '/capabilities/canes/canes-onboard-1.webp', alt: 'Cane’s onboarding' },
+              { src: '/capabilities/canes/canes-menu.webp', alt: 'Cane’s menu' },
+              { src: '/capabilities/canes/canes-onboard-2.webp', alt: 'Cane’s onboarding' },
+              { src: '/capabilities/canes/canes-account.webp', alt: 'Cane’s account' },
+              { src: '/capabilities/canes/canes-onboard-3.webp', alt: 'Cane’s onboarding' },
+              { src: '/capabilities/canes/canes-confirm.webp', alt: 'Cane’s order confirmation' },
+              { src: '/capabilities/canes/canes-onboard-4.webp', alt: 'Cane’s onboarding' },
+              { src: '/capabilities/canes/canes-home.webp', alt: 'Cane’s home' },
             ]}
           />
         </Reveal>
@@ -40,12 +40,12 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
           <BlueFlowRow
             dark={dark}
             steps={[
-              { label: 'Onboarding', src: '/capabilities/canes/canes-onboard-1.png' },
-              { label: 'Welcome', src: '/capabilities/canes/canes-onboard-2.png' },
-              { label: 'Build the order', src: '/capabilities/canes/canes-menu.png' },
-              { label: 'Account', src: '/capabilities/canes/canes-account.png' },
-              { label: 'Confirmation', src: '/capabilities/canes/canes-confirm.png' },
-              { label: 'Home', src: '/capabilities/canes/canes-home.png' },
+              { label: 'Onboarding', src: '/capabilities/canes/canes-onboard-1.webp' },
+              { label: 'Welcome', src: '/capabilities/canes/canes-onboard-2.webp' },
+              { label: 'Build the order', src: '/capabilities/canes/canes-menu.webp' },
+              { label: 'Account', src: '/capabilities/canes/canes-account.webp' },
+              { label: 'Confirmation', src: '/capabilities/canes/canes-confirm.webp' },
+              { label: 'Home', src: '/capabilities/canes/canes-home.webp' },
             ]}
             caption="Onboarding → menu → checkout — the real ordering flow"
           />
@@ -65,7 +65,7 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
           <Reveal>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/capabilities/mindbody/mb-pos-1.png"
+              src="/capabilities/mindbody/mb-pos-1.webp"
               alt="Mindbody point-of-sale checkout"
               className="w-full rounded-[var(--br-card-radius)] border border-[var(--br-line)] object-cover shadow-[0_10px_30px_rgba(7,14,44,0.10)]"
               loading="lazy"
@@ -75,7 +75,7 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
             <Reveal>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/capabilities/mindbody/mb-pos-2.png"
+                src="/capabilities/mindbody/mb-pos-2.webp"
                 alt="Mindbody retail checkout — payment"
                 className="w-full rounded-[var(--br-card-radius)] border border-[var(--br-line)] object-cover shadow-[0_10px_30px_rgba(7,14,44,0.10)]"
                 loading="lazy"
@@ -84,7 +84,7 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
             <Reveal delay={80}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/capabilities/mindbody/mb-pos-3.png"
+                src="/capabilities/mindbody/mb-pos-3.webp"
                 alt="Mindbody retail checkout — cart"
                 className="w-full rounded-[var(--br-card-radius)] border border-[var(--br-line)] object-cover shadow-[0_10px_30px_rgba(7,14,44,0.10)]"
                 loading="lazy"
@@ -108,11 +108,11 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
           fullBleed
           ratio="phone"
           items={[
-            { label: 'Raising Cane’s — app', src: '/capabilities/breadth/canes.png' },
-            { label: 'CBTL — iOS app', src: '/capabilities/breadth/cbtl.png' },
-            { label: 'Wingstop — ordering', src: '/capabilities/breadth/wingstop.png' },
-            { label: 'Blaze — consumer app', src: '/capabilities/breadth/blaze-app.png' },
-            { label: 'Trees / Ipse — app', src: '/capabilities/breadth/trees.png' },
+            { label: 'Raising Cane’s — app', src: '/capabilities/breadth/canes.webp' },
+            { label: 'CBTL — iOS app', src: '/capabilities/breadth/cbtl.webp' },
+            { label: 'Wingstop — ordering', src: '/capabilities/breadth/wingstop.webp' },
+            { label: 'Blaze — consumer app', src: '/capabilities/breadth/blaze-app.webp' },
+            { label: 'Trees / Ipse — app', src: '/capabilities/breadth/trees.webp' },
             'Panda Express — app',
             'Dave & Buster’s — kiosk',
             'True Food Kitchen — web',

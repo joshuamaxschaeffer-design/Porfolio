@@ -9,7 +9,7 @@ export function LeadershipModules({ dark = false }: { dark?: boolean }) {
       kicker: 'Advocacy',
       title: 'Pitched, not just made',
       blurb: 'The internal deck that sold Mindbody on an illustration program — then the style guide that delivered it.',
-      src: '/capabilities/leadership/illo-proposal.png',
+      src: '/capabilities/leadership/illo-proposal.webp',
       caption: 'Mindbody — illustration program pitch',
       note: 'Design leadership = selling the idea, then shipping the system.',
     },

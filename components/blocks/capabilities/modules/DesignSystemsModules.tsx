@@ -81,8 +81,8 @@ export function DesignSystemsModules({ dark = true }: { dark?: boolean }) {
           blurb="Reporting and analytics with documented data-viz patterns — an executive summary paired with a granular analyst view."
         />
         <div className="grid grid-cols-1 gap-6 md:grid-cols-12 md:gap-8 md:items-start">
-          <div className="md:col-span-7"><ImgCard src="/capabilities/design-systems/mb-dashboard-1.png" alt="Mindbody analytics — sales & retention" caption="Mindbody — analytics & reporting" /></div>
-          <div className="md:col-span-5"><ImgCard src="/capabilities/design-systems/mb-dashboard-2.png" alt="Mindbody analytics dashboard, full view" caption="Mindbody — full dashboard" /></div>
+          <div className="md:col-span-7"><ImgCard src="/capabilities/design-systems/mb-dashboard-1.webp" alt="Mindbody analytics — sales & retention" caption="Mindbody — analytics & reporting" /></div>
+          <div className="md:col-span-5"><ImgCard src="/capabilities/design-systems/mb-dashboard-2.webp" alt="Mindbody analytics dashboard, full view" caption="Mindbody — full dashboard" /></div>
         </div>
         <ModuleCaption dark={dark}>A hero chart, then the full dashboard — the white-space differentiator.</ModuleCaption>
       </div>

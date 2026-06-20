@@ -45,13 +45,13 @@ export function MarketingWebModules({ dark = true }: { dark?: boolean }) {
         />
         <div className="grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-14">
           <ResponsivePair
-            desktop="/capabilities/web/tfk-home-hero.jpg"
-            mobile="/capabilities/web/tfk-mobile-hero.jpg"
+            desktop="/capabilities/web/tfk-home-hero.webp"
+            mobile="/capabilities/web/tfk-mobile-hero.webp"
             label="True Food Kitchen — ordering site"
           />
           <ResponsivePair
-            desktop="/capabilities/web/blaze-home-hero.jpg"
-            mobile="/capabilities/web/blaze-mobile-hero.jpg"
+            desktop="/capabilities/web/blaze-home-hero.webp"
+            mobile="/capabilities/web/blaze-mobile-hero.webp"
             label="Blaze — marketing site"
           />
         </div>
@@ -63,7 +63,7 @@ export function MarketingWebModules({ dark = true }: { dark?: boolean }) {
         <Reveal>
           <figure className="overflow-hidden rounded-[var(--br-card-radius)] border border-white/10 bg-white">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/capabilities/web/tfk-seasonal.png" alt="True Food Kitchen seasonal page" className="w-full object-cover" loading="lazy" />
+            <img src="/capabilities/web/tfk-seasonal.webp" alt="True Food Kitchen seasonal page" className="w-full object-cover" loading="lazy" />
             <figcaption className="br-data px-4 py-3 text-[11px] uppercase tracking-[0.08em] text-[var(--br-muted-2)]">True Food Kitchen — seasonal feature</figcaption>
           </figure>
         </Reveal>
@@ -79,15 +79,29 @@ export function MarketingWebModules({ dark = true }: { dark?: boolean }) {
         />
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-5">
           {[
-            { src: '/capabilities/web/dq-dec.jpg', label: 'DQ — December' },
-            { src: '/capabilities/web/dq-jan.jpg', label: 'DQ — January' },
-            { src: '/capabilities/web/dq-april.gif', label: 'DQ — April (animated)' },
-            { src: '/capabilities/web/chandon-ig.png', label: 'Chandon — IG Shopping' },
+            { src: '/capabilities/web/dq-dec.webp', label: 'DQ — December' },
+            { src: '/capabilities/web/dq-jan.webp', label: 'DQ — January' },
+            { src: '/capabilities/web/dq-april.mp4', label: 'DQ — April (animated)' },
+            { src: '/capabilities/web/chandon-ig.webp', label: 'Chandon — IG Shopping' },
           ].map((a, i) => (
             <Reveal key={a.label} delay={i * 40}>
               <figure className="overflow-hidden rounded-[var(--br-card-radius)] border border-white/10 bg-white">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={a.src} alt={a.label} className="aspect-[3/5] w-full object-cover object-top" loading="lazy" />
+                {a.src.endsWith('.mp4') ? (
+                  <video
+                    src={a.src}
+                    poster={a.src.replace('.mp4', '-poster.webp')}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    preload="metadata"
+                    aria-label={a.label}
+                    className="aspect-[3/5] w-full object-cover object-top"
+                  />
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={a.src} alt={a.label} className="aspect-[3/5] w-full object-cover object-top" loading="lazy" />
+                )}
                 <figcaption className="br-data px-3 py-2 text-[10px] uppercase tracking-[0.08em] text-[var(--br-muted-2)]">{a.label}</figcaption>
               </figure>
             </Reveal>

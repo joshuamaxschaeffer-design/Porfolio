@@ -41,12 +41,12 @@ export function BrandModules({ dark = true }: { dark?: boolean }) {
         />
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5">
           {[
-            { src: '/capabilities/brand/dopa-construction.png', label: 'DOPA — logomark construction' },
-            { src: '/capabilities/brand/dopa-mark.png', label: 'DOPA — the mark', contain: true },
-            { src: '/capabilities/brand/dopa-appicon.png', label: 'DOPA — app icon', contain: true },
-            { src: '/capabilities/brand/rosetta-system.jpg', label: 'Rosetta — identity system' },
-            { src: '/capabilities/brand/rosetta-applied.jpg', label: 'Rosetta — applied' },
-            { src: '/capabilities/brand/jubilee-applied.jpg', label: 'Jubilee — in context' },
+            { src: '/capabilities/brand/dopa-construction.webp', label: 'DOPA — logomark construction' },
+            { src: '/capabilities/brand/dopa-mark.webp', label: 'DOPA — the mark', contain: true },
+            { src: '/capabilities/brand/dopa-appicon.webp', label: 'DOPA — app icon', contain: true },
+            { src: '/capabilities/brand/rosetta-system.webp', label: 'Rosetta — identity system' },
+            { src: '/capabilities/brand/rosetta-applied.webp', label: 'Rosetta — applied' },
+            { src: '/capabilities/brand/jubilee-applied.webp', label: 'Jubilee — in context' },
           ].map((a, i) => (
             <Reveal key={a.label} delay={i * 30}>
               <figure className="overflow-hidden rounded-[var(--br-card-radius)] border border-white/10 bg-white">
