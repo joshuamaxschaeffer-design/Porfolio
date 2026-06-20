@@ -295,7 +295,9 @@ function ScopeModule({ m }: { m: Mod }) {
           {m.body}
         </p>
       </header>
-      <div className="relative mt-5 flex min-h-0 flex-1 items-center justify-center overflow-hidden">
+      {/* Visual zone: a fixed-height area where each module's mockup sits
+          CLEANLY (contained, never bleeding/clipping at ugly points). */}
+      <div className="mt-5 flex min-h-0 flex-1 items-end justify-center">
         <ModuleVisual m={m} green={green} />
       </div>
     </article>
@@ -305,58 +307,56 @@ function ScopeModule({ m }: { m: Mod }) {
 function ModuleVisual({ m, green }: { m: Mod; green: boolean }) {
   const mm = m as Record<string, unknown>
 
-  // device mockup (MVP, dark-mode UI). The new hero device PNGs already include
-  // a phone frame, so render them bare (no extra Phone wrapper) and let them
-  // fill the card height.
+  // PHONE mockup (MVP hero device, dark-mode UI). Show the device whole, at a
+  // controlled height, sitting on the card floor. The /hero2 PNGs already have
+  // a frame; bare screens get a Phone frame. Either way it FITS, no clipping.
   if (typeof mm.device === 'string') {
     const framed = (mm.device as string).includes('/hero2/')
     if (framed) {
-      // Fill the card: device-home is a tall phone PNG. Push it up so it bleeds
-      // off the bottom edge (like Panda's modules) rather than floating small.
       return (
-        <div className="absolute inset-x-0 bottom-0 flex justify-center" style={{ top: '-4%' }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={mm.device as string}
-            alt={m.title}
-            loading="lazy"
-            className="h-full w-auto max-w-none object-contain object-bottom drop-shadow-[0_18px_36px_rgba(0,0,0,0.45)]"
-          />
-        </div>
-      )
-    }
-    return (
-      <div className="absolute inset-x-0 bottom-0 top-[6%] flex justify-center">
+        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={mm.device as string}
           alt={m.title}
-          // eslint-disable-next-line @next/next/no-img-element
-          className="h-full w-auto max-w-none rounded-[14%/6.5%] object-cover object-top drop-shadow-[0_18px_36px_rgba(0,0,0,0.45)]"
+          loading="lazy"
+          className="h-[230px] w-auto object-contain drop-shadow-[0_16px_34px_rgba(0,0,0,0.45)] sm:h-[250px]"
         />
+      )
+    }
+    return (
+      <div className="w-[150px]">
+        <Phone src={mm.device as string} alt={m.title} />
       </div>
     )
   }
-  // desktop screen anchored at the bottom (browser frame, like Panda MVP)
+
+  // DESKTOP: a contained browser-window thumbnail showing the TOP of the page
+  // (the hero), cropped to a clean 16:10 window — not a clipped full page.
   if (typeof mm.desktop === 'string') {
     return (
-      <div className="absolute inset-x-2 bottom-0 top-[4%] overflow-hidden rounded-t-xl border border-black/10 bg-white [box-shadow:0_-10px_40px_rgba(0,0,0,0.18)]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={mm.desktop as string} alt={m.title} loading="lazy" className="block h-full w-full object-cover object-top" />
+      <div className="w-full max-w-[440px] overflow-hidden rounded-xl border border-black/10 bg-white [box-shadow:0_16px_36px_rgba(0,0,0,0.2)]">
+        <div className="flex items-center gap-1.5 border-b border-black/5 bg-[#f3f3f5] px-3 py-2">
+          <span className="h-2 w-2 rounded-full bg-black/15" />
+          <span className="h-2 w-2 rounded-full bg-black/15" />
+          <span className="h-2 w-2 rounded-full bg-black/15" />
+        </div>
+        <div className="aspect-[16/9] overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={mm.desktop as string} alt={m.title} loading="lazy" className="block w-full object-cover object-top" />
+        </div>
       </div>
     )
   }
-  // emails stacked with perspective
-  if (Array.isArray(mm.emails)) {
-    return <PerspectiveStack srcs={mm.emails as string[]} green={green} />
-  }
-  // location/contact pages stacked with perspective
-  if (Array.isArray(mm.stacked)) {
-    return <PerspectiveStack srcs={mm.stacked as string[]} green={green} />
-  }
-  // in-store boards side by side
+
+  // EMAILS / PAGES: a tidy overlapping stack of small thumbnails, each whole at
+  // a fixed size with a gentle offset (no chaotic clipping).
+  if (Array.isArray(mm.emails)) return <ThumbStack srcs={mm.emails as string[]} green={green} />
+  if (Array.isArray(mm.stacked)) return <ThumbStack srcs={mm.stacked as string[]} green={green} />
+
+  // IN-STORE boards side by side, contained.
   if (Array.isArray(mm.boards)) {
     return (
-      <div className="grid w-full grid-cols-2 items-end gap-4">
+      <div className="grid w-full grid-cols-2 items-end gap-4 pb-1">
         {(mm.boards as string[]).map((b) => (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -364,23 +364,24 @@ function ModuleVisual({ m, green }: { m: Mod; green: boolean }) {
             src={b}
             alt={m.title}
             loading="lazy"
-            className="w-full rounded-lg border border-black/10 [box-shadow:0_14px_30px_rgba(0,0,0,0.2)]"
+            className="max-h-[260px] w-full rounded-lg border border-black/10 object-contain object-bottom [box-shadow:0_14px_30px_rgba(0,0,0,0.2)]"
           />
         ))}
       </div>
     )
   }
-  // flavor icon mockup grid
+
+  // FLAVOR icon mockup grid.
   if (Array.isArray(mm.icons)) {
     return (
-      <div className="grid w-full max-w-[420px] grid-cols-3 gap-4 pb-2">
+      <div className="grid w-full max-w-[360px] grid-cols-3 gap-3 pb-1">
         {(mm.icons as string[]).map((ic) => (
           <div
             key={ic}
             className="flex aspect-square items-center justify-center rounded-2xl border border-[var(--br-line)] bg-white [box-shadow:var(--br-card-shadow)]"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={ic} alt="" className="h-12 w-12 object-contain" style={{ filter: `drop-shadow(0 2px 3px rgba(0,0,0,0.15))` }} />
+            <img src={ic} alt="" className="h-11 w-11 object-contain" />
           </div>
         ))}
       </div>
@@ -389,35 +390,27 @@ function ModuleVisual({ m, green }: { m: Mod; green: boolean }) {
   return null
 }
 
-/** Two/three screens stacked with a slight receding perspective. */
-function PerspectiveStack({ srcs, green }: { srcs: string[]; green: boolean }) {
+/** A tidy overlapping stack of small thumbnails (emails / pages). */
+function ThumbStack({ srcs, green }: { srcs: string[]; green: boolean }) {
+  const shots = srcs.slice(0, 3)
   return (
-    <div
-      className="relative h-full w-full"
-      style={{ perspective: '1400px' }}
-    >
-      {srcs.slice(0, 3).map((s, i) => {
-        // gentle fanned overlap, anchored low, filling the card width
-        return (
-          <div
-            key={s}
-            className="absolute bottom-0 overflow-hidden rounded-xl border border-black/10 bg-white"
-            style={{
-              left: `${10 + i * 12}%`,
-              bottom: `${-2 - i * 2}%`,
-              width: '54%',
-              maxHeight: '108%',
-              transform: `rotate(${-6 + i * 5}deg)`,
-              transformOrigin: 'bottom center',
-              zIndex: srcs.length - i,
-              boxShadow: green ? '0 18px 40px rgba(0,0,0,0.4)' : '0 18px 40px rgba(0,0,0,0.25)',
-            }}
-          >
+    <div className="relative h-[270px] w-full">
+      {shots.map((s, i) => (
+        <div
+          key={s}
+          className="absolute left-1/2 top-1/2 w-[140px] overflow-hidden rounded-xl border border-black/10 bg-white"
+          style={{
+            transform: `translate(calc(-50% + ${(i - 1) * 46}px), calc(-50% + ${(i - 1) * 10}px)) rotate(${(i - 1) * 6}deg)`,
+            zIndex: i,
+            boxShadow: green ? '0 16px 34px rgba(0,0,0,0.4)' : '0 16px 34px rgba(0,0,0,0.24)',
+          }}
+        >
+          <div className="h-[250px] overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={s} alt="" loading="lazy" className="block w-full object-cover object-top" />
           </div>
-        )
-      })}
+        </div>
+      ))}
     </div>
   )
 }
