@@ -48,9 +48,16 @@ export function ArtMotionModules({ dark = false }: { dark?: boolean }) {
             <div className="overflow-hidden rounded-[var(--br-card-radius)] border border-[var(--br-line)] bg-white">
               <BluePlaceholder ratio="square" rounded={false} label="“Quadtopus” octopus loop (FPO)" />
               <div className="p-5">
-                <p className="text-[15px] font-medium text-[var(--br-ink)]">Octopus swim-cycle</p>
-                <p className="mt-1 text-[13px] leading-snug text-[var(--br-muted)]">
-                  Featured on <span className="font-medium">Laughing Squid</span> + design roundups; widely pinned.
+                <div className="flex items-baseline gap-3">
+                  <p className="text-[15px] font-medium text-[var(--br-ink)]">Octopus swim-cycle</p>
+                  <span className="br-data text-[11px] uppercase tracking-[0.08em] text-[var(--br-gold)]">“Quadtopus”</span>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+                  <span><span className="text-[20px] font-semibold text-[var(--br-ink)]">65K+</span> <span className="br-data text-[11px] uppercase tracking-[0.06em] text-[var(--br-muted-2)]">Reddit upvotes</span></span>
+                  <span><span className="text-[20px] font-semibold text-[var(--br-ink)]">140K+</span> <span className="br-data text-[11px] uppercase tracking-[0.06em] text-[var(--br-muted-2)]">Imgur views</span></span>
+                </div>
+                <p className="mt-3 text-[13px] leading-snug text-[var(--br-muted)]">
+                  Featured on <span className="font-medium">Laughing Squid</span>; reposted across Reddit, Imgur &amp; Pinterest over multiple waves.
                 </p>
               </div>
             </div>
@@ -59,9 +66,16 @@ export function ArtMotionModules({ dark = false }: { dark?: boolean }) {
             <div className="overflow-hidden rounded-[var(--br-card-radius)] border border-[var(--br-line)] bg-white">
               <BluePlaceholder ratio="square" rounded={false} label="Fire loop (FPO)" />
               <div className="p-5">
-                <p className="text-[15px] font-medium text-[var(--br-ink)]">Fire loop</p>
-                <p className="mt-1 text-[13px] leading-snug text-[var(--br-muted)]">
-                  Spread across <span className="font-medium">Tumblr, Imgur &amp; Reddit</span> — reposted far past the original.
+                <div className="flex items-baseline gap-3">
+                  <p className="text-[15px] font-medium text-[var(--br-ink)]">Fire loop</p>
+                  <span className="br-data text-[11px] uppercase tracking-[0.08em] text-[var(--br-gold)]">Animation experiment</span>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+                  <span><span className="text-[20px] font-semibold text-[var(--br-ink)]">88K</span> <span className="br-data text-[11px] uppercase tracking-[0.06em] text-[var(--br-muted-2)]">Imgur views</span></span>
+                  <span><span className="text-[20px] font-semibold text-[var(--br-ink)]">3.4K</span> <span className="br-data text-[11px] uppercase tracking-[0.06em] text-[var(--br-muted-2)]">Reddit upvotes</span></span>
+                </div>
+                <p className="mt-3 text-[13px] leading-snug text-[var(--br-muted)]">
+                  Reposted across <span className="font-medium">Imgur, Reddit &amp; Pinterest</span> — far past the original post.
                 </p>
               </div>
             </div>

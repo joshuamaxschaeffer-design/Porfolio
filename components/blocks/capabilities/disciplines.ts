@@ -174,13 +174,13 @@ export const artMotion: Discipline = {
     { icon: 'film', label: 'Brand film', note: '4K product & brand films' },
   ],
   stats: [
+    { value: 85, suffix: 'K+', label: 'Reddit upvotes across viral loops' },
+    { value: 230, suffix: 'K+', label: 'Imgur views across reposts' },
     { value: 2, label: 'Visual languages defined (illustration + motion)' },
-    { value: 2, label: 'Animations that went viral off-platform' },
-    { value: 4, suffix: 'K', label: 'Brand films produced (CBTL)' },
     { value: 13, suffix: '+', label: 'Years of motion & illustration' },
   ],
   statsNote:
-    'Documented “2 Pillars of Illustration” + “3 Pillars of Motion” languages (Mindbody). Octopus loop featured on Laughing Squid; fire loop spread across Tumblr, Imgur & Reddit.',
+    'Octopus loop (“Quadtopus”) featured on Laughing Squid + reposted to 65K+ upvotes on r/oddlysatisfying; fire loop hit 88K Imgur views. Documented “2 Pillars of Illustration” + “3 Pillars of Motion” languages at Mindbody.',
 }
 
 /* ───────────────────────────────────────────────────────────────────────────
