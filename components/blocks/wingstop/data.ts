@@ -305,13 +305,17 @@ export const branding = {
   eyebrow: 'BRANDING',
   heading: 'A flavor icon system, in three dimensions',
   intro: 'Every flavor needed its own mark. I designed an icon for each one and matched it to Wingstop’s existing icon language, then rendered them as a dimensional set.',
+  /** Real 3D chip renders (SD Studio): each flavour's actual glyph embossed on
+   *  a dimensional flavour-coloured coin. Replaces the CSS-3D stand-in. */
   chips: [
-    { src: '/wingstop/flavor-icons/atomic.svg', name: 'Atomic', color: '#c4151c' },
-    { src: '/wingstop/flavor-icons/lemon-pepper.svg', name: 'Lemon Pepper', color: '#c7c531' },
-    { src: '/wingstop/flavor-icons/garlic-parm.svg', name: 'Garlic Parm', color: '#e3c98a' },
-    { src: '/wingstop/flavor-icons/mango-habanero.svg', name: 'Mango Habanero', color: '#f08a21' },
-    { src: '/wingstop/flavor-icons/hawaiian.svg', name: 'Hawaiian', color: '#23c265' },
-    { src: '/wingstop/flavor-icons/louisiana-rub.svg', name: 'Louisiana Rub', color: '#df3a23' },
+    { src: '/wingstop/flavor-chips/ws-chip-atomic.png', name: 'Atomic', color: '#c4151c' },
+    { src: '/wingstop/flavor-chips/ws-chip-lemon-pepper.png', name: 'Lemon Pepper', color: '#c7c531' },
+    { src: '/wingstop/flavor-chips/ws-chip-garlic-parm.png', name: 'Garlic Parm', color: '#e3c98a' },
+    { src: '/wingstop/flavor-chips/ws-chip-mango-habanero.png', name: 'Mango Habanero', color: '#f08a21' },
+    { src: '/wingstop/flavor-chips/ws-chip-hawaiian.png', name: 'Hawaiian', color: '#23c265' },
+    { src: '/wingstop/flavor-chips/ws-chip-louisiana-rub.png', name: 'Louisiana Rub', color: '#df3a23' },
+    { src: '/wingstop/flavor-chips/ws-chip-original-hot.png', name: 'Original Hot', color: '#1f9a44' },
+    { src: '/wingstop/flavor-chips/ws-chip-bbq.png', name: 'Hickory BBQ', color: '#9a5a2a' },
   ],
   gridEyebrow: 'MATCHED TO THE BRAND',
   gridNote: 'The full set, drawn to sit alongside Wingstop’s existing iconography.',
