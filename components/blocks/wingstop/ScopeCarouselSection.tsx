@@ -295,9 +295,10 @@ function ScopeModule({ m }: { m: Mod }) {
           {m.body}
         </p>
       </header>
-      {/* Visual zone: a fixed-height area where each module's mockup sits
-          CLEANLY (contained, never bleeding/clipping at ugly points). */}
-      <div className="mt-5 flex min-h-0 flex-1 items-end justify-center">
+      {/* Visual zone: the mockup sits LARGE and grounded at the card bottom so
+          the card reads full and confident (no floating-in-empty-space). Always
+          shown whole, never cropped mid-content. */}
+      <div className="relative mt-4 flex min-h-0 flex-1 items-end justify-center">
         <ModuleVisual m={m} green={green} />
       </div>
     </article>

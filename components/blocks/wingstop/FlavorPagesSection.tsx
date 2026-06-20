@@ -29,29 +29,32 @@ export function FlavorPagesSection() {
         <p className="mt-3 max-w-3xl text-lg text-white/80 md:text-[22px]">{defaults.intro}</p>
       </div>
 
-      {/* 3 flavor pages in perspective */}
-      <div className="relative mx-auto mt-10 max-w-[1200px] px-6 md:mt-16" style={{ perspective: '1800px' }}>
-        <div className="relative h-[58vw] max-h-[680px] min-h-[420px]" style={{ transformStyle: 'preserve-3d' }}>
-          {defaults.pages.map((p, i) => (
-            <div
-              key={p}
-              className="absolute overflow-hidden rounded-xl border border-white/12 bg-white/5"
-              style={{
-                left: `${6 + i * 26}%`,
-                top: `${i * 6}%`,
-                width: '46%',
-                transform: `rotateX(8deg) rotateY(-22deg) rotateZ(2deg) translateZ(${-i * 90}px)`,
-                transformOrigin: 'center',
-                zIndex: defaults.pages.length - i,
-                boxShadow: '0 30px 70px rgba(0,0,0,0.6)',
-                filter: i > 0 ? `brightness(${1 - i * 0.12})` : 'none',
-              }}
-            >
+      {/* The flavor pages are the aesthetic peak: dark, photography-forward, tall.
+          Show them BIG as three browser panels whose dramatic flavor-blast hero
+          fills the frame, slightly fanned, on black. Whole heroes, no awkward
+          crop. They auto-scroll on hover to reveal the page below. */}
+      <div className="-mx-6 mt-10 flex gap-6 overflow-x-auto px-6 pb-3 md:mt-16 md:gap-8 md:px-12 lg:justify-center [scrollbar-width:thin]">
+        {defaults.pages.map((p, i) => (
+          <div
+            key={p}
+            className="group relative w-[78vw] max-w-[420px] shrink-0 overflow-hidden rounded-2xl border border-white/12 bg-black sm:w-[60vw] lg:w-[400px]"
+            style={{
+              boxShadow: '0 34px 80px rgba(0,0,0,0.65)',
+              transform: `rotate(${(i - 1) * 1.5}deg)`,
+            }}
+          >
+            {/* fixed tall viewport; the page hero fills it, then scrolls up on hover */}
+            <div className="h-[520px] overflow-hidden md:h-[600px]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={p} alt="" loading="lazy" className="block w-full object-cover object-top" />
+              <img
+                src={p}
+                alt=""
+                loading="lazy"
+                className="block w-full object-cover object-top transition-[object-position] duration-[6000ms] ease-linear group-hover:[object-position:50%_100%]"
+              />
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
 
       {/* Autoplay flavor video */}
