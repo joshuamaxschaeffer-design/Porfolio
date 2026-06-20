@@ -82,3 +82,34 @@ export function BrandWall({
     </div>
   )
 }
+
+/**
+ * LogoMarquee — a slow, full-bleed auto-scrolling strip of real brand logos on
+ * white pills. Pauses on hover. Instant "look who I've worked with" proof near
+ * the hero. Pure CSS loop (cheap), edge-faded.
+ */
+export function LogoMarquee({ brands }: { brands: BrandDef[] }) {
+  const doubled = [...brands, ...brands]
+  return (
+    <div
+      className="relative left-1/2 right-1/2 -mx-[50vw] w-screen overflow-hidden py-2"
+      style={{
+        maskImage: 'linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent)',
+        WebkitMaskImage: 'linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent)',
+      }}
+    >
+      <div className="flex w-max animate-[cap-marquee_60s_linear_infinite] gap-4 hover:[animation-play-state:paused]">
+        {doubled.map((b, i) => (
+          <div
+            key={`${b.name}-${i}`}
+            className="flex h-[68px] w-[170px] shrink-0 items-center justify-center rounded-[12px] border border-[var(--br-line)] bg-white px-5"
+          >
+            <BrandLogo brand={b} dark={false} />
+          </div>
+        ))}
+      </div>
+      <style>{`@keyframes cap-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+        @media (prefers-reduced-motion: reduce){.animate-\\[cap-marquee_60s_linear_infinite\\]{animation:none}}`}</style>
+    </div>
+  )
+}
