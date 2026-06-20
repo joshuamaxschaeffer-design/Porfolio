@@ -39,10 +39,16 @@ html {
      wordmark, nav icons, page headers) never shifts horizontally between a
      short page (no scrollbar) and a tall one (scrollbar present). */
   scrollbar-gutter: stable;
+  /* Contain intentional horizontal scrollers / negative-margin bleeds (case-
+     study carousels use `-mx-6 … overflow-x-auto` to reach the screen edge) so
+     they never make the whole PAGE scroll sideways. `clip` (not `hidden`) keeps
+     position:sticky working — several sections pin on scroll. */
+  overflow-x: clip;
 }
 
 body {
   min-height: 100vh;
+  overflow-x: clip;
 }
 
 .container {
