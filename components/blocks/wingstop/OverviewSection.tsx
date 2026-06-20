@@ -56,13 +56,13 @@ export function OverviewSection(props: OverviewProps) {
           backgrounds, never on top of another food image (the hero photo). */}
 
       <div className="br-container relative z-[2] pt-16 pb-20 md:pt-24 md:pb-[160px]">
-        {/* Typographic wordmark until brand assets land */}
-        <p
-          className="text-[28px] font-semibold uppercase leading-none tracking-[0.02em] text-[var(--ws-green)] md:text-[34px]"
-          style={{ fontFamily: 'var(--br-font-heading)' }}
-        >
-          Wingstop
-        </p>
+        {/* Real Wingstop "Wing Experts" winged logo, white on the dark hero. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/wingstop/logo/wingstop-white.svg"
+          alt="Wingstop"
+          className="h-[52px] w-auto md:h-[64px]"
+        />
 
         <p className="br-data mt-3 flex items-center gap-2 text-sm text-[var(--br-muted)]">
           {/* eslint-disable-next-line @next/next/no-img-element */}

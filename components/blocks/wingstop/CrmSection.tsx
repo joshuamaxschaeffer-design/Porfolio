@@ -65,13 +65,16 @@ function CrmScopeSlide() {
   }, [])
 
   return (
-    <div ref={ref} className="relative mt-10 h-[200vh] md:mt-14">
+    // Height tuned so the horizontal slide finishes right at the section bottom
+    // (no trailing empty scroll / white void). ~150vh gives a comfortable pace
+    // for the ~7 tall emails without dead space.
+    <div ref={ref} className="relative mt-10 h-[150vh] md:mt-14">
       <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden">
         <div className="br-container">
           <span className="br-data text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ws-green)]">
             {defaults.scope.eyebrow}
           </span>
-          <h3 className="mt-2 text-2xl font-semibold text-[var(--br-ink)] sm:text-[28px]">{defaults.scope.title}</h3>
+          <h3 className="mt-2 text-[26px] font-semibold text-[var(--br-ink)] sm:text-[32px]">{defaults.scope.title}</h3>
         </div>
         {/* food decoration (top-down, on the flat white field) */}
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-0">
@@ -83,9 +86,9 @@ function CrmScopeSlide() {
               alt=""
               className="absolute opacity-90"
               style={{
-                width: 150 - i * 24,
-                left: `${[6, 78, 40][i]}%`,
-                top: `${[12, 60, 78][i]}%`,
+                width: 180 - i * 28,
+                left: `${[4, 82, 44][i]}%`,
+                top: `${[10, 64, 80][i]}%`,
                 transform: `rotate(${[-12, 10, -6][i]}deg)`,
                 filter: 'drop-shadow(0 16px 26px rgba(0,0,0,0.18))',
               }}
@@ -93,11 +96,11 @@ function CrmScopeSlide() {
           ))}
         </div>
         <div ref={trackRef} className="relative z-[1] mt-8 overflow-hidden">
-          <div className="flex gap-6 px-6 will-change-transform md:px-20" style={{ transform: `translateX(${x}px)` }}>
+          <div className="flex gap-8 px-6 will-change-transform md:px-20" style={{ transform: `translateX(${x}px)` }}>
             {defaults.scope.emails.map((e) => (
               <div
                 key={e}
-                className="h-[58vh] w-[230px] shrink-0 overflow-hidden rounded-2xl border border-[var(--br-line)] bg-white [box-shadow:0_18px_44px_rgba(0,0,0,0.16)] sm:w-[260px]"
+                className="h-[66vh] w-[280px] shrink-0 overflow-hidden rounded-2xl border border-[var(--br-line)] bg-white [box-shadow:0_24px_54px_rgba(0,0,0,0.18)] sm:w-[320px]"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={e} alt="" loading="lazy" className="block w-full object-cover object-top" />

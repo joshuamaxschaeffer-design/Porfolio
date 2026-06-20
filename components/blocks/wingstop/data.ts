@@ -46,8 +46,8 @@ export const overview = {
  */
 export const scope = {
   eyebrow: 'THE SCOPE',
-  heading: 'A redesign that touched every part of Wingstop’s digital presence',
-  intro: 'One flavor-first system, carried across the native app, the website, in-store screens, and a year of campaigns. Drag through it.',
+  heading: 'Every part of the digital experience',
+  intro: 'One flavor-first system across the native app, the website, in-store screens, and a year of campaigns. Drag through it.',
   pills: ['MVP App', 'Desktop Site', 'CRM', 'Flavor Pages', 'Branding', 'In-Store', 'UI Updates', 'Web Needs'],
   modules: [
     {

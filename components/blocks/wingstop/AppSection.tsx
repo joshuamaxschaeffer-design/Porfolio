@@ -50,9 +50,11 @@ export function AppSection() {
               <h3 className="mt-2 text-2xl font-semibold leading-tight text-white sm:text-[26px]">{f.title}</h3>
               <p className="mt-2 text-[15px] leading-relaxed text-white/80">{f.body}</p>
             </header>
-            <div className="mt-5 flex min-h-0 flex-1 items-end justify-center gap-3 overflow-hidden">
+            {/* Phones sized by HEIGHT so they sit whole within the card (the
+                center one a touch taller), never clipped. */}
+            <div className="mt-5 flex min-h-0 flex-1 items-end justify-center gap-3">
               {f.screens.map((s, i) => (
-                <div key={s} className={i === 1 ? 'w-[34%] max-w-[190px]' : 'mb-5 w-[29%] max-w-[165px] opacity-95'}>
+                <div key={s} className={i === 1 ? 'h-full' : 'mb-4 h-[88%] opacity-95'} style={{ aspectRatio: '750 / 1624' }}>
                   <Phone src={s} />
                 </div>
               ))}
@@ -135,28 +137,19 @@ export function AppSection() {
           <h3 className="mt-2 text-2xl font-semibold text-white sm:text-[28px]">{defaults.bento.title}</h3>
           <p className="mt-2 max-w-[60ch] text-[15px] text-white/80 sm:text-base">{defaults.bento.body}</p>
         </div>
-        <div className="grid grid-cols-2 auto-rows-[180px] gap-3 sm:auto-rows-[200px] lg:[grid-template-columns:repeat(4,1fr)] lg:[grid-auto-rows:220px]">
-          {defaults.bento.images.map((src, i) => {
-            // True bento on desktop: a composed 4-col / 2-row layout with varied spans.
-            // [0] tall feature (left, 2 rows), [1] tall (2 rows), [2] wide (2 cols),
-            // [3] tall (2 rows), [4] standard 1x1 fills the remaining cell.
-            const span = [
-              'lg:[grid-row:span_2]',
-              'lg:[grid-row:span_2]',
-              'lg:[grid-column:span_2]',
-              'lg:[grid-row:span_2]',
-              '',
-            ][i] ?? ''
-            return (
-              <div
-                key={src}
-                className={`overflow-hidden rounded-xl border border-white/15 bg-white/5 ${span}`}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={src} alt="" loading="lazy" className="block h-full w-full object-cover" />
-              </div>
-            )
-          })}
+        {/* These are the real App Store listing screenshots (portrait marketing
+            screens). Show them WHOLE in a clean uniform row, like the App Store
+            gallery — not cropped into a mismatched bento. */}
+        <div className="-mx-6 flex gap-5 overflow-x-auto px-6 pb-3 md:-mx-20 md:px-20 [scrollbar-width:thin]">
+          {defaults.bento.images.map((src) => (
+            <div
+              key={src}
+              className="aspect-[1242/2208] w-[240px] shrink-0 overflow-hidden rounded-[24px] border border-white/15 bg-black [box-shadow:0_24px_50px_rgba(0,0,0,0.5)] sm:w-[270px]"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={src} alt="" loading="lazy" className="block h-full w-full object-cover object-top" />
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -165,7 +158,7 @@ export function AppSection() {
 
 function Phone({ src }: { src: string }) {
   return (
-    <div className="relative aspect-[750/1624] w-full overflow-hidden rounded-[14%/6.5%] bg-white shadow-[0_18px_40px_-12px_rgba(0,0,0,0.5)] ring-1 ring-black/10">
+    <div className="relative h-full w-full overflow-hidden rounded-[14%/6.5%] bg-white shadow-[0_18px_40px_-12px_rgba(0,0,0,0.5)] ring-1 ring-black/10">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={src} alt="" draggable={false} loading="lazy" className="pointer-events-none h-full w-full object-cover object-top" />
     </div>
