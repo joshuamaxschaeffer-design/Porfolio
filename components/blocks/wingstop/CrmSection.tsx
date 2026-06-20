@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { crmSection as defaults } from './data'
+import { DragGrid } from './DragGrid'
 
 /**
  * SECTION 3 — CRM. WHITE field.
@@ -118,18 +119,8 @@ function CrmAnimatedGrid() {
       </span>
       <h3 className="mt-2 text-2xl font-semibold text-[var(--br-ink)] sm:text-[28px]">{defaults.animated.title}</h3>
       <p className="mt-2 max-w-[60ch] text-[15px] text-[var(--br-muted)] sm:text-base">{defaults.animated.body}</p>
-      <div className="-mx-6 mt-7 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-4 md:-mx-20 md:px-20 [scrollbar-width:thin]">
-        {defaults.animated.gifs.map((g) => (
-          <figure key={g.src} className="w-[230px] shrink-0 snap-start sm:w-[260px]">
-            <div className="aspect-square overflow-hidden rounded-2xl border border-[var(--br-line)] bg-[var(--br-bg-2)] [box-shadow:var(--br-card-shadow)]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={g.src} alt={g.label} loading="lazy" className="h-full w-full object-cover" />
-            </div>
-            <figcaption className="br-data mt-3 text-[13px] uppercase tracking-[0.1em] text-[var(--br-muted-2)]">
-              {g.label}
-            </figcaption>
-          </figure>
-        ))}
+      <div className="mt-7">
+        <DragGrid items={defaults.animated.gifs} tone="light" />
       </div>
     </div>
   )
