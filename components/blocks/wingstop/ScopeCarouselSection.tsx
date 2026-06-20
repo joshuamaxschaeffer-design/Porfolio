@@ -311,21 +311,37 @@ function ModuleVisual({ m, green }: { m: Mod; green: boolean }) {
   if (typeof mm.device === 'string') {
     const framed = (mm.device as string).includes('/hero2/')
     if (framed) {
-      // eslint-disable-next-line @next/next/no-img-element
-      return <img src={mm.device as string} alt={m.title} loading="lazy" className="h-full w-auto max-w-full object-contain drop-shadow-[0_18px_36px_rgba(0,0,0,0.4)]" />
+      // Fill the card: device-home is a tall phone PNG. Push it up so it bleeds
+      // off the bottom edge (like Panda's modules) rather than floating small.
+      return (
+        <div className="absolute inset-x-0 bottom-0 flex justify-center" style={{ top: '-4%' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={mm.device as string}
+            alt={m.title}
+            loading="lazy"
+            className="h-full w-auto max-w-none object-contain object-bottom drop-shadow-[0_18px_36px_rgba(0,0,0,0.45)]"
+          />
+        </div>
+      )
     }
     return (
-      <div className="h-full">
-        <Phone src={mm.device as string} alt={m.title} />
+      <div className="absolute inset-x-0 bottom-0 top-[6%] flex justify-center">
+        <img
+          src={mm.device as string}
+          alt={m.title}
+          // eslint-disable-next-line @next/next/no-img-element
+          className="h-full w-auto max-w-none rounded-[14%/6.5%] object-cover object-top drop-shadow-[0_18px_36px_rgba(0,0,0,0.45)]"
+        />
       </div>
     )
   }
-  // desktop screen anchored at the bottom (like Panda MVP)
+  // desktop screen anchored at the bottom (browser frame, like Panda MVP)
   if (typeof mm.desktop === 'string') {
     return (
-      <div className="w-[94%] translate-y-[6%] overflow-hidden rounded-t-xl border border-black/10 bg-white [box-shadow:0_-10px_40px_rgba(0,0,0,0.18)]">
+      <div className="absolute inset-x-2 bottom-0 top-[4%] overflow-hidden rounded-t-xl border border-black/10 bg-white [box-shadow:0_-10px_40px_rgba(0,0,0,0.18)]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={mm.desktop as string} alt={m.title} loading="lazy" className="block w-full object-cover object-top" />
+        <img src={mm.desktop as string} alt={m.title} loading="lazy" className="block h-full w-full object-cover object-top" />
       </div>
     )
   }
@@ -381,18 +397,20 @@ function PerspectiveStack({ srcs, green }: { srcs: string[]; green: boolean }) {
       style={{ perspective: '1400px' }}
     >
       {srcs.slice(0, 3).map((s, i) => {
-        const off = i * 7
+        // gentle fanned overlap, anchored low, filling the card width
         return (
           <div
             key={s}
-            className="absolute left-1/2 overflow-hidden rounded-xl border border-black/10 bg-white"
+            className="absolute bottom-0 overflow-hidden rounded-xl border border-black/10 bg-white"
             style={{
-              bottom: `${-6 + off}%`,
-              width: '64%',
-              transform: `translateX(-50%) translateY(${off}%) rotateX(34deg) rotateZ(-14deg) scale(${1 - i * 0.06})`,
+              left: `${10 + i * 12}%`,
+              bottom: `${-2 - i * 2}%`,
+              width: '54%',
+              maxHeight: '108%',
+              transform: `rotate(${-6 + i * 5}deg)`,
               transformOrigin: 'bottom center',
               zIndex: srcs.length - i,
-              boxShadow: green ? '0 18px 40px rgba(0,0,0,0.35)' : '0 18px 40px rgba(0,0,0,0.22)',
+              boxShadow: green ? '0 18px 40px rgba(0,0,0,0.4)' : '0 18px 40px rgba(0,0,0,0.25)',
             }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
