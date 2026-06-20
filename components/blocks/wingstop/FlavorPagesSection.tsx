@@ -56,7 +56,7 @@ export function FlavorPagesSection() {
 
       {/* Autoplay flavor video */}
       <div className="br-container pb-20 pt-14 md:pb-[120px] md:pt-24">
-        <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)] lg:gap-[60px]">
+        <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)] lg:gap-[50px]">
           <div>
             <span className="br-data text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ws-green)]">
               {defaults.video.eyebrow}
@@ -97,10 +97,17 @@ function AutoplayVideo({ src, poster }: { src: string; poster?: string }) {
   }, [])
 
   return (
-    <div className="mx-auto w-[64%] max-w-[300px] overflow-hidden rounded-[14%/6.5%] bg-black shadow-[0_24px_60px_-12px_rgba(0,0,0,0.7)] ring-1 ring-white/10 lg:mx-0 lg:ml-auto">
+    // The flavor-page video is a LANDSCAPE desktop recording (1080x608), so it
+    // lives in a browser-style frame, not a phone.
+    <div className="w-full overflow-hidden rounded-xl border border-white/12 bg-black shadow-[0_24px_60px_-12px_rgba(0,0,0,0.7)]">
+      <div className="flex items-center gap-1.5 border-b border-white/8 bg-white/[0.03] px-3 py-2">
+        <span className="h-2.5 w-2.5 rounded-full bg-white/20" />
+        <span className="h-2.5 w-2.5 rounded-full bg-white/20" />
+        <span className="h-2.5 w-2.5 rounded-full bg-white/20" />
+      </div>
       <video
         ref={ref}
-        className="block aspect-[750/1624] w-full object-cover"
+        className="block aspect-[1080/608] w-full object-cover"
         src={src}
         poster={poster}
         muted

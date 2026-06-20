@@ -76,13 +76,16 @@ export function ProductPagesStage() {
         />
       </div>
 
-      {/* tall band so the big pages can overflow top + bottom */}
-      <div className="relative grid min-h-[720px] grid-cols-1 items-center gap-8 lg:min-h-[1020px] lg:grid-cols-[1.55fr_1fr]">
+      {/* Two-column at lg+ (pages left, copy right). Below lg it stacks: copy
+          on top, then the pages fan in its own bounded height so it never
+          overlaps the copy. */}
+      <div className="relative grid grid-cols-1 items-center gap-8 lg:min-h-[1020px] lg:grid-cols-[1.55fr_1fr]">
         {/* LEFT: the angled, receding page fan. NO horizontal clip — the fan
             fills the whole left background and bleeds off the left edge; it may
-            sit slightly under the copy (per Joshua). */}
+            sit slightly under the copy (per Joshua). Bounded height at sub-lg so
+            the absolutely-positioned fan has room and can't cover the copy. */}
         <div
-          className="relative order-2 h-full lg:order-1"
+          className="relative order-2 h-[440px] sm:h-[560px] lg:order-1 lg:h-full"
           style={{ perspective: '2200px', perspectiveOrigin: '50% 50%' }}
         >
           {/* Right-anchored, rendered Note→Tab→Gear left-to-right so the GEAR

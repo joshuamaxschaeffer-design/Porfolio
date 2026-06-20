@@ -36,7 +36,7 @@ export interface SamsungCaseStudyProps {
 export function SamsungCaseStudy(props: SamsungCaseStudyProps = {}) {
   return (
     <article
-      className="sg-dark relative"
+      className="sg-dark relative overflow-x-clip"
       style={
         {
           // dark palette

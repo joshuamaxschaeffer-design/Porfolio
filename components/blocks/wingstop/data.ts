@@ -18,7 +18,7 @@
 
 export const overview = {
   client: 'Wingstop',
-  dateRange: '2019 — 2022',
+  dateRange: '2019–2022',
   lead: 'I led the redesign of Wingstop’s ordering experience across mobile, web, and in-store, built around flavor.',
   role: 'Lead Designer & Art Director (Hathway, now Bounteous). I owned the UX and art direction end to end, then led and mentored a team of designers who built it out across platforms, campaigns, and in-store screens.',
   scope: [
@@ -56,14 +56,14 @@ export const scope = {
       eyebrow: 'MVP APP',
       title: 'Wingstop App',
       body: 'The native ordering app, designed mobile-first across the whole flow.',
-      device: '/wingstop/devices/two-devices.webp',
+      device: '/wingstop/hero2/device-home.webp',
     },
     {
       key: 'desktop',
       eyebrow: 'DESKTOP SITE',
       title: 'The full website',
       body: 'The ordering experience scaled to desktop, end to end.',
-      desktop: '/wingstop/flavor/d-lemon-pepper.webp',
+      desktop: '/wingstop/desktopapp/d-flavors.webp',
     },
     {
       key: 'crm',
@@ -81,7 +81,7 @@ export const scope = {
       eyebrow: 'FLAVOR PAGES',
       title: 'Flavor-first menu',
       body: 'Photography-forward pages that make every flavor the hero.',
-      desktop: '/wingstop/flavor/d-garlic-parm.webp',
+      desktop: '/wingstop/flavor/d-lemon-pepper.webp',
     },
     {
       key: 'branding',
@@ -129,7 +129,7 @@ export const scope = {
 export const app = {
   eyebrow: 'THE WINGSTOP APP',
   heading: 'The native ordering app, end to end',
-  intro: 'I designed the full ordering experience as a system of features — browse, customize, cart, account — then built the component library that kept it consistent.',
+  intro: 'I designed the full ordering experience as a system of features. Browse, customize, cart, account, then built the component library that kept it consistent.',
   pills: ['Features', 'Components', 'Desktop', 'Shipped'],
   /** A few KEY features, each shown as app screens (3-go-right carousel). */
   features: [
@@ -138,19 +138,19 @@ export const app = {
       title: 'Browse and build an order',
       body: 'The core flow: pick wings, flavors, sides and drinks, with photography leading every step.',
       screens: [
-        '/wingstop/product/m-product-1.webp',
-        '/wingstop/product/m-product-2.webp',
-        '/wingstop/product/m-product-3.webp',
+        '/wingstop/mobileapp/m-flavors.webp',
+        '/wingstop/mobileapp/m-product.webp',
+        '/wingstop/mobileapp/m-customize.webp',
       ],
     },
     {
       eyebrow: 'FLAVOR CUSTOMIZATION',
       title: 'Customize by flavor and heat',
-      body: 'Split the count across flavors, set sides, and upgrade — the whole build-your-meal experience.',
+      body: 'Split the count across flavors, set sides, and upgrade. The whole build-your-meal experience.',
       screens: [
-        '/wingstop/usability/step-1-flavors.webp',
-        '/wingstop/usability/step-1b-quantities.webp',
-        '/wingstop/usability/step-2-side.webp',
+        '/wingstop/mobileapp/m-customize.webp',
+        '/wingstop/mobileapp/m-done.webp',
+        '/wingstop/mobileapp/m-eclub.webp',
       ],
     },
     {
@@ -158,17 +158,17 @@ export const app = {
       title: 'From cart to confirmed',
       body: 'A streamlined cart, special requests, and a checkout that gets out of the way.',
       screens: [
-        '/wingstop/product/m-product-4.webp',
         '/wingstop/product/m-cart.webp',
         '/wingstop/product/m-checkout.webp',
+        '/wingstop/mobileapp/m-product.webp',
       ],
     },
   ],
   /** Component library card (Panda/Baserate style). */
   components: {
     eyebrow: 'COMPONENT LIBRARY',
-    title: 'One system, every screen',
-    body: 'A library of buttons, inputs, flavor chips, cards and bars — so the team could ship feature after feature on-brand.',
+    title: 'The component library',
+    body: 'A library of buttons, inputs, flavor chips, cards and bars, so the team could ship feature after feature on-brand.',
     swatches: ['#00843D', '#23c265', '#0c0d0d', '#f1b228', '#ffffff'],
     icons: [
       '/wingstop/flavor-icons/atomic.svg',
@@ -182,7 +182,7 @@ export const app = {
     eyebrow: 'DESKTOP SITE',
     title: 'Scaled to the web',
     body: 'The same ordering system, reflowed for desktop.',
-    screens: ['/wingstop/flavor/d-lemon-pepper.webp', '/wingstop/flavor/d-garlic-parm.webp'],
+    screens: ['/wingstop/desktopapp/d-flavors.webp', '/wingstop/desktopapp/d-flavor-custom.webp'],
   },
   /** Bento of all the app work — App Store release imagery. */
   bento: {
@@ -207,7 +207,7 @@ export const app = {
 export const crmSection = {
   eyebrow: 'CRM',
   heading: 'A modular email system, a year of campaigns',
-  intro: 'I designed a modular CRM system so the team could assemble campaign after campaign from shared blocks — promotions, delivery, game-day, onboarding.',
+  intro: 'I designed a modular CRM system so the team could assemble campaign after campaign from shared blocks. Promotions, delivery, game-day, onboarding.',
   /** Scroll-slide row of all the email work. */
   scope: {
     eyebrow: 'THE SCOPE',
@@ -226,8 +226,8 @@ export const crmSection = {
   /** Modular + animated: a grid carousel of the CRM gifs. */
   animated: {
     eyebrow: 'MODULAR & ANIMATED',
-    title: 'Built to move',
-    body: 'Animated modules — flavor reveals, emoji reactions, explosions — that made the emails pop in the inbox.',
+    title: 'Animated for the inbox',
+    body: 'Animated modules, flavor reveals, emoji reactions, explosions, that made the emails pop in the inbox.',
     gifs: [
       { src: '/wingstop/crmgif/flavor-combos.gif', label: 'Flavor combos' },
       { src: '/wingstop/crmgif/face-emoji.gif', label: 'Emoji reactions' },
@@ -253,8 +253,8 @@ export const flavorPages = {
   ],
   video: {
     eyebrow: 'IN MOTION',
-    title: 'Designed to move',
-    body: 'The flavor pages animated as you scrolled — here is the Lemon Pepper page in motion.',
+    title: 'The pages animated on scroll',
+    body: 'The flavor pages animated as you scrolled. Here is the Lemon Pepper page in motion.',
     src: '/wingstop/video/flavor-lemon-pepper.mp4',
     poster: '/wingstop/flavor/m-lemon-pepper.webp',
   },
@@ -264,7 +264,7 @@ export const flavorPages = {
 export const inStoreSection = {
   eyebrow: 'IN-STORE SCREENS',
   heading: 'Designed for the wall, too',
-  intro: 'The flavor-first system reached the restaurants. I designed the digital menu boards — vertical and horizontal — that were implemented in stores.',
+  intro: 'The flavor-first system reached the restaurants. I designed the digital menu boards, vertical and horizontal, that were implemented in stores.',
   boards: [
     { src: '/wingstop/instore/board-1.webp', label: 'Combos & group packs' },
     { src: '/wingstop/instore/board-2.webp', label: 'Extras & drinks' },
@@ -275,7 +275,7 @@ export const inStoreSection = {
 export const webNeeds = {
   eyebrow: 'ADDITIONAL WEB NEEDS',
   heading: 'Everything around the order',
-  intro: 'Beyond the core experience, the team and I shipped the supporting surfaces across the site — store-finder, locations, and careers.',
+  intro: 'Beyond the core experience, the team and I shipped the supporting surfaces across the site. Store-finder, locations, and careers.',
   items: [
     { src: '/wingstop/location/loc-1.webp', label: 'Locations' },
     { src: '/wingstop/location/loc-finder.webp', label: 'Store finder' },
@@ -339,38 +339,43 @@ export const branding = {
  */
 export const uiux = {
   eyebrow: 'UI/UX UPDATES',
-  heading: 'The thinking behind the screens',
-  intro: 'The redesign was built on real UX work — flows for every key task, a full dark mode, and a measurable usability overhaul.',
+  heading: 'The UX work underneath',
+  intro: 'The redesign was built on real UX work: flows for every key task, a full dark mode, and a measurable usability overhaul.',
   flows: [
     {
-      name: 'Order a meal',
+      name: 'Hub-and-spoke ordering',
+      steps: [
+        { src: '/wingstop/mobileapp/m-flavors.webp', label: 'Flavor selection' },
+        { src: '/wingstop/usability/step-1b-quantities.webp', label: 'Flavor quantities' },
+        { src: '/wingstop/mobileapp/m-customize.webp', label: 'Side customization' },
+        { src: '/wingstop/usability/step-3-drink.webp', label: 'Drink selection' },
+        { src: '/wingstop/usability/step-4-upgrade.webp', label: 'Upgrade' },
+      ],
+    },
+    {
+      name: 'Single-page ordering',
       steps: [
         { src: '/wingstop/usability/step-1-flavors.webp', label: 'Choose flavors' },
-        { src: '/wingstop/usability/step-1b-quantities.webp', label: 'Set quantities' },
         { src: '/wingstop/usability/step-2-side.webp', label: 'Choose a side' },
-        { src: '/wingstop/usability/step-5-review.webp', label: 'Review' },
-      ],
-    },
-    {
-      name: 'Build a side',
-      steps: [
-        { src: '/wingstop/usability/step-2-side.webp', label: 'Pick a side' },
-        { src: '/wingstop/usability/step-4-upgrade.webp', label: 'Upgrade' },
-        { src: '/wingstop/ux/new-mobile.webp', label: 'Confirm' },
-      ],
-    },
-    {
-      name: 'Add a drink',
-      steps: [
         { src: '/wingstop/usability/step-3-drink.webp', label: 'Choose a drink' },
-        { src: '/wingstop/ux/new-mobile.webp', label: 'Added' },
+        { src: '/wingstop/mobileapp/m-done.webp', label: 'Review order' },
       ],
     },
     {
-      name: 'Old vs new',
+      name: 'Desktop ordering',
       steps: [
-        { src: '/wingstop/ux/old-mobile.webp', label: '2019 flow' },
-        { src: '/wingstop/ux/new-mobile.webp', label: 'Redesigned' },
+        { src: '/wingstop/desktopapp/d-flavors.webp', label: 'Menu' },
+        { src: '/wingstop/desktopapp/d-flavor-custom.webp', label: 'Customize' },
+        { src: '/wingstop/desktopapp/d-drink.webp', label: 'Drink' },
+        { src: '/wingstop/desktopapp/d-side.webp', label: 'Upgrade' },
+      ],
+    },
+    {
+      name: 'Side upgrade',
+      steps: [
+        { src: '/wingstop/usability/step-2-side.webp', label: 'Side selection' },
+        { src: '/wingstop/usability/step-4-upgrade.webp', label: 'Upgrade side' },
+        { src: '/wingstop/mobileapp/m-done.webp', label: 'Applied' },
       ],
     },
   ],
@@ -404,7 +409,7 @@ export const uiux = {
 export const appFoundation = {
   eyebrow: 'THE FOUNDATION',
   heading: 'THE FULL APP, ACROSS PLATFORMS',
-  intro: 'Before the flavor work, the foundation: I pitched and designed the entire ordering app — product pages, customization, cart, and checkout — across mobile and desktop, then led the team that built it out screen by screen.',
+  intro: 'Before the flavor work, the foundation: I pitched and designed the entire ordering app, product pages, customization, cart, and checkout, across mobile and desktop, then led the team that built it out screen by screen.',
   /** Tall product/cart/checkout screens for the perspective stage. */
   screens: [
     { src: '/wingstop/product/m-product-1.webp', alt: 'Wing combo product page' },
@@ -414,18 +419,18 @@ export const appFoundation = {
     { src: '/wingstop/product/m-cart.webp', alt: 'Cart' },
     { src: '/wingstop/product/m-checkout.webp', alt: 'Checkout' },
   ],
-  caption: 'Product, customization, cart and checkout — designed mobile-first, then scaled to desktop.',
+  caption: 'Product, customization, cart and checkout, designed mobile-first, then scaled to desktop.',
 }
 
 export const challenge = {
   heading: 'THE CHALLENGE',
-  intro: 'Ordering wings is a group decision with too many variables — flavors, counts, combos, crew size, and a menu that changes store to store. The old experience made guests do all of that work. The redesign had to make a complicated order feel like a crave.',
+  intro: 'Ordering wings is a group decision with too many variables. Flavors, counts, combos, crew size, and a menu that changes store to store. The old experience made guests do all of that work. The redesign had to make a complicated order feel like a crave.',
   problems: [
     {
       tag: '01',
       icon: 'menu',
       title: 'A menu that outgrew its UI',
-      body: 'Eleven flavors across heat levels, plus bundles, tenders, sides, and dips. Choice overload buried the thing Wingstop sells best — flavor — under taxonomy.',
+      body: 'Eleven flavors across heat levels, plus bundles, tenders, sides, and dips. Choice overload buried the thing Wingstop sells best, flavor, under taxonomy.',
     },
     {
       tag: '02',
@@ -447,7 +452,7 @@ export const challenge = {
     body: 'The 2019 experience asked guests to parse a group-packs spreadsheet. The redesign leads with photography and flavor, and hides the variance.',
     before: '/wingstop/ux/old-desktop.webp',
     after: '/wingstop/ux/new-desktop.webp',
-    beforeLabel: '2019 — the old menu',
+    beforeLabel: '2019, the old menu',
     afterLabel: 'Flavor-first redesign',
   },
 }
@@ -469,7 +474,7 @@ export const flavorWorld = {
   heat: {
     eyebrow: 'THE HEAT SCALE',
     title: 'Pick by heat, not by hunting',
-    body: 'A single slider sets the tone — from no-heat sweet to blazing-hot Atomic — and filters the whole menu to match the mood. Drag it.',
+    body: 'A single slider sets the tone, from no-heat sweet to blazing-hot Atomic, and filters the whole menu to match the mood. Drag it.',
   },
   /** Flavor icons (Joshua designed an icon system for these). */
   iconsEyebrow: 'A FLAVOR ICON SYSTEM',
@@ -500,18 +505,18 @@ export const flavorWorld = {
 export const usability = {
   eyebrow: 'IMPROVED USABILITY',
   heading: 'A COMPLICATED ORDER, MADE SIMPLE',
-  intro: 'The biggest UX project: rebuilding the build-your-meal flow. A 15-piece meal for two used to mean a dozen decisions. We turned it into a guided sequence — pick flavors, set quantities, choose sides and drinks, upgrade — that feels like a crave, not a form.',
+  intro: 'The biggest UX project: rebuilding the build-your-meal flow. A 15-piece meal for two used to mean a dozen decisions. We turned it into a guided sequence, pick flavors, set quantities, choose sides and drinks, upgrade, that feels like a crave, not a form.',
   /** The Wing Calculator™ hunger scale (reskinned FeelingSlider). */
   calculator: {
     eyebrow: 'WING CALCULATOR™',
     title: 'Math nobody should do hungry',
-    body: 'Rate your hunger — snacky, hungry, or starving — and the Wing Calculator™ sizes the order to your crew. Group-order friction, engineered away. Try the scale.',
+    body: 'Rate your hunger, snacky, hungry, or starving, and the Wing Calculator™ sizes the order to your crew. Group-order friction, engineered away. Try the scale.',
   },
   /** Step screens for the horizontal walkthrough. */
   steps: [
     { src: '/wingstop/usability/step-1-flavors.webp', title: 'Choose flavors', body: 'Browse by flavor and heat, not a dropdown.' },
     { src: '/wingstop/usability/step-1b-quantities.webp', title: 'Specify quantities', body: 'Split the count across flavors with a slider per flavor.' },
-    { src: '/wingstop/usability/step-2-side.webp', title: 'Choose a side', body: 'Fries, corn, veggies — shown, not listed.' },
+    { src: '/wingstop/usability/step-2-side.webp', title: 'Choose a side', body: 'Fries, corn, veggies, shown, not listed.' },
     { src: '/wingstop/usability/step-3-drink.webp', title: 'Choose a drink', body: 'Brand logos make the pick instant.' },
     { src: '/wingstop/usability/step-4-upgrade.webp', title: 'Upgrade a side', body: 'One tap to make it a meal.' },
     { src: '/wingstop/usability/step-5-review.webp', title: 'Review & order', body: 'Every step visible, nothing buried.' },
@@ -522,11 +527,11 @@ export const usability = {
 export const craft = {
   eyebrow: 'RANGE OF CRAFT',
   heading: 'ONE SYSTEM, MANY SURFACES',
-  intro: 'The flavor-first system reached further than the order screen — a sleek dark mode, physical menu boards in restaurants, and a modular email engine that powered campaign after campaign.',
+  intro: 'The flavor-first system reached further than the order screen. A sleek dark mode, physical menu boards in restaurants, and a modular email engine that powered campaign after campaign.',
   darkMode: {
     eyebrow: 'DARK MODE',
     title: 'The whole app, after dark',
-    body: 'A full dark theme — personalized home, reorder, menu, configurator, and checkout — designed so the food photography only got richer.',
+    body: 'A full dark theme, personalized home, reorder, menu, configurator, and checkout, designed so the food photography only got richer.',
     screens: [
       { src: '/wingstop/darkmode/dm-1.webp', alt: 'Dark mode home' },
       { src: '/wingstop/darkmode/dm-2.webp', alt: 'Dark mode menu' },
@@ -538,7 +543,7 @@ export const craft = {
   inStore: {
     eyebrow: 'IN-STORE DISPLAYS',
     title: 'Designed for the wall, too',
-    body: 'Vertical and horizontal digital menu boards — combos, group packs, extras, drinks — implemented in restaurants.',
+    body: 'Vertical and horizontal digital menu boards, combos, group packs, extras, drinks, implemented in restaurants.',
     boards: [
       { src: '/wingstop/instore/board-1.webp', alt: 'In-store menu board 1' },
       { src: '/wingstop/instore/board-2.webp', alt: 'In-store menu board 2' },
@@ -547,7 +552,7 @@ export const craft = {
   crm: {
     eyebrow: 'MODULAR CRM',
     title: 'One email system, every campaign',
-    body: 'A modular email design — 25 Days of Flavor, game-day promos, delivery, onboarding — assembled from shared blocks so the team could ship campaigns fast and on-brand.',
+    body: 'A modular email design, 25 Days of Flavor, game-day promos, delivery, onboarding, assembled from shared blocks so the team could ship campaigns fast and on-brand.',
     emails: [
       { src: '/wingstop/crm/crm-25days.webp', alt: '25 Days of Flavor' },
       { src: '/wingstop/crm/crm-60wings.webp', alt: '60 wings promo' },
@@ -564,7 +569,7 @@ export const craft = {
 export const moreWork = {
   eyebrow: 'MORE WORK',
   heading: 'AND EVERYTHING AROUND IT',
-  intro: 'Beyond the core experience, the team and I shipped the supporting surfaces too — store-finder pages that helped guests find a location, and more.',
+  intro: 'Beyond the core experience, the team and I shipped the supporting surfaces too. Store-finder pages that helped guests find a location, and more.',
   items: [
     { src: '/wingstop/location/loc-1.webp', title: 'Locations', body: 'Store-finder redesign' },
     { src: '/wingstop/location/loc-2.webp', title: 'Location page', body: 'Per-store detail' },
@@ -576,7 +581,7 @@ export const moreWork = {
 export const covid = {
   eyebrow: 'THE PAYOFF',
   heading: 'THEN THE WORLD SHUT DOWN',
-  intro: 'The app shipped in 2019. A year later, COVID closed every dining room — and the year-old ordering experience became the entire business overnight.',
+  intro: 'The app shipped in 2019. A year later, COVID closed every dining room, and the year-old ordering experience became the entire business overnight.',
   beats: [
     {
       eyebrow: 'SHIPPED 2019',
@@ -586,7 +591,7 @@ export const covid = {
     {
       eyebrow: 'MARCH 2020',
       title: 'Dining rooms close',
-      body: 'Overnight, every order had to go through digital. The app wasn’t a convenience anymore — it was the storefront.',
+      body: 'Overnight, every order had to go through digital. The app wasn’t a convenience anymore. It was the storefront.',
     },
     {
       eyebrow: 'THE RESULT',
@@ -629,21 +634,21 @@ export const outcomes = {
       decimals: 1,
       suffix: '★',
       label: 'App Store Rating',
-      description: 'Across 1.4 million+ ratings on iOS — among the highest-rated ordering apps in the category.',
+      description: 'Across 1.4 million+ ratings on iOS, among the highest-rated ordering apps in the category.',
     },
     {
       value: 63.7,
       decimals: 1,
       suffix: '%',
       label: 'COVID Digital Surge',
-      description: 'Digital share of sales in Q2 2020 — double the 30% mix from when the app launched a year earlier.',
+      description: 'Digital share of sales in Q2 2020, double the 30% mix from when the app launched a year earlier.',
     },
     {
       value: 70.3,
       decimals: 1,
       suffix: '%',
       label: 'Digital Sales Mix',
-      description: 'Share of systemwide sales flowing through digital by Q4 2024 — still climbing, at 72.8% by late 2025.',
+      description: 'Share of systemwide sales flowing through digital by Q4 2024, still climbing, at 72.8% by late 2025.',
     },
     {
       value: 4.8,

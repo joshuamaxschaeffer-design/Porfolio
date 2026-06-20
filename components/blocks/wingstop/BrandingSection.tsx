@@ -99,26 +99,35 @@ function Chip({ chip, index }: { chip: { src: string; name: string; color: strin
   }, [])
 
   return (
-    <div className="flex flex-col items-center gap-3" style={{ perspective: '600px' }}>
+    <div className="flex flex-col items-center gap-3" style={{ perspective: '900px' }}>
       <div
         ref={ref}
-        className="relative grid aspect-square w-full place-items-center rounded-2xl will-change-transform"
+        className="relative grid aspect-square w-full place-items-center rounded-[22px] will-change-transform"
         style={{
-          background: `radial-gradient(120% 120% at 30% 25%, ${chip.color}33, #16171a 70%)`,
-          border: `1px solid ${chip.color}55`,
-          transform: `rotateY(${rot}deg)`,
+          // physical chip: tinted body, beveled bright top edge, dark base edge
+          background: `linear-gradient(160deg, ${chip.color}40 0%, #1a1b1f 55%, #0e0f12 100%)`,
+          border: `1px solid ${chip.color}66`,
+          // combine a gentle fixed X-tilt with the scroll-driven Y-rotation so it
+          // reads dimensional like the Baserate chips
+          transform: `rotateX(12deg) rotateY(${rot}deg)`,
           transformStyle: 'preserve-3d',
-          boxShadow: `0 20px 40px rgba(0,0,0,0.5), inset 0 1px 0 ${chip.color}40`,
+          boxShadow: `0 24px 46px rgba(0,0,0,0.55), inset 0 2px 1px ${chip.color}66, inset 0 -3px 6px rgba(0,0,0,0.6)`,
         }}
       >
-        {/* The flavor SVGs are a green disc + white glyph — render as-is (no
-            invert) so the glyph stays legible; just lift them with a shadow. */}
+        {/* glossy top sheen */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 rounded-[22px]"
+          style={{ background: 'linear-gradient(150deg, rgba(255,255,255,0.18), transparent 42%)', transform: 'translateZ(6px)' }}
+        />
+        {/* The flavor SVGs are a green disc + white glyph; render as-is (no
+            invert) so the glyph stays legible. Lifted forward for 3D depth. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={chip.src}
           alt={chip.name}
-          className="h-[52%] w-[52%] object-contain [filter:drop-shadow(0_3px_6px_rgba(0,0,0,0.55))]"
-          style={{ transform: 'translateZ(18px)' }}
+          className="h-[56%] w-[56%] object-contain [filter:drop-shadow(0_4px_7px_rgba(0,0,0,0.6))]"
+          style={{ transform: 'translateZ(26px)' }}
         />
       </div>
       <span className="br-data text-center text-[11px] uppercase leading-tight tracking-[0.08em] text-white/65">

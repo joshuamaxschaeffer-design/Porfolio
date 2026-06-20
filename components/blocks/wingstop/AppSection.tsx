@@ -43,16 +43,16 @@ export function AppSection() {
         {defaults.features.map((f) => (
           <article
             key={f.title}
-            className="flex h-[520px] w-[86vw] max-w-[820px] shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-white/20 bg-white/[0.08] p-7 backdrop-blur-sm sm:w-[78vw] sm:p-9 lg:w-[760px]"
+            className="flex h-[480px] w-[80vw] max-w-[680px] shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-white/20 bg-white/[0.08] p-7 backdrop-blur-sm sm:w-[64vw] sm:p-8 lg:w-[640px]"
           >
             <header className="max-w-[52ch]">
               <span className="br-data text-xs font-semibold uppercase tracking-[0.18em] text-white/80">{f.eyebrow}</span>
               <h3 className="mt-2 text-2xl font-semibold leading-tight text-white sm:text-[26px]">{f.title}</h3>
               <p className="mt-2 text-[15px] leading-relaxed text-white/80">{f.body}</p>
             </header>
-            <div className="mt-6 flex min-h-0 flex-1 items-end justify-center gap-4">
+            <div className="mt-5 flex min-h-0 flex-1 items-end justify-center gap-3">
               {f.screens.map((s, i) => (
-                <div key={s} className={i === 1 ? 'w-[30%] max-w-[180px]' : 'mb-5 w-[27%] max-w-[160px] opacity-95'}>
+                <div key={s} className={i === 1 ? 'w-[36%] max-w-[210px]' : 'mb-6 w-[31%] max-w-[185px] opacity-95'}>
                   <Phone src={s} />
                 </div>
               ))}
@@ -61,7 +61,7 @@ export function AppSection() {
         ))}
 
         {/* Component Library card (Panda/Baserate style) */}
-        <article className="flex h-[520px] w-[86vw] max-w-[820px] shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-white/20 bg-white p-7 text-[var(--br-ink)] sm:w-[78vw] sm:p-9 lg:w-[760px]">
+        <article className="flex h-[480px] w-[80vw] max-w-[680px] shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-white/20 bg-white p-7 text-[var(--br-ink)] sm:w-[64vw] sm:p-8 lg:w-[640px]">
           <header className="max-w-[52ch]">
             <span className="br-data text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ws-green)]">
               {defaults.components.eyebrow}
@@ -107,7 +107,7 @@ export function AppSection() {
         </article>
 
         {/* Desktop site card */}
-        <article className="flex h-[520px] w-[86vw] max-w-[820px] shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-white/20 bg-white/[0.08] p-7 backdrop-blur-sm sm:w-[78vw] sm:p-9 lg:w-[760px]">
+        <article className="flex h-[480px] w-[80vw] max-w-[680px] shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-white/20 bg-white/[0.08] p-7 backdrop-blur-sm sm:w-[64vw] sm:p-8 lg:w-[640px]">
           <header className="max-w-[52ch]">
             <span className="br-data text-xs font-semibold uppercase tracking-[0.18em] text-white/80">{defaults.desktop.eyebrow}</span>
             <h3 className="mt-2 text-2xl font-semibold leading-tight text-white sm:text-[26px]">{defaults.desktop.title}</h3>
@@ -135,16 +135,28 @@ export function AppSection() {
           <h3 className="mt-2 text-2xl font-semibold text-white sm:text-[28px]">{defaults.bento.title}</h3>
           <p className="mt-2 max-w-[60ch] text-[15px] text-white/80 sm:text-base">{defaults.bento.body}</p>
         </div>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          {defaults.bento.images.map((src, i) => (
-            <div
-              key={src}
-              className={`overflow-hidden rounded-xl border border-white/15 bg-white/5 ${i === 0 ? 'col-span-2 row-span-2 sm:col-span-1 sm:row-span-1' : ''}`}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt="" loading="lazy" className="block h-full w-full object-cover" />
-            </div>
-          ))}
+        <div className="grid grid-cols-2 auto-rows-[180px] gap-3 sm:auto-rows-[200px] lg:[grid-template-columns:repeat(4,1fr)] lg:[grid-auto-rows:220px]">
+          {defaults.bento.images.map((src, i) => {
+            // True bento on desktop: a composed 4-col / 2-row layout with varied spans.
+            // [0] tall feature (left, 2 rows), [1] tall (2 rows), [2] wide (2 cols),
+            // [3] tall (2 rows), [4] standard 1x1 fills the remaining cell.
+            const span = [
+              'lg:[grid-row:span_2]',
+              'lg:[grid-row:span_2]',
+              'lg:[grid-column:span_2]',
+              'lg:[grid-row:span_2]',
+              '',
+            ][i] ?? ''
+            return (
+              <div
+                key={src}
+                className={`overflow-hidden rounded-xl border border-white/15 bg-white/5 ${span}`}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={src} alt="" loading="lazy" className="block h-full w-full object-cover" />
+              </div>
+            )
+          })}
         </div>
       </div>
     </section>

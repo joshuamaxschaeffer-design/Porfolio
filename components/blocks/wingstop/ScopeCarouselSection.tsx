@@ -16,7 +16,9 @@ import { scope as defaults } from './data'
 
 const GREEN = '#00843D'
 const GREEN_BRIGHT = '#23c265'
-const CARD = 'h-[560px] w-[86vw] max-w-[880px] sm:w-[78vw] lg:h-[600px] lg:w-[840px]'
+// Tighter than before: scope cards are an overview, not a deep-dive — keep them
+// dense so they don't read as empty balloons.
+const CARD = 'h-[440px] w-[78vw] max-w-[680px] sm:w-[60vw] lg:h-[460px] lg:w-[620px]'
 
 export function ScopeCarouselSection() {
   return (
@@ -25,10 +27,10 @@ export function ScopeCarouselSection() {
         <p className="br-data text-[14px] uppercase tracking-[0.12em] text-[var(--ws-green)]">
           1. {defaults.eyebrow}
         </p>
-        <h2 className="mt-3 max-w-[24ch] text-[32px] font-medium uppercase leading-[1.05] text-[var(--br-ink)] md:text-[40px]">
+        <h2 className="mt-3 max-w-[20ch] text-[30px] font-medium uppercase leading-[1.05] text-[var(--br-ink)] md:text-[38px]">
           {defaults.heading}
         </h2>
-        <p className="mt-3 max-w-3xl text-lg text-[var(--br-muted)] md:text-[22px]">{defaults.intro}</p>
+        <p className="mt-3 max-w-2xl text-base text-[var(--br-muted)] md:text-[19px]">{defaults.intro}</p>
       </header>
       <ScopeCarousel />
     </section>
@@ -293,7 +295,7 @@ function ScopeModule({ m }: { m: Mod }) {
           {m.body}
         </p>
       </header>
-      <div className="relative mt-6 flex min-h-0 flex-1 items-end justify-center overflow-hidden">
+      <div className="relative mt-5 flex min-h-0 flex-1 items-center justify-center overflow-hidden">
         <ModuleVisual m={m} green={green} />
       </div>
     </article>
@@ -303,10 +305,17 @@ function ScopeModule({ m }: { m: Mod }) {
 function ModuleVisual({ m, green }: { m: Mod; green: boolean }) {
   const mm = m as Record<string, unknown>
 
-  // device mockup (MVP, dark-mode UI)
+  // device mockup (MVP, dark-mode UI). The new hero device PNGs already include
+  // a phone frame, so render them bare (no extra Phone wrapper) and let them
+  // fill the card height.
   if (typeof mm.device === 'string') {
+    const framed = (mm.device as string).includes('/hero2/')
+    if (framed) {
+      // eslint-disable-next-line @next/next/no-img-element
+      return <img src={mm.device as string} alt={m.title} loading="lazy" className="h-full w-auto max-w-full object-contain drop-shadow-[0_18px_36px_rgba(0,0,0,0.4)]" />
+    }
     return (
-      <div className="w-[60%] max-w-[280px]">
+      <div className="h-full">
         <Phone src={mm.device as string} alt={m.title} />
       </div>
     )

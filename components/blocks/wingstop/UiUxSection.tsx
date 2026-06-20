@@ -77,12 +77,18 @@ function FlowNode({ step }: { step: { src: string; label: string } }) {
         </span>
         <span className="text-[12px] leading-tight text-[var(--br-muted)]">{step.label}</span>
       </div>
-      {/* hover-revealed screen */}
+      {/* hover-revealed screen — larger, lifts above siblings, won't clip */}
       <div
-        className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 w-[150px] -translate-x-1/2 overflow-hidden rounded-xl border border-[var(--br-line)] bg-white opacity-0 shadow-[0_18px_44px_rgba(0,0,0,0.22)] transition-opacity duration-200 group-hover:opacity-100 group-focus:opacity-100"
+        className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-3 w-[168px] -translate-x-1/2 overflow-hidden rounded-xl border border-[var(--br-line)] bg-white opacity-0 shadow-[0_22px_50px_rgba(0,0,0,0.28)] transition-all duration-200 group-hover:opacity-100 group-focus:opacity-100"
+        aria-hidden={!open}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={step.src} alt={step.label} loading="lazy" className="block w-full object-cover object-top" style={{ height: open ? 'auto' : 'auto' }} />
+        <div className="max-h-[300px] overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={step.src} alt={step.label} loading="lazy" className="block w-full object-cover object-top" />
+        </div>
+        <p className="br-data border-t border-[var(--br-line)] px-2 py-1.5 text-[11px] uppercase tracking-[0.08em] text-[var(--br-muted)]">
+          {step.label}
+        </p>
       </div>
     </div>
   )
@@ -119,7 +125,7 @@ function DarkModeStack() {
   }, [])
 
   const F = 1500
-  const GAP = 200 + p * 260 // spread grows on scroll
+  const GAP = 320 + p * 320 // larger base so cards stay clearly separated, spread grows on scroll
 
   return (
     <div ref={ref} className="relative mt-16 h-[200vh] bg-[#0a0a0b]">
@@ -138,14 +144,16 @@ function DarkModeStack() {
           {defaults.darkMode.screens.map((src, i) => {
             const z = i * GAP
             const s = F / (F + z)
-            // anchor front card left-center, recede toward top-right vanishing point
-            const frontX = 30,
-              frontY = 56,
-              vpX = 92,
-              vpY = 26
+            // anchor front card lower-left, recede cleanly up-and-to-the-right
+            const frontX = 26,
+              frontY = 58,
+              vpX = 90,
+              vpY = 22
             const x = frontX + (vpX - frontX) * (1 - s)
             const y = frontY + (vpY - frontY) * (1 - s)
-            const d = z / (200 + 260)
+            // normalized depth across the whole stack (0 = hero front, 1 = back card)
+            const count = defaults.darkMode.screens.length
+            const d = count > 1 ? i / (count - 1) : 0
             return (
               <div
                 key={src}
@@ -153,11 +161,11 @@ function DarkModeStack() {
                 style={{
                   left: `${x}%`,
                   top: `${y}%`,
-                  width: '20%',
-                  maxWidth: 230,
+                  width: '22%',
+                  maxWidth: 250,
                   transform: `translate(-50%,-50%) scale(${s})`,
                   zIndex: defaults.darkMode.screens.length - i,
-                  filter: `brightness(${1 - Math.min(0.6, Math.max(0, (d - 0.3) * 0.7))}) blur(${Math.min(8, Math.max(0, (d - 0.6) * 12))}px)`,
+                  filter: `brightness(${1 - 0.5 * d}) blur(${(6 * d * d).toFixed(2)}px)`,
                   boxShadow: '0 24px 60px rgba(0,0,0,0.6)',
                 }}
               >
