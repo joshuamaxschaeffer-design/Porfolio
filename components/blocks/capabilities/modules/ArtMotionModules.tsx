@@ -1,30 +1,28 @@
 'use client'
 
 import { BluePlaceholder } from '../BluePlaceholder'
+import { DarkBand } from '../DarkBand'
 import { AnchorHeader, BlueGrid, BlueRail, ModuleCaption } from './primitives'
 
 /**
- * Section 04 — Art Direction & Motion work modules (bluescale FPO).
+ * Section 04 — Art Direction & Motion work modules.
  *
- * - Reel hero + filmstrip of still keyframes (so motion reads even when paused).
- * - The documented visual *languages* (Mindbody illustration + motion pillars,
- *   CBTL watercolor) as proof of direction.
- * - Art-direction boards (photography / campaign stills).
- * - Animated-mark showcase.
+ * DARK band: the motion reel + filmstrip + the documented visual languages —
+ * the most cinematic moment on the page. Light: AD boards + animated marks.
  */
 export function ArtMotionModules() {
   return (
-    <div className="space-y-20 md:space-y-28">
-      {/* ── Reel hero + filmstrip ───────────────────────────── */}
-      <div>
-        <AnchorHeader
-          kicker="Motion · reel"
-          title="Motion that reads, even paused"
-          blurb="A looping reel of interface motion and brand film, with a filmstrip of stills pulled from it — so the work lands whether or not it’s playing."
-        />
-        <BluePlaceholder ratio="ultrawide" label="Motion reel — looping video (FPO)" />
+    <div className="space-y-16 md:space-y-20">
+      {/* ── DARK band: reel + filmstrip + languages ─────────── */}
+      <DarkBand
+        eyebrow="Motion · reel"
+        title="Motion that reads, even paused"
+        blurb="A looping reel of interface motion and brand film, with a filmstrip of stills pulled from it — so the work lands whether or not it’s playing. I’ve defined entire visual languages, not just one-off assets."
+      >
+        <BluePlaceholder ratio="ultrawide" dark label="Motion reel — looping video (FPO)" />
         <div className="mt-4">
           <BlueGrid
+            dark
             cols={4}
             ratio="video"
             items={[
@@ -32,28 +30,31 @@ export function ArtMotionModules() {
               'CBTL — brand film (4K)',
               'Mindbody — interface motion',
               'Pepsi — product / AR',
+              'Schick — interface motion',
+              'ConCo — motion piece',
             ]}
           />
         </div>
-        <ModuleCaption>Filmstrip — stills from the reel (FPO). Real build autoplays muted loops.</ModuleCaption>
-      </div>
+        <ModuleCaption dark>Filmstrip — stills from the reel (FPO). Real build autoplays muted loops.</ModuleCaption>
 
-      {/* ── Visual languages (proof of direction) ───────────── */}
-      <div>
-        <AnchorHeader
-          kicker="Direction · languages"
-          title="I’ve defined visual languages, not just assets"
-          role="Mindbody · CBTL"
-          blurb="Documented systems: Mindbody’s illustration (“2 Pillars: Relatable, Purposeful”) and motion (“3 Pillars: Calming, Reactive, Guiding”), and CBTL’s watercolor art direction."
-        />
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-7">
-          <BluePlaceholder ratio="portrait" label="Illustration language — Mindbody (FPO)" />
-          <BluePlaceholder ratio="portrait" label="Motion language — Mindbody (FPO)" />
-          <BluePlaceholder ratio="portrait" label="Watercolor AD — CBTL (FPO)" />
+        {/* visual languages */}
+        <div className="mt-12 border-t border-white/10 pt-12">
+          <AnchorHeader
+            dark
+            kicker="Direction · languages"
+            title="Documented visual languages"
+            role="Mindbody · CBTL"
+            blurb="Mindbody’s illustration (“2 Pillars: Relatable, Purposeful”) and motion (“3 Pillars: Calming, Reactive, Guiding”), and CBTL’s watercolor art direction."
+          />
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-7">
+            <BluePlaceholder ratio="portrait" dark label="Illustration language — Mindbody (FPO)" />
+            <BluePlaceholder ratio="portrait" dark label="Motion language — Mindbody (FPO)" />
+            <BluePlaceholder ratio="portrait" dark label="Watercolor AD — CBTL (FPO)" />
+          </div>
         </div>
-      </div>
+      </DarkBand>
 
-      {/* ── Art-direction boards ────────────────────────────── */}
+      {/* ── Art-direction boards (light) ────────────────────── */}
       <div>
         <AnchorHeader
           kicker="Art direction"
@@ -75,7 +76,7 @@ export function ArtMotionModules() {
         />
       </div>
 
-      {/* ── Animated marks ──────────────────────────────────── */}
+      {/* ── Animated marks (light rail) ─────────────────────── */}
       <div>
         <AnchorHeader
           kicker="Animated identity"

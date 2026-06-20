@@ -2,16 +2,17 @@
 
 import { Reveal } from '../../../animation/Reveal'
 import { BluePlaceholder } from '../BluePlaceholder'
-import { AnchorHeader, BlueGrid, ModuleCaption } from './primitives'
+import { DarkBand } from '../DarkBand'
+import { BrandWall } from '../BrandLogo'
+import { pick } from '../brands'
+import { AnchorHeader, ModuleCaption } from './primitives'
 
 /**
- * Section 02 — Brand & Identity work modules (bluescale FPO, real layouts).
+ * Section 02 — Brand & Identity work modules.
  *
- * Anchor: Blaze — the authored multi-sub-brand system, shown as the senior
- * brand-case artifact sequence (direction → logomark anatomy → clearspace →
- * color → type → applications).
- * Then: "Identities I built" wall (authored marks, incl. animated), kept clearly
- * separate from brands worked within.
+ * Anchor (DARK band): Blaze — the authored multi-sub-brand system shown as the
+ * senior brand-case artifact sequence. Then real logo walls: "Identities I
+ * built" (authored, real marks) kept separate from "brands I worked within."
  */
 
 const BRAND_SEQUENCE: { step: string; label: string; ratio: 'wide' | 'ultrawide' }[] = [
@@ -25,15 +26,13 @@ const BRAND_SEQUENCE: { step: string; label: string; ratio: 'wide' | 'ultrawide'
 
 export function BrandModules() {
   return (
-    <div className="space-y-20 md:space-y-28">
-      {/* ── Anchor — Blaze identity system (artifact sequence) ── */}
-      <div>
-        <AnchorHeader
-          kicker="Anchor · Authored"
-          title="Blaze — a multi-sub-brand system"
-          role="Sole / Lead Designer + Brand"
-          blurb="A full identity for a cannabis-tech suite: one parent mark plus five sub-brands (Warehouse, Center, Extract, Grow, Retail), each with its own lockups and app icon."
-        />
+    <div className="space-y-16 md:space-y-20">
+      {/* ── Anchor — Blaze identity system (dark cinematic) ──── */}
+      <DarkBand
+        eyebrow="Anchor · Authored"
+        title="Blaze — a multi-sub-brand system"
+        blurb="A full identity for a cannabis-tech suite: one parent mark plus five sub-brands (Warehouse, Center, Extract, Grow, Retail), each with its own lockups and app icon. Sole Designer + Brand."
+      >
         <div className="space-y-5 md:space-y-6">
           {BRAND_SEQUENCE.map(({ step, label, ratio }, i) => (
             <Reveal key={step} delay={i * 40}>
@@ -44,32 +43,24 @@ export function BrandModules() {
                   </p>
                 </div>
                 <div className="md:col-span-9">
-                  <BluePlaceholder ratio={ratio} label={label} />
+                  <BluePlaceholder ratio={ratio} dark label={label} />
                 </div>
               </div>
             </Reveal>
           ))}
         </div>
-      </div>
+      </DarkBand>
 
-      {/* ── Identities I built (authored marks wall) ──────────── */}
+      {/* ── Identities I built (authored marks — REAL logos) ─── */}
       <div>
         <AnchorHeader
           kicker="Identities I built"
           title="Logos & marks, from scratch"
           blurb="Authored identities — distinct from brands I’ve worked within. Several have animated marks."
         />
-        <BlueGrid
+        <BrandWall
           cols={3}
-          ratio="square"
-          items={[
-            'Blaze — wordmark + icon',
-            'DOPA — logo + app icon',
-            'Jubilee — animated mark',
-            'Rosetta — animated mark',
-            'Trees — logo + leaf system',
-            'Baserate / Journalytic — marks',
-          ]}
+          brands={pick('blaze', 'dopa', 'jubilee', 'rosetta', 'trees', 'baserate', 'journalytic')}
         />
         <ModuleCaption>Animated marks (Jubilee, Rosetta) loop here in the real build.</ModuleCaption>
       </div>
@@ -79,24 +70,22 @@ export function BrandModules() {
         <AnchorHeader
           kicker="Worked within"
           title="Brands I shipped inside"
-          blurb="Established identities I designed product and applications for — shown as a normalized logo row, not claimed as authored."
+          blurb="Established identities I designed product and applications for — shown as a normalized logo wall, not claimed as authored."
         />
-        <BlueGrid
+        <BrandWall
           cols={4}
-          ratio="wide"
-          items={[
-            'Panda Express',
-            'Raising Cane’s',
-            'Dave & Buster’s',
-            'True Food Kitchen',
-            'Wingstop',
-            'CBTL',
-            'Mindbody',
-            'Samsung',
-            'VF Corp · Work Authority',
-          ]}
+          brands={pick(
+            'panda',
+            'raisingCanes',
+            'daveAndBusters',
+            'trueFoodKitchen',
+            'wingstop',
+            'cbtl',
+            'mindbody',
+            'samsung',
+            'vfCorp',
+          )}
         />
-        <ModuleCaption>Normalized monochrome logo wall (FPO) — “worked within,” not authored.</ModuleCaption>
       </div>
     </div>
   )

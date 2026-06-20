@@ -4,49 +4,47 @@ import { Reveal } from '../../../animation/Reveal'
 import { PerspectiveDeviceGrid } from '../../shared/PerspectiveDeviceGrid'
 import { ImageCompareSlider } from '../../shared/ImageCompareSlider'
 import { BluePlaceholder } from '../BluePlaceholder'
+import { DarkBand } from '../DarkBand'
 import { AnchorHeader, BlueRail, BlueFlowRow, ModuleCaption } from './primitives'
 
 /** FPO accent for the bluescale pass (recede glow on the perspective grid). */
-const BLUE = '#3f66b5'
+const BLUE = '#5b7fc7'
 
 /**
- * Section 01 — Product & UX work modules (bluescale FPO, real layouts).
+ * Section 01 — Product & UX work modules.
  *
- * Anchor A: Mindbody (B2B) — perspective device grid + a before/after slider.
- * Anchor B: Raising Cane's (consumer) — order→scan→reward flow row.
- * Breadth rail: the other product brands as a draggable-style rail of screens.
+ * Anchor A: Mindbody (B2B) — a DARK cinematic band w/ perspective device grid +
+ * before/after slider + data-viz. Anchor B: Raising Cane's flow. Breadth rail.
  */
 export function ProductUxModules() {
   return (
-    <div className="space-y-20 md:space-y-28">
-      {/* ── Anchor A — Mindbody (B2B depth) ─────────────────── */}
-      <div>
-        <AnchorHeader
-          kicker="Anchor · B2B"
-          title="Mindbody"
-          role="UI/IXD + Design-Systems Lead"
-          blurb="The point-of-sale, payments, checkout, refunds, and reconciliation behind a wellness platform — dense workflows that can’t break the power user behind the counter."
-        />
+    <div className="space-y-16 md:space-y-20">
+      {/* ── Anchor A — Mindbody (dark cinematic feature band) ── */}
+      <DarkBand
+        eyebrow="Anchor · B2B"
+        title="Mindbody — the system behind the counter"
+        blurb="Point-of-sale, payments, checkout, refunds, and reconciliation for a wellness platform — dense workflows that can’t break the power user. UI/IXD + Design-Systems Lead."
+      >
         <Reveal>
           <PerspectiveDeviceGrid accent={BLUE} cols={4} rows={2} caption="Mindbody — POS / retail screens (FPO)" />
         </Reveal>
-        <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
+        <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
           <Reveal>
             <ImageCompareSlider
-              before={<BluePlaceholder ratio="wide" rounded={false} label="Original retail checkout (before)" />}
-              after={<BluePlaceholder ratio="wide" rounded={false} label="Redesigned checkout (after)" />}
+              before={<BluePlaceholder ratio="wide" rounded={false} dark label="Original retail checkout" />}
+              after={<BluePlaceholder ratio="wide" rounded={false} dark label="Redesigned checkout" />}
               beforeLabel="Before"
               afterLabel="After"
               ratio="16/9"
             />
-            <ModuleCaption>Before / after — the retail checkout redesign.</ModuleCaption>
+            <ModuleCaption dark>Drag the handle — the retail checkout redesign.</ModuleCaption>
           </Reveal>
           <Reveal delay={80}>
-            <BluePlaceholder ratio="wide" label="Analytics dashboard — data-viz (FPO)" />
-            <ModuleCaption>Reporting & analytics — dense data made legible.</ModuleCaption>
+            <BluePlaceholder ratio="wide" dark label="Analytics dashboard — data-viz (FPO)" />
+            <ModuleCaption dark>Reporting & analytics — dense data, made legible.</ModuleCaption>
           </Reveal>
         </div>
-      </div>
+      </DarkBand>
 
       {/* ── Anchor B — Raising Cane's (consumer richness) ───── */}
       <div>

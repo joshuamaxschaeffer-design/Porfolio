@@ -2,22 +2,19 @@
 
 import { Reveal } from '../../../animation/Reveal'
 import { BluePlaceholder } from '../BluePlaceholder'
+import { DarkBand } from '../DarkBand'
 import { AnchorHeader, BlueGrid, ModuleCaption } from './primitives'
 
 /**
- * Section 03 — Design Systems & Implementation work modules (bluescale FPO).
+ * Section 03 — Design Systems & Implementation work modules.
  *
- * - Scale-as-wow: a component-library grid + a "by the numbers" line.
- * - Design ↔ code: side-by-side UI and the code that builds it (handoff).
- * - Data-viz spotlight (the differentiator): hero chart → zoomed dashboard →
- *   outcome, all FPO for now.
- *
- * (Real build swaps in the live component sheets + the 3D ScalabilityTimeline +
- * the hover-swap CodeBox.)
+ * - Component libraries (scale) — light grid.
+ * - DARK band: the "system at scale" + design↔code + data-viz spotlight, the
+ *   cinematic, technical peak (the enterprise/B2B proof).
  */
 export function DesignSystemsModules() {
   return (
-    <div className="space-y-20 md:space-y-28">
+    <div className="space-y-16 md:space-y-20">
       {/* ── Component libraries (scale) ─────────────────────── */}
       <div>
         <AnchorHeader
@@ -42,55 +39,54 @@ export function DesignSystemsModules() {
         <ModuleCaption>Component sheet (FPO) — real library captures drop in here.</ModuleCaption>
       </div>
 
-      {/* ── Tokens + scale timeline ─────────────────────────── */}
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-10">
-        <div className="md:col-span-5">
-          <AnchorHeader kicker="Tokens" title="Decisions, not values" blurb="Color, type, and spacing as tokens — change once, propagate everywhere. No visual drift." />
-          <BluePlaceholder ratio="portrait" label="Token → component wiring (FPO)" />
+      {/* ── DARK band: scale + design↔code + data-viz ───────── */}
+      <DarkBand
+        eyebrow="The system at scale"
+        title="Tokens, handoff, and dense data"
+        blurb="Decisions as tokens — change once, propagate everywhere. The component paired with the code that builds it. And the data-viz patterns behind analytics and investor dashboards."
+      >
+        {/* tokens + scale timeline */}
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-10">
+          <div className="md:col-span-5">
+            <BluePlaceholder ratio="portrait" dark label="Token → component wiring (FPO)" />
+            <ModuleCaption dark>Color · type · spacing as tokens — no visual drift.</ModuleCaption>
+          </div>
+          <div className="md:col-span-7">
+            <BluePlaceholder ratio="wide" dark label="Scalability timeline — receding screens (FPO)" />
+            <ModuleCaption dark>One system holds across many screens.</ModuleCaption>
+          </div>
         </div>
-        <div className="md:col-span-7">
-          <AnchorHeader kicker="Scale" title="One system, many screens" blurb="The receding “zoom-out” of screens that proves a system holds at scale." />
-          <BluePlaceholder ratio="wide" label="Scalability timeline — receding screens (FPO)" />
-          <ModuleCaption>Real build = the 3D ScalabilityTimeline component.</ModuleCaption>
-        </div>
-      </div>
 
-      {/* ── Design ↔ code (handoff) ─────────────────────────── */}
-      <div>
-        <AnchorHeader
-          kicker="Implementation"
-          title="Design ↔ code handoff"
-          blurb="The component on the left; the code that builds it on the right. Built so engineers can extend the system without me in the room."
-        />
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
+        {/* design ↔ code */}
+        <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
           <Reveal>
-            <BluePlaceholder ratio="video" label="Live UI component (FPO)" />
+            <BluePlaceholder ratio="video" dark label="Live UI component (FPO)" />
           </Reveal>
           <Reveal delay={80}>
-            <BluePlaceholder ratio="video" label="The code behind it (FPO)" />
+            <BluePlaceholder ratio="video" dark label="The code behind it (FPO)" />
           </Reveal>
         </div>
-        <ModuleCaption>Real build = hover-swap CodeBox pairing UI with its source.</ModuleCaption>
-      </div>
+        <ModuleCaption dark>Design ↔ code — built so engineers extend the system without me.</ModuleCaption>
 
-      {/* ── Data-viz spotlight (differentiator) ─────────────── */}
-      <div>
-        <AnchorHeader
-          kicker="Data-viz · the differentiator"
-          title="Dense analytics, made legible"
-          role="Mindbody · Baserate"
-          blurb="Reporting and investor dashboards with documented data-viz pattern sets — an executive summary view paired with a granular analyst view. Mindbody’s analytics and Baserate’s investor platform."
-        />
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-12 md:gap-8">
-          <div className="md:col-span-7">
-            <BluePlaceholder ratio="wide" label="Baserate — investor dashboard, hero chart (FPO)" />
-          </div>
-          <div className="md:col-span-5">
-            <BluePlaceholder ratio="wide" label="Mindbody — analytics, zoomed out (FPO)" />
+        {/* data-viz spotlight */}
+        <div className="mt-12 border-t border-white/10 pt-12">
+          <AnchorHeader
+            dark
+            kicker="Data-viz · the differentiator"
+            title="Dense analytics, made legible"
+            role="Mindbody · Baserate"
+            blurb="Reporting and investor dashboards with documented data-viz pattern sets — an executive summary paired with a granular analyst view."
+          />
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-12 md:gap-8">
+            <div className="md:col-span-7">
+              <BluePlaceholder ratio="wide" dark label="Baserate — investor dashboard, hero chart (FPO)" />
+            </div>
+            <div className="md:col-span-5">
+              <BluePlaceholder ratio="wide" dark label="Mindbody — analytics, zoomed out (FPO)" />
+            </div>
           </div>
         </div>
-        <ModuleCaption>Lead with one beautiful chart, then the full dashboard + the outcome.</ModuleCaption>
-      </div>
+      </DarkBand>
     </div>
   )
 }

@@ -36,6 +36,8 @@ export interface BluePlaceholderProps {
   ratio?: BlueRatio
   /** rounded corners (default true) */
   rounded?: boolean
+  /** dark-band treatment (deeper fill, lighter strokes) */
+  dark?: boolean
   className?: string
 }
 
@@ -43,18 +45,26 @@ export function BluePlaceholder({
   label,
   ratio = 'video',
   rounded = true,
+  dark = false,
   className = '',
 }: BluePlaceholderProps) {
+  // light vs dark-band palette
+  const fill = dark ? 'bg-[#1a2740]' : 'bg-[#dbe6fb]'
+  const border = dark ? 'border-[#33486f]' : 'border-[#9db8e8]'
+  const stroke = dark ? 'text-[#33486f]' : 'text-[#9db8e8]'
+  const chip = dark ? 'bg-[#2a3c5e]' : 'bg-[#bcd0f4]'
+  const glyph = dark ? 'text-[#7e9bd4]' : 'text-[#3f66b5]'
+  const text = dark ? 'text-[#7e9bd4]' : 'text-[#3f66b5]'
   return (
     <div
-      className={`relative w-full overflow-hidden border border-[#9db8e8] bg-[#dbe6fb] ${
+      className={`relative w-full overflow-hidden border ${fill} ${border} ${
         RATIO[ratio]
       } ${rounded ? 'rounded-[var(--br-card-radius)]' : ''} ${className}`}
     >
       {/* diagonal image-X glyph */}
       <svg
         aria-hidden
-        className="absolute inset-0 h-full w-full text-[#9db8e8]"
+        className={`absolute inset-0 h-full w-full ${stroke}`}
         preserveAspectRatio="none"
       >
         <line x1="0" y1="0" x2="100%" y2="100%" stroke="currentColor" strokeWidth="1" />
@@ -62,8 +72,8 @@ export function BluePlaceholder({
       </svg>
       {/* center mark + caption */}
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 text-center">
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#bcd0f4]">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="text-[#3f66b5]">
+        <span className={`flex h-9 w-9 items-center justify-center rounded-full ${chip}`}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className={glyph}>
             <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.6" />
             <circle cx="8.5" cy="8.5" r="1.6" fill="currentColor" />
             <path
@@ -76,7 +86,7 @@ export function BluePlaceholder({
           </svg>
         </span>
         {label && (
-          <span className="br-data max-w-[28ch] text-[11px] uppercase leading-snug tracking-[0.1em] text-[#3f66b5]">
+          <span className={`br-data max-w-[28ch] text-[11px] uppercase leading-snug tracking-[0.1em] ${text}`}>
             {label}
           </span>
         )}

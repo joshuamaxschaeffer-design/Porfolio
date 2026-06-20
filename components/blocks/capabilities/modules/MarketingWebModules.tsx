@@ -72,6 +72,7 @@ export function MarketingWebModules() {
             'Samsung — enterprise web',
             'Chandon — IG Shopping / PDP',
             'Pepsi — e-comm / AR',
+            'PetSmart — brand / campaign',
             'KFC — promo pitch',
           ]}
         />
