@@ -50,9 +50,9 @@ export function AppSection() {
               <h3 className="mt-2 text-2xl font-semibold leading-tight text-white sm:text-[26px]">{f.title}</h3>
               <p className="mt-2 text-[15px] leading-relaxed text-white/80">{f.body}</p>
             </header>
-            <div className="mt-5 flex min-h-0 flex-1 items-end justify-center gap-3">
+            <div className="mt-5 flex min-h-0 flex-1 items-end justify-center gap-3 overflow-hidden">
               {f.screens.map((s, i) => (
-                <div key={s} className={i === 1 ? 'w-[36%] max-w-[210px]' : 'mb-6 w-[31%] max-w-[185px] opacity-95'}>
+                <div key={s} className={i === 1 ? 'w-[34%] max-w-[190px]' : 'mb-5 w-[29%] max-w-[165px] opacity-95'}>
                   <Phone src={s} />
                 </div>
               ))}
