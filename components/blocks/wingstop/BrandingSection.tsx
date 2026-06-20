@@ -47,14 +47,14 @@ export function BrandingSection() {
           {defaults.gridEyebrow}
         </span>
         <p className="mt-2 max-w-[60ch] text-[15px] text-white/80 sm:text-base">{defaults.gridNote}</p>
-        <ul className="mt-6 grid grid-cols-3 gap-4 sm:grid-cols-6 sm:gap-5">
+        <ul className="mt-6 grid grid-cols-4 gap-3 sm:grid-cols-6 lg:grid-cols-12">
           {defaults.grid.map((src, i) => (
             <li
               key={src + i}
-              className="flex aspect-square items-center justify-center rounded-2xl border border-white/12 bg-white/[0.06] p-3"
+              className="flex aspect-square items-center justify-center rounded-xl border border-white/12 bg-white/[0.06] p-2"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={src} alt="" className="h-full w-full object-contain" />
+              <img src={src} alt="" className="h-10 w-10 object-contain" />
             </li>
           ))}
         </ul>
@@ -64,14 +64,19 @@ export function BrandingSection() {
 }
 
 /** One dimensional chip; tilts toward ~45° as the section scrolls through view. */
+/** Per-chip baseline offsets (px) — a slight vertical scatter so the grid reads
+ *  as tossed coins rather than a rigid 3×2. Indexed by position. */
+const CHIP_STAGGER = [-14, 18, -8, 12, -18, 8]
+
 function Chip({ chip, index }: { chip: { src: string; name: string; color: string }; index: number }) {
   const ref = useRef<HTMLDivElement>(null)
-  const [rot, setRot] = useState(-18)
+  const [drift, setDrift] = useState(0)
+  const base = CHIP_STAGGER[index % CHIP_STAGGER.length]
 
   useEffect(() => {
     const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
     if (reduce) {
-      setRot(0)
+      setDrift(0)
       return
     }
     let raf = 0
@@ -83,7 +88,8 @@ function Chip({ chip, index }: { chip: { src: string; name: string; color: strin
       const vh = window.innerHeight
       // center-relative progress: -1 (below) → 0 (centered) → 1 (above)
       const c = (r.top + r.height / 2 - vh / 2) / (vh / 2)
-      setRot(Math.max(-45, Math.min(45, c * 42)))
+      // gentle vertical float; alternate direction per chip so they bob apart.
+      setDrift(Math.max(-26, Math.min(26, c * 24 * (index % 2 ? -1 : 1))))
     }
     const schedule = () => {
       if (!raf) raf = requestAnimationFrame(onScroll)
@@ -96,17 +102,14 @@ function Chip({ chip, index }: { chip: { src: string; name: string; color: strin
       window.removeEventListener('resize', schedule)
       if (raf) cancelAnimationFrame(raf)
     }
-  }, [])
+  }, [index])
 
   return (
     <div className="flex flex-col items-center">
-      {/* The chip renders are WIDE ellipses (a coin seen at an angle), so the
-          container is sized to that shape (4:3-ish) rather than a square — a
-          square left big vertical gaps and let the coin drift toward the label. */}
-      <div ref={ref} className="relative grid aspect-[4/3] w-full place-items-center will-change-transform">
-        {/* Real SD-Studio 3D chip render (Wingstop-green coin + white glyph).
-            A gentle scroll-driven rotate gives the same subtle motion as the
-            Baserate chips without faking depth in CSS. */}
+      {/* The chip renders are already tossed 3D coins (pre-rotated in SD Studio),
+          so we DON'T re-rotate in CSS — just a gentle vertical float + a static
+          per-chip stagger so the set reads as coins caught mid-air. */}
+      <div ref={ref} className="relative grid aspect-square w-full place-items-center will-change-transform">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={chip.src}
@@ -114,12 +117,12 @@ function Chip({ chip, index }: { chip: { src: string; name: string; color: strin
           loading="lazy"
           className="h-full w-full object-contain"
           style={{
-            transform: `rotate(${rot * 0.4}deg)`,
-            filter: 'drop-shadow(0 16px 24px rgba(0,0,0,0.5))',
+            transform: `translateY(${base + drift}px)`,
+            filter: 'drop-shadow(0 18px 26px rgba(0,0,0,0.55))',
           }}
         />
       </div>
-      <span className="br-data mt-4 text-center text-[11px] uppercase leading-tight tracking-[0.08em] text-white/65">
+      <span className="br-data mt-3 text-center text-[11px] uppercase leading-tight tracking-[0.08em] text-white/65">
         {chip.name}
       </span>
     </div>
