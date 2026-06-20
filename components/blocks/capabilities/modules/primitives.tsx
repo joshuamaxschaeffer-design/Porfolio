@@ -64,6 +64,29 @@ export function AnchorHeader({
   )
 }
 
+/**
+ * ModuleCard — a subtle container that groups an anchor mini-case (header +
+ * media) into one distinct block so the long scroll reads as discrete cards,
+ * not floating content. Tone-aware; light padding so media still breathes.
+ */
+export function ModuleCard({
+  dark = false,
+  children,
+}: {
+  dark?: boolean
+  children: React.ReactNode
+}) {
+  return (
+    <div
+      className={`rounded-[var(--br-card-radius)] border p-5 md:p-8 ${
+        dark ? 'border-white/12 bg-white/[0.03]' : 'border-[var(--br-line)] bg-white/60'
+      }`}
+    >
+      {children}
+    </div>
+  )
+}
+
 /** Small caption under a placeholder. */
 export function ModuleCaption({
   children,

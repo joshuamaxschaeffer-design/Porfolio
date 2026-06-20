@@ -4,7 +4,7 @@ import { Reveal } from '../../../animation/Reveal'
 import { PerspectiveDeviceGrid } from '../../shared/PerspectiveDeviceGrid'
 import { ImageCompareSlider } from '../../shared/ImageCompareSlider'
 import { BluePlaceholder } from '../BluePlaceholder'
-import { AnchorHeader, BlueRail, BlueFlowRow, ModuleCaption } from './primitives'
+import { AnchorHeader, BlueRail, BlueFlowRow, ModuleCaption, ModuleCard } from './primitives'
 
 const BLUE = '#5b7fc7'
 
@@ -13,7 +13,7 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
   return (
     <div className="space-y-16 md:space-y-24">
       {/* Anchor A — Mindbody (B2B) */}
-      <div>
+      <ModuleCard dark={dark}>
         <AnchorHeader
           dark={dark}
           kicker="Anchor · B2B"
@@ -40,10 +40,10 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
             <ModuleCaption dark={dark}>Reporting & analytics — dense data, made legible.</ModuleCaption>
           </Reveal>
         </div>
-      </div>
+      </ModuleCard>
 
       {/* Anchor B — Raising Cane's flow */}
-      <div>
+      <ModuleCard dark={dark}>
         <AnchorHeader
           dark={dark}
           kicker="Anchor · Consumer"
@@ -56,7 +56,7 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
           steps={['Onboarding', 'Find a location', 'Build the order', 'Customize (PDP)', 'Scan / Caniac Club', 'Reward → checkout']}
           caption="Order → scan → reward — the core flow (FPO)"
         />
-      </div>
+      </ModuleCard>
 
       {/* Breadth rail — full width */}
       <div>
