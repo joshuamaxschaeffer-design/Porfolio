@@ -143,18 +143,46 @@ function ScopeCarousel() {
   useEffect(
     () => () => {
       if (dragRaf.current != null) cancelAnimationFrame(dragRaf.current)
+      if (pillRaf.current != null) cancelAnimationFrame(pillRaf.current)
     },
     [],
   )
 
-  const scrollToCard = useCallback((i: number) => {
-    const el = trackRef.current
-    if (!el) return
-    const card = el.querySelectorAll<HTMLElement>('[data-card]')[i]
-    if (!card) return
-    const padLeft = parseFloat(getComputedStyle(el).paddingLeft) || 0
-    el.scrollTo({ left: card.offsetLeft - padLeft, behavior: 'smooth' })
-  }, [])
+  const pillRaf = useRef<number | null>(null)
+  const scrollToCard = useCallback(
+    (i: number) => {
+      const el = trackRef.current
+      if (!el) return
+      const card = el.querySelectorAll<HTMLElement>('[data-card]')[i]
+      if (!card) return
+      // Stop any drag momentum so it doesn't fight the jump.
+      stopMomentum()
+      if (pillRaf.current != null) cancelAnimationFrame(pillRaf.current)
+      const padLeft = parseFloat(getComputedStyle(el).paddingLeft) || 0
+      const maxLeft = el.scrollWidth - el.clientWidth
+      const to = Math.max(0, Math.min(maxLeft, card.offsetLeft - padLeft))
+      // Manual rAF tween on scrollLeft. We do NOT use scrollTo({behavior:'smooth'}):
+      // Lenis ships lenis.css which forces scroll-behavior:auto globally, so the
+      // native smooth jump is a no-op. Driving scrollLeft directly is Lenis-safe.
+      const from = el.scrollLeft
+      const dist = to - from
+      if (Math.abs(dist) < 1) return
+      const dur = Math.min(620, 240 + Math.abs(dist) * 0.5)
+      const start = performance.now()
+      const ease = (t: number) => 1 - Math.pow(1 - t, 3) // easeOutCubic
+      const step = (now: number) => {
+        const p = Math.min(1, (now - start) / dur)
+        el.scrollLeft = from + dist * ease(p)
+        if (p < 1) {
+          pillRaf.current = requestAnimationFrame(step)
+        } else {
+          pillRaf.current = null
+        }
+      }
+      pillRaf.current = requestAnimationFrame(step)
+    },
+    [stopMomentum],
+  )
 
   const dragTick = useCallback(() => {
     const el = trackRef.current
@@ -349,10 +377,13 @@ function ModuleVisual({ m, green }: { m: Mod; green: boolean }) {
     )
   }
 
-  // EMAILS / PAGES: a tidy overlapping stack of small thumbnails, each whole at
-  // a fixed size with a gentle offset (no chaotic clipping).
+  // EMAILS: tall captures — a tidy overlapping stack of tall thumbnails reads
+  // right (they're meant to be tall).
   if (Array.isArray(mm.emails)) return <ThumbStack srcs={mm.emails as string[]} green={green} />
-  if (Array.isArray(mm.stacked)) return <ThumbStack srcs={mm.stacked as string[]} green={green} />
+  // WEB PAGES (location / finder): these source captures are extremely tall full
+  // pages, so a tall crop is mostly empty white. Show them as fanned BROWSER
+  // WINDOWS cropped to a clean 16:10 of the top, where the actual content lives.
+  if (Array.isArray(mm.stacked)) return <WindowStack srcs={mm.stacked as string[]} />
 
   // IN-STORE boards side by side, contained.
   if (Array.isArray(mm.boards)) {
@@ -416,17 +447,53 @@ function ThumbStack({ srcs, green }: { srcs: string[]; green: boolean }) {
   )
 }
 
-function Phone({ src, alt }: { src: string; alt: string }) {
+/** Fanned browser-window thumbnails — for very tall full-page web captures that
+ *  would otherwise crop to empty white. Each is a clean 16:10 of the page top. */
+function WindowStack({ srcs }: { srcs: string[] }) {
+  const shots = srcs.slice(0, 3)
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-[14%/6.5%] bg-white shadow-[0_20px_50px_-12px_rgba(0,0,0,0.45)] ring-1 ring-black/5">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={src}
-        alt={alt}
-        draggable={false}
-        loading="lazy"
-        className="pointer-events-none h-full w-full object-cover object-top"
-      />
+    <div className="relative h-[300px] w-full">
+      {shots.map((s, i) => (
+        <div
+          key={s}
+          className="absolute left-1/2 top-1/2 w-[230px] overflow-hidden rounded-lg border border-black/10 bg-white"
+          style={{
+            transform: `translate(calc(-50% + ${(i - 1) * 40}px), calc(-50% + ${(i - 1) * 26}px)) rotate(${(i - 1) * 4}deg)`,
+            zIndex: i,
+            boxShadow: '0 18px 40px rgba(0,0,0,0.24)',
+          }}
+        >
+          <div className="flex items-center gap-1 border-b border-black/5 bg-[#f3f3f5] px-2 py-1.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-black/15" />
+            <span className="h-1.5 w-1.5 rounded-full bg-black/15" />
+            <span className="h-1.5 w-1.5 rounded-full bg-black/15" />
+          </div>
+          <div className="aspect-[16/10] overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={s} alt="" loading="lazy" className="block w-full object-cover object-top" />
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function Phone({ src, alt }: { src: string; alt: string }) {
+  // Match the framed device used in the App section: dark bezel + notch so it
+  // reads as hardware, not a bare rounded screenshot.
+  return (
+    <div className="relative h-full w-full rounded-[15%/7%] bg-[#0c0d0d] p-[3.5%] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)] ring-1 ring-white/10">
+      <div className="relative h-full w-full overflow-hidden rounded-[12%/6%] bg-white">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={src}
+          alt={alt}
+          draggable={false}
+          loading="lazy"
+          className="pointer-events-none h-full w-full object-cover object-top"
+        />
+      </div>
+      <div className="absolute left-1/2 top-[3.5%] h-[1.6%] w-[34%] -translate-x-1/2 rounded-full bg-[#0c0d0d]" />
     </div>
   )
 }

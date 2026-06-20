@@ -50,14 +50,30 @@ export function AppSection() {
               <h3 className="mt-2 text-2xl font-semibold leading-tight text-white sm:text-[26px]">{f.title}</h3>
               <p className="mt-2 text-[15px] leading-relaxed text-white/80">{f.body}</p>
             </header>
-            {/* Phones sized by HEIGHT so they sit whole within the card (the
-                center one a touch taller), never clipped. */}
-            <div className="mt-5 flex min-h-0 flex-1 items-end justify-center gap-3">
-              {f.screens.map((s, i) => (
-                <div key={s} className={i === 1 ? 'h-full' : 'mb-4 h-[88%] opacity-95'} style={{ aspectRatio: '750 / 1624' }}>
-                  <Phone src={s} />
-                </div>
-              ))}
+            {/* A considered product shot: the middle screen is the hero (framed,
+                tallest), the other two tuck behind it, slightly smaller and
+                overlapping, so the trio reads as one composition instead of three
+                equal slivers. On phones we show only the hero — side peeks are
+                illegible at that width. */}
+            <div className="relative mt-5 flex min-h-0 flex-1 items-end justify-center">
+              {/* left peek */}
+              <div
+                className="absolute bottom-2 hidden h-[80%] sm:block"
+                style={{ aspectRatio: '750 / 1624', transform: 'translateX(-58%) rotate(-5deg)' }}
+              >
+                <Phone src={f.screens[0]} dim />
+              </div>
+              {/* right peek */}
+              <div
+                className="absolute bottom-2 hidden h-[80%] sm:block"
+                style={{ aspectRatio: '750 / 1624', transform: 'translateX(58%) rotate(5deg)' }}
+              >
+                <Phone src={f.screens[2] ?? f.screens[0]} dim />
+              </div>
+              {/* hero */}
+              <div className="relative z-10 h-full max-h-[420px]" style={{ aspectRatio: '750 / 1624' }}>
+                <Phone src={f.screens[1] ?? f.screens[0]} />
+              </div>
             </div>
           </article>
         ))}
@@ -157,11 +173,21 @@ export function AppSection() {
   )
 }
 
-function Phone({ src }: { src: string }) {
+function Phone({ src, dim = false }: { src: string; dim?: boolean }) {
+  // A real device: dark bezel, rounded corners, a small notch. The screen sits
+  // inset so the frame reads as hardware, not just a rounded screenshot.
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-[14%/6.5%] bg-white shadow-[0_18px_40px_-12px_rgba(0,0,0,0.5)] ring-1 ring-black/10">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={src} alt="" draggable={false} loading="lazy" className="pointer-events-none h-full w-full object-cover object-top" />
+    <div
+      className={`relative h-full w-full rounded-[15%/7%] bg-[#0c0d0d] p-[3.5%] shadow-[0_18px_40px_-12px_rgba(0,0,0,0.55)] ring-1 ring-white/10 ${
+        dim ? 'brightness-[0.82] saturate-[0.92]' : ''
+      }`}
+    >
+      <div className="relative h-full w-full overflow-hidden rounded-[12%/6%] bg-white">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={src} alt="" draggable={false} loading="lazy" className="pointer-events-none h-full w-full object-cover object-top" />
+      </div>
+      {/* notch */}
+      <div className="absolute left-1/2 top-[3.5%] h-[1.6%] w-[34%] -translate-x-1/2 rounded-full bg-[#0c0d0d]" />
     </div>
   )
 }

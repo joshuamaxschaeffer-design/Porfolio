@@ -42,7 +42,14 @@ function Flow({ flow }: { flow: { name: string; steps: { src: string; label: str
   return (
     <div>
       <h3 className="text-[18px] font-semibold text-[var(--br-ink)]">{flow.name}</h3>
-      <div className="mt-4 flex items-stretch">
+      {/* The node row is wider than a phone (fixed-width nodes + arrows), so it
+          scrolls horizontally on small screens instead of pushing the whole
+          page sideways. Negative margin lets it bleed to the screen edge on
+          mobile; it sits inline again once there's room. */}
+      {/* Always horizontally scrollable: a 5-step flow is wider than its grid
+          column even on desktop, so we let the row scroll within the column
+          rather than push the page. Bleeds to the screen edge on mobile. */}
+      <div className="br-noscrollbar -mx-6 mt-4 flex items-stretch overflow-x-auto px-6 md:mx-0 md:px-0">
         {flow.steps.map((s, i) => (
           <div key={s.label + i} className="flex items-center">
             <FlowNode step={s} />
@@ -61,35 +68,28 @@ function Flow({ flow }: { flow: { name: string; steps: { src: string; label: str
 }
 
 function FlowNode({ step }: { step: { src: string; label: string } }) {
-  const [open, setOpen] = useState(false)
+  // Desktop captures are landscape; phone captures are tall. Frame each correctly
+  // so nothing is distorted. Each node shows the ACTUAL screen (not a lettered
+  // placeholder), so the flow reads as a real screen-to-screen path.
+  const isDesktop = step.src.includes('/desktopapp/')
+  const thumbAspect = isDesktop ? 'aspect-[16/10]' : 'aspect-[750/1624]'
+  const radius = isDesktop ? 'rounded-lg' : 'rounded-[16%/9%]'
+  const width = isDesktop ? 'w-[150px] sm:w-[176px]' : 'w-[104px] sm:w-[120px]'
   return (
-    <div
-      className="group relative"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-      onFocus={() => setOpen(true)}
-      onBlur={() => setOpen(false)}
-      tabIndex={0}
-    >
-      <div className="flex min-w-[88px] max-w-[110px] flex-col items-center gap-2 rounded-xl border border-[var(--br-line)] bg-[var(--br-bg-2)] px-3 py-3 text-center transition-colors hover:border-[var(--ws-green)] hover:bg-white">
-        <span className="grid h-7 w-7 place-items-center rounded-full bg-[var(--ws-green)] text-[12px] font-semibold text-white">
-          {step.label.charAt(0)}
-        </span>
-        <span className="text-[12px] leading-tight text-[var(--br-muted)]">{step.label}</span>
-      </div>
-      {/* hover-revealed screen — larger, lifts above siblings, won't clip */}
+    <div className={`group flex flex-col items-center gap-2 ${width}`} tabIndex={0}>
       <div
-        className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-3 w-[168px] -translate-x-1/2 overflow-hidden rounded-xl border border-[var(--br-line)] bg-white opacity-0 shadow-[0_22px_50px_rgba(0,0,0,0.28)] transition-all duration-200 group-hover:opacity-100 group-focus:opacity-100"
-        aria-hidden={!open}
+        className={`w-full overflow-hidden ${radius} border border-[var(--br-line)] bg-white shadow-[0_8px_20px_rgba(0,0,0,0.10)] ring-1 ring-black/[0.03] transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-[var(--ws-green)] group-hover:shadow-[0_14px_30px_rgba(0,0,0,0.16)] group-focus:border-[var(--ws-green)]`}
       >
-        <div className="max-h-[300px] overflow-hidden">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={step.src} alt={step.label} loading="lazy" className="block w-full object-cover object-top" />
-        </div>
-        <p className="br-data border-t border-[var(--br-line)] px-2 py-1.5 text-[11px] uppercase tracking-[0.08em] text-[var(--br-muted)]">
-          {step.label}
-        </p>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={step.src}
+          alt={step.label}
+          loading="lazy"
+          draggable={false}
+          className={`block w-full object-cover object-top ${thumbAspect}`}
+        />
       </div>
+      <span className="text-center text-[12px] leading-tight text-[var(--br-muted)]">{step.label}</span>
     </div>
   )
 }
