@@ -23,7 +23,7 @@ export function DesignSystemsModules() {
         <AnchorHeader
           kicker="Scale"
           title="Component libraries, by the thousand"
-          blurb="Tokenized libraries built per product — buttons, fields, cells, nav, modals — kept consistent across every surface. The Raising Cane’s system alone runs 447 components."
+          blurb="Tokenized libraries built per product — buttons, fields, cells, nav, modals — kept consistent across every surface. The Raising Cane’s system alone runs 447 components; Baserate’s is the system behind the investor platform."
         />
         <BlueGrid
           cols={4}
@@ -78,15 +78,15 @@ export function DesignSystemsModules() {
         <AnchorHeader
           kicker="Data-viz · the differentiator"
           title="Dense analytics, made legible"
-          role="Mindbody — UI/IXD + Design-Systems Lead"
-          blurb="A reporting system with a documented data-viz pattern set — an executive summary view paired with a granular analyst view."
+          role="Mindbody · Baserate"
+          blurb="Reporting and investor dashboards with documented data-viz pattern sets — an executive summary view paired with a granular analyst view. Mindbody’s analytics and Baserate’s investor platform."
         />
         <div className="grid grid-cols-1 gap-6 md:grid-cols-12 md:gap-8">
           <div className="md:col-span-7">
-            <BluePlaceholder ratio="wide" label="Hero chart — the single insight (FPO)" />
+            <BluePlaceholder ratio="wide" label="Baserate — investor dashboard, hero chart (FPO)" />
           </div>
           <div className="md:col-span-5">
-            <BluePlaceholder ratio="wide" label="Full dashboard — zoomed out (FPO)" />
+            <BluePlaceholder ratio="wide" label="Mindbody — analytics, zoomed out (FPO)" />
           </div>
         </div>
         <ModuleCaption>Lead with one beautiful chart, then the full dashboard + the outcome.</ModuleCaption>

@@ -92,6 +92,7 @@ export function BrandModules() {
             'Wingstop',
             'CBTL',
             'Mindbody',
+            'Samsung',
             'VF Corp · Work Authority',
           ]}
         />

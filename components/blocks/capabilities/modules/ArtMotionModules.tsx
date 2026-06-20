@@ -27,7 +27,12 @@ export function ArtMotionModules() {
           <BlueGrid
             cols={4}
             ratio="video"
-            items={['Keyframe 01', 'Keyframe 02', 'Keyframe 03', 'Keyframe 04']}
+            items={[
+              'Wingstop — flavor film',
+              'CBTL — brand film (4K)',
+              'Mindbody — interface motion',
+              'Pepsi — product / AR',
+            ]}
           />
         </div>
         <ModuleCaption>Filmstrip — stills from the reel (FPO). Real build autoplays muted loops.</ModuleCaption>
@@ -64,7 +69,8 @@ export function ArtMotionModules() {
             'Dave & Buster’s — energy / play',
             'Pepsi — product / AR',
             'Wingstop — flavor key art',
-            'Panda — campaign direction',
+            'Panda — food photography / campaign',
+            'Samsung — Galaxy campaign direction',
           ]}
         />
       </div>

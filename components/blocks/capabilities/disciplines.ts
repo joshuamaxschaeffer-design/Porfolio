@@ -67,7 +67,7 @@ export const productUx: Discipline = {
     { label: 'Ordering & loyalty systems', note: 'Cart, rewards, scan, group ordering' },
   ],
   stats: [
-    { value: 11, label: 'Brands shipped in this discipline' },
+    { value: 14, label: 'Brands shipped in this discipline' },
     { value: 4, label: 'Form factors designed for' },
     { value: 9300, suffix: '+', label: 'Product screens designed' },
     { value: 4.8, decimals: 1, suffix: '★', label: 'Panda Express app — App Store (574K ratings)' },

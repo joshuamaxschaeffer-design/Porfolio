@@ -73,13 +73,14 @@ export function ProductUxModules() {
       <div>
         <AnchorHeader
           kicker="Breadth"
-          title="Nine more products, four form factors"
-          blurb="Beyond the anchors: consumer apps, kiosks, POS, and ordering web across the rest of the roster."
+          title="A dozen more products, four form factors"
+          blurb="Beyond the anchors: consumer apps, an investor platform, kiosks, POS, and ordering web across the rest of the roster — including the flagship case-study products."
         />
         <BlueRail
           items={[
             'Panda Express — app',
-            'Wingstop — ordering web',
+            'Baserate — investor platform',
+            'Wingstop — ordering app + web',
             'CBTL — iOS app',
             'Dave & Buster’s — kiosk',
             'Dave & Buster’s — mobile',
