@@ -44,19 +44,19 @@ export function DisciplineModule({
   children,
 }: DisciplineModuleProps) {
   const dark = BG[bg].dark
+  const gold = dark ? 'var(--br-gold-soft)' : 'var(--br-gold)'
   const ink = dark ? 'text-white' : 'text-[var(--br-ink)]'
-  const body = dark ? 'text-white/70' : 'text-[var(--br-muted)]'
-  const cardBg = dark ? 'bg-white/[0.04] border-white/10' : 'bg-white border-[var(--br-line)]'
-  const cardNote = dark ? 'text-white/45' : 'text-[var(--br-muted-2)]'
-  const statNote = dark ? 'text-white/40' : 'text-[var(--br-muted-2)]'
+  const cardBg = dark ? 'bg-white/[0.05] border-white/15' : 'bg-white border-[var(--br-line)]'
+  const cardNote = dark ? 'text-white/55' : 'text-[var(--br-muted-2)]'
+  const statNote = dark ? 'text-white/50' : 'text-[var(--br-muted-2)]'
 
   return (
     <section id={id} className={BG[bg].className}>
-      <div className="br-container py-20 md:py-28">
+      <div className="br-container py-16 md:py-24">
         {/* Number + title */}
         <Reveal>
           <div className="flex items-baseline gap-4">
-            <span className="br-data text-[15px] font-semibold tracking-[0.1em] text-[var(--br-gold)] md:text-[17px]">
+            <span className="br-data text-[15px] font-semibold tracking-[0.1em] md:text-[17px]" style={{ color: gold }}>
               {num}
             </span>
             <h2 className={`text-[30px] font-medium uppercase leading-none tracking-[-0.01em] md:text-[46px] ${ink}`}>
@@ -78,11 +78,11 @@ export function DisciplineModule({
             {capabilities.map((c) => (
               <div
                 key={c.label}
-                className={`group flex items-start gap-3.5 rounded-[var(--br-card-radius)] border p-4 transition-colors duration-300 md:p-5 ${cardBg}`}
+                className={`group flex h-full items-start gap-3.5 rounded-[var(--br-card-radius)] border p-4 transition-all duration-300 hover:-translate-y-0.5 md:p-5 ${cardBg} ${dark ? 'hover:border-white/30' : 'hover:border-[var(--br-gold)]'}`}
               >
                 <span
-                  className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] text-[var(--br-gold)]"
-                  style={{ background: dark ? 'rgba(197,160,80,0.14)' : 'rgba(197,160,80,0.12)' }}
+                  className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px]"
+                  style={{ background: dark ? 'rgba(199,144,22,0.18)' : 'rgba(174,125,0,0.10)', color: gold }}
                 >
                   <CapIcon name={c.icon} />
                 </span>
@@ -102,7 +102,7 @@ export function DisciplineModule({
         {/* Full-width stat row in a bordered panel */}
         <Reveal delay={100}>
           <div className={`mt-12 rounded-[var(--br-card-radius)] border p-7 md:mt-14 md:p-9 ${cardBg}`}>
-            <StatCounters stats={stats} />
+            <StatCounters stats={dark ? stats.map((s) => ({ ...s, accent: gold })) : stats} dark={dark} />
             {statsNote && (
               <p className={`br-data mt-7 text-[11px] uppercase leading-relaxed tracking-[0.08em] ${statNote}`}>
                 {statsNote}

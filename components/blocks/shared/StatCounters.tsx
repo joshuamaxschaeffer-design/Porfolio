@@ -18,17 +18,26 @@ export interface StatItem {
  * that draws in) the moment the block scrolls into view. Quick credibility hit
  * for a results/outcomes strip. Reduced-motion → final values shown instantly.
  */
-export function StatCounters({ stats, className }: { stats: StatItem[]; className?: string }) {
+export function StatCounters({
+  stats,
+  className,
+  dark = false,
+}: {
+  stats: StatItem[]
+  className?: string
+  /** light text for dark backgrounds (optional; default keeps existing look) */
+  dark?: boolean
+}) {
   return (
     <div className={`grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-4 ${className ?? ''}`}>
       {stats.map((s, i) => (
-        <Counter key={i} stat={s} index={i} />
+        <Counter key={i} stat={s} index={i} dark={dark} />
       ))}
     </div>
   )
 }
 
-function Counter({ stat, index }: { stat: StatItem; index: number }) {
+function Counter({ stat, index, dark = false }: { stat: StatItem; index: number; dark?: boolean }) {
   const reduce = useReducedMotion()
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, amount: 0.5 })
@@ -50,7 +59,7 @@ function Counter({ stat, index }: { stat: StatItem; index: number }) {
 
   return (
     <div ref={ref}>
-      <p className="text-[40px] font-medium leading-none tracking-[-0.02em] text-[var(--br-ink)] md:text-[56px]">
+      <p className={`text-[40px] font-medium leading-none tracking-[-0.02em] md:text-[56px] ${dark ? 'text-white' : 'text-[var(--br-ink)]'}`}>
         {stat.prefix}
         {shown}
         {stat.suffix ? <span style={{ color: accent }}>{stat.suffix}</span> : null}
@@ -63,7 +72,7 @@ function Counter({ stat, index }: { stat: StatItem; index: number }) {
         animate={inView || reduce ? { scaleX: 1 } : undefined}
         transition={{ duration: 0.7, delay: 0.2 + index * 0.08, ease: [0.16, 1, 0.3, 1] }}
       />
-      <p className="br-data mt-3 text-[12px] uppercase leading-snug tracking-[0.1em] text-[var(--br-muted)] md:text-[13px]">
+      <p className={`br-data mt-3 text-[12px] uppercase leading-snug tracking-[0.1em] md:text-[13px] ${dark ? 'text-white/60' : 'text-[var(--br-muted)]'}`}>
         {stat.label}
       </p>
     </div>

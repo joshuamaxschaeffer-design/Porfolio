@@ -63,17 +63,20 @@ export function BrandWall({
       : cols === 3
         ? 'grid-cols-2 sm:grid-cols-3'
         : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4'
+  // On dark sections, real brand logos are mostly dark-on-transparent, so they'd
+  // vanish on a near-black tile. Give every tile a WHITE surface so logos always
+  // read — and it looks like a premium "logo card" wall on dark.
   const tile = dark
-    ? 'border-white/10 bg-white/[0.03] hover:bg-white/[0.06]'
-    : 'border-[var(--br-line)] bg-white hover:bg-[var(--br-bg-2)]'
+    ? 'border-white/10 bg-white hover:border-white/30'
+    : 'border-[var(--br-line)] bg-white hover:border-[var(--br-gold)]'
   return (
     <div className={`grid gap-3 md:gap-4 ${colClass}`}>
       {brands.map((b) => (
         <div
           key={b.name}
-          className={`flex h-[88px] items-center justify-center rounded-[var(--br-card-radius)] border px-4 transition-colors duration-300 md:h-[104px] ${tile}`}
+          className={`flex h-[88px] items-center justify-center rounded-[var(--br-card-radius)] border px-5 transition-all duration-300 hover:-translate-y-0.5 md:h-[104px] ${tile}`}
         >
-          <BrandLogo brand={b} dark={dark} />
+          <BrandLogo brand={b} dark={false} />
         </div>
       ))}
     </div>
