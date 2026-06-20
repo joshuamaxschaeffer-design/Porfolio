@@ -117,11 +117,12 @@ export function BlueRail({
   dark = false,
   fullBleed = false,
 }: {
-  items: string[]
+  items: (string | { label: string; src?: string })[]
   ratio?: BlueRatio
   dark?: boolean
   fullBleed?: boolean
 }) {
+  const norm = items.map((it) => (typeof it === 'string' ? { label: it } : it))
   const ref = useRef<HTMLDivElement>(null)
   const [drag, setDrag] = useState(false)
   const state = useRef({ down: false, startX: 0, startScroll: 0, moved: false, lastX: 0, lastT: 0, v: 0 })
@@ -199,16 +200,40 @@ export function BlueRail({
         }`}
       >
         <div className="flex gap-4 md:gap-5" style={{ width: 'max-content' }}>
-          {items.map((label) => (
-            <div key={label} className={`${cardW} shrink-0 ${drag ? 'pointer-events-none' : ''}`}>
-              <BluePlaceholder ratio={ratio} label={label} dark={dark} />
+          {norm.map((it) => (
+            <div key={it.label} className={`${cardW} shrink-0 ${drag ? 'pointer-events-none' : ''}`}>
+              {it.src ? (
+                <figure>
+                  <div
+                    className={`overflow-hidden rounded-[14px] border bg-white ${
+                      dark ? 'border-white/10' : 'border-[var(--br-line)]'
+                    } shadow-[0_8px_24px_rgba(7,14,44,0.10)]`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={it.src}
+                      alt={it.label}
+                      draggable={false}
+                      className="aspect-[9/19.5] w-full object-cover object-top"
+                      loading="lazy"
+                    />
+                  </div>
+                  <figcaption
+                    className={`br-data mt-2 text-[11px] uppercase tracking-[0.06em] ${
+                      dark ? 'text-white/50' : 'text-[var(--br-muted-2)]'
+                    }`}
+                  >
+                    {it.label}
+                  </figcaption>
+                </figure>
+              ) : (
+                <BluePlaceholder ratio={ratio} label={it.label} dark={dark} />
+              )}
             </div>
           ))}
         </div>
       </div>
-      <ModuleCaption dark={dark}>
-        Drag → · {items.length} items (FPO — real screens drop in here)
-      </ModuleCaption>
+      <ModuleCaption dark={dark}>Drag → · {norm.length} products across four form factors</ModuleCaption>
     </Reveal>
   )
 }

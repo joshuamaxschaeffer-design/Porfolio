@@ -108,17 +108,15 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
           fullBleed
           ratio="phone"
           items={[
+            { label: 'Raising Cane’s — app', src: '/capabilities/breadth/canes.png' },
+            { label: 'CBTL — iOS app', src: '/capabilities/breadth/cbtl.png' },
+            { label: 'Wingstop — ordering', src: '/capabilities/breadth/wingstop.png' },
+            { label: 'Blaze — consumer app', src: '/capabilities/breadth/blaze-app.png' },
+            { label: 'Trees / Ipse — app', src: '/capabilities/breadth/trees.png' },
             'Panda Express — app',
-            'Baserate — investor platform',
-            'Wingstop — ordering app + web',
-            'CBTL — iOS app',
             'Dave & Buster’s — kiosk',
-            'Dave & Buster’s — mobile',
             'True Food Kitchen — web',
             'VF Corp — Work Authority LMS',
-            'Blaze — consumer app',
-            'Blaze — budtender POS',
-            'Trees / Ipse — app',
             'Noodles & Co. — ordering',
           ]}
         />
