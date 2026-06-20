@@ -233,8 +233,10 @@ function PlatformStack({
   const phoneWpct = pct(PHONE_W)
   // vertical offsets as % of stage height so they scale too
   const vpct = (n: number) => `${(n / STAGE_H) * 100}%`
+  // definite width (so the `auto` grid track on desktop has a size); capped to
+  // 100% so it shrinks on narrow screens instead of overflowing.
   return (
-    <div className="mx-auto w-full lg:mx-0 lg:shrink-0" style={{ maxWidth: STAGE_W }}>
+    <div className="mx-auto lg:mx-0 lg:shrink-0" style={{ width: STAGE_W, maxWidth: '100%' }}>
       {/* aspect-ratio keeps height proportional as the width shrinks */}
       <div className="relative w-full" style={{ aspectRatio: `${STAGE_W} / ${STAGE_H}` }}>
         {/* back phone — furthest right + highest, lowest z */}

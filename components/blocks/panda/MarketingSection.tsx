@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useReducedMotion } from 'motion/react'
+import { motion, useMotionValue, useReducedMotion, useSpring, useTransform, type MotionValue as MV } from 'motion/react'
 import { marketing as defaults } from './data'
 
 /**
@@ -204,30 +204,40 @@ function AngledScreen({ page, reduce, index }: { page: DeckPage; reduce: boolean
 function WireframeStack({ pages }: { pages: { key: string; label: string; src: string }[] }) {
   const deck = pages.slice(0, 5)
   const stageRef = useRef<HTMLDivElement>(null)
-  const [p, setP] = useState(0) // 0 = tight stack, 1 = fully spread
+  const reduce = useReducedMotion()
+
+  // Smooth like Baserate's ScalabilityTimeline: a single MotionValue (NO React
+  // state / re-render per frame) fed through useSpring, then useTransform to each
+  // card's style. Progress is driven manually from getBoundingClientRect in a
+  // rAF loop because this site's Lenis smooth-scroll FREEZES Motion's
+  // useScroll({target}). Writing straight to MotionValues + spring = fluid,
+  // scroll-synced motion with no CSS-transition lag (the old setState + CSS
+  // transition was what made it janky).
+  const raw = useMotionValue(reduce ? 1 : 0)
+  const p = useSpring(raw, { stiffness: 90, damping: 28, mass: 0.5 })
 
   useEffect(() => {
-    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
     if (reduce) {
-      setP(1)
+      raw.set(1)
       return
     }
     let raf = 0
-    const tick = () => {
+    const measure = () => {
       raf = 0
       const el = stageRef.current
       if (!el) return
       const r = el.getBoundingClientRect()
       const vh = window.innerHeight || 1
-      // 0 when the stage top is at the bottom of the viewport, 1 once it has
-      // risen to ~40% up the viewport — a gentle expand as it scrolls in.
-      const prog = (vh - r.top) / (vh * 0.6)
-      setP(Math.max(0, Math.min(1, prog)))
+      // 0 when the stage's center is near the bottom of the viewport, 1 once it
+      // has risen to ~center — a gentle, subtle spread as it scrolls through.
+      const center = r.top + r.height / 2
+      const prog = (vh - center) / (vh * 0.55)
+      raw.set(Math.max(0, Math.min(1, prog)))
     }
     const onScroll = () => {
-      if (!raf) raf = requestAnimationFrame(tick)
+      if (!raf) raf = requestAnimationFrame(measure)
     }
-    tick()
+    measure()
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', onScroll)
     return () => {
@@ -235,63 +245,72 @@ function WireframeStack({ pages }: { pages: { key: string; label: string; src: s
       window.removeEventListener('resize', onScroll)
       if (raf) cancelAnimationFrame(raf)
     }
-  }, [])
+  }, [raw, reduce])
 
   return (
     // no overflow-hidden here — let the fan breathe so the top corners aren't clipped
     <div className="relative mt-10 flex w-full justify-center">
       <div ref={stageRef} className="relative h-[clamp(340px,44vw,560px)] w-full max-w-[1100px]">
-        {deck.map((pg, i) => {
-          // tight stack at p=0 → spread at p=1. front card largest on the left;
-          // each card steps right, tilts a touch more, shrinks, darkens w/ depth.
-          const widthPct = 30 - i * 2.4
-          const spread = 8 + i * (5 + 11 * p) // step grows with progress
-          const leftPct = spread
-          const rotate = -7 + i * (0.8 + 1.0 * p)
-          const darken = Math.min(0.45, i * 0.11)
-          return (
-            <figure
-              key={pg.key}
-              className="absolute top-1/2 m-0"
-              style={{
-                left: `${leftPct}%`,
-                width: `${widthPct}%`,
-                transform: `translate3d(0,-50%,0) rotate(${rotate}deg)`,
-                transformOrigin: 'center bottom',
-                transition: 'left 0.18s ease-out, transform 0.18s ease-out',
-                zIndex: deck.length - i,
-                backfaceVisibility: 'hidden',
-                WebkitBackfaceVisibility: 'hidden',
-              }}
-            >
-              <div
-                className="relative aspect-[360/560] overflow-hidden rounded-[12px] bg-white"
-                style={{
-                  boxShadow: '0 26px 60px -26px rgba(0,0,0,0.8)',
-                  // hairline instead of ring; smooths the rotated edge
-                  outline: '1px solid rgba(255,255,255,0.06)',
-                  outlineOffset: '-1px',
-                }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={pg.src}
-                  alt={`${pg.label} page design`}
-                  draggable={false}
-                  loading="lazy"
-                  className="block w-full select-none"
-                />
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute inset-0 bg-[#0d0d0f]"
-                  style={{ opacity: darken }}
-                />
-              </div>
-            </figure>
-          )
-        })}
+        {deck.map((pg, i) => (
+          <WireframeCard key={pg.key} page={pg} index={i} total={deck.length} p={p} />
+        ))}
       </div>
     </div>
+  )
+}
+
+/** One fanned wireframe card. Its left/rotate are MotionValues derived from the
+ *  spring `p` (0 tight → 1 spread) via useTransform — updates on the compositor,
+ *  never via React re-render, so it tracks scroll smoothly. Subtle travel. */
+function WireframeCard({
+  page,
+  index,
+  total,
+  p,
+}: {
+  page: { key: string; label: string; src: string }
+  index: number
+  total: number
+  p: MV<number>
+}) {
+  const widthPct = 30 - index * 2.4
+  const darken = Math.min(0.45, index * 0.11)
+  // subtle expand: each card's left-step and tilt grow only a little with p
+  const left = useTransform(p, (v) => `${8 + index * (7 + 7 * v)}%`)
+  const rotate = useTransform(p, (v) => -6 + index * (1.0 + 0.7 * v))
+  const transform = useTransform(rotate, (r) => `translate3d(0,-50%,0) rotate(${r}deg)`)
+  return (
+    <motion.figure
+      className="absolute top-1/2 m-0"
+      style={{
+        left,
+        width: `${widthPct}%`,
+        transform,
+        transformOrigin: 'center bottom',
+        zIndex: total - index,
+        backfaceVisibility: 'hidden',
+        WebkitBackfaceVisibility: 'hidden',
+      }}
+    >
+      <div
+        className="relative aspect-[360/560] overflow-hidden rounded-[12px] bg-white"
+        style={{
+          boxShadow: '0 26px 60px -26px rgba(0,0,0,0.8)',
+          outline: '1px solid rgba(255,255,255,0.06)',
+          outlineOffset: '-1px',
+        }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={page.src}
+          alt={`${page.label} page design`}
+          draggable={false}
+          loading="lazy"
+          className="block w-full select-none"
+        />
+        <div aria-hidden className="pointer-events-none absolute inset-0 bg-[#0d0d0f]" style={{ opacity: darken }} />
+      </div>
+    </motion.figure>
   )
 }
 
