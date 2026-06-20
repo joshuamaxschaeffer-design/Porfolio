@@ -56,6 +56,23 @@ export function AppSection() {
                 equal slivers. On phones we show only the hero — side peeks are
                 illegible at that width. */}
             <div className="relative mt-5 flex min-h-0 flex-1 items-end justify-center">
+              {/* A 5-phone fan: hero center, two peeks each side stepping back,
+                  smaller + dimmer + more rotated outward so the card reads as a
+                  full spread of screens. On phones we show only the hero. */}
+              {/* outer-left */}
+              <div
+                className="absolute bottom-4 hidden h-[66%] lg:block"
+                style={{ aspectRatio: '750 / 1624', transform: 'translateX(-108%) rotate(-9deg)' }}
+              >
+                <Phone src={f.screens[3] ?? f.screens[0]} dim />
+              </div>
+              {/* outer-right */}
+              <div
+                className="absolute bottom-4 hidden h-[66%] lg:block"
+                style={{ aspectRatio: '750 / 1624', transform: 'translateX(108%) rotate(9deg)' }}
+              >
+                <Phone src={f.screens[4] ?? f.screens[1] ?? f.screens[0]} dim />
+              </div>
               {/* left peek */}
               <div
                 className="absolute bottom-2 hidden h-[80%] sm:block"
@@ -156,7 +173,7 @@ export function AppSection() {
         {/* These are the real App Store listing graphics (a phone mockup on a
             branded background, each its own art). Show them WHOLE at a uniform
             height so they read like the actual App Store gallery. */}
-        <div className="-mx-6 flex gap-5 overflow-x-auto px-6 pb-3 md:-mx-20 md:px-20 [scrollbar-width:thin]">
+        <div className="-mx-6 flex gap-5 overflow-x-auto px-6 pt-2 pb-14 md:-mx-20 md:px-20 [scrollbar-width:thin]">
           {defaults.bento.images.map((src) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img

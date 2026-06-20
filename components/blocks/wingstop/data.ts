@@ -63,7 +63,7 @@ export const scope = {
       eyebrow: 'DESKTOP SITE',
       title: 'The full website',
       body: 'The ordering experience scaled to desktop, end to end.',
-      desktop: '/wingstop/desktopapp/d-flavors.webp',
+      desktop: '/wingstop/flavor/d-lemon-pepper.webp',
     },
     {
       key: 'crm',
@@ -141,6 +141,8 @@ export const app = {
         '/wingstop/mobileapp/m-flavors.webp',
         '/wingstop/mobileapp/m-product.webp',
         '/wingstop/mobileapp/m-customize.webp',
+        '/wingstop/product/m-product-1.webp',
+        '/wingstop/product/m-product-2.webp',
       ],
     },
     {
@@ -151,6 +153,8 @@ export const app = {
         '/wingstop/mobileapp/m-customize.webp',
         '/wingstop/mobileapp/m-done.webp',
         '/wingstop/mobileapp/m-eclub.webp',
+        '/wingstop/product/m-product-3.webp',
+        '/wingstop/product/m-product-4.webp',
       ],
     },
     {
@@ -161,6 +165,8 @@ export const app = {
         '/wingstop/product/m-cart.webp',
         '/wingstop/product/m-checkout.webp',
         '/wingstop/mobileapp/m-product.webp',
+        '/wingstop/mobileapp/m-flavors.webp',
+        '/wingstop/mobileapp/m-done.webp',
       ],
     },
   ],

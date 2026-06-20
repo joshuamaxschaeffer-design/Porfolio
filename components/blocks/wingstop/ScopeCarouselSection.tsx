@@ -249,7 +249,7 @@ function ScopeCarousel() {
     <div className="mt-10 pb-16 md:mt-14 md:pb-24">
       <div
         ref={trackRef}
-        className="br-noscrollbar flex cursor-grab snap-x snap-mandatory gap-6 overflow-x-auto overscroll-x-contain pb-2 select-none active:cursor-grabbing lg:snap-none"
+        className="br-noscrollbar flex cursor-grab snap-x snap-mandatory gap-6 overflow-x-auto overscroll-x-contain pt-3 pb-14 select-none active:cursor-grabbing lg:snap-none"
         style={{ paddingInline: RAIL_PAD, scrollPaddingInline: RAIL_PAD, touchAction: 'pan-x pan-y' }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
@@ -359,17 +359,13 @@ function ModuleVisual({ m, green }: { m: Mod; green: boolean }) {
     )
   }
 
-  // DESKTOP: a contained browser-window thumbnail showing the TOP of the page
-  // (the hero), cropped to a clean 16:10 window — not a clipped full page.
+  // DESKTOP: the real full-COLOR desktop page shown whole (no browser chrome).
+  // It's a tall page, so it sits grounded at the card floor and we reveal the
+  // top — a confident single colour visual, not a boxed greyscale wireframe.
   if (typeof mm.desktop === 'string') {
     return (
-      <div className="w-full max-w-[560px] overflow-hidden rounded-xl border border-black/10 bg-white [box-shadow:0_20px_44px_rgba(0,0,0,0.22)]">
-        <div className="flex items-center gap-1.5 border-b border-black/5 bg-[#f3f3f5] px-3 py-2.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-black/15" />
-          <span className="h-2.5 w-2.5 rounded-full bg-black/15" />
-          <span className="h-2.5 w-2.5 rounded-full bg-black/15" />
-        </div>
-        <div className="aspect-[16/10] overflow-hidden">
+      <div className="w-full max-w-[600px] overflow-hidden rounded-xl [box-shadow:0_22px_48px_rgba(0,0,0,0.28)]">
+        <div className="aspect-[16/11] overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={mm.desktop as string} alt={m.title} loading="lazy" className="block w-full object-cover object-top" />
         </div>
