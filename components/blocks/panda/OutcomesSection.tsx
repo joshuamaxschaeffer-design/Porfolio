@@ -219,34 +219,38 @@ function PlatformStack({
   screens: { src: string; alt: string }[]
   appIcon: string
 }) {
-  const PHONE_W = 200 // ~35% larger than the previous 150px
+  // Geometry expressed as RATIOS of the stage width so the whole composition
+  // scales to fit its container (full size at the 390px natural width on desktop,
+  // shrinking cleanly on mobile — no fixed px that overflow a narrow screen).
+  const PHONE_W = 200
   const ICON = 116
-  // phone heights from the 750×1624 frame, so we can size the stage
-  const phoneH = Math.round((PHONE_W * 1624) / 750)
-  // left→right diagonal: front phone tucks ~44px behind the icon's right side;
-  // the back phone steps a further ~118px right (≈ leaves a clear sliver behind
-  // the front one) and sits higher.
-  const frontLeft = ICON - 44
-  const backLeft = frontLeft + 118
-  const stageW = backLeft + PHONE_W
-  const stageH = phoneH + 40
+  const frontLeft = ICON - 44 // 72
+  const backLeft = frontLeft + 118 // 190
+  const STAGE_W = backLeft + PHONE_W // 390 (natural)
+  const phoneH = (PHONE_W * 1624) / 750
+  const STAGE_H = phoneH + 40
+  const pct = (n: number) => `${(n / STAGE_W) * 100}%`
+  const phoneWpct = pct(PHONE_W)
+  // vertical offsets as % of stage height so they scale too
+  const vpct = (n: number) => `${(n / STAGE_H) * 100}%`
   return (
-    <div className="mx-auto lg:mx-0 lg:shrink-0" style={{ width: stageW, maxWidth: '100%' }}>
-      <div className="relative" style={{ width: stageW, height: stageH }}>
+    <div className="mx-auto w-full lg:mx-0 lg:shrink-0" style={{ maxWidth: STAGE_W }}>
+      {/* aspect-ratio keeps height proportional as the width shrinks */}
+      <div className="relative w-full" style={{ aspectRatio: `${STAGE_W} / ${STAGE_H}` }}>
         {/* back phone — furthest right + highest, lowest z */}
-        <div className="absolute" style={{ left: backLeft, top: 0, width: PHONE_W, zIndex: 1 }}>
+        <div className="absolute" style={{ left: pct(backLeft), top: 0, width: phoneWpct, zIndex: 1 }}>
           <AppPhone src={screens[1].src} alt={screens[1].alt} />
         </div>
         {/* front phone — steps right of the icon, slightly lower, mid z */}
-        <div className="absolute" style={{ left: frontLeft, top: 22, width: PHONE_W, zIndex: 2 }}>
+        <div className="absolute" style={{ left: pct(frontLeft), top: vpct(22), width: phoneWpct, zIndex: 2 }}>
           <AppPhone src={screens[0].src} alt={screens[0].alt} />
         </div>
         {/* app icon — iOS-style (white padding + rounded square), front,
             bottom-left, highest z */}
-        <div className="absolute" style={{ left: 0, bottom: 0, width: ICON, zIndex: 3 }}>
+        <div className="absolute" style={{ left: 0, bottom: 0, width: pct(ICON), zIndex: 3 }}>
           <div
             className="overflow-hidden bg-white shadow-[0_18px_40px_-12px_rgba(0,0,0,0.28)] ring-1 ring-black/5"
-            style={{ borderRadius: '22.37%', padding: Math.round(ICON * 0.11) }}
+            style={{ borderRadius: '22.37%', padding: '11%' }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={appIcon} alt="Panda Express app icon" loading="lazy" className="block w-full" />
