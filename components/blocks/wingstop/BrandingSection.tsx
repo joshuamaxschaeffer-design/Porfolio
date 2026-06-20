@@ -99,24 +99,27 @@ function Chip({ chip, index }: { chip: { src: string; name: string; color: strin
   }, [])
 
   return (
-    <div className="flex flex-col items-center gap-3">
-      <div ref={ref} className="relative grid aspect-square w-full place-items-center will-change-transform">
-        {/* Real SD-Studio 3D chip render (flavour-coloured coin + embossed glyph).
-            A gentle scroll-driven rotate + lift gives the same subtle motion as
-            the Baserate chips without faking depth in CSS. */}
+    <div className="flex flex-col items-center">
+      {/* The chip renders are WIDE ellipses (a coin seen at an angle), so the
+          container is sized to that shape (4:3-ish) rather than a square — a
+          square left big vertical gaps and let the coin drift toward the label. */}
+      <div ref={ref} className="relative grid aspect-[4/3] w-full place-items-center will-change-transform">
+        {/* Real SD-Studio 3D chip render (Wingstop-green coin + white glyph).
+            A gentle scroll-driven rotate gives the same subtle motion as the
+            Baserate chips without faking depth in CSS. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={chip.src}
           alt={`${chip.name} flavour chip`}
           loading="lazy"
-          className="h-[94%] w-[94%] object-contain"
+          className="h-full w-full object-contain"
           style={{
-            transform: `rotate(${rot * 0.5}deg) translateY(${-rot * 0.25}px)`,
-            filter: 'drop-shadow(0 18px 26px rgba(0,0,0,0.5))',
+            transform: `rotate(${rot * 0.4}deg)`,
+            filter: 'drop-shadow(0 16px 24px rgba(0,0,0,0.5))',
           }}
         />
       </div>
-      <span className="br-data text-center text-[11px] uppercase leading-tight tracking-[0.08em] text-white/65">
+      <span className="br-data mt-4 text-center text-[11px] uppercase leading-tight tracking-[0.08em] text-white/65">
         {chip.name}
       </span>
     </div>

@@ -84,11 +84,13 @@ function CrmScopeSlide() {
               key={f}
               src={f}
               alt=""
-              className="absolute opacity-90"
+              className="absolute hidden opacity-90 lg:block"
               style={{
-                width: 180 - i * 28,
-                left: `${[4, 82, 44][i]}%`,
-                top: `${[10, 64, 80][i]}%`,
+                // Kept clear of the heading (top-left) and the email rail (center
+                // band): tucked into the lower-left, far-right, and bottom edges.
+                width: 168 - i * 26,
+                left: `${[3, 86, 50][i]}%`,
+                top: `${[68, 60, 84][i]}%`,
                 transform: `rotate(${[-12, 10, -6][i]}deg)`,
                 filter: 'drop-shadow(0 16px 26px rgba(0,0,0,0.18))',
               }}
