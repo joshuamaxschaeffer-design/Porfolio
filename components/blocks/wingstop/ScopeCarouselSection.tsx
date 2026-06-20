@@ -246,7 +246,7 @@ function ScopeCarousel() {
   }
 
   return (
-    <div className="mt-10 md:mt-14">
+    <div className="mt-10 pb-16 md:mt-14 md:pb-24">
       <div
         ref={trackRef}
         className="br-noscrollbar flex cursor-grab snap-x snap-mandatory gap-6 overflow-x-auto overscroll-x-contain pb-2 select-none active:cursor-grabbing lg:snap-none"
