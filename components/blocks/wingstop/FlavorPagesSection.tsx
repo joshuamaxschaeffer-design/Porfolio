@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { flavorPages as defaults } from './data'
 
+/** Tilt of the receding page fan (Samsung ProductPagesStage model). */
+const FAN_TRANSFORM = 'rotateX(9deg) rotateY(-26deg) rotateZ(7deg)'
+
 /**
  * SECTION 4 — FLAVOR PAGES. Cinematic BLACK section. Three flavor pages laid
  * down in perspective (Samsung "Product and landing pages" style), then a
@@ -29,30 +32,11 @@ export function FlavorPagesSection() {
         <p className="mt-3 max-w-3xl text-lg text-white/80 md:text-[22px]">{defaults.intro}</p>
       </div>
 
-      {/* The flavor pages are the aesthetic peak: dark, photography-forward, tall.
-          Show them BIG as three browser panels whose dramatic flavor-blast hero
-          fills the frame, slightly fanned, on black. Whole heroes, no awkward
-          crop. They auto-scroll on hover to reveal the page below. */}
-      <div className="-mx-6 mt-10 flex gap-6 overflow-x-auto px-6 pb-3 md:mt-16 md:gap-8 md:px-12 lg:justify-center [scrollbar-width:thin]">
-        {defaults.pages.map((p, i) => (
-          <div
-            key={p}
-            className="group relative w-[78vw] max-w-[420px] shrink-0 overflow-hidden rounded-2xl border border-white/12 bg-black sm:w-[60vw] lg:w-[400px]"
-            style={{ boxShadow: '0 34px 80px rgba(0,0,0,0.65)' }}
-          >
-            {/* fixed tall viewport; the page hero fills it, then scrolls up on hover */}
-            <div className="h-[520px] overflow-hidden md:h-[600px]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={p}
-                alt=""
-                loading="lazy"
-                className="block w-full object-cover object-top transition-[object-position] duration-[6000ms] ease-linear group-hover:[object-position:50%_100%]"
-              />
-            </div>
-          </div>
-        ))}
-      </div>
+      {/* The flavor pages are the aesthetic peak — laid down in a receding 3D
+          perspective fan (Samsung "Product and landing pages" treatment): the
+          three full pages tilt back and step toward the viewer, bleeding off the
+          top/bottom of the band, with alternating scroll parallax. */}
+      <FlavorPageFan pages={defaults.pages} />
 
       {/* Autoplay flavor video */}
       <div className="br-container pb-20 pt-14 md:pb-[120px] md:pt-24">
@@ -68,6 +52,108 @@ export function FlavorPagesSection() {
         </div>
       </div>
     </section>
+  )
+}
+
+/** Three flavor pages in a receding 3D perspective fan (Samsung model). The row
+ *  tilts back as one preserve-3d group; each successive page steps nearer +
+ *  larger; alternating pages drift opposite directions on scroll. Pages bleed
+ *  off the top/bottom of the band for a cinematic feel. */
+function FlavorPageFan({ pages }: { pages: string[] }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [progress, setProgress] = useState(0)
+  const reduce = useRef(false)
+
+  useEffect(() => {
+    reduce.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    let raf = 0
+    const onScroll = () => {
+      if (raf) return
+      raf = requestAnimationFrame(() => {
+        raf = 0
+        const el = ref.current
+        if (!el) return
+        const r = el.getBoundingClientRect()
+        const vh = window.innerHeight
+        const center = r.top + r.height / 2
+        const p = (vh / 2 - center) / (vh / 2 + r.height / 2)
+        setProgress(Math.max(-1, Math.min(1, p)))
+      })
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      if (raf) cancelAnimationFrame(raf)
+    }
+  }, [])
+
+  const amp = reduce.current ? 0 : 56
+
+  return (
+    <>
+      {/* DESKTOP / TABLET: the perspective fan */}
+      <div
+        ref={ref}
+        className="relative mx-auto mt-10 hidden h-[680px] w-full max-w-[1500px] md:mt-16 lg:block"
+        style={{ perspective: '2200px', perspectiveOrigin: '50% 50%' }}
+      >
+        <div
+          className="absolute left-1/2 top-1/2 flex items-center gap-8 md:gap-12"
+          style={{ transform: `translate(-50%, -50%) ${FAN_TRANSFORM}`, transformStyle: 'preserve-3d' }}
+        >
+          {pages.map((p, i) => {
+            const dir = i % 2 === 0 ? 1 : -1
+            const near = i // 0 = far/small ... n-1 = near/large
+            const scale = 0.84 + near * 0.14
+            return (
+              <figure
+                key={p}
+                className="relative shrink-0 overflow-hidden rounded-[14px] ring-1 ring-white/15"
+                style={{
+                  width: 'clamp(280px, 26vw, 440px)',
+                  transform: `translateY(${progress * amp * dir}px) translateZ(${(near - 1) * 150}px) scale(${scale})`,
+                  transformOrigin: 'center center',
+                  boxShadow: '0 50px 90px -28px rgba(0,0,0,0.75), 0 12px 28px -10px rgba(0,0,0,0.6)',
+                  willChange: 'transform',
+                }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={p} alt="Wingstop flavor landing page" loading="lazy" draggable={false} className="block w-full" />
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0"
+                  style={{ background: 'linear-gradient(120deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0) 34%)' }}
+                />
+              </figure>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* MOBILE: a calmer single-tilt overlap (the wide fan is illegible small) */}
+      <div className="relative mx-auto mt-10 w-full max-w-[460px] px-5 lg:hidden" style={{ perspective: '1400px' }}>
+        <div className="flex items-center justify-center" style={{ transform: 'rotateY(-16deg) rotateZ(5deg)', transformStyle: 'preserve-3d' }}>
+          {pages.slice(0, 3).map((p, i) => (
+            <figure
+              key={p}
+              className="relative -ml-10 first:ml-0 overflow-hidden rounded-[12px] ring-1 ring-white/15"
+              style={{
+                width: '62%',
+                transform: `translateZ(${i * 60}px) scale(${0.9 + i * 0.06})`,
+                boxShadow: '0 30px 60px -20px rgba(0,0,0,0.7)',
+                zIndex: i,
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={p} alt="Wingstop flavor landing page" loading="lazy" className="block w-full" />
+            </figure>
+          ))}
+        </div>
+      </div>
+    </>
   )
 }
 
