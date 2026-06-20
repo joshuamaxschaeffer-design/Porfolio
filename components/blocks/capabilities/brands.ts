@@ -33,20 +33,21 @@ export const BRANDS: Record<string, BrandDef> = {
   rosetta: { name: 'Rosetta', wordmark: 'Rosetta', color: '#1a2233' },
   blaze: { name: 'Blaze', wordmark: 'BLAZE', color: '#F5A623' },
 
-  // ── Client brands (styled wordmark for now; brand colors) ──
-  mindbody: { name: 'Mindbody', wordmark: 'MINDBODY', color: '#00B0B9' },
-  raisingCanes: { name: 'Raising Cane’s', wordmark: 'Raising Cane’s', color: '#B01E24' },
-  cbtl: { name: 'The Coffee Bean & Tea Leaf', wordmark: 'Coffee Bean & Tea Leaf', color: '#53277E' },
-  daveAndBusters: { name: 'Dave & Buster’s', wordmark: 'Dave & Buster’s', color: '#E2231A' },
-  trueFoodKitchen: { name: 'True Food Kitchen', wordmark: 'True Food Kitchen', color: '#2F7D3B' },
-  vfCorp: { name: 'VF Corp · Work Authority', wordmark: 'Work Authority', color: '#1F4E96' },
-  noodles: { name: 'Noodles & Company', wordmark: 'Noodles & Co.', color: '#C8102E' },
+  // ── Client brands — REAL logos (verified); 3 remain wordmarks ──
+  mindbody: { name: 'Mindbody', src: `${L}/mindbody.svg`, color: '#00B0B9' },
+  raisingCanes: { name: 'Raising Cane’s', src: `${L}/raising-canes.svg`, color: '#B01E24' },
+  daveAndBusters: { name: 'Dave & Buster’s', src: `${L}/dave-and-busters.svg`, color: '#E2231A' },
+  vfCorp: { name: 'VF Corp · Work Authority', src: `${L}/vf-corp.svg`, color: '#1F4E96' },
   pepsi: { name: 'Pepsi', src: `${L}/pepsi.svg`, color: '#004B93' },
-  chandon: { name: 'Chandon', wordmark: 'CHANDON', color: '#1a1a1a' },
-  dairyQueen: { name: 'Dairy Queen', wordmark: 'DQ', color: '#E4002B' },
+  chandon: { name: 'Chandon', src: `${L}/chandon.svg`, color: '#1a1a1a' },
+  dairyQueen: { name: 'Dairy Queen', src: `${L}/dairy-queen.svg`, color: '#E4002B' },
   kfc: { name: 'KFC', src: `${L}/kfc.svg`, color: '#A6093D' },
-  petsmart: { name: 'PetSmart', wordmark: 'PetSmart', color: '#0072CE' },
-  schick: { name: 'Schick', wordmark: 'Schick', color: '#005EB8' },
+  petsmart: { name: 'PetSmart', src: `${L}/petsmart.svg`, color: '#0072CE' },
+  schick: { name: 'Schick', src: `${L}/schick.svg`, color: '#005EB8' },
+  // ── still wordmarks (no clean logo sourced yet) ────────────
+  cbtl: { name: 'The Coffee Bean & Tea Leaf', wordmark: 'Coffee Bean & Tea Leaf', color: '#53277E' },
+  trueFoodKitchen: { name: 'True Food Kitchen', wordmark: 'True Food Kitchen', color: '#2F7D3B' },
+  noodles: { name: 'Noodles & Company', wordmark: 'Noodles & Co.', color: '#C8102E' },
   conco: { name: 'ConCo', wordmark: 'ConCo', color: '#1a2233' },
 }
 

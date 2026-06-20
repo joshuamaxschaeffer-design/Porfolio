@@ -84,28 +84,39 @@ export function ModuleCaption({
 }
 
 /**
- * DragRail — a horizontally DRAGGABLE rail of FPO cards with momentum-ish feel
- * (pointer drag + native momentum scroll). Cursor shows grab/grabbing. Falls
- * back to touch scroll on mobile. This is the "browse the work" breadth rail.
+ * DragRail — a horizontally DRAGGABLE rail of FPO cards with momentum (pointer
+ * drag w/ velocity-based inertia + native momentum scroll). Cursor grab/grabbing.
+ * `fullBleed` makes it span the full viewport width (escapes the container).
  */
 export function BlueRail({
   items,
   ratio = 'phone',
   dark = false,
+  fullBleed = false,
 }: {
   items: string[]
   ratio?: BlueRatio
   dark?: boolean
+  fullBleed?: boolean
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const [drag, setDrag] = useState(false)
-  const state = useRef({ down: false, startX: 0, startScroll: 0, moved: false })
+  const state = useRef({ down: false, startX: 0, startScroll: 0, moved: false, lastX: 0, lastT: 0, v: 0 })
+  const raf = useRef<number | null>(null)
 
   useEffect(() => {
     const el = ref.current
     if (!el) return
+    const stopInertia = () => {
+      if (raf.current) cancelAnimationFrame(raf.current)
+      raf.current = null
+    }
     const down = (e: PointerEvent) => {
-      state.current = { down: true, startX: e.clientX, startScroll: el.scrollLeft, moved: false }
+      stopInertia()
+      state.current = {
+        down: true, startX: e.clientX, startScroll: el.scrollLeft, moved: false,
+        lastX: e.clientX, lastT: performance.now(), v: 0,
+      }
       setDrag(true)
     }
     const move = (e: PointerEvent) => {
@@ -113,15 +124,31 @@ export function BlueRail({
       const dx = e.clientX - state.current.startX
       if (Math.abs(dx) > 4) state.current.moved = true
       el.scrollLeft = state.current.startScroll - dx
+      const now = performance.now()
+      const dt = now - state.current.lastT
+      if (dt > 0) state.current.v = (e.clientX - state.current.lastX) / dt
+      state.current.lastX = e.clientX
+      state.current.lastT = now
     }
     const up = () => {
+      if (!state.current.down) return
       state.current.down = false
       setDrag(false)
+      // momentum: carry the last velocity, decay
+      let v = state.current.v * 16 // px per frame
+      const step = () => {
+        if (Math.abs(v) < 0.4) { raf.current = null; return }
+        el.scrollLeft -= v
+        v *= 0.95
+        raf.current = requestAnimationFrame(step)
+      }
+      if (Math.abs(v) > 1) raf.current = requestAnimationFrame(step)
     }
     el.addEventListener('pointerdown', down)
     window.addEventListener('pointermove', move)
     window.addEventListener('pointerup', up)
     return () => {
+      stopInertia()
       el.removeEventListener('pointerdown', down)
       window.removeEventListener('pointermove', move)
       window.removeEventListener('pointerup', up)
@@ -135,17 +162,22 @@ export function BlueRail({
         ? 'w-[300px] md:w-[380px]'
         : 'w-[240px] md:w-[280px]'
 
+  // full-bleed escapes the br-container to span the viewport
+  const bleed = fullBleed
+    ? 'relative left-1/2 right-1/2 -mx-[50vw] w-screen px-6 md:px-10'
+    : '-mx-6 px-6 md:-mx-10 md:px-10'
+
   return (
     <Reveal>
       <div
         ref={ref}
-        className={`-mx-6 select-none overflow-x-auto px-6 pb-3 md:-mx-10 md:px-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
+        className={`select-none overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${bleed} ${
           drag ? 'cursor-grabbing' : 'cursor-grab'
         }`}
       >
         <div className="flex gap-4 md:gap-5" style={{ width: 'max-content' }}>
           {items.map((label) => (
-            <div key={label} className={`${cardW} shrink-0`}>
+            <div key={label} className={`${cardW} shrink-0 ${drag ? 'pointer-events-none' : ''}`}>
               <BluePlaceholder ratio={ratio} label={label} dark={dark} />
             </div>
           ))}

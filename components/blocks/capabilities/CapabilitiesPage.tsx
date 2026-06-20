@@ -2,6 +2,7 @@ import { SectionNav, type SectionNavItem } from '../baserate/SectionNav'
 import { StatCounters } from '../shared/StatCounters'
 import { DisciplineModule } from './DisciplineModule'
 import {
+  BG,
   heroStats,
   heroCopy,
   productUx,
@@ -19,7 +20,6 @@ import { MarketingWebModules } from './modules/MarketingWebModules'
 import { LeadershipModules } from './modules/LeadershipModules'
 
 export interface CapabilitiesPageProps {
-  /** Header overrides (CMS) */
   eyebrow?: string
   heading?: string
   lead?: string
@@ -28,15 +28,10 @@ export interface CapabilitiesPageProps {
 /**
  * Capabilities — the CENTERPIECE section.
  *
- * The biggest, most-impressive section on the site: it carries everything
- * outside the four case studies (Panda + Baserate flagships; Wingstop + Samsung
- * secondary). A centerpiece hero with a section-level stat row, then five merged
- * disciplines — each a DisciplineModule (overview + work modules) — and a
- * closing Leadership band.
- *
- * This pass lays out the full structure with BLUESCALE FPO placeholders inside
- * the real layouts; real imagery (Figma exports / disk assets) drops in later.
- * Built on the br-* editorial system with the single gold accent.
+ * Seven sections, each a single FLAT premium background color edge-to-edge so it
+ * reads as one connected block: Hero WHITE → 01 GREY → 02 BLACK → 03 NAVY →
+ * 04 GREY → 05 BLACK → 06 WHITE. Tone-aware modules flip light/dark per section.
+ * Images stay bluescale FPO; logos are real where sourced.
  */
 export function CapabilitiesPage(props: CapabilitiesPageProps = {}) {
   const eyebrow = props.eyebrow ?? heroCopy.eyebrow
@@ -57,9 +52,9 @@ export function CapabilitiesPage(props: CapabilitiesPageProps = {}) {
     <article className="br-article bg-white">
       <SectionNav items={navItems} />
 
-      {/* ── Centerpiece hero + section-level stat row ──────────── */}
+      {/* ── Hero — WHITE ───────────────────────────────────────── */}
       <section id="overview" className="bg-white">
-        <div className="br-container pt-16 pb-12 md:pt-24 md:pb-16">
+        <div className="br-container pt-16 pb-16 md:pt-24 md:pb-24">
           <p className="br-data text-xs font-semibold uppercase tracking-[0.18em] text-[var(--br-gold)] md:text-sm">
             {eyebrow}
           </p>
@@ -69,94 +64,58 @@ export function CapabilitiesPage(props: CapabilitiesPageProps = {}) {
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-[var(--br-muted)] md:text-[22px]">
             {lead}
           </p>
-          <div className="mt-12 md:mt-16">
+          <div className="mt-12 rounded-[var(--br-card-radius)] border border-[var(--br-line)] bg-white p-7 md:mt-16 md:p-9">
             <StatCounters stats={heroStats} />
+            <p className="br-data mt-7 text-[11px] uppercase leading-relaxed tracking-[0.08em] text-[var(--br-muted-2)]">
+              {heroCopy.statsNote}
+            </p>
           </div>
-          <p className="br-data mt-7 text-[11px] uppercase leading-relaxed tracking-[0.08em] text-[var(--br-muted-2)]">
-            {heroCopy.statsNote}
-          </p>
         </div>
       </section>
 
-      {/* ── 01 — Product & UX ──────────────────────────────────── */}
-      <DisciplineModule
-        num={productUx.num}
-        id={productUx.id}
-        title={productUx.title}
-        positioning={productUx.positioning}
-        capabilities={productUx.capabilities}
-        stats={productUx.stats}
-        statsNote={productUx.statsNote}
-      >
-        <ProductUxModules />
+      {/* ── 01 Product & UX — GREY ─────────────────────────────── */}
+      <DisciplineModule {...sectionProps(productUx)}>
+        <ProductUxModules dark={BG[productUx.bg].dark} />
       </DisciplineModule>
 
-      {/* ── 02 — Brand & Identity ──────────────────────────────── */}
-      <DisciplineModule
-        num={brand.num}
-        id={brand.id}
-        title={brand.title}
-        positioning={brand.positioning}
-        capabilities={brand.capabilities}
-        stats={brand.stats}
-        statsNote={brand.statsNote}
-        shaded
-      >
-        <BrandModules />
+      {/* ── 02 Brand & Identity — BLACK ────────────────────────── */}
+      <DisciplineModule {...sectionProps(brand)}>
+        <BrandModules dark={BG[brand.bg].dark} />
       </DisciplineModule>
 
-      {/* ── 03 — Design Systems & Implementation ───────────────── */}
-      <DisciplineModule
-        num={designSystems.num}
-        id={designSystems.id}
-        title={designSystems.title}
-        positioning={designSystems.positioning}
-        capabilities={designSystems.capabilities}
-        stats={designSystems.stats}
-        statsNote={designSystems.statsNote}
-      >
-        <DesignSystemsModules />
+      {/* ── 03 Design Systems — NAVY ───────────────────────────── */}
+      <DisciplineModule {...sectionProps(designSystems)}>
+        <DesignSystemsModules dark={BG[designSystems.bg].dark} />
       </DisciplineModule>
 
-      {/* ── 04 — Art Direction & Motion ────────────────────────── */}
-      <DisciplineModule
-        num={artMotion.num}
-        id={artMotion.id}
-        title={artMotion.title}
-        positioning={artMotion.positioning}
-        capabilities={artMotion.capabilities}
-        stats={artMotion.stats}
-        statsNote={artMotion.statsNote}
-        shaded
-      >
-        <ArtMotionModules />
+      {/* ── 04 Motion & Illustration — GREY ────────────────────── */}
+      <DisciplineModule {...sectionProps(artMotion)}>
+        <ArtMotionModules dark={BG[artMotion.bg].dark} />
       </DisciplineModule>
 
-      {/* ── 05 — Marketing & Web ───────────────────────────────── */}
-      <DisciplineModule
-        num={marketingWeb.num}
-        id={marketingWeb.id}
-        title={marketingWeb.title}
-        positioning={marketingWeb.positioning}
-        capabilities={marketingWeb.capabilities}
-        stats={marketingWeb.stats}
-        statsNote={marketingWeb.statsNote}
-      >
-        <MarketingWebModules />
+      {/* ── 05 Marketing & Web — BLACK ─────────────────────────── */}
+      <DisciplineModule {...sectionProps(marketingWeb)}>
+        <MarketingWebModules dark={BG[marketingWeb.bg].dark} />
       </DisciplineModule>
 
-      {/* ── 06 — Leadership & How I Work (closing band) ────────── */}
-      <DisciplineModule
-        num={leadership.num}
-        id={leadership.id}
-        title={leadership.title}
-        positioning={leadership.positioning}
-        capabilities={leadership.capabilities}
-        stats={leadership.stats}
-        shaded
-      >
-        <LeadershipModules />
+      {/* ── 06 Leadership — WHITE ──────────────────────────────── */}
+      <DisciplineModule {...sectionProps(leadership)}>
+        <LeadershipModules dark={BG[leadership.bg].dark} />
       </DisciplineModule>
     </article>
   )
+}
+
+/** Spread the shared DisciplineModule props from a discipline object. */
+function sectionProps(d: typeof productUx) {
+  return {
+    num: d.num,
+    id: d.id,
+    title: d.title,
+    positioning: d.positioning,
+    capabilities: d.capabilities,
+    stats: d.stats,
+    statsNote: d.statsNote,
+    bg: d.bg,
+  }
 }

@@ -19,6 +19,17 @@
 import type { StatItem } from '../shared/StatCounters'
 import type { CapabilityItem } from './DisciplineModule'
 
+/** Per-section flat background + tone. Each section is ONE color edge-to-edge. */
+export type SectionBg = 'white' | 'grey' | 'black' | 'navy'
+
+/** bg token → {className, tone} so modules can adapt light/dark. */
+export const BG: Record<SectionBg, { className: string; dark: boolean }> = {
+  white: { className: 'bg-white', dark: false },
+  grey: { className: 'bg-[#f4f5f7]', dark: false },
+  black: { className: 'bg-[#0c0d10]', dark: true },
+  navy: { className: 'bg-[#0e1a2b]', dark: true },
+}
+
 export interface Discipline {
   id: string
   num: string
@@ -27,6 +38,8 @@ export interface Discipline {
   capabilities: CapabilityItem[]
   stats: StatItem[]
   statsNote?: string
+  /** flat background color for the whole section */
+  bg: SectionBg
 }
 
 /** Section-level hero stat row (top of the whole Capabilities centerpiece). */
@@ -55,16 +68,17 @@ export const heroCopy = {
 export const productUx: Discipline = {
   id: 'product-ux',
   num: '01',
+  bg: 'grey',
   title: 'Product & UX Design',
   positioning:
     'I take products from the real problem to shipped flows — consumer apps ordered by millions and dense B2B tools that can’t afford to break a power user.',
   capabilities: [
-    { label: 'Product strategy', note: 'Framing the problem before a pixel moves' },
-    { label: 'Information architecture', note: 'Sitemaps, flows, permissions models' },
-    { label: 'End-to-end app UX', note: 'Onboarding → ordering → loyalty → account' },
-    { label: 'Multi-surface', note: 'Kiosk, mobile web, native, desktop' },
-    { label: 'B2B / power-user workflows', note: 'POS, checkout, reconciliation, reporting' },
-    { label: 'Ordering & loyalty systems', note: 'Cart, rewards, scan, group ordering' },
+    { icon: 'strategy', label: 'Product strategy', note: 'Framing the problem before a pixel moves' },
+    { icon: 'ia', label: 'Information architecture', note: 'Sitemaps, flows, permissions models' },
+    { icon: 'app', label: 'End-to-end app UX', note: 'Onboarding → ordering → loyalty → account' },
+    { icon: 'surfaces', label: 'Multi-surface', note: 'Kiosk, mobile web, native, desktop' },
+    { icon: 'workflow', label: 'B2B / power-user workflows', note: 'POS, checkout, reconciliation, reporting' },
+    { icon: 'loyalty', label: 'Ordering & loyalty systems', note: 'Cart, rewards, scan, group ordering' },
   ],
   stats: [
     { value: 14, label: 'Brands shipped in this discipline' },
@@ -85,16 +99,17 @@ export const productUx: Discipline = {
 export const brand: Discipline = {
   id: 'brand',
   num: '02',
+  bg: 'black',
   title: 'Brand & Identity',
   positioning:
     'Complete identity systems — logo, type, color, and voice — built to scale across product and marketing. Not a logo file; a system that holds together everywhere it lands.',
   capabilities: [
-    { label: 'Identity systems', note: 'Logo, logotype, clearspace, usage' },
-    { label: 'Type & color systems', note: 'Scales, tokens, accessible palettes' },
-    { label: 'Sub-brand architecture', note: 'Product families under one system' },
-    { label: 'Brand voice', note: 'Tone that carries from app to OOH' },
-    { label: 'Logomark construction', note: 'Grids, anatomy, optical balance' },
-    { label: 'Brand-in-product', note: 'Identity applied across real screens' },
+    { icon: 'identity', label: 'Identity systems', note: 'Logo, logotype, clearspace, usage' },
+    { icon: 'color', label: 'Type & color systems', note: 'Scales, tokens, accessible palettes' },
+    { icon: 'systems', label: 'Sub-brand architecture', note: 'Product families under one system' },
+    { icon: 'voice', label: 'Brand voice', note: 'Tone that carries from app to OOH' },
+    { icon: 'grid', label: 'Logomark construction', note: 'Grids, anatomy, optical balance' },
+    { icon: 'product', label: 'Brand-in-product', note: 'Identity applied across real screens' },
   ],
   stats: [
     { value: 6, label: 'Identities built from scratch' },
@@ -115,16 +130,17 @@ export const brand: Discipline = {
 export const designSystems: Discipline = {
   id: 'design-systems',
   num: '03',
+  bg: 'navy',
   title: 'Design Systems & Implementation',
   positioning:
     'The components, tokens, and handoff that keep a product consistent as the team and surface area grow — including the data-dense patterns behind analytics and reporting.',
   capabilities: [
-    { label: 'Component libraries', note: '300–800-component systems per product' },
-    { label: 'Design tokens', note: 'Color, type, spacing as decisions' },
-    { label: 'Developer handoff', note: 'Specs, redlines, design-to-code' },
-    { label: 'Cross-surface consistency', note: 'One system, every form factor' },
-    { label: 'Data-viz & dashboards', note: 'Charts, metrics, executive + analyst views' },
-    { label: 'Iconography', note: 'UI glyph sets at scale' },
+    { icon: 'components', label: 'Component libraries', note: '300–800-component systems per product' },
+    { icon: 'tokens', label: 'Design tokens', note: 'Color, type, spacing as decisions' },
+    { icon: 'handoff', label: 'Developer handoff', note: 'Specs, redlines, design-to-code' },
+    { icon: 'consistency', label: 'Cross-surface consistency', note: 'One system, every form factor' },
+    { icon: 'dataviz', label: 'Data-viz & dashboards', note: 'Charts, metrics, executive + analyst views' },
+    { icon: 'icons', label: 'Iconography', note: 'UI glyph sets at scale' },
   ],
   stats: [
     { value: 4500, suffix: '+', label: 'Components authored across libraries' },
@@ -143,27 +159,28 @@ export const designSystems: Discipline = {
  * Anchors: CBTL (watercolor AD), Mindbody (illustration + motion languages).
  * ─────────────────────────────────────────────────────────────────────────── */
 export const artMotion: Discipline = {
-  id: 'art-motion',
+  id: 'motion',
   num: '04',
-  title: 'Art Direction & Motion',
+  bg: 'grey',
+  title: 'Motion & Illustration',
   positioning:
-    'Setting the visual hypothesis and making it move — campaigns, illustration systems, and interface motion. I’ve defined entire visual languages, not just one-off assets.',
+    'Interface motion, illustration systems, and animated identity — making the work move. I’ve defined entire visual languages, not just one-off assets, and a couple of these animations took on a life of their own.',
   capabilities: [
-    { label: 'Art direction', note: 'The visual hypothesis, held across surfaces' },
-    { label: 'Illustration systems', note: 'A documented, reusable style' },
-    { label: 'Interface motion', note: 'Transitions, feedback, choreography' },
-    { label: 'Brand film & video', note: '4K product and brand films' },
-    { label: 'Campaign visuals', note: 'Photography direction, key art' },
-    { label: 'Animated identity', note: 'Logo systems in motion' },
+    { icon: 'motion', label: 'Interface motion', note: 'Transitions, feedback, choreography' },
+    { icon: 'illustration', label: 'Illustration systems', note: 'A documented, reusable style' },
+    { icon: 'identity', label: 'Animated identity', note: 'Logo systems in motion' },
+    { icon: 'systems', label: 'Motion languages', note: 'Documented principles teams follow' },
+    { icon: 'character', label: 'Character & icon animation', note: 'Loops, loaders, mascots' },
+    { icon: 'film', label: 'Brand film', note: '4K product & brand films' },
   ],
   stats: [
     { value: 2, label: 'Visual languages defined (illustration + motion)' },
-    { value: 5, label: 'Brands art-directed' },
+    { value: 2, label: 'Animations that went viral off-platform' },
     { value: 4, suffix: 'K', label: 'Brand films produced (CBTL)' },
-    { value: 13, suffix: '+', label: 'Years directing visual work' },
+    { value: 13, suffix: '+', label: 'Years of motion & illustration' },
   ],
   statsNote:
-    'Documented “2 Pillars of Illustration” + “3 Pillars of Motion” languages (Mindbody); watercolor art direction (CBTL).',
+    'Documented “2 Pillars of Illustration” + “3 Pillars of Motion” languages (Mindbody). Octopus loop featured on Laughing Squid; fire loop spread across Tumblr, Imgur & Reddit.',
 }
 
 /* ───────────────────────────────────────────────────────────────────────────
@@ -175,16 +192,17 @@ export const artMotion: Discipline = {
 export const marketingWeb: Discipline = {
   id: 'marketing-web',
   num: '05',
+  bg: 'black',
   title: 'Marketing & Web',
   positioning:
     'Launch and product sites that wrap the app — plus the lifecycle creative around them. Brand storytelling and conversion built into one responsive experience.',
   capabilities: [
-    { label: 'Marketing & launch sites', note: 'Homepage → conversion' },
-    { label: 'Product / ordering web', note: 'Full responsive ordering flows' },
-    { label: 'Responsive systems', note: 'Desktop, tablet, mobile' },
-    { label: 'Email & lifecycle', note: 'Retention programs, not one-off mailers' },
-    { label: 'Campaign / promo', note: 'Seasonal, LTO, drops' },
-    { label: 'E-commerce / AR', note: 'Shoppable, interactive surfaces' },
+    { icon: 'web', label: 'Marketing & launch sites', note: 'Homepage → conversion' },
+    { icon: 'ecommerce', label: 'Product / ordering web', note: 'Full responsive ordering flows' },
+    { icon: 'responsive', label: 'Responsive systems', note: 'Desktop, tablet, mobile' },
+    { icon: 'email', label: 'Email & lifecycle', note: 'Retention programs, not one-off mailers' },
+    { icon: 'campaign', label: 'Campaign / promo', note: 'Seasonal, LTO, drops' },
+    { icon: 'ai', label: 'E-commerce / AR', note: 'Shoppable, interactive surfaces' },
   ],
   stats: [
     { value: 3, label: 'Responsive breakpoints, every build' },
@@ -204,14 +222,15 @@ export const marketingWeb: Discipline = {
 export const leadership: Discipline = {
   id: 'leadership',
   num: '06',
+  bg: 'white',
   title: 'Leadership & How I Work',
   positioning:
     'I don’t just execute. I define the visual languages, pitch them to the room, set the systems other designers extend, and build with AI in the loop.',
   capabilities: [
-    { label: 'Design leadership', note: 'Lead → Art Director → Head of Design' },
-    { label: 'Internal advocacy', note: 'Pitched the Mindbody illustration program' },
-    { label: 'Systems other teams extend', note: 'Toolkits built for handoff' },
-    { label: 'AI product prototyping', note: 'Building with models in the loop' },
+    { icon: 'leadership', label: 'Design leadership', note: 'Lead → Art Director → Head of Design' },
+    { icon: 'advocacy', label: 'Internal advocacy', note: 'Pitched the Mindbody illustration program' },
+    { icon: 'systems', label: 'Systems other teams extend', note: 'Toolkits built for handoff' },
+    { icon: 'ai', label: 'AI product prototyping', note: 'Building with models in the loop' },
   ],
   stats: [
     { value: 13, suffix: '+', label: 'Years, Lead → Art Director → Head of Design' },

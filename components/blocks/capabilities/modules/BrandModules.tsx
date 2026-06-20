@@ -2,88 +2,75 @@
 
 import { Reveal } from '../../../animation/Reveal'
 import { BluePlaceholder } from '../BluePlaceholder'
-import { DarkBand } from '../DarkBand'
 import { BrandWall } from '../BrandLogo'
 import { pick } from '../brands'
 import { AnchorHeader, ModuleCaption } from './primitives'
 
 /**
- * Section 02 — Brand & Identity work modules.
+ * Section 02 — Brand & Identity (BLACK section, dark tone).
  *
- * Anchor (DARK band): Blaze — the authored multi-sub-brand system shown as the
- * senior brand-case artifact sequence. Then real logo walls: "Identities I
- * built" (authored, real marks) kept separate from "brands I worked within."
+ * Equal grid of authored identities (every brand a peer — Blaze is just one
+ * card). Then a brand-agnostic "how an identity gets built" artifact strip, and
+ * the "worked within" logo wall. No single brand privileged.
  */
-
-const BRAND_SEQUENCE: { step: string; label: string; ratio: 'wide' | 'ultrawide' }[] = [
-  { step: 'Direction', label: 'Brand direction board — explorations', ratio: 'wide' },
-  { step: 'Logomark', label: 'Logomark anatomy / construction grid', ratio: 'ultrawide' },
-  { step: 'Clearspace', label: 'Logo + logotype · spacing specimen', ratio: 'ultrawide' },
-  { step: 'Color', label: 'Color system — options → refined', ratio: 'ultrawide' },
-  { step: 'Type', label: 'Type scale specimen', ratio: 'ultrawide' },
-  { step: 'Applications', label: 'In-context — app, packaging, OOH', ratio: 'wide' },
-]
-
-export function BrandModules() {
+export function BrandModules({ dark = true }: { dark?: boolean }) {
   return (
-    <div className="space-y-16 md:space-y-20">
-      {/* ── Anchor — Blaze identity system (dark cinematic) ──── */}
-      <DarkBand
-        eyebrow="Anchor · Authored"
-        title="Blaze — a multi-sub-brand system"
-        blurb="A full identity for a cannabis-tech suite: one parent mark plus five sub-brands (Warehouse, Center, Extract, Grow, Retail), each with its own lockups and app icon. Sole Designer + Brand."
-      >
-        <div className="space-y-5 md:space-y-6">
-          {BRAND_SEQUENCE.map(({ step, label, ratio }, i) => (
-            <Reveal key={step} delay={i * 40}>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-12 md:items-center md:gap-8">
-                <div className="md:col-span-3">
-                  <p className="br-data text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--br-gold)]">
-                    {String(i + 1).padStart(2, '0')} · {step}
-                  </p>
-                </div>
-                <div className="md:col-span-9">
-                  <BluePlaceholder ratio={ratio} dark label={label} />
-                </div>
-              </div>
+    <div className="space-y-16 md:space-y-24">
+      {/* Identities I built — equal grid, REAL logos */}
+      <div>
+        <AnchorHeader
+          dark={dark}
+          kicker="Identities I built"
+          title="Logos & systems, from scratch"
+          blurb="Authored identities — each a complete system, not a logo file. Distinct from brands I’ve worked within. Several have animated marks."
+        />
+        <BrandWall
+          dark={dark}
+          cols={4}
+          brands={pick('blaze', 'dopa', 'jubilee', 'rosetta', 'trees', 'baserate', 'journalytic')}
+        />
+        <ModuleCaption dark={dark}>Animated marks (Jubilee, Rosetta) loop here in the real build.</ModuleCaption>
+      </div>
+
+      {/* How an identity gets built — brand-agnostic artifact strip */}
+      <div>
+        <AnchorHeader
+          dark={dark}
+          kicker="The system"
+          title="What every identity ships with"
+          blurb="Each brand gets the full system — direction, logomark, clearspace, color, type, and in-context applications."
+        />
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5">
+          {[
+            'Direction board',
+            'Logomark anatomy',
+            'Clearspace & lockups',
+            'Color system',
+            'Type scale',
+            'In-context applications',
+          ].map((label, i) => (
+            <Reveal key={label} delay={i * 30}>
+              <BluePlaceholder ratio="video" dark={dark} label={label} />
             </Reveal>
           ))}
         </div>
-      </DarkBand>
-
-      {/* ── Identities I built (authored marks — REAL logos) ─── */}
-      <div>
-        <AnchorHeader
-          kicker="Identities I built"
-          title="Logos & marks, from scratch"
-          blurb="Authored identities — distinct from brands I’ve worked within. Several have animated marks."
-        />
-        <BrandWall
-          cols={3}
-          brands={pick('blaze', 'dopa', 'jubilee', 'rosetta', 'trees', 'baserate', 'journalytic')}
-        />
-        <ModuleCaption>Animated marks (Jubilee, Rosetta) loop here in the real build.</ModuleCaption>
       </div>
 
-      {/* ── Worked within (separate, honest framing) ──────────── */}
+      {/* Worked within — REAL logos */}
       <div>
         <AnchorHeader
+          dark={dark}
           kicker="Worked within"
           title="Brands I shipped inside"
-          blurb="Established identities I designed product and applications for — shown as a normalized logo wall, not claimed as authored."
+          blurb="Established identities I designed product and applications for — a normalized logo wall, not claimed as authored."
         />
         <BrandWall
+          dark={dark}
           cols={4}
           brands={pick(
-            'panda',
-            'raisingCanes',
-            'daveAndBusters',
-            'trueFoodKitchen',
-            'wingstop',
-            'cbtl',
-            'mindbody',
-            'samsung',
-            'vfCorp',
+            'panda', 'raisingCanes', 'daveAndBusters', 'trueFoodKitchen',
+            'wingstop', 'cbtl', 'mindbody', 'samsung', 'vfCorp', 'pepsi',
+            'dairyQueen', 'noodles',
           )}
         />
       </div>
