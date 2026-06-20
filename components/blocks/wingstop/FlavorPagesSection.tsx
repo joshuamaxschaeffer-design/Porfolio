@@ -38,10 +38,7 @@ export function FlavorPagesSection() {
           <div
             key={p}
             className="group relative w-[78vw] max-w-[420px] shrink-0 overflow-hidden rounded-2xl border border-white/12 bg-black sm:w-[60vw] lg:w-[400px]"
-            style={{
-              boxShadow: '0 34px 80px rgba(0,0,0,0.65)',
-              transform: `rotate(${(i - 1) * 1.5}deg)`,
-            }}
+            style={{ boxShadow: '0 34px 80px rgba(0,0,0,0.65)' }}
           >
             {/* fixed tall viewport; the page hero fills it, then scrolls up on hover */}
             <div className="h-[520px] overflow-hidden md:h-[600px]">
