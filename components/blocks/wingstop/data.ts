@@ -63,7 +63,7 @@ export const scope = {
       eyebrow: 'DESKTOP SITE',
       title: 'The full website',
       body: 'The ordering experience scaled to desktop, end to end.',
-      desktop: '/wingstop/flavor/d-lemon-pepper.webp',
+      desktop: '/wingstop/desktopapp/d-product.webp',
     },
     {
       key: 'crm',
@@ -155,7 +155,7 @@ export const app = {
       body: 'Split the count across flavors, set sides, and upgrade. The whole build-your-meal experience.',
       screens: [
         '/wingstop/mobileapp/m-customize.webp',
-        '/wingstop/mobileapp/m-done.webp',
+        '/wingstop/mobileapp/m-flavor-customize.webp',
         '/wingstop/mobileapp/m-eclub.webp',
         '/wingstop/product/m-product-3.webp',
         '/wingstop/product/m-product-4.webp',
@@ -167,7 +167,7 @@ export const app = {
       body: 'A streamlined cart, special requests, and a checkout that gets out of the way.',
       screens: [
         '/wingstop/product/m-cart.webp',
-        '/wingstop/product/m-checkout.webp',
+        '/wingstop/mobileapp/m-checkout-extra.webp',
         '/wingstop/mobileapp/m-product.webp',
         '/wingstop/mobileapp/m-flavors.webp',
         '/wingstop/mobileapp/m-done.webp',
@@ -187,12 +187,12 @@ export const app = {
       '/wingstop/flavor-icons/hawaiian.svg',
     ],
   },
-  /** Desktop site — a mockup or two stacked. */
+  /** Desktop site — a mockup or two stacked (real product/ordering page first). */
   desktop: {
     eyebrow: 'DESKTOP SITE',
     title: 'Scaled to the web',
     body: 'The same ordering system, reflowed for desktop.',
-    screens: ['/wingstop/desktopapp/d-flavors.webp', '/wingstop/desktopapp/d-flavor-custom.webp'],
+    screens: ['/wingstop/desktopapp/d-product.webp', '/wingstop/desktopapp/d-flavors.webp'],
   },
   /** Bento of all the app work — App Store release imagery. */
   bento: {

@@ -68,38 +68,40 @@ function DarkModeStack() {
   }, [])
 
   const F = 1500
-  // Tighter recede + bigger cards. A SMALLER per-card gap keeps the screens
-  // close together (no huge gaps), and a small scroll-linked delta opens the
-  // stack just slightly as it passes through view. NO scroll pin.
+  // Per-card depth gap; a small scroll-linked delta opens the stack slightly.
   const GAP = 150 + p * 70
+  const count = defaults.darkMode.screens.length
 
   return (
-    <div ref={ref} className="relative mt-16 bg-[#0a0a0b]">
+    <div className="br-container mt-16">
+      {/* ONE big rounded dark CARD (not a full-width band): text on the LEFT,
+          the receding device stack on the RIGHT. */}
       <div
-        className="ws-dark relative h-[80vh] overflow-hidden text-white md:h-[86vh]"
+        ref={ref}
+        className="ws-dark relative grid grid-cols-1 gap-8 overflow-hidden rounded-3xl border border-white/10 bg-[#0a0a0b] p-8 text-white [box-shadow:0_30px_80px_-20px_rgba(0,0,0,0.6)] md:p-12 lg:grid-cols-[minmax(0,42%)_minmax(0,1fr)] lg:items-center lg:gap-6"
         style={{ '--ws-green': '#23c265' } as React.CSSProperties}
       >
-        <div className="br-container pt-14">
+        {/* LEFT — copy */}
+        <div className="lg:py-6">
           <span className="br-data text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ws-green)]">
             {defaults.darkMode.eyebrow}
           </span>
           <h3 className="mt-2 text-2xl font-semibold text-white sm:text-[28px]">{defaults.darkMode.title}</h3>
-          <p className="mt-2 max-w-[56ch] text-[15px] text-white/75 sm:text-base">{defaults.darkMode.body}</p>
+          <p className="mt-3 max-w-[44ch] text-[15px] text-white/75 sm:text-base">{defaults.darkMode.body}</p>
         </div>
-        <div className="absolute inset-0 -z-0">
+
+        {/* RIGHT — receding device stack, confined to this column */}
+        <div className="relative h-[58vh] min-h-[420px] w-full lg:h-[62vh]">
           {defaults.darkMode.screens.map((src, i) => {
             const z = i * GAP
             const s = F / (F + z)
-            // anchor front card lower-left; recede up-and-right toward a CLOSER
-            // vanishing point so the cards stay near each other (less spread).
+            // anchor front card lower-left of THIS column; recede up-and-right.
             const frontX = 30,
-              frontY = 56,
-              vpX = 68,
+              frontY = 60,
+              vpX = 78,
               vpY = 34
             const x = frontX + (vpX - frontX) * (1 - s)
             const y = frontY + (vpY - frontY) * (1 - s)
-            // normalized depth across the whole stack (0 = hero front, 1 = back card)
-            const count = defaults.darkMode.screens.length
             const d = count > 1 ? i / (count - 1) : 0
             return (
               <div
@@ -108,12 +110,10 @@ function DarkModeStack() {
                 style={{
                   left: `${x}%`,
                   top: `${y}%`,
-                  // ~2x the old footprint (22% → 38%, 250 → 460) so the screens
-                  // read large and confident.
-                  width: '38%',
-                  maxWidth: 460,
+                  width: '42%',
+                  maxWidth: 320,
                   transform: `translate(-50%,-50%) scale(${s})`,
-                  zIndex: defaults.darkMode.screens.length - i,
+                  zIndex: count - i,
                   filter: `brightness(${1 - 0.5 * d}) blur(${(6 * d * d).toFixed(2)}px)`,
                   boxShadow: '0 24px 60px rgba(0,0,0,0.6)',
                 }}

@@ -53,13 +53,16 @@ interface EmailNode {
  *  Modelled on Panda's MvpScatter: the windows are BIG and bleed off the top
  *  and bottom of the (short) band, so the row reads as a confident stream of
  *  campaigns rather than small floating thumbnails. */
+// Even horizontal spacing: 6 emails at equal cx intervals (~15.33% apart) and a
+// near-uniform cy (a tiny ±5 alternating lift so the row isn't dead-flat) so the
+// white gaps between the tilted windows read as a consistent small distance.
 const SCATTER: EmailNode[] = [
-  { src: defaults.scope.emails[0], cx: 13, cy: 52, w: 13, row: 1 },
-  { src: defaults.scope.emails[4], cx: 30, cy: 30, w: 12.5, row: 2 },
-  { src: defaults.scope.emails[1], cx: 46, cy: 62, w: 13, row: 1 },
-  { src: defaults.scope.emails[2], cx: 62, cy: 40, w: 12.5, row: 2 },
-  { src: defaults.scope.emails[3], cx: 78, cy: 64, w: 13, row: 3 },
-  { src: defaults.scope.emails[5], cx: 92, cy: 36, w: 12.5, row: 4 },
+  { src: defaults.scope.emails[0], cx: 12, cy: 50, w: 12.5, row: 1 },
+  { src: defaults.scope.emails[4], cx: 27.33, cy: 45, w: 12.5, row: 2 },
+  { src: defaults.scope.emails[1], cx: 42.66, cy: 50, w: 12.5, row: 1 },
+  { src: defaults.scope.emails[2], cx: 58, cy: 45, w: 12.5, row: 2 },
+  { src: defaults.scope.emails[3], cx: 73.33, cy: 50, w: 12.5, row: 1 },
+  { src: defaults.scope.emails[5], cx: 88.66, cy: 45, w: 12.5, row: 2 },
 ]
 /** Top-down food props framing the scatter (left/top/width as % of band).
  *  Pushed to clip off the side/top/bottom edges (Panda model). */
@@ -112,11 +115,13 @@ function CrmEmailScatter() {
   const upY = useTransform(up, (d) => d * AXIS_Y)
   const downX = useTransform(down, (d) => d * AXIS_X)
   const downY = useTransform(down, (d) => d * AXIS_Y)
+  // All rows drift TOGETHER (same direction) so the even horizontal gaps between
+  // the windows are preserved through the scroll parallax — no scissoring.
   const axis = {
     1: { x: upX, y: upY },
-    2: { x: downX, y: downY },
+    2: { x: upX, y: upY },
     3: { x: upX, y: upY },
-    4: { x: downX, y: downY },
+    4: { x: upX, y: upY },
   } as const
 
   return (
