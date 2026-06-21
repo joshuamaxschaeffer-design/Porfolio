@@ -47,18 +47,6 @@ export function DesignSystemsModules({ dark = true }: { dark?: boolean }) {
         </Reveal>
       </div>
 
-      {/* Tokens + scale */}
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-10 md:items-start">
-        <div className="md:col-span-5">
-          <AnchorHeader dark={dark} kicker="Tokens & UI" title="One system, applied" blurb="Color, type, and spacing as tokens — change once, propagate everywhere." />
-          <ImgCard src="/capabilities/design-systems/baserate-ui.webp" alt="Baserate desktop UI built from the system" />
-        </div>
-        <div className="md:col-span-7">
-          <AnchorHeader dark={dark} kicker="Scale" title="Holds across many screens" blurb="The same system, screen after screen." />
-          <ImgCard src="/capabilities/design-systems/scalability.webp" alt="Baserate screens at scale" />
-        </div>
-      </div>
-
       {/* Mindbody NUTool — a major product-management feature (real desktop screens) */}
       <div>
         <AnchorHeader
