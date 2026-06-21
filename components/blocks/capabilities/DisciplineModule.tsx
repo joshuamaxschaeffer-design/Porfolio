@@ -66,19 +66,18 @@ export function DisciplineModule({
           </p>
         </Reveal>
 
-        {/* Optional client-logo row — brands I did this discipline's work for */}
+        {/* Optional client-logo row — brands I did this discipline's work for (white cards) */}
         {clientLogos && clientLogos.length > 0 && (
           <Reveal delay={90}>
-            <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-5 md:mt-10 md:gap-x-12">
+            <div className="mt-8 flex flex-wrap gap-3 md:mt-10 md:gap-4">
               {clientLogos.map((src) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <span
                   key={src}
-                  src={src}
-                  alt=""
-                  className={`h-7 w-auto max-w-[120px] object-contain md:h-8 ${dark ? 'opacity-80 brightness-0 invert' : 'opacity-70'}`}
-                  loading="lazy"
-                />
+                  className="flex h-16 w-[140px] items-center justify-center rounded-[var(--br-card-radius)] border border-black/5 bg-white px-5 shadow-[0_4px_14px_rgba(7,14,44,0.06)] md:h-[72px] md:w-[160px]"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={src} alt="" className="max-h-9 w-auto max-w-full object-contain" loading="lazy" />
+                </span>
               ))}
             </div>
           </Reveal>
