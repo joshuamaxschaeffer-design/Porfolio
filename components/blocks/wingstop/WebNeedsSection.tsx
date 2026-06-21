@@ -34,14 +34,15 @@ export function WebNeedsSection() {
  *  more of each page down its length. */
 function PageCard({ src, label }: { src: string; label: string }) {
   return (
-    <figure className="w-[80vw] max-w-[680px] sm:w-[58vw] lg:w-[620px]">
+    // Scaled DOWN (~half the old width) and ~2× TALLER — a tall portrait card
+    // that reveals much more of each page down its length. No caption.
+    <figure className="w-[64vw] max-w-[360px] sm:w-[40vw] lg:w-[330px]">
       <div className="overflow-hidden rounded-2xl border border-[var(--br-line)] bg-white [box-shadow:0_24px_55px_-18px_rgba(0,0,0,0.35)]">
-        <div className="aspect-[16/13] overflow-hidden">
+        <div className="aspect-[16/26] overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={src} alt={label} loading="lazy" draggable={false} className="block w-full object-cover object-top" />
         </div>
       </div>
-      <figcaption className="br-data mt-3 text-[13px] uppercase tracking-[0.1em] text-[var(--br-muted-2)]">{label}</figcaption>
     </figure>
   )
 }

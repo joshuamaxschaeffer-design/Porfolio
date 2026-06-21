@@ -242,7 +242,7 @@ export function DragCarousel({
     <div className="mt-2 relative left-1/2 right-1/2 -mx-[50vw] w-screen">
       <div
         ref={trackRef}
-        className={`br-noscrollbar flex cursor-grab snap-x snap-mandatory ${gapClass} overflow-x-auto overscroll-x-contain pb-2 select-none active:cursor-grabbing lg:snap-none`}
+        className={`br-noscrollbar flex cursor-grab snap-x snap-mandatory ${gapClass} overflow-x-auto overscroll-x-contain pt-3 pb-20 select-none active:cursor-grabbing lg:snap-none`}
         style={{ paddingInline: RAIL_PAD, scrollPaddingInline: RAIL_PAD, touchAction: 'pan-x pan-y' }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
