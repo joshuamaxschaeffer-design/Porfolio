@@ -117,17 +117,23 @@ export function ProductPagesStage() {
           </div>
         </div>
 
-        {/* RIGHT: copy */}
-        <div className="relative order-1 px-6 pt-14 sm:px-10 lg:order-2 lg:pr-[8%] lg:pt-0">
-          <p className="br-data text-[12px] font-semibold uppercase tracking-[0.2em] text-white/90">
-            {webPages.tag}
-          </p>
-          <h3 className="mt-3 text-[26px] font-semibold leading-tight text-white sm:text-[30px] md:text-[40px]">
-            {webPages.title}
-          </h3>
-          <p className="mt-4 max-w-md text-[15px] leading-normal text-white/85 md:text-base">
-            {webPages.body}
-          </p>
+        {/* RIGHT: copy. On mobile the angled pages fill the background and can
+            climb over this text, so the copy sits on an OPAQUE card that matches
+            the section's background (teal) — it can't be seen through, so the
+            text always reads on top of the mockups (#2, 2026-06-20). At lg+ the
+            two-column layout keeps them apart, so the card backing is dropped. */}
+        <div className="relative z-20 order-1 lg:order-2 lg:pt-0">
+          <div className="mx-6 mt-6 border-l-2 border-white/40 bg-[#1c8aa6] bg-[linear-gradient(105deg,rgba(55,192,144,0.55)_0%,rgba(43,152,160,0.35)_55%,rgba(39,102,176,0.45)_100%)] px-5 py-6 sm:mx-10 lg:mx-0 lg:mt-0 lg:border-0 lg:bg-transparent lg:bg-none lg:p-0 lg:pr-[8%]">
+            <p className="br-data text-[12px] font-semibold uppercase tracking-[0.2em] text-white/90">
+              {webPages.tag}
+            </p>
+            <h3 className="mt-3 text-[26px] font-semibold leading-tight text-white sm:text-[30px] md:text-[40px]">
+              {webPages.title}
+            </h3>
+            <p className="mt-4 max-w-md text-[15px] leading-normal text-white/85 md:text-base">
+              {webPages.body}
+            </p>
+          </div>
         </div>
       </div>
     </div>

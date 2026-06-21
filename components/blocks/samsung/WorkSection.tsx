@@ -94,7 +94,7 @@ function TableWithScreens() {
           alt={inStore.device.alt}
           width={inStore.device.w}
           height={inStore.device.h}
-          className="mx-auto block w-full max-w-[2880px]"
+          className="mr-auto block w-[300vw] max-w-none md:mx-auto md:w-full md:max-w-[2880px]"
         />
       </div>
 
@@ -104,7 +104,7 @@ function TableWithScreens() {
           never climb over the table/heading on mobile. The table's transparent
           shadow margin (~12% bottom) means ~-14% lands the screens on the table
           surface. */}
-      <div className="relative z-10 -mt-[14%]">
+      <div className="relative z-10 -mt-[42%] md:-mt-[14%]">
         {/* connecting grey rail behind the screen column */}
         <div
           aria-hidden

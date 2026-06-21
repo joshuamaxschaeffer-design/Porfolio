@@ -78,7 +78,7 @@ export function StoreLocatorPopout() {
                 Pushed further left + bigger to blanket the back page's locator
                 region. scroll-grows. */}
             <figure
-              className="absolute left-[-150px] top-[38%] w-[102%] overflow-hidden ring-1 ring-black/10"
+              className="absolute left-[-110px] top-[calc(38%-15px)] w-[102%] overflow-hidden ring-1 ring-black/10 lg:left-[-150px] lg:top-[38%]"
               style={{
                 transform: `rotateX(10deg) rotateY(4deg) rotateZ(-5deg) scale(${scale}) translateY(${lift}px)`,
                 transformOrigin: 'left center',
