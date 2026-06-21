@@ -84,27 +84,27 @@ function TableWithScreens() {
   const aligns = ['md:mr-auto', 'md:ml-auto', 'md:mr-auto'] // left, right, left
   return (
     <div className="relative">
-      {/* BIG table — full-res 3226px source for 2× density. Pull-up to close the
-          gap above it is PROPORTIONAL (% of width, like the table itself) so it
-          scales with the viewport instead of over-pulling on small screens. */}
-      <div className="-mt-[6%]">
+      {/* BIG table — image is cropped TIGHT to the device content (no transparent
+          margin), so it fills the column at every width. A small pull-up closes
+          the gap above; it's proportional (% of width) so it scales with the
+          viewport instead of over-pulling on small screens. */}
+      <div className="-mt-[2%]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={`${W}/${inStore.device.file}`}
           alt={inStore.device.alt}
           width={inStore.device.w}
           height={inStore.device.h}
-          className="mr-auto block w-[300vw] max-w-none md:mx-auto md:w-full md:max-w-[2880px]"
+          className="mx-auto block w-full max-w-[1400px]"
         />
       </div>
 
       {/* Screens overlap the bottom of the table. The overlap is PERCENTAGE-based
           (relative to width, which is how the table height scales too) so the
-          screens always sit on the lower part of the table at every width and
-          never climb over the table/heading on mobile. The table's transparent
-          shadow margin (~12% bottom) means ~-14% lands the screens on the table
-          surface. */}
-      <div className="relative z-10 -mt-[42%] md:-mt-[14%]">
+          screens always sit on the lower part of the table at every width. The
+          image is now cropped tight (content runs to the bottom edge), so a
+          small overlap lands the first screen just below the table front face. */}
+      <div className="relative z-10 -mt-[8%] md:-mt-[6%]">
         {/* connecting grey rail behind the screen column */}
         <div
           aria-hidden
