@@ -10,12 +10,14 @@ import { DragCarousel } from '../../shared/DragCarousel'
  * BluePlaceholder (FPO) for now. `dark` adapts every primitive for dark bands.
  */
 
-/** Mini-case / module header: kicker + title + optional role + blurb. */
+/**
+ * Module header — TITLE ONLY. Per Josh: each major discipline section opens with
+ * the copy + data; the sub-module headers should NOT repeat a kicker, a role to
+ * the right, or a blurb underneath. Those props are accepted but intentionally
+ * not rendered so existing call sites don't need editing.
+ */
 export function AnchorHeader({
-  kicker,
   title,
-  role,
-  blurb,
   dark = false,
 }: {
   kicker?: string
@@ -26,40 +28,9 @@ export function AnchorHeader({
 }) {
   return (
     <Reveal>
-      <div className="mb-7 md:mb-9">
-        {kicker && (
-          <p className="br-data text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--br-gold)]">
-            {kicker}
-          </p>
-        )}
-        <div className="mt-2 flex flex-wrap items-baseline gap-x-4 gap-y-1">
-          <h3
-            className={`text-[22px] font-medium tracking-[-0.01em] md:text-[30px] ${
-              dark ? 'text-white' : 'text-[var(--br-ink)]'
-            }`}
-          >
-            {title}
-          </h3>
-          {role && (
-            <span
-              className={`br-data text-[12px] uppercase tracking-[0.08em] ${
-                dark ? 'text-white/45' : 'text-[var(--br-muted-2)]'
-              }`}
-            >
-              {role}
-            </span>
-          )}
-        </div>
-        {blurb && (
-          <p
-            className={`mt-3 max-w-[60ch] text-[15px] leading-normal md:text-base ${
-              dark ? 'text-white/55' : 'text-[var(--br-muted)]'
-            }`}
-          >
-            {blurb}
-          </p>
-        )}
-      </div>
+      <h3 className={`mb-7 text-[22px] font-medium tracking-[-0.01em] md:mb-9 md:text-[30px] ${dark ? 'text-white' : 'text-[var(--br-ink)]'}`}>
+        {title}
+      </h3>
     </Reveal>
   )
 }
