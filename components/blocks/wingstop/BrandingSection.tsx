@@ -63,15 +63,16 @@ export function BrandingSection() {
   )
 }
 
-/** One dimensional chip; tilts toward ~45° as the section scrolls through view. */
-/** Per-chip baseline offsets (px) — a slight vertical scatter so the grid reads
- *  as tossed coins rather than a rigid 3×2. Indexed by position. */
-const CHIP_STAGGER = [-14, 18, -8, 12, -18, 8]
+/** The chips now render FRONT-FACING (rendered upright in SD Studio), so on
+ *  scroll we just rotate them slightly left/right — a gentle, alternating in-plane
+ *  tilt — rather than re-posing them. Per-chip baseline rotation (deg) gives the
+ *  resting set a touch of life; the scroll drift swings around it. */
+const CHIP_BASE_ROT = [-5, 4, -3, 5, -4, 3]
 
 function Chip({ chip, index }: { chip: { src: string; name: string; color: string }; index: number }) {
   const ref = useRef<HTMLDivElement>(null)
   const [drift, setDrift] = useState(0)
-  const base = CHIP_STAGGER[index % CHIP_STAGGER.length]
+  const base = CHIP_BASE_ROT[index % CHIP_BASE_ROT.length]
 
   useEffect(() => {
     const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
@@ -88,8 +89,9 @@ function Chip({ chip, index }: { chip: { src: string; name: string; color: strin
       const vh = window.innerHeight
       // center-relative progress: -1 (below) → 0 (centered) → 1 (above)
       const c = (r.top + r.height / 2 - vh / 2) / (vh / 2)
-      // gentle vertical float; alternate direction per chip so they bob apart.
-      setDrift(Math.max(-26, Math.min(26, c * 24 * (index % 2 ? -1 : 1))))
+      // gentle in-plane rotation; alternate direction per chip so adjacent coins
+      // rock opposite ways as the section scrolls past.
+      setDrift(Math.max(-9, Math.min(9, c * 8 * (index % 2 ? -1 : 1))))
     }
     const schedule = () => {
       if (!raf) raf = requestAnimationFrame(onScroll)
@@ -106,19 +108,18 @@ function Chip({ chip, index }: { chip: { src: string; name: string; color: strin
 
   return (
     <div className="flex flex-col items-center">
-      {/* The chip renders are already tossed 3D coins (pre-rotated in SD Studio),
-          so we DON'T re-rotate in CSS — just a gentle vertical float + a static
-          per-chip stagger so the set reads as coins caught mid-air. */}
+      {/* Front-facing 3D coin renders: a subtle scroll-linked in-plane rotation
+          (base tilt + drift), kept gentle so the glyph stays readable. */}
       <div ref={ref} className="relative grid aspect-square w-full place-items-center will-change-transform">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={chip.src}
           alt={`${chip.name} flavour chip`}
           loading="lazy"
-          className="h-full w-full object-contain"
+          className="h-[88%] w-[88%] object-contain"
           style={{
-            transform: `translateY(${base + drift}px)`,
-            filter: 'drop-shadow(0 18px 26px rgba(0,0,0,0.55))',
+            transform: `rotate(${base + drift}deg)`,
+            filter: 'drop-shadow(0 18px 26px rgba(0,0,0,0.5))',
           }}
         />
       </div>
