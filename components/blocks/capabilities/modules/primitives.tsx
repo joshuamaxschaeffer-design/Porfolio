@@ -134,9 +134,9 @@ export function BlueRail({
   const cards = norm.map((it) => (
     <div key={it.label} className={cardW}>
       {it.src ? (
-        <figure>
+        <figure className="relative pb-3 pl-3">
           <div
-            className={`relative overflow-hidden rounded-[18px] border bg-white ${
+            className={`overflow-hidden rounded-[18px] border bg-white ${
               dark ? 'border-white/10' : 'border-[var(--br-line)]'
             } shadow-[0_8px_24px_rgba(7,14,44,0.10)]`}
           >
@@ -148,16 +148,16 @@ export function BlueRail({
               className="aspect-[9/19.5] w-full object-cover object-top"
               loading="lazy"
             />
-            {/* iOS-style app icon, bottom-left */}
-            {it.icon && (
-              <span className="absolute bottom-3 left-3 block h-10 w-10 overflow-hidden rounded-[10px] border border-black/10 bg-white shadow-[0_4px_12px_rgba(0,0,0,0.25)]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={it.icon} alt="" draggable={false} className="h-full w-full object-cover" />
-              </span>
-            )}
           </div>
+          {/* iOS-style app icon — sits OUTSIDE the screen, bottom-left, slightly overlapping */}
+          {it.icon && (
+            <span className="absolute bottom-0 left-0 flex h-12 w-12 items-center justify-center overflow-hidden rounded-[12px] border border-black/10 bg-white p-1.5 shadow-[0_6px_16px_rgba(0,0,0,0.22)]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={it.icon} alt="" draggable={false} className="h-full w-full object-contain" />
+            </span>
+          )}
           <figcaption
-            className={`br-data mt-2 text-[11px] uppercase tracking-[0.06em] ${
+            className={`br-data mt-2 pl-1 text-[11px] uppercase tracking-[0.06em] ${
               dark ? 'text-white/50' : 'text-[var(--br-muted-2)]'
             }`}
           >
@@ -170,7 +170,7 @@ export function BlueRail({
     </div>
   ))
 
-  return <DragCarousel items={cards} dark={dark} pills={false} gapClass="gap-4 md:gap-5" />
+  return <DragCarousel items={cards} dark={dark} pills={false} gapClass="gap-8 md:gap-12" />
 }
 
 /** A flow step: a label + optional real screen image. */

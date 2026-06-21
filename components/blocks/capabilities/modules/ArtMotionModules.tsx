@@ -71,20 +71,20 @@ export function ArtMotionModules({ dark = false }: { dark?: boolean }) {
           blurb="Interface motion and brand film — a looping reel with stills pulled from it, so the work lands whether or not it’s playing."
         />
         {/* mb-motion is landscape (1280×746); pepsi is tall phone (750×1750).
-            Show each at its NATIVE aspect, contained — no side-cropping, no captions. */}
-        <div className="grid grid-cols-1 items-stretch gap-5 md:grid-cols-12 md:gap-6">
-          <Reveal className="md:col-span-8">
-            <div className="h-full overflow-hidden rounded-[var(--br-card-radius)] border border-[var(--br-line)] bg-[#0b1020]">
-              <LoopVideo src="/capabilities/motion/mb-motion.mp4" poster="/capabilities/motion/mb-motion-poster.webp" className="aspect-[1280/746] w-full object-contain" />
+            Each at its native aspect — no letterbox, no caption. The pepsi phone
+            is sized so its height matches the landscape video's height. */}
+        <div className="flex flex-col items-start gap-5 md:flex-row md:gap-6">
+          <Reveal className="w-full md:flex-1">
+            <div className="overflow-hidden rounded-[var(--br-card-radius)] border border-[var(--br-line)]">
+              <LoopVideo src="/capabilities/motion/mb-motion.mp4" poster="/capabilities/motion/mb-motion-poster.webp" className="aspect-[1280/746] w-full object-cover" />
             </div>
           </Reveal>
-          <Reveal delay={60} className="md:col-span-4">
-            <div className="mx-auto h-full max-w-[260px] overflow-hidden rounded-[28px] border border-[var(--br-line)] bg-[#0b1020]">
-              <LoopVideo src="/capabilities/motion/pepsi-motion.mp4" poster="/capabilities/motion/pepsi-motion-poster.webp" className="aspect-[750/1750] w-full object-contain" />
+          <Reveal delay={60} className="w-[150px] shrink-0 md:w-[180px]">
+            <div className="overflow-hidden rounded-[20px] border border-[var(--br-line)]">
+              <LoopVideo src="/capabilities/motion/pepsi-motion.mp4" poster="/capabilities/motion/pepsi-motion-poster.webp" className="aspect-[750/1750] w-full object-cover" />
             </div>
           </Reveal>
         </div>
-        <ModuleCaption dark={dark}>Interface motion (Mindbody) and product / AR (Pepsi) — autoplaying muted loops.</ModuleCaption>
       </div>
 
       {/* CBTL interface motion — real screen-recordings of the app in motion */}
@@ -104,18 +104,17 @@ export function ArtMotionModules({ dark = false }: { dark?: boolean }) {
             { src: '/capabilities/cbtl/vid-scan.mp4', label: 'Scan to pay' },
           ].map((v, i) => (
             <Reveal key={v.label} delay={i * 50}>
-              <figure className="overflow-hidden rounded-[22px] border border-[var(--br-line)] bg-black">
+              <figure className="overflow-hidden rounded-[12px] border border-[var(--br-line)] bg-black">
                 <LoopVideo
                   src={v.src}
                   poster={v.src.replace('.mp4', '-poster.webp')}
                   label={`CBTL ${v.label}`}
-                  className="aspect-[540/960] w-full object-contain"
+                  className="aspect-[540/960] w-full object-cover"
                 />
               </figure>
             </Reveal>
           ))}
         </div>
-        <ModuleCaption dark={dark}>The interface in motion — theming, transitions, and the scan pulse.</ModuleCaption>
       </div>
 
       {/* Icon systems — CBTL + Mindbody libraries */}
@@ -132,14 +131,12 @@ export function ArtMotionModules({ dark = false }: { dark?: boolean }) {
             <figure className="overflow-hidden rounded-[var(--br-card-radius)] border border-[var(--br-line)] bg-white">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/capabilities/mindbody-new/icons-1.webp" alt="Mindbody product icon library" className="w-full object-cover" loading="lazy" />
-              <figcaption className="br-data px-4 py-3 text-[11px] uppercase tracking-[0.08em] text-[var(--br-muted-2)]">Mindbody — product icon library (designed + directed)</figcaption>
             </figure>
           </div>
           <div className="md:col-span-5">
             <figure className="overflow-hidden rounded-[var(--br-card-radius)] border border-[var(--br-line)] bg-white">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/capabilities/cbtl/icons-1.webp" alt="CBTL bespoke icon set" className="w-full object-contain p-4" loading="lazy" />
-              <figcaption className="br-data px-4 py-3 text-[11px] uppercase tracking-[0.08em] text-[var(--br-muted-2)]">CBTL — bespoke icon set</figcaption>
             </figure>
           </div>
         </div>

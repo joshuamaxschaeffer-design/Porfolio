@@ -99,9 +99,9 @@ export function DisciplineModule({
           </div>
         </Reveal>
 
-        {/* Full-width stat row in a bordered panel */}
+        {/* Full-width stat row — flat on the section background (no card) */}
         <Reveal delay={100}>
-          <div className={`mt-12 rounded-[var(--br-card-radius)] border p-7 md:mt-14 md:p-9 ${cardBg}`}>
+          <div className="mt-12 border-t pt-10 md:mt-16" style={{ borderColor: dark ? 'rgba(255,255,255,0.12)' : 'var(--br-line)' }}>
             <StatCounters stats={dark ? stats.map((s) => ({ ...s, accent: gold })) : stats} dark={dark} />
             {statsNote && (
               <p className={`br-data mt-7 text-[11px] uppercase leading-relaxed tracking-[0.08em] ${statNote}`}>

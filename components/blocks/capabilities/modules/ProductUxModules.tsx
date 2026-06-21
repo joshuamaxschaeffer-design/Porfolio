@@ -3,17 +3,14 @@
 import { useState } from 'react'
 import { Reveal } from '../../../animation/Reveal'
 import { CapDeviceFan } from '../../shared/CapDeviceFan'
-import { ExplorationStack } from '../../baserate/ExplorationStack'
-import { AnchorHeader, BlueRail, BlueFlowRow, ModuleCaption, ModuleCard } from './primitives'
+import { ScreenStack } from '../../shared/ScreenStack'
+import { AnchorHeader, BlueRail, BlueFlowRow, ModuleCard } from './primitives'
 
 /** Section 01 — Product & UX work modules (grey section, light tone). */
 export function ProductUxModules({ dark = false }: { dark?: boolean }) {
   return (
     <div className="space-y-16 md:space-y-24">
-      {/* Process opener — how a product UX starts (from the Baserate build) */}
-      <ExplorationModule dark={dark} />
-
-      {/* Anchor A — Raising Cane's (consumer, mobile) — device fan + flow + Cover-Flow detail */}
+      {/* Anchor A — Raising Cane's (consumer, mobile) — device fan + receding stack */}
       <ModuleCard dark={dark}>
         <AnchorHeader
           dark={dark}
@@ -24,7 +21,6 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
         />
         <CapDeviceFan
           dark={dark}
-          caption="Raising Cane’s — native app screens"
           screens={[
             { src: '/capabilities/canes/ui-welcome.webp', alt: 'Cane’s welcome' },
             { src: '/capabilities/canes/ui-onboard.webp', alt: 'Cane’s onboarding' },
@@ -34,24 +30,31 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
             { src: '/capabilities/canes/ui-confirm.webp', alt: 'Cane’s order status' },
           ]}
         />
-        {/* Cover-Flow detail of the drink-customization states (reuses the Baserate ExplorationStack) */}
-        <div className="mt-14">
-          <p className="br-data mb-2 text-[11px] uppercase tracking-[0.12em] text-[var(--br-gold)]">Detail · order customization</p>
-          <h4 className="br-heading mb-6 text-[clamp(1.15rem,2.4vw,1.5rem)] leading-tight text-[var(--br-ink)]">Every modifier, dialed in</h4>
-          <ExplorationStack
-            cardAspect="9/19.5"
-            fit="cover"
-            items={[
-              { title: 'Combo builder', body: 'Quantity steppers, swaps, and add-ons drawn to the same spec as the rest of the system.', image: '/capabilities/canes/ui-features.webp' },
-              { title: 'Fountain drink', body: 'Pick a size, choose your drink, decide on ice — one decision per screen.', image: '/capabilities/canes/ui-drink-1.webp' },
-              { title: 'Unsweet tea', body: 'The same builder, a different product — consistent controls everywhere.', image: '/capabilities/canes/ui-drink-2.webp' },
-              { title: 'Add-ons', body: 'Up-sells and extras layered in without crowding the core choice.', image: '/capabilities/canes/ui-drink-3.webp' },
+        {/* Detail of the drink-customization states — receding ScreenStack */}
+        <div className="mt-12 grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-12">
+          <div>
+            <p className="br-data mb-2 text-[11px] uppercase tracking-[0.12em] text-[var(--br-gold)]">Detail · order customization</p>
+            <h4 className="br-heading text-[clamp(1.15rem,2.4vw,1.5rem)] leading-tight text-[var(--br-ink)]">Every modifier, dialed in</h4>
+            <p className="mt-3 max-w-[44ch] text-[15px] leading-relaxed text-[var(--br-muted-2)]">
+              The drink and combo builders — quantity steppers, swaps, and add-ons — drawn to the same
+              spec as the rest of the system, one decision per screen.
+            </p>
+          </div>
+          <ScreenStack
+            dark={dark}
+            cardWidth="52%"
+            height="h-[300px] sm:h-[360px] lg:h-[420px]"
+            screens={[
+              { src: '/capabilities/canes/ui-features.webp', alt: 'Cane’s combo builder' },
+              { src: '/capabilities/canes/ui-drink-1.webp', alt: 'Cane’s fountain drink' },
+              { src: '/capabilities/canes/ui-drink-2.webp', alt: 'Cane’s unsweet tea' },
+              { src: '/capabilities/canes/ui-drink-3.webp', alt: 'Cane’s add-ons' },
             ]}
           />
         </div>
       </ModuleCard>
 
-      {/* Anchor — Dave & Buster's app — Cover-Flow swap + ordering flow */}
+      {/* Anchor — Dave & Buster's app — receding ScreenStack + ordering flow */}
       <ModuleCard dark={dark}>
         <AnchorHeader
           dark={dark}
@@ -60,14 +63,14 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
           role="Product & UI Designer"
           blurb="The membership app that fuses dining and arcade — Power Card balance, food ordering, and play, in a bold dark interface."
         />
-        <ExplorationStack
-          cardAspect="9/19.5"
-          fit="cover"
-          items={[
-            { title: 'Dashboard', body: 'Eat/Play toggling, a points balance, and deals tied to movies and menu — the dark UI keeps the energy of the room.', image: '/capabilities/dnb/app-1.webp' },
-            { title: 'Recommendations', body: 'Personalized “try these” games and food, surfaced on the home base.', image: '/capabilities/dnb/app-2.webp' },
-            { title: 'Power Card', body: 'The chips balance, VR plays, and tickets — the card, made digital.', image: '/capabilities/dnb/app-4.webp' },
-            { title: 'Onboarding', body: 'Two clear ways to start playing — digital or plastic.', image: '/capabilities/dnb/app-5.webp' },
+        <ScreenStack
+          dark={dark}
+          cardWidth="50%"
+          screens={[
+            { src: '/capabilities/dnb/app-1.webp', alt: 'D&B dashboard' },
+            { src: '/capabilities/dnb/app-2.webp', alt: 'D&B recommendations' },
+            { src: '/capabilities/dnb/app-4.webp', alt: 'D&B Power Card' },
+            { src: '/capabilities/dnb/app-5.webp', alt: 'D&B onboarding' },
           ]}
         />
         <div className="mt-10">
@@ -81,12 +84,11 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
               { label: 'Your bag', src: '/capabilities/dnb/app-toolkit-4.webp' },
               { label: 'Confirmation', src: '/capabilities/dnb/app-toolkit-5.webp' },
             ]}
-            caption="Browse → item → bag → thank-you — the food-ordering path"
           />
         </div>
       </ModuleCard>
 
-      {/* Anchor — Dave & Buster's KIOSK — tall floor-standing kiosk + floating stack */}
+      {/* Anchor — Dave & Buster's KIOSK — tall floor-standing kiosk + clean row */}
       <ModuleCard dark={dark}>
         <AnchorHeader
           dark={dark}
@@ -98,7 +100,7 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
         <KioskScene dark={dark} />
       </ModuleCard>
 
-      {/* Anchor — Trees UX flow */}
+      {/* Anchor — Trees UX flow + receding finished-UI stack */}
       <ModuleCard dark={dark}>
         <AnchorHeader
           dark={dark}
@@ -118,25 +120,31 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
               { label: '5 · Action plans', src: '/capabilities/trees/wire-5.webp' },
               { label: '6 · Track + rate', src: '/capabilities/trees/wire-6.webp' },
             ]}
-            caption="The wireframe flow — onboarding → goal → matched action plans → tracking"
           />
         </div>
-        <div className="mt-12">
-          <p className="br-data mb-2 text-[11px] uppercase tracking-[0.12em] text-[var(--br-gold)]">Then · the finished UI</p>
-          <h4 className="br-heading mb-6 text-[clamp(1.15rem,2.4vw,1.5rem)] leading-tight text-[var(--br-ink)]">Wireframe to product</h4>
-          <ExplorationStack
-            cardAspect="9/19.5"
-            fit="cover"
-            items={[
-              { title: 'Goal created', body: 'A branded success moment — “91% of people like you complete this goal.”', image: '/capabilities/trees/ui-1.webp' },
-              { title: 'Action plans', body: 'Matched plans as clean cards, ranked by fit.', image: '/capabilities/trees/ui-2.webp' },
-              { title: 'Plan detail', body: 'A real task checklist with a clear add-to-plan CTA.', image: '/capabilities/trees/ui-3.webp' },
+        <div className="mt-12 grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-12">
+          <div>
+            <p className="br-data mb-2 text-[11px] uppercase tracking-[0.12em] text-[var(--br-gold)]">Then · the finished UI</p>
+            <h4 className="br-heading text-[clamp(1.15rem,2.4vw,1.5rem)] leading-tight text-[var(--br-ink)]">Wireframe to product</h4>
+            <p className="mt-3 max-w-[44ch] text-[15px] leading-relaxed text-[var(--br-muted-2)]">
+              The same flow, resolved: a goal-created moment, matched plans as clean cards, and a plan
+              detail with a real task checklist.
+            </p>
+          </div>
+          <ScreenStack
+            dark={dark}
+            cardWidth="52%"
+            height="h-[300px] sm:h-[360px] lg:h-[420px]"
+            screens={[
+              { src: '/capabilities/trees/ui-1.webp', alt: 'Trees goal created' },
+              { src: '/capabilities/trees/ui-2.webp', alt: 'Trees action plans' },
+              { src: '/capabilities/trees/ui-3.webp', alt: 'Trees plan detail' },
             ]}
           />
         </div>
       </ModuleCard>
 
-      {/* Breadth rail — full width, now the shared draggable carousel + app icons */}
+      {/* Breadth rail — full width, shared draggable carousel + app icons outside the screens */}
       <div>
         <AnchorHeader
           dark={dark}
@@ -159,16 +167,15 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
             'Noodles & Co. — ordering',
           ]}
         />
-        <ModuleCaption dark={dark}>Drag → · products across four form factors</ModuleCaption>
       </div>
     </div>
   )
 }
 
 /**
- * KioskScene — ONE screen inside a tall, floor-standing kiosk (McDonald's-style
- * proportions), with the rest of the flow floating as a static fanned stack to
- * its right. A Wireframe⇄Finished toggle swaps both.
+ * KioskScene — ONE screen inside a tall floor-standing kiosk (McDonald's-style),
+ * with the rest of the flow in a clean LEFT-TO-RIGHT row to its right, top-aligned
+ * with the kiosk screen, NOT rotated. A Wireframe⇄Finished toggle swaps both.
  */
 function KioskScene({ dark = false }: { dark?: boolean }) {
   const [ui, setUi] = useState(true)
@@ -195,16 +202,13 @@ function KioskScene({ dark = false }: { dark?: boolean }) {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,300px)_1fr] lg:gap-16">
-        {/* The tall floor-standing kiosk — McDonald's proportions: narrow column,
-            screen up top, a long pedestal body below so it reads floor-height. */}
+      <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[260px_1fr] lg:gap-12">
+        {/* tall floor-standing kiosk — one screen */}
         <Reveal>
           <div className="mx-auto w-full max-w-[230px]">
-            {/* head unit: thick bezel housing the touchscreen */}
             <div className="relative rounded-[20px] border-[10px] border-[#1a1c22] bg-[#1a1c22] shadow-[0_30px_60px_-24px_rgba(7,14,44,0.5)]">
               <div className="mx-auto mb-2 h-1 w-10 rounded-full bg-white/20" />
               <div className="overflow-hidden rounded-[8px] bg-black">
-                {/* show the kiosk screen at its true 9:16 — no extra cropping */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={hero} alt="D&B kiosk — primary screen" className="aspect-[9/16] w-full object-cover object-top" loading="lazy" />
               </div>
@@ -212,11 +216,8 @@ function KioskScene({ dark = false }: { dark?: boolean }) {
                 <span className="h-1 w-1 rounded-full bg-white/25" />
               </div>
             </div>
-            {/* slim neck */}
             <div className="mx-auto h-3 w-10 bg-[#1a1c22]" />
-            {/* tall pedestal body — this is what makes it read as a floor kiosk */}
             <div className="mx-auto h-40 w-24 rounded-b-[6px] bg-gradient-to-b from-[#23262d] via-[#1a1c22] to-[#14161b]" />
-            {/* base foot */}
             <div className="mx-auto h-3 w-40 rounded-[4px] bg-[#14161b]" />
             <div className="mx-auto mt-1 h-1.5 w-48 rounded-full bg-black/10" />
             <p className={`br-data mt-4 text-center text-[11px] uppercase tracking-[0.1em] ${dark ? 'text-white/50' : 'text-[var(--br-muted-2)]'}`}>
@@ -225,21 +226,10 @@ function KioskScene({ dark = false }: { dark?: boolean }) {
           </div>
         </Reveal>
 
-        {/* The rest of the flow, floating as a static fanned stack to the right —
-            shown at true 9:16, fully visible (no crop). */}
-        <div className="relative mx-auto flex w-full max-w-[640px] items-start justify-center gap-3 sm:gap-4">
+        {/* the rest of the flow — clean left-to-right row, top-aligned, no rotation */}
+        <div className="grid grid-cols-3 gap-4 md:gap-6">
           {rest.map((s, i) => (
-            <figure
-              key={s}
-              className="relative shrink-0 overflow-hidden rounded-[14px] border border-[var(--br-line)] bg-white"
-              style={{
-                width: '31%',
-                maxWidth: 190,
-                transform: `translateY(${i * 18}px) rotate(${(i - 1) * 2}deg)`,
-                zIndex: i,
-                boxShadow: '0 24px 50px -28px rgba(7,14,44,0.45)',
-              }}
-            >
+            <figure key={s} className="overflow-hidden rounded-[14px] border border-[var(--br-line)] bg-white shadow-[0_18px_40px_-26px_rgba(7,14,44,0.4)]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={s} alt={`D&B kiosk — screen ${i + 2}`} className="aspect-[9/16] w-full object-cover object-top" loading="lazy" />
             </figure>
@@ -247,81 +237,5 @@ function KioskScene({ dark = false }: { dark?: boolean }) {
         </div>
       </div>
     </div>
-  )
-}
-
-/**
- * ExplorationModule — the "how product UX starts" process card. A fanned deck of
- * feature pills on the left, exploration steps on the right with the active step
- * marked by a gold left border. Mirrors the Baserate build.
- */
-const EXPLORE_STEPS = [
-  { k: 'Workflow analysis', d: 'From research and interviews we identified the current behaviors and tools that defined an investor’s workflow.' },
-  { k: 'Data hierarchy', d: 'Charted out the structure of user data across tools, features, individuals and teams.' },
-  { k: 'Feature ecosystem', d: 'Mapped out the ecosystem of features and how they would interact with each other.' },
-]
-const FEATURE_PILLS = [
-  'Self Contracts', 'Activity Log', 'Watchlist',
-  'Entries', 'Home Dashboard', 'Admin',
-  'Decisions', 'History', 'Reporting',
-  'Cal Integration', 'Timeline', 'Notes',
-  'AI + MCP', 'Blind Voting', 'Price Alerts',
-  'Portfolio', 'Idea Management', 'Tags',
-  'Task Lists', 'Messaging', 'Documents',
-]
-
-function ExplorationModule({ dark = false }: { dark?: boolean }) {
-  const [step, setStep] = useState(2)
-  return (
-    <ModuleCard dark={dark}>
-      <AnchorHeader
-        dark={dark}
-        kicker="How a product UX starts"
-        title="From a tangle of features to a system"
-        role="Baserate — investor platform"
-        blurb="Before any screen: map the workflow, the data, and how every feature relates. The exploration that turned a long feature list into a coherent product."
-      />
-      <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-2 md:gap-16">
-        <Reveal>
-          <div className="relative">
-            <div className="absolute -left-3 top-3 h-full w-full rounded-[18px] border border-[var(--br-line)] bg-[var(--br-bg-2)]/60" aria-hidden />
-            <div className="absolute -left-1.5 top-1.5 h-full w-full rounded-[18px] border border-[var(--br-line)] bg-[var(--br-bg-2)]/80" aria-hidden />
-            <div className="relative rounded-[18px] border border-[var(--br-line)] bg-white p-5 shadow-[0_18px_44px_rgba(7,14,44,0.10)]">
-              <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
-                {FEATURE_PILLS.map((p) => (
-                  <span
-                    key={p}
-                    className="br-data truncate rounded-[8px] border border-[var(--br-line)] px-2.5 py-2 text-[11px] uppercase tracking-[0.04em] text-[var(--br-muted-2)]"
-                  >
-                    {p}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </Reveal>
-
-        <div>
-          <p className="br-data mb-5 text-[11px] uppercase tracking-[0.14em] text-[var(--br-gold)]">Exploration</p>
-          <div className="space-y-6">
-            {EXPLORE_STEPS.map((s, i) => {
-              const on = i === step
-              return (
-                <button key={s.k} type="button" onMouseEnter={() => setStep(i)} onClick={() => setStep(i)} className="block w-full text-left">
-                  <div className="pl-4 transition-all" style={{ borderLeft: `2px solid ${on ? 'var(--br-gold)' : 'transparent'}` }}>
-                    <h4 className="br-heading text-[clamp(1rem,1.8vw,1.25rem)] font-semibold uppercase tracking-[0.02em] transition-colors" style={{ color: on ? 'var(--br-ink)' : 'var(--br-muted-2)' }}>
-                      {s.k}
-                    </h4>
-                    <p className="mt-1 max-w-[46ch] text-[14px] leading-relaxed transition-colors" style={{ color: on ? 'var(--br-muted)' : 'var(--br-muted-2)' }}>
-                      {s.d}
-                    </p>
-                  </div>
-                </button>
-              )
-            })}
-          </div>
-        </div>
-      </div>
-    </ModuleCard>
   )
 }

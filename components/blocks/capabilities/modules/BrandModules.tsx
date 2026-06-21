@@ -67,42 +67,6 @@ export function BrandModules({ dark = true }: { dark?: boolean }) {
         <ModuleCaption dark={dark}>One system, three product lines — sub-brands that stay a family.</ModuleCaption>
       </div>
 
-      {/* How an identity gets built — REAL brand artifacts, BENTO layout */}
-      <div>
-        <AnchorHeader
-          dark={dark}
-          kicker="The system"
-          title="What every identity ships with"
-          blurb="Each brand gets the full system — direction, logomark construction, color, and in-context applications. A few from DOPA, Rosetta & Jubilee."
-        />
-        {/* bento: a feature tile + supporting tiles of varied sizes */}
-        <div className="grid auto-rows-[150px] grid-cols-2 gap-3 md:auto-rows-[180px] md:grid-cols-4 md:gap-4">
-          {[
-            { src: '/capabilities/brand/rosetta-system.webp', label: 'Rosetta — identity system', span: 'col-span-2 row-span-2' },
-            { src: '/capabilities/brand/dopa-mark.webp', label: 'DOPA — the mark', contain: true, span: 'col-span-1 row-span-1' },
-            { src: '/capabilities/brand/dopa-appicon.webp', label: 'DOPA — app icon', contain: true, span: 'col-span-1 row-span-1' },
-            { src: '/capabilities/brand/dopa-construction.webp', label: 'DOPA — logomark construction', span: 'col-span-2 row-span-1' },
-            { src: '/capabilities/brand/jubilee-applied.webp', label: 'Jubilee — in context', span: 'col-span-2 row-span-1' },
-            { src: '/capabilities/brand/rosetta-applied.webp', label: 'Rosetta — applied', span: 'col-span-2 row-span-1' },
-          ].map((a) => (
-            <figure
-              key={a.label}
-              className={`group relative overflow-hidden rounded-[var(--br-card-radius)] border border-white/10 bg-white ${a.span}`}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={a.src}
-                alt={a.label}
-                className={`h-full w-full ${a.contain ? 'object-contain p-5' : 'object-cover'}`}
-                loading="lazy"
-              />
-              <figcaption className="br-data absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-3 py-2 text-[10px] uppercase tracking-[0.07em] text-white/90">
-                {a.label}
-              </figcaption>
-            </figure>
-          ))}
-        </div>
-      </div>
     </div>
   )
 }

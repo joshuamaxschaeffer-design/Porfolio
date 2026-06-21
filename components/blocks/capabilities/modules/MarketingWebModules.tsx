@@ -25,7 +25,6 @@ function ResponsivePair({
           <img src={mobile} alt={`${label} — mobile`} className="aspect-[9/19] w-full object-cover object-top" loading="lazy" />
         </div>
       </div>
-      <p className="br-data text-[11px] uppercase tracking-[0.08em] text-white/45">{label}</p>
     </Reveal>
   )
 }
@@ -90,12 +89,10 @@ export function MarketingWebModules({ dark = true }: { dark?: boolean }) {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={a.src} alt={a.label} className="aspect-[3/5] w-full object-cover object-top" loading="lazy" />
                 )}
-                <figcaption className="br-data px-3 py-2 text-[10px] uppercase tracking-[0.08em] text-[var(--br-muted-2)]">{a.label}</figcaption>
               </figure>
             </Reveal>
           ))}
         </div>
-        <ModuleCaption dark={dark}>Lifecycle creative — a real program, not one-offs.</ModuleCaption>
       </div>
 
       {/* Enterprise web & POS — VF Corp LMS + Blaze retail POS */}
@@ -112,14 +109,12 @@ export function MarketingWebModules({ dark = true }: { dark?: boolean }) {
             <figure className="overflow-hidden rounded-[var(--br-card-radius)] border border-white/10 bg-white">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/capabilities/vfcorp/ux-2.webp" alt="VF Corp WORK Authority — course detail" className="aspect-[16/11] w-full object-cover object-top" loading="lazy" />
-              <figcaption className="br-data px-4 py-3 text-[11px] uppercase tracking-[0.08em] text-[var(--br-muted-2)]">VF Corp — “WORK Authority” training platform</figcaption>
             </figure>
           </div>
           <div className="md:col-span-5">
             <figure className="overflow-hidden rounded-[var(--br-card-radius)] border border-white/10 bg-white">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/capabilities/blaze/retail-1-pos-account-dashboard.webp" alt="Blaze retail POS dashboard" className="aspect-[16/11] w-full object-cover object-top" loading="lazy" />
-              <figcaption className="br-data px-4 py-3 text-[11px] uppercase tracking-[0.08em] text-[var(--br-muted-2)]">Blaze — retail POS back office</figcaption>
             </figure>
           </div>
         </div>
