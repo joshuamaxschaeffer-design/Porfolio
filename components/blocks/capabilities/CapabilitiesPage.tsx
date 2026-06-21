@@ -66,7 +66,7 @@ export function CapabilitiesPage(props: CapabilitiesPageProps = {}) {
           <p className="mt-6 max-w-2xl text-lg leading-relaxed text-[var(--br-muted)] md:text-[22px]">
             {lead}
           </p>
-          <div className="mt-12 rounded-[var(--br-card-radius)] border border-[var(--br-line)] bg-white p-7 md:mt-16 md:p-9">
+          <div className="mt-12 border-t border-[var(--br-line)] pt-10 md:mt-16">
             <StatCounters stats={heroStats} />
             <p className="br-data mt-7 text-[11px] uppercase leading-relaxed tracking-[0.08em] text-[var(--br-muted-2)]">
               {heroCopy.statsNote}

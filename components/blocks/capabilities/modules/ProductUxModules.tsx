@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Reveal } from '../../../animation/Reveal'
 import { CapDeviceFan } from '../../shared/CapDeviceFan'
-import { ScreenStack } from '../../shared/ScreenStack'
+import { ExplorationStack } from '../../baserate/ExplorationStack'
 import { AnchorHeader, BlueRail, BlueFlowRow, ModuleCard } from './primitives'
 
 /** Section 01 — Product & UX work modules (grey section, light tone). */
@@ -30,25 +30,19 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
             { src: '/capabilities/canes/ui-confirm.webp', alt: 'Cane’s order status' },
           ]}
         />
-        {/* Detail of the drink-customization states — receding ScreenStack */}
-        <div className="mt-12 grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-12">
-          <div>
-            <p className="br-data mb-2 text-[11px] uppercase tracking-[0.12em] text-[var(--br-gold)]">Detail · order customization</p>
-            <h4 className="br-heading text-[clamp(1.15rem,2.4vw,1.5rem)] leading-tight text-[var(--br-ink)]">Every modifier, dialed in</h4>
-            <p className="mt-3 max-w-[44ch] text-[15px] leading-relaxed text-[var(--br-muted-2)]">
-              The drink and combo builders — quantity steppers, swaps, and add-ons — drawn to the same
-              spec as the rest of the system, one decision per screen.
-            </p>
-          </div>
-          <ScreenStack
-            dark={dark}
-            cardWidth="52%"
-            height="h-[300px] sm:h-[360px] lg:h-[420px]"
-            screens={[
-              { src: '/capabilities/canes/ui-features.webp', alt: 'Cane’s combo builder' },
-              { src: '/capabilities/canes/ui-drink-1.webp', alt: 'Cane’s fountain drink' },
-              { src: '/capabilities/canes/ui-drink-2.webp', alt: 'Cane’s unsweet tea' },
-              { src: '/capabilities/canes/ui-drink-3.webp', alt: 'Cane’s add-ons' },
+        {/* Detail of the drink-customization states — Cover-Flow swap (compact) */}
+        <div className="mt-12">
+          <p className="br-data mb-2 text-[11px] uppercase tracking-[0.12em] text-[var(--br-gold)]">Detail · order customization</p>
+          <h4 className="br-heading mb-6 text-[clamp(1.15rem,2.4vw,1.5rem)] leading-tight text-[var(--br-ink)]">Every modifier, dialed in</h4>
+          <ExplorationStack
+            cardAspect="9/19.5"
+            fit="cover"
+            maxW={300}
+            items={[
+              { title: 'Combo builder', body: 'Quantity steppers, swaps, and add-ons drawn to the same spec as the rest of the system.', image: '/capabilities/canes/ui-features.webp' },
+              { title: 'Fountain drink', body: 'Pick a size, choose your drink, decide on ice — one decision per screen.', image: '/capabilities/canes/ui-drink-1.webp' },
+              { title: 'Unsweet tea', body: 'The same builder, a different product — consistent controls everywhere.', image: '/capabilities/canes/ui-drink-2.webp' },
+              { title: 'Add-ons', body: 'Up-sells and extras layered in without crowding the core choice.', image: '/capabilities/canes/ui-drink-3.webp' },
             ]}
           />
         </div>
@@ -63,14 +57,15 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
           role="Product & UI Designer"
           blurb="The membership app that fuses dining and arcade — Power Card balance, food ordering, and play, in a bold dark interface."
         />
-        <ScreenStack
-          dark={dark}
-          cardWidth="50%"
-          screens={[
-            { src: '/capabilities/dnb/app-1.webp', alt: 'D&B dashboard' },
-            { src: '/capabilities/dnb/app-2.webp', alt: 'D&B recommendations' },
-            { src: '/capabilities/dnb/app-4.webp', alt: 'D&B Power Card' },
-            { src: '/capabilities/dnb/app-5.webp', alt: 'D&B onboarding' },
+        <ExplorationStack
+          cardAspect="9/19.5"
+          fit="cover"
+          maxW={300}
+          items={[
+            { title: 'Dashboard', body: 'Eat/Play toggling, a points balance, and deals tied to movies and menu — the dark UI keeps the energy of the room.', image: '/capabilities/dnb/app-1.webp' },
+            { title: 'Recommendations', body: 'Personalized “try these” games and food, surfaced on the home base.', image: '/capabilities/dnb/app-2.webp' },
+            { title: 'Power Card', body: 'The chips balance, VR plays, and tickets — the card, made digital.', image: '/capabilities/dnb/app-4.webp' },
+            { title: 'Onboarding', body: 'Two clear ways to start playing — digital or plastic.', image: '/capabilities/dnb/app-5.webp' },
           ]}
         />
         <div className="mt-10">
@@ -122,23 +117,17 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
             ]}
           />
         </div>
-        <div className="mt-12 grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-12">
-          <div>
-            <p className="br-data mb-2 text-[11px] uppercase tracking-[0.12em] text-[var(--br-gold)]">Then · the finished UI</p>
-            <h4 className="br-heading text-[clamp(1.15rem,2.4vw,1.5rem)] leading-tight text-[var(--br-ink)]">Wireframe to product</h4>
-            <p className="mt-3 max-w-[44ch] text-[15px] leading-relaxed text-[var(--br-muted-2)]">
-              The same flow, resolved: a goal-created moment, matched plans as clean cards, and a plan
-              detail with a real task checklist.
-            </p>
-          </div>
-          <ScreenStack
-            dark={dark}
-            cardWidth="52%"
-            height="h-[300px] sm:h-[360px] lg:h-[420px]"
-            screens={[
-              { src: '/capabilities/trees/ui-1.webp', alt: 'Trees goal created' },
-              { src: '/capabilities/trees/ui-2.webp', alt: 'Trees action plans' },
-              { src: '/capabilities/trees/ui-3.webp', alt: 'Trees plan detail' },
+        <div className="mt-12">
+          <p className="br-data mb-2 text-[11px] uppercase tracking-[0.12em] text-[var(--br-gold)]">Then · the finished UI</p>
+          <h4 className="br-heading mb-6 text-[clamp(1.15rem,2.4vw,1.5rem)] leading-tight text-[var(--br-ink)]">Wireframe to product</h4>
+          <ExplorationStack
+            cardAspect="9/19.5"
+            fit="cover"
+            maxW={300}
+            items={[
+              { title: 'Goal created', body: 'A branded success moment — “91% of people like you complete this goal.”', image: '/capabilities/trees/ui-1.webp' },
+              { title: 'Action plans', body: 'Matched plans as clean cards, ranked by fit.', image: '/capabilities/trees/ui-2.webp' },
+              { title: 'Plan detail', body: 'A real task checklist with a clear add-to-plan CTA.', image: '/capabilities/trees/ui-3.webp' },
             ]}
           />
         </div>

@@ -29,6 +29,7 @@ export function ExplorationStack({
   tag,
   cardAspect = '874/932',
   fit = 'contain',
+  maxW = 440,
 }: {
   items: ExplorationItem[]
   tag?: string
@@ -36,6 +37,8 @@ export function ExplorationStack({
   cardAspect?: string
   /** object-fit for the front image. Default 'contain' (Baserate). Use 'cover' for phone screens to fill. */
   fit?: 'contain' | 'cover'
+  /** Max width of the card stack (px). Default 440 (Baserate). Smaller for compact phone decks. */
+  maxW?: number
 }) {
   const reduce = useReducedMotion()
   const [active, setActive] = useState(0)
@@ -127,7 +130,7 @@ export function ExplorationStack({
     >
       {/* Image stack — Cover Flow perspective. Front card faces forward; cards
           behind angle away (rotateY), fanning left. */}
-      <div className="relative mx-auto w-full max-w-[440px] pl-8 lg:pl-20" style={{ perspective: '1200px', aspectRatio: cardAspect }}>
+      <div className="relative mx-auto w-full pl-8 lg:pl-20" style={{ perspective: '1200px', aspectRatio: cardAspect, maxWidth: maxW }}>
         {items.map((item, i) => {
           const depth = (i - current + n) % n
           const isFront = depth === 0
