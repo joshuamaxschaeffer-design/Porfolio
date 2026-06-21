@@ -144,7 +144,7 @@ function Improvement() {
 
       {/* All four in one row, video first. Each phone is a flex item with a
           shared basis so they line up; the row scrolls on small screens. */}
-      <div className="-mx-6 mt-8 flex items-end gap-5 overflow-x-auto px-6 pb-3 md:mx-0 md:gap-6 md:px-0 lg:overflow-visible [scrollbar-width:thin]">
+      <div className="-mx-6 mt-8 flex items-end gap-5 overflow-x-auto px-6 pb-10 md:mx-0 md:gap-6 md:px-0 lg:overflow-visible lg:pb-3 [scrollbar-width:thin]">
         <div className="w-[200px] shrink-0 sm:w-[230px] md:w-auto md:flex-1">
           <ImprovementVideo src={defaults.improvement.video} poster={defaults.improvement.poster} />
         </div>

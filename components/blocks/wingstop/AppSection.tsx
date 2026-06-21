@@ -60,7 +60,10 @@ export function AppSection() {
         {/* These are the real App Store listing graphics (a phone mockup on a
             branded background, each its own art). Show them WHOLE at a uniform
             height so they read like the actual App Store gallery. */}
-        <div className="-mx-6 flex gap-5 overflow-x-auto px-6 pt-2 pb-14 md:-mx-20 md:px-20 [scrollbar-width:thin]">
+        {/* overflow-x-auto forces overflow-y:auto, which would clip the cards'
+            drop shadow — so the vertical padding here must exceed the shadow's
+            reach (y 24 + blur 50 ≈ 74px) to keep it from being cut off. */}
+        <div className="-mx-6 flex gap-5 overflow-x-auto px-6 pt-6 pb-24 md:-mx-20 md:px-20 [scrollbar-width:thin]">
           {defaults.bento.images.map((src) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img

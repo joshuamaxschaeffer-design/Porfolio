@@ -29,7 +29,7 @@ export function FlavorPagesSection() {
       {/* Heading on the LEFT (vertically centered), the receding perspective
           fan on the RIGHT. The whole beat is cut off by a hairline divider so
           the tilted pages never bleed into the "In motion" video module below. */}
-      <div className="border-b border-white/12">
+      <div className="overflow-hidden border-b border-white/12">
         {/* DESKTOP / TABLET: two columns — text left & centered, fan right. */}
         <div className="mx-auto hidden w-full max-w-[1600px] grid-cols-[minmax(280px,360px)_minmax(0,1fr)] items-center gap-6 lg:grid">
           <div className="py-20 pl-6 md:pl-12">

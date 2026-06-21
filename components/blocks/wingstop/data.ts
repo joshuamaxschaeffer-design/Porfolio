@@ -86,15 +86,15 @@ export const scope = {
     {
       key: 'branding',
       eyebrow: 'BRANDING',
-      title: 'A flavor icon system',
-      body: 'An icon designed for every flavor, matched to the Wingstop brand.',
+      title: 'A flavor icon system I designed',
+      body: 'I designed an original icon for every flavor, matched to the Wingstop brand language.',
       icons: [
-        '/wingstop/flavor-icons/atomic.svg',
-        '/wingstop/flavor-icons/lemon-pepper.svg',
-        '/wingstop/flavor-icons/garlic-parm.svg',
-        '/wingstop/flavor-icons/mango-habanero.svg',
-        '/wingstop/flavor-icons/hawaiian.svg',
-        '/wingstop/flavor-icons/louisiana-rub.svg',
+        '/wingstop/flavor-icons-designed/atomic-bbq.png',
+        '/wingstop/flavor-icons-designed/bayou-bbq.png',
+        '/wingstop/flavor-icons-designed/dragon-breath.png',
+        '/wingstop/flavor-icons-designed/hot-lemon.png',
+        '/wingstop/flavor-icons-designed/lemon-garlic.png',
+        '/wingstop/flavor-icons-designed/mango-volcano.png',
       ],
     },
     {
@@ -109,7 +109,11 @@ export const scope = {
       eyebrow: 'UI UPDATES',
       title: 'A full dark mode',
       body: 'The whole app re-themed so the food photography only got richer.',
-      device: '/wingstop/darkmode/dm-1.webp',
+      devices: [
+        '/wingstop/darkmode/dm-2.webp',
+        '/wingstop/darkmode/dm-1.webp',
+        '/wingstop/darkmode/dm-3.webp',
+      ],
     },
     {
       key: 'web',

@@ -17,15 +17,7 @@ import { DragGrid } from './DragGrid'
  */
 export function CrmSection() {
   return (
-    <section id="crm" className="relative w-full overflow-hidden bg-white">
-      <div className="br-container pt-16 md:pt-24">
-        <p className="br-data text-[14px] uppercase tracking-[0.12em] text-[var(--ws-green)]">3. {defaults.eyebrow}</p>
-        <h2 className="mt-3 max-w-[24ch] text-[32px] font-medium leading-[1.05] text-[var(--br-ink)] md:text-[40px]">
-          {defaults.heading}
-        </h2>
-        <p className="mt-3 max-w-3xl text-lg text-[var(--br-muted)] md:text-[22px]">{defaults.intro}</p>
-      </div>
-
+    <section id="crm" className="relative w-full overflow-hidden bg-white pt-16 md:pt-24">
       <CrmEmailScatter />
       <CrmAnimatedGrid />
     </section>
@@ -42,8 +34,9 @@ const TRAVEL = 80
 const RAD = (TILT_DEG * Math.PI) / 180
 const AXIS_X = Math.sin(RAD)
 const AXIS_Y = -Math.cos(RAD)
-/** Each email window is this aspect (portrait), showing the campaign's top. */
-const EMAIL_AR = '320 / 460'
+/** Each email window is this aspect — tall (≈3× the old height) so it shows much
+ *  more of the campaign down its length, like a real email scroll. */
+const EMAIL_AR = '320 / 1180'
 /** Soft drop shadow, cast down-right (light from upper-left). On a NON-rotated
  *  wrapper so the offset stays truly downward while the email tilts. */
 const EMAIL_SHADOW = 'drop-shadow(7px 17px 24px rgba(0,0,0,0.26))'
@@ -61,18 +54,19 @@ interface EmailNode {
  *  and bottom of the (short) band, so the row reads as a confident stream of
  *  campaigns rather than small floating thumbnails. */
 const SCATTER: EmailNode[] = [
-  { src: defaults.scope.emails[4], cx: 81, cy: -8, w: 24, row: 2 },
-  { src: defaults.scope.emails[0], cx: 19, cy: 46, w: 25, row: 1 },
-  { src: defaults.scope.emails[1], cx: 39.5, cy: 82, w: 25, row: 2 },
-  { src: defaults.scope.emails[2], cx: 61, cy: 70, w: 25, row: 3 },
-  { src: defaults.scope.emails[3], cx: 81.5, cy: 108, w: 24, row: 4 },
+  { src: defaults.scope.emails[0], cx: 13, cy: 52, w: 13, row: 1 },
+  { src: defaults.scope.emails[4], cx: 30, cy: 30, w: 12.5, row: 2 },
+  { src: defaults.scope.emails[1], cx: 46, cy: 62, w: 13, row: 1 },
+  { src: defaults.scope.emails[2], cx: 62, cy: 40, w: 12.5, row: 2 },
+  { src: defaults.scope.emails[3], cx: 78, cy: 64, w: 13, row: 3 },
+  { src: defaults.scope.emails[5], cx: 92, cy: 36, w: 12.5, row: 4 },
 ]
 /** Top-down food props framing the scatter (left/top/width as % of band).
- *  Bigger than before and pushed to clip off the side edges (Panda model). */
+ *  Pushed to clip off the side/top/bottom edges (Panda model). */
 const FOOD = [
-  { src: defaults.scope.food[0], left: 2, top: 6, w: 17, rot: -10 },
-  { src: defaults.scope.food[1], left: 88, top: 52, w: 19, rot: 8 },
-  { src: defaults.scope.food[2], left: 49, top: 96, w: 13, rot: -6 },
+  { src: defaults.scope.food[0], left: 3, top: 8, w: 11, rot: -10 },
+  { src: defaults.scope.food[1], left: 96, top: 64, w: 12, rot: 8 },
+  { src: defaults.scope.food[2], left: 70, top: 96, w: 8, rot: -6 },
 ]
 
 const rowDir = (row: 1 | 2 | 3 | 4) => (row === 1 || row === 3 ? 1 : -1)
@@ -134,7 +128,7 @@ function CrmEmailScatter() {
           rides in a bordered plate at the top-left of the band. */}
       <div
         ref={stageRef}
-        className="relative mx-auto hidden aspect-[1443/560] w-full max-w-[1600px] overflow-hidden border-y border-[var(--br-line)] lg:block"
+        className="relative left-1/2 right-1/2 -mx-[50vw] hidden aspect-[1600/860] w-screen overflow-hidden border-y border-[var(--br-line)] lg:block"
       >
         {/* food props (behind emails) */}
         {FOOD.map((f) => (
@@ -171,8 +165,11 @@ function CrmEmailScatter() {
           )
         })}
 
-        {/* heading plate — bordered, top-left (Panda MvpScatter style) */}
-        <div className="absolute left-[5%] top-[9%] z-30 max-w-[420px] rounded-[10px] border border-[var(--br-line)] bg-white/95 p-6 shadow-[var(--br-card-shadow)] backdrop-blur-sm lg:p-7">
+        {/* heading plate — bordered, aligned to the editorial column (Panda style) */}
+        <div
+          className="absolute top-[8%] z-30 max-w-[420px] rounded-[10px] border border-[var(--br-line)] bg-white/95 p-6 shadow-[var(--br-card-shadow)] backdrop-blur-sm lg:p-7"
+          style={{ left: 'calc(max(1.5rem, (100vw - 1443px) / 2 + 5rem))' }}
+        >
           <span className="br-data text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ws-green)]">
             {defaults.scope.eyebrow}
           </span>

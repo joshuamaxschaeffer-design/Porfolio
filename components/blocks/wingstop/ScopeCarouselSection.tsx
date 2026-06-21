@@ -336,6 +336,35 @@ function ScopeModule({ m }: { m: Mod }) {
 function ModuleVisual({ m, green }: { m: Mod; green: boolean }) {
   const mm = m as Record<string, unknown>
 
+  // PHONE FAN — multiple screens (e.g. dark mode): a hero phone center with a
+  // stepped-back peek on each side, all framed + grounded at the card floor.
+  if (Array.isArray(mm.devices)) {
+    const screens = mm.devices as string[]
+    return (
+      <div className="relative flex h-full w-full items-end justify-center pb-1">
+        {screens[1] && (
+          <div
+            className="absolute bottom-2 h-[78%]"
+            style={{ aspectRatio: '750 / 1624', transform: 'translateX(-62%) rotate(-7deg)' }}
+          >
+            <Phone src={screens[1]} alt={m.title} dim />
+          </div>
+        )}
+        {screens[2] && (
+          <div
+            className="absolute bottom-2 h-[78%]"
+            style={{ aspectRatio: '750 / 1624', transform: 'translateX(62%) rotate(7deg)' }}
+          >
+            <Phone src={screens[2]} alt={m.title} dim />
+          </div>
+        )}
+        <div className="relative z-10 h-full max-h-[360px]" style={{ aspectRatio: '750 / 1624' }}>
+          <Phone src={screens[0]} alt={m.title} />
+        </div>
+      </div>
+    )
+  }
+
   // PHONE mockup (MVP hero device, dark-mode UI). Show the device whole, at a
   // controlled height, sitting on the card floor. The /hero2 PNGs already have
   // a frame; bare screens get a Phone frame. Either way it FITS, no clipping.
@@ -361,10 +390,11 @@ function ModuleVisual({ m, green }: { m: Mod; green: boolean }) {
 
   // DESKTOP: the real full-COLOR desktop page shown whole (no browser chrome).
   // It's a tall page, so it sits grounded at the card floor and we reveal the
-  // top — a confident single colour visual, not a boxed greyscale wireframe.
+  // top. Kept a touch SMALLER (max-w-[460px]) so it always clears the card's
+  // title/intro above it — no overlap.
   if (typeof mm.desktop === 'string') {
     return (
-      <div className="w-full max-w-[600px] overflow-hidden rounded-xl [box-shadow:0_22px_48px_rgba(0,0,0,0.28)]">
+      <div className="w-full max-w-[460px] overflow-hidden rounded-xl [box-shadow:0_22px_48px_rgba(0,0,0,0.28)]">
         <div className="aspect-[16/11] overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={mm.desktop as string} alt={m.title} loading="lazy" className="block w-full object-cover object-top" />
@@ -381,36 +411,41 @@ function ModuleVisual({ m, green }: { m: Mod; green: boolean }) {
   // WINDOWS cropped to a clean 16:10 of the top, where the actual content lives.
   if (Array.isArray(mm.stacked)) return <WindowStack srcs={mm.stacked as string[]} />
 
-  // IN-STORE boards side by side, contained.
+  // IN-STORE boards side by side. The source boards are 9:16 (900×1600), so each
+  // sits in a matching 9:16 frame and fills it edge-to-edge (no letterbox / no
+  // wrong-ratio box). Centered as a pair, grounded at the card floor.
   if (Array.isArray(mm.boards)) {
     return (
-      <div className="grid w-full grid-cols-2 items-end gap-4 pb-1">
+      <div className="flex h-full w-full items-end justify-center gap-4 pb-1">
         {(mm.boards as string[]).map((b) => (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <div
             key={b}
-            src={b}
-            alt={m.title}
-            loading="lazy"
-            className="max-h-[260px] w-full rounded-lg border border-black/10 object-contain object-bottom [box-shadow:0_14px_30px_rgba(0,0,0,0.2)]"
-          />
+            className="h-full max-h-[380px] overflow-hidden rounded-lg border border-black/10 [box-shadow:0_14px_30px_rgba(0,0,0,0.2)]"
+            style={{ aspectRatio: '9 / 16' }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={b} alt={m.title} loading="lazy" className="block h-full w-full object-cover" />
+          </div>
         ))}
       </div>
     )
   }
 
-  // FLAVOR icon mockup grid.
+  // FLAVOR icon grid — Joshua's own designed flavor icons (green badge + white
+  // glyph). They're complete badges, so they sit on the card directly (no white
+  // tile) at a confident size with a soft lift.
   if (Array.isArray(mm.icons)) {
     return (
-      <div className="grid w-full max-w-[360px] grid-cols-3 gap-3 pb-1">
+      <div className="grid w-full max-w-[380px] grid-cols-3 gap-5 pb-2">
         {(mm.icons as string[]).map((ic) => (
-          <div
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
             key={ic}
-            className="flex aspect-square items-center justify-center rounded-2xl border border-[var(--br-line)] bg-white [box-shadow:var(--br-card-shadow)]"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={ic} alt="" className="h-11 w-11 object-contain" />
-          </div>
+            src={ic}
+            alt=""
+            loading="lazy"
+            className="aspect-square w-full object-contain drop-shadow-[0_10px_18px_rgba(0,0,0,0.18)]"
+          />
         ))}
       </div>
     )
@@ -444,25 +479,27 @@ function ThumbStack({ srcs, green }: { srcs: string[]; green: boolean }) {
 }
 
 /** Fanned browser-window thumbnails — for very tall full-page web captures that
- *  would otherwise crop to empty white. Each is a clean 16:10 of the page top. */
+ *  would otherwise crop to empty white. Each is a clean 16:10 of the page top.
+ *  Windows are LARGE (~2× the old size) so the pages read clearly; the fan
+ *  offsets stay modest so the trio still fits the card. */
 function WindowStack({ srcs }: { srcs: string[] }) {
   const shots = srcs.slice(0, 3)
   return (
-    <div className="relative h-[300px] w-full">
+    <div className="relative h-full max-h-[420px] w-full">
       {shots.map((s, i) => (
         <div
           key={s}
-          className="absolute left-1/2 top-1/2 w-[230px] overflow-hidden rounded-lg border border-black/10 bg-white"
+          className="absolute left-1/2 top-1/2 w-[78%] max-w-[480px] overflow-hidden rounded-lg border border-black/10 bg-white"
           style={{
-            transform: `translate(calc(-50% + ${(i - 1) * 40}px), calc(-50% + ${(i - 1) * 26}px)) rotate(${(i - 1) * 4}deg)`,
+            transform: `translate(calc(-50% + ${(i - 1) * 34}px), calc(-50% + ${(i - 1) * 30}px)) rotate(${(i - 1) * 3}deg)`,
             zIndex: i,
             boxShadow: '0 18px 40px rgba(0,0,0,0.24)',
           }}
         >
-          <div className="flex items-center gap-1 border-b border-black/5 bg-[#f3f3f5] px-2 py-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-black/15" />
-            <span className="h-1.5 w-1.5 rounded-full bg-black/15" />
-            <span className="h-1.5 w-1.5 rounded-full bg-black/15" />
+          <div className="flex items-center gap-1.5 border-b border-black/5 bg-[#f3f3f5] px-3 py-2">
+            <span className="h-2 w-2 rounded-full bg-black/15" />
+            <span className="h-2 w-2 rounded-full bg-black/15" />
+            <span className="h-2 w-2 rounded-full bg-black/15" />
           </div>
           <div className="aspect-[16/10] overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -474,11 +511,15 @@ function WindowStack({ srcs }: { srcs: string[] }) {
   )
 }
 
-function Phone({ src, alt }: { src: string; alt: string }) {
+function Phone({ src, alt, dim = false }: { src: string; alt: string; dim?: boolean }) {
   // Match the framed device used in the App section: dark bezel + notch so it
   // reads as hardware, not a bare rounded screenshot.
   return (
-    <div className="relative h-full w-full rounded-[15%/7%] bg-[#0c0d0d] p-[3.5%] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)] ring-1 ring-white/10">
+    <div
+      className={`relative h-full w-full rounded-[15%/7%] bg-[#0c0d0d] p-[3.5%] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)] ring-1 ring-white/10 ${
+        dim ? 'brightness-[0.82] saturate-[0.92]' : ''
+      }`}
+    >
       <div className="relative h-full w-full overflow-hidden rounded-[12%/6%] bg-white">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
