@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
 import { Reveal } from '../../../animation/Reveal'
 import { BluePlaceholder, type BlueRatio } from '../BluePlaceholder'
+import { DragCarousel } from '../../shared/DragCarousel'
 
 /**
  * Shared building blocks for the Capabilities work modules.
@@ -107,135 +107,70 @@ export function ModuleCaption({
 }
 
 /**
- * DragRail — a horizontally DRAGGABLE rail of FPO cards with momentum (pointer
- * drag w/ velocity-based inertia + native momentum scroll). Cursor grab/grabbing.
- * `fullBleed` makes it span the full viewport width (escapes the container).
+ * BlueRail — the breadth carousel. Now uses the shared DragCarousel (the exact
+ * native-scroll + JS mouse-drag-with-flick-momentum + jump-pills pattern from
+ * the Panda / Baserate case studies). Each phone card shows a real screen (when
+ * `src`) with a small iOS-style app icon pinned to its bottom-left, plus a
+ * caption. Cards without `src` fall back to an FPO placeholder.
  */
 export function BlueRail({
   items,
   ratio = 'phone',
   dark = false,
-  fullBleed = false,
 }: {
-  items: (string | { label: string; src?: string })[]
+  items: (string | { label: string; src?: string; icon?: string })[]
   ratio?: BlueRatio
   dark?: boolean
   fullBleed?: boolean
 }) {
   const norm = items.map((it) => (typeof it === 'string' ? { label: it } : it))
-  const ref = useRef<HTMLDivElement>(null)
-  const [drag, setDrag] = useState(false)
-  const state = useRef({ down: false, startX: 0, startScroll: 0, moved: false, lastX: 0, lastT: 0, v: 0 })
-  const raf = useRef<number | null>(null)
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const stopInertia = () => {
-      if (raf.current) cancelAnimationFrame(raf.current)
-      raf.current = null
-    }
-    const down = (e: PointerEvent) => {
-      stopInertia()
-      state.current = {
-        down: true, startX: e.clientX, startScroll: el.scrollLeft, moved: false,
-        lastX: e.clientX, lastT: performance.now(), v: 0,
-      }
-      setDrag(true)
-    }
-    const move = (e: PointerEvent) => {
-      if (!state.current.down) return
-      const dx = e.clientX - state.current.startX
-      if (Math.abs(dx) > 4) state.current.moved = true
-      el.scrollLeft = state.current.startScroll - dx
-      const now = performance.now()
-      const dt = now - state.current.lastT
-      if (dt > 0) state.current.v = (e.clientX - state.current.lastX) / dt
-      state.current.lastX = e.clientX
-      state.current.lastT = now
-    }
-    const up = () => {
-      if (!state.current.down) return
-      state.current.down = false
-      setDrag(false)
-      // momentum: carry the last velocity, decay
-      let v = state.current.v * 16 // px per frame
-      const step = () => {
-        if (Math.abs(v) < 0.4) { raf.current = null; return }
-        el.scrollLeft -= v
-        v *= 0.95
-        raf.current = requestAnimationFrame(step)
-      }
-      if (Math.abs(v) > 1) raf.current = requestAnimationFrame(step)
-    }
-    el.addEventListener('pointerdown', down)
-    window.addEventListener('pointermove', move)
-    window.addEventListener('pointerup', up)
-    return () => {
-      stopInertia()
-      el.removeEventListener('pointerdown', down)
-      window.removeEventListener('pointermove', move)
-      window.removeEventListener('pointerup', up)
-    }
-  }, [])
-
   const cardW =
     ratio === 'phone' || ratio === 'tall'
-      ? 'w-[180px] md:w-[210px]'
+      ? 'w-[200px] md:w-[230px]'
       : ratio === 'wide' || ratio === 'video' || ratio === 'ultrawide'
         ? 'w-[300px] md:w-[380px]'
         : 'w-[240px] md:w-[280px]'
 
-  // full-bleed escapes the br-container to span the viewport
-  const bleed = fullBleed
-    ? 'relative left-1/2 right-1/2 -mx-[50vw] w-screen px-6 md:px-10'
-    : '-mx-6 px-6 md:-mx-10 md:px-10'
+  const cards = norm.map((it) => (
+    <div key={it.label} className={cardW}>
+      {it.src ? (
+        <figure>
+          <div
+            className={`relative overflow-hidden rounded-[18px] border bg-white ${
+              dark ? 'border-white/10' : 'border-[var(--br-line)]'
+            } shadow-[0_8px_24px_rgba(7,14,44,0.10)]`}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={it.src}
+              alt={it.label}
+              draggable={false}
+              className="aspect-[9/19.5] w-full object-cover object-top"
+              loading="lazy"
+            />
+            {/* iOS-style app icon, bottom-left */}
+            {it.icon && (
+              <span className="absolute bottom-3 left-3 block h-10 w-10 overflow-hidden rounded-[10px] border border-black/10 bg-white shadow-[0_4px_12px_rgba(0,0,0,0.25)]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={it.icon} alt="" draggable={false} className="h-full w-full object-cover" />
+              </span>
+            )}
+          </div>
+          <figcaption
+            className={`br-data mt-2 text-[11px] uppercase tracking-[0.06em] ${
+              dark ? 'text-white/50' : 'text-[var(--br-muted-2)]'
+            }`}
+          >
+            {it.label}
+          </figcaption>
+        </figure>
+      ) : (
+        <BluePlaceholder ratio={ratio} label={it.label} dark={dark} />
+      )}
+    </div>
+  ))
 
-  return (
-    <Reveal>
-      <div
-        ref={ref}
-        className={`select-none overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${bleed} ${
-          drag ? 'cursor-grabbing' : 'cursor-grab'
-        }`}
-      >
-        <div className="flex gap-4 md:gap-5" style={{ width: 'max-content' }}>
-          {norm.map((it) => (
-            <div key={it.label} className={`${cardW} shrink-0 ${drag ? 'pointer-events-none' : ''}`}>
-              {it.src ? (
-                <figure>
-                  <div
-                    className={`overflow-hidden rounded-[14px] border bg-white ${
-                      dark ? 'border-white/10' : 'border-[var(--br-line)]'
-                    } shadow-[0_8px_24px_rgba(7,14,44,0.10)]`}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={it.src}
-                      alt={it.label}
-                      draggable={false}
-                      className="aspect-[9/19.5] w-full object-cover object-top"
-                      loading="lazy"
-                    />
-                  </div>
-                  <figcaption
-                    className={`br-data mt-2 text-[11px] uppercase tracking-[0.06em] ${
-                      dark ? 'text-white/50' : 'text-[var(--br-muted-2)]'
-                    }`}
-                  >
-                    {it.label}
-                  </figcaption>
-                </figure>
-              ) : (
-                <BluePlaceholder ratio={ratio} label={it.label} dark={dark} />
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-      <ModuleCaption dark={dark}>Drag → · {norm.length} products across four form factors</ModuleCaption>
-    </Reveal>
-  )
+  return <DragCarousel items={cards} dark={dark} pills={false} gapClass="gap-4 md:gap-5" />
 }
 
 /** A flow step: a label + optional real screen image. */

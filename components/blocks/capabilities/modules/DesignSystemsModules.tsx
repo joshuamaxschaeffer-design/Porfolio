@@ -62,22 +62,13 @@ export function DesignSystemsModules({ dark = true }: { dark?: boolean }) {
         </div>
       </div>
 
-      {/* Design ↔ build */}
-      <div>
-        <AnchorHeader dark={dark} kicker="Implementation" title="Designed to be built" blurb="Complex flows (like Baserate’s decision builder) designed so engineers extend the system without me in the room." />
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
-          <Reveal><ImgCard src="/capabilities/design-systems/baserate-decision.webp" alt="Baserate decision builder" /></Reveal>
-          <Reveal delay={80}><ImgCard src="/capabilities/design-systems/baserate-ui.webp" alt="Baserate UI in the product" /></Reveal>
-        </div>
-      </div>
-
       {/* Mindbody NUTool — a major product-management feature (real desktop screens) */}
       <div>
         <AnchorHeader
           dark={dark}
           kicker="Anchor · enterprise tooling"
-          title="Mindbody — the product-management system"
-          role="Lead Product Designer"
+          title="Defined company-wide systems"
+          role="Mindbody · Lead Product Designer"
           blurb="One of my biggest Mindbody builds: the tool studios use to manage their retail catalog — a dense data-table admin, a full add/edit-product flow with a variant matrix, and category taxonomy. Built to stay legible under real operator load."
         />
         <Reveal>

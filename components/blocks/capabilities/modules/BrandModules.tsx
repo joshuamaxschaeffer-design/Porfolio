@@ -67,7 +67,7 @@ export function BrandModules({ dark = true }: { dark?: boolean }) {
         <ModuleCaption dark={dark}>One system, three product lines — sub-brands that stay a family.</ModuleCaption>
       </div>
 
-      {/* How an identity gets built — REAL brand artifacts */}
+      {/* How an identity gets built — REAL brand artifacts, BENTO layout */}
       <div>
         <AnchorHeader
           dark={dark}
@@ -75,50 +75,33 @@ export function BrandModules({ dark = true }: { dark?: boolean }) {
           title="What every identity ships with"
           blurb="Each brand gets the full system — direction, logomark construction, color, and in-context applications. A few from DOPA, Rosetta & Jubilee."
         />
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5">
+        {/* bento: a feature tile + supporting tiles of varied sizes */}
+        <div className="grid auto-rows-[150px] grid-cols-2 gap-3 md:auto-rows-[180px] md:grid-cols-4 md:gap-4">
           {[
-            { src: '/capabilities/brand/dopa-construction.webp', label: 'DOPA — logomark construction' },
-            { src: '/capabilities/brand/dopa-mark.webp', label: 'DOPA — the mark', contain: true },
-            { src: '/capabilities/brand/dopa-appicon.webp', label: 'DOPA — app icon', contain: true },
-            { src: '/capabilities/brand/rosetta-system.webp', label: 'Rosetta — identity system' },
-            { src: '/capabilities/brand/rosetta-applied.webp', label: 'Rosetta — applied' },
-            { src: '/capabilities/brand/jubilee-applied.webp', label: 'Jubilee — in context' },
-          ].map((a, i) => (
-            <Reveal key={a.label} delay={i * 30}>
-              <figure className="overflow-hidden rounded-[var(--br-card-radius)] border border-white/10 bg-white">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={a.src}
-                  alt={a.label}
-                  className={`aspect-[16/10] w-full ${a.contain ? 'object-contain p-4' : 'object-cover'}`}
-                  loading="lazy"
-                />
-                <figcaption className="br-data px-4 py-3 text-[11px] uppercase tracking-[0.08em] text-[var(--br-muted-2)]">
-                  {a.label}
-                </figcaption>
-              </figure>
-            </Reveal>
+            { src: '/capabilities/brand/rosetta-system.webp', label: 'Rosetta — identity system', span: 'col-span-2 row-span-2' },
+            { src: '/capabilities/brand/dopa-mark.webp', label: 'DOPA — the mark', contain: true, span: 'col-span-1 row-span-1' },
+            { src: '/capabilities/brand/dopa-appicon.webp', label: 'DOPA — app icon', contain: true, span: 'col-span-1 row-span-1' },
+            { src: '/capabilities/brand/dopa-construction.webp', label: 'DOPA — logomark construction', span: 'col-span-2 row-span-1' },
+            { src: '/capabilities/brand/jubilee-applied.webp', label: 'Jubilee — in context', span: 'col-span-2 row-span-1' },
+            { src: '/capabilities/brand/rosetta-applied.webp', label: 'Rosetta — applied', span: 'col-span-2 row-span-1' },
+          ].map((a) => (
+            <figure
+              key={a.label}
+              className={`group relative overflow-hidden rounded-[var(--br-card-radius)] border border-white/10 bg-white ${a.span}`}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={a.src}
+                alt={a.label}
+                className={`h-full w-full ${a.contain ? 'object-contain p-5' : 'object-cover'}`}
+                loading="lazy"
+              />
+              <figcaption className="br-data absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-3 py-2 text-[10px] uppercase tracking-[0.07em] text-white/90">
+                {a.label}
+              </figcaption>
+            </figure>
           ))}
         </div>
-      </div>
-
-      {/* Worked within — REAL logos */}
-      <div>
-        <AnchorHeader
-          dark={dark}
-          kicker="Worked within"
-          title="Brands I shipped inside"
-          blurb="Established identities I designed product and applications for — a normalized logo wall, not claimed as authored."
-        />
-        <BrandWall
-          dark={dark}
-          cols={4}
-          brands={pick(
-            'panda', 'raisingCanes', 'daveAndBusters', 'trueFoodKitchen',
-            'wingstop', 'cbtl', 'mindbody', 'samsung', 'vfCorp', 'pepsi',
-            'dairyQueen', 'noodles',
-          )}
-        />
       </div>
     </div>
   )

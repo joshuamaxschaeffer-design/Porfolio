@@ -6,14 +6,6 @@ import { AnchorHeader, ModuleCaption } from './primitives'
 export function LeadershipModules({ dark = false }: { dark?: boolean }) {
   const cards = [
     {
-      kicker: 'Advocacy',
-      title: 'Pitched, not just made',
-      blurb: 'The internal deck that sold Mindbody on an illustration program — then the style guide that delivered it.',
-      src: '/capabilities/leadership/illo-proposal.webp',
-      caption: 'Mindbody — illustration program pitch',
-      note: 'Design leadership = selling the idea, then shipping the system.',
-    },
-    {
       kicker: 'Systems',
       title: 'Built for handoff',
       blurb: 'Toolkits and languages other designers and engineers extend without me in the room.',
@@ -31,7 +23,7 @@ export function LeadershipModules({ dark = false }: { dark?: boolean }) {
     },
   ]
   return (
-    <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-8">
+    <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-8">
       {cards.map((c) => (
         <div key={c.title}>
           <AnchorHeader dark={dark} kicker={c.kicker} title={c.title} blurb={c.blurb} />

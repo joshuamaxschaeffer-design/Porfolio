@@ -70,37 +70,21 @@ export function ArtMotionModules({ dark = false }: { dark?: boolean }) {
           title="Motion that reads, even paused"
           blurb="Interface motion and brand film — a looping reel with stills pulled from it, so the work lands whether or not it’s playing."
         />
-        <Reveal>
-          <div className="overflow-hidden rounded-[var(--br-card-radius)] border border-[var(--br-line)] bg-black">
-            <LoopVideo
-              src="/capabilities/motion/cbtl-film.mp4"
-              poster="/capabilities/motion/cbtl-film-poster.webp"
-              className="aspect-video w-full object-cover"
-            />
-          </div>
-        </Reveal>
-        <div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5">
-          <Reveal>
-            <figure className="overflow-hidden rounded-[var(--br-card-radius)] border border-[var(--br-line)] bg-black">
-              <LoopVideo src="/capabilities/motion/mb-motion.mp4" poster="/capabilities/motion/mb-motion-poster.webp" className="aspect-video w-full object-cover" />
-              <figcaption className="br-data bg-white px-4 py-2.5 text-[11px] uppercase tracking-[0.08em] text-[var(--br-muted-2)]">Mindbody — interface motion</figcaption>
-            </figure>
+        {/* mb-motion is landscape (1280×746); pepsi is tall phone (750×1750).
+            Show each at its NATIVE aspect, contained — no side-cropping, no captions. */}
+        <div className="grid grid-cols-1 items-stretch gap-5 md:grid-cols-12 md:gap-6">
+          <Reveal className="md:col-span-8">
+            <div className="h-full overflow-hidden rounded-[var(--br-card-radius)] border border-[var(--br-line)] bg-[#0b1020]">
+              <LoopVideo src="/capabilities/motion/mb-motion.mp4" poster="/capabilities/motion/mb-motion-poster.webp" className="aspect-[1280/746] w-full object-contain" />
+            </div>
           </Reveal>
-          <Reveal delay={60}>
-            <figure className="overflow-hidden rounded-[var(--br-card-radius)] border border-[var(--br-line)] bg-black">
-              <LoopVideo src="/capabilities/motion/pepsi-motion.mp4" poster="/capabilities/motion/pepsi-motion-poster.webp" className="aspect-video w-full object-cover" />
-              <figcaption className="br-data bg-white px-4 py-2.5 text-[11px] uppercase tracking-[0.08em] text-[var(--br-muted-2)]">Pepsi — product / AR</figcaption>
-            </figure>
-          </Reveal>
-          <Reveal delay={120}>
-            <figure className="overflow-hidden rounded-[var(--br-card-radius)] border border-[var(--br-line)] bg-black">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/capabilities/motion/cbtl-film-poster.webp" alt="CBTL brand film still" className="aspect-video w-full object-cover" loading="lazy" />
-              <figcaption className="br-data bg-white px-4 py-2.5 text-[11px] uppercase tracking-[0.08em] text-[var(--br-muted-2)]">CBTL — brand film (4K)</figcaption>
-            </figure>
+          <Reveal delay={60} className="md:col-span-4">
+            <div className="mx-auto h-full max-w-[260px] overflow-hidden rounded-[28px] border border-[var(--br-line)] bg-[#0b1020]">
+              <LoopVideo src="/capabilities/motion/pepsi-motion.mp4" poster="/capabilities/motion/pepsi-motion-poster.webp" className="aspect-[750/1750] w-full object-contain" />
+            </div>
           </Reveal>
         </div>
-        <ModuleCaption dark={dark}>Brand film, interface motion, and product/AR — autoplaying muted loops.</ModuleCaption>
+        <ModuleCaption dark={dark}>Interface motion (Mindbody) and product / AR (Pepsi) — autoplaying muted loops.</ModuleCaption>
       </div>
 
       {/* CBTL interface motion — real screen-recordings of the app in motion */}
@@ -125,9 +109,8 @@ export function ArtMotionModules({ dark = false }: { dark?: boolean }) {
                   src={v.src}
                   poster={v.src.replace('.mp4', '-poster.webp')}
                   label={`CBTL ${v.label}`}
-                  className="aspect-[9/19.5] w-full object-cover"
+                  className="aspect-[540/960] w-full object-contain"
                 />
-                <figcaption className="br-data bg-white px-3 py-2 text-center text-[10px] uppercase tracking-[0.08em] text-[var(--br-muted-2)]">{v.label}</figcaption>
               </figure>
             </Reveal>
           ))}
@@ -171,17 +154,20 @@ export function ArtMotionModules({ dark = false }: { dark?: boolean }) {
           role="Mindbody · CBTL"
           blurb="Mindbody’s illustration program — “2 Pillars: Relatable, Purposeful” — that I pitched (analysis + proposal) and then defined as a usable style guide, plus a documented motion language."
         />
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-3 md:gap-6">
+        {/* the actual spot illustrations from the style guide (not the full pages) */}
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-6 md:gap-5">
           {[
-            { src: '/capabilities/mindbody-new/illustration-1.webp', label: 'The two pillars' },
-            { src: '/capabilities/mindbody-new/illustration-2.webp', label: 'Style & character' },
-            { src: '/capabilities/mindbody-new/illustration-3.webp', label: 'Usage — do / don’t' },
-          ].map((a, i) => (
-            <Reveal key={a.label} delay={i * 60}>
-              <figure className="overflow-hidden rounded-[var(--br-card-radius)] border border-[var(--br-line)] bg-white">
+            '/capabilities/mindbody-new/illo-art-1.webp',
+            '/capabilities/mindbody-new/illo-art-2.webp',
+            '/capabilities/mindbody-new/illo-art-3.webp',
+            '/capabilities/mindbody-new/illo-art-4.webp',
+            '/capabilities/mindbody-new/illo-art-5.webp',
+            '/capabilities/mindbody-new/illo-art-6.webp',
+          ].map((src, i) => (
+            <Reveal key={src} delay={i * 30}>
+              <figure className="flex aspect-square items-center justify-center overflow-hidden rounded-[var(--br-card-radius)] border border-[var(--br-line)] bg-white p-3">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={a.src} alt={`Mindbody illustration guide — ${a.label}`} className="aspect-[3/4] w-full object-cover object-top" loading="lazy" />
-                <figcaption className="br-data px-4 py-3 text-[11px] uppercase tracking-[0.08em] text-[var(--br-muted-2)]">{a.label}</figcaption>
+                <img src={src} alt="Mindbody illustration" className="max-h-full max-w-full object-contain" loading="lazy" />
               </figure>
             </Reveal>
           ))}
@@ -189,39 +175,6 @@ export function ArtMotionModules({ dark = false }: { dark?: boolean }) {
         <ModuleCaption dark={dark}>
           From research and a written proposal to a usable style guide — and a parallel motion language (“Calming, Reactive, Guiding”).
         </ModuleCaption>
-      </div>
-
-      {/* Animated marks + character — real looping GIFs */}
-      <div>
-        <AnchorHeader
-          dark={dark}
-          kicker="Animated identity & character"
-          title="Marks & characters in motion"
-          blurb="Logo systems, loaders, and character loops built to move."
-        />
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-6 md:gap-5">
-          {[
-            { src: '/capabilities/motion/anim-Octopus.mp4', label: 'Octopus' },
-            { src: '/capabilities/motion/anim-Fire.mp4', label: 'Fire' },
-            { src: '/capabilities/motion/anim-Whale.mp4', label: 'Whale' },
-            { src: '/capabilities/motion/anim-Monkey.mp4', label: 'Monkey' },
-            { src: '/capabilities/motion/anim-lion.mp4', label: 'Lion' },
-            { src: '/capabilities/motion/anim-Bird.mp4', label: 'Bird' },
-          ].map((a, i) => (
-            <Reveal key={a.label} delay={i * 30}>
-              <figure className="overflow-hidden rounded-[var(--br-card-radius)] border border-[var(--br-line)] bg-white">
-                <LoopVideo
-                  src={a.src}
-                  poster={a.src.replace('.mp4', '-poster.webp')}
-                  label={`${a.label} animation`}
-                  className="aspect-square w-full object-cover"
-                />
-                <figcaption className="br-data px-3 py-2 text-center text-[10px] uppercase tracking-[0.08em] text-[var(--br-muted-2)]">{a.label}</figcaption>
-              </figure>
-            </Reveal>
-          ))}
-        </div>
-        <ModuleCaption dark={dark}>Looping animation studies — interface loaders & characters.</ModuleCaption>
       </div>
     </div>
   )

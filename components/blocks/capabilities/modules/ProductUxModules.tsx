@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { Reveal } from '../../../animation/Reveal'
-import { PerspectiveDeviceGrid } from '../../shared/PerspectiveDeviceGrid'
-import { SwipeStack } from '../../shared/SwipeStack'
+import { CapDeviceFan } from '../../shared/CapDeviceFan'
+import { ExplorationStack } from '../../baserate/ExplorationStack'
 import { AnchorHeader, BlueRail, BlueFlowRow, ModuleCaption, ModuleCard } from './primitives'
 
 /** Section 01 — Product & UX work modules (grey section, light tone). */
@@ -13,7 +13,7 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
       {/* Process opener — how a product UX starts (from the Baserate build) */}
       <ExplorationModule dark={dark} />
 
-      {/* Anchor A — Raising Cane's (consumer, mobile) — perspective grid + flow */}
+      {/* Anchor A — Raising Cane's (consumer, mobile) — device fan + flow + Cover-Flow detail */}
       <ModuleCard dark={dark}>
         <AnchorHeader
           dark={dark}
@@ -22,63 +22,49 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
           role="Lead Designer → Art Director"
           blurb="The full ordering product, web and native — onboarding, menu, scan-to-earn loyalty, group ordering, and checkout."
         />
-        <Reveal>
-          <PerspectiveDeviceGrid
-            accent="#C8102E"
-            cols={4}
-            rows={2}
-            caption="Raising Cane’s — native app screens"
-            screens={[
-              { src: '/capabilities/canes/canes-onboard-1.webp', alt: 'Cane’s onboarding' },
-              { src: '/capabilities/canes/canes-menu.webp', alt: 'Cane’s menu' },
-              { src: '/capabilities/canes/canes-onboard-2.webp', alt: 'Cane’s onboarding' },
-              { src: '/capabilities/canes/canes-account.webp', alt: 'Cane’s account' },
-              { src: '/capabilities/canes/canes-onboard-3.webp', alt: 'Cane’s onboarding' },
-              { src: '/capabilities/canes/canes-confirm.webp', alt: 'Cane’s order confirmation' },
-              { src: '/capabilities/canes/canes-onboard-4.webp', alt: 'Cane’s onboarding' },
-              { src: '/capabilities/canes/canes-home.webp', alt: 'Cane’s home' },
-            ]}
-          />
-        </Reveal>
+        <CapDeviceFan
+          dark={dark}
+          caption="Raising Cane’s — native app screens"
+          screens={[
+            { src: '/capabilities/canes/ui-welcome.webp', alt: 'Cane’s welcome' },
+            { src: '/capabilities/canes/ui-onboard.webp', alt: 'Cane’s onboarding' },
+            { src: '/capabilities/canes/ui-home.webp', alt: 'Cane’s menu' },
+            { src: '/capabilities/canes/ui-build.webp', alt: 'Cane’s order builder' },
+            { src: '/capabilities/canes/ui-account.webp', alt: 'Cane’s account' },
+            { src: '/capabilities/canes/ui-confirm.webp', alt: 'Cane’s order status' },
+          ]}
+        />
         <div className="mt-10">
           <p className="br-data mb-4 text-[11px] uppercase tracking-[0.12em] text-[var(--br-gold)]">The core flow</p>
           <BlueFlowRow
             dark={dark}
             steps={[
-              { label: 'Onboarding', src: '/capabilities/canes/canes-onboard-1.webp' },
-              { label: 'Welcome', src: '/capabilities/canes/canes-onboard-2.webp' },
-              { label: 'Build the order', src: '/capabilities/canes/canes-menu.webp' },
-              { label: 'Account', src: '/capabilities/canes/canes-account.webp' },
-              { label: 'Confirmation', src: '/capabilities/canes/canes-confirm.webp' },
-              { label: 'Home', src: '/capabilities/canes/canes-home.webp' },
+              { label: 'Welcome', src: '/capabilities/canes/ui-welcome.webp' },
+              { label: 'Onboarding', src: '/capabilities/canes/ui-onboard.webp' },
+              { label: 'Build the order', src: '/capabilities/canes/ui-build.webp' },
+              { label: 'Account', src: '/capabilities/canes/ui-account.webp' },
+              { label: 'Confirmation', src: '/capabilities/canes/ui-confirm.webp' },
+              { label: 'Menu', src: '/capabilities/canes/ui-home.webp' },
             ]}
             caption="Onboarding → menu → checkout — the real ordering flow"
           />
         </div>
-        {/* Hover-scrub stack of the drink-customization detail screens */}
-        <div className="mt-10 grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-12">
-          <div>
-            <p className="br-data mb-2 text-[11px] uppercase tracking-[0.12em] text-[var(--br-gold)]">Detail · order customization</p>
-            <h4 className="br-heading text-[clamp(1.15rem,2.4vw,1.5rem)] leading-tight text-[var(--br-ink)]">Every modifier, dialed in</h4>
-            <p className="mt-3 max-w-[42ch] text-[15px] leading-relaxed text-[var(--br-muted-2)]">
-              The drink and combo builders — quantity steppers, swaps, and add-ons — drawn to the same
-              spec as the rest of the system. Hover or swipe to flip through the states.
-            </p>
-          </div>
-          <SwipeStack
-            maxW={300}
-            pills={['Combo', 'Fountain', 'Unsweet', 'Add-ons']}
-            screens={[
-              { src: '/capabilities/canes/ui-features.webp', alt: 'Cane’s combo builder' },
-              { src: '/capabilities/canes/ui-drink-1.webp', alt: 'Cane’s fountain drink' },
-              { src: '/capabilities/canes/ui-drink-2.webp', alt: 'Cane’s unsweet tea' },
-              { src: '/capabilities/canes/ui-drink-3.webp', alt: 'Cane’s drink add-ons' },
+        {/* Cover-Flow detail of the drink-customization states (reuses the Baserate ExplorationStack) */}
+        <div className="mt-12">
+          <p className="br-data mb-2 text-[11px] uppercase tracking-[0.12em] text-[var(--br-gold)]">Detail · order customization</p>
+          <h4 className="br-heading mb-6 text-[clamp(1.15rem,2.4vw,1.5rem)] leading-tight text-[var(--br-ink)]">Every modifier, dialed in</h4>
+          <ExplorationStack
+            items={[
+              { title: 'Combo builder', body: 'Quantity steppers, swaps, and add-ons drawn to the same spec as the rest of the system.', image: '/capabilities/canes/ui-features.webp' },
+              { title: 'Fountain drink', body: 'Pick a size, choose your drink, decide on ice — one decision per screen.', image: '/capabilities/canes/ui-drink-1.webp' },
+              { title: 'Unsweet tea', body: 'The same builder, a different product — consistent controls everywhere.', image: '/capabilities/canes/ui-drink-2.webp' },
+              { title: 'Add-ons', body: 'Up-sells and extras layered in without crowding the core choice.', image: '/capabilities/canes/ui-drink-3.webp' },
             ]}
           />
         </div>
       </ModuleCard>
 
-      {/* Anchor — Dave & Buster's app (consumer, mobile) — aesthetic stacked screens */}
+      {/* Anchor — Dave & Buster's app — Cover-Flow swap + ordering flow */}
       <ModuleCard dark={dark}>
         <AnchorHeader
           dark={dark}
@@ -87,26 +73,14 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
           role="Product & UI Designer"
           blurb="The membership app that fuses dining and arcade — Power Card balance, food ordering, and play, in a bold dark interface."
         />
-        <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-12">
-          <SwipeStack
-            maxW={300}
-            pills={['Dashboard', 'Recommend', 'Power Card', 'Onboard']}
-            screens={[
-              { src: '/capabilities/dnb/app-1.webp', alt: 'D&B offers dashboard' },
-              { src: '/capabilities/dnb/app-2.webp', alt: 'D&B recommendations' },
-              { src: '/capabilities/dnb/app-4.webp', alt: 'D&B Power Card balance' },
-              { src: '/capabilities/dnb/app-5.webp', alt: 'D&B card onboarding' },
-            ]}
-          />
-          <div className="md:order-first">
-            <p className="br-data mb-2 text-[11px] uppercase tracking-[0.12em] text-[var(--br-gold)]">Membership · dining + play</p>
-            <h4 className="br-heading text-[clamp(1.15rem,2.4vw,1.5rem)] leading-tight text-[var(--br-ink)]">A bold, branded home base</h4>
-            <p className="mt-3 max-w-[42ch] text-[15px] leading-relaxed text-[var(--br-muted-2)]">
-              Eat/Play toggling, a Power Card chips balance, deals tied to movies and menu — the dark
-              UI keeps the energy of the room. Then the full food-ordering flow below.
-            </p>
-          </div>
-        </div>
+        <ExplorationStack
+          items={[
+            { title: 'Dashboard', body: 'Eat/Play toggling, a points balance, and deals tied to movies and menu — the dark UI keeps the energy of the room.', image: '/capabilities/dnb/app-1.webp' },
+            { title: 'Recommendations', body: 'Personalized “try these” games and food, surfaced on the home base.', image: '/capabilities/dnb/app-2.webp' },
+            { title: 'Power Card', body: 'The chips balance, VR plays, and tickets — the card, made digital.', image: '/capabilities/dnb/app-4.webp' },
+            { title: 'Onboarding', body: 'Two clear ways to start playing — digital or plastic.', image: '/capabilities/dnb/app-5.webp' },
+          ]}
+        />
         <div className="mt-10">
           <p className="br-data mb-4 text-[11px] uppercase tracking-[0.12em] text-[var(--br-gold)]">The ordering flow</p>
           <BlueFlowRow
@@ -123,7 +97,7 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
         </div>
       </ModuleCard>
 
-      {/* Anchor — Dave & Buster's KIOSK — UX→UI, with clear kiosk framing */}
+      {/* Anchor — Dave & Buster's KIOSK — tall floor-standing kiosk + floating stack */}
       <ModuleCard dark={dark}>
         <AnchorHeader
           dark={dark}
@@ -132,10 +106,10 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
           role="UX + UI Designer"
           blurb="A floor-standing self-order kiosk — designed for a big touchscreen at arm’s length, not a phone in the hand. Wireframed end-to-end, then finished."
         />
-        <KioskCompare dark={dark} />
+        <KioskScene dark={dark} />
       </ModuleCard>
 
-      {/* Anchor — Trees UX flow (ported flow component) */}
+      {/* Anchor — Trees UX flow */}
       <ModuleCard dark={dark}>
         <AnchorHeader
           dark={dark}
@@ -158,71 +132,20 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
             caption="The wireframe flow — onboarding → goal → matched action plans → tracking"
           />
         </div>
-        <div className="mt-10 grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-12">
-          <div>
-            <p className="br-data mb-2 text-[11px] uppercase tracking-[0.12em] text-[var(--br-gold)]">Then · the finished UI</p>
-            <h4 className="br-heading text-[clamp(1.15rem,2.4vw,1.5rem)] leading-tight text-[var(--br-ink)]">Wireframe to product</h4>
-            <p className="mt-3 max-w-[42ch] text-[15px] leading-relaxed text-[var(--br-muted-2)]">
-              The same flow, resolved: a goal-created moment, matched plans as clean cards, and a plan
-              detail with a real task checklist. Hover or swipe to flip through.
-            </p>
-          </div>
-          <SwipeStack
-            maxW={300}
-            pills={['Goal created', 'Action plans', 'Plan detail']}
-            screens={[
-              { src: '/capabilities/trees/ui-1.webp', alt: 'Trees goal created' },
-              { src: '/capabilities/trees/ui-2.webp', alt: 'Trees action plans' },
-              { src: '/capabilities/trees/ui-3.webp', alt: 'Trees plan detail' },
+        <div className="mt-12">
+          <p className="br-data mb-2 text-[11px] uppercase tracking-[0.12em] text-[var(--br-gold)]">Then · the finished UI</p>
+          <h4 className="br-heading mb-6 text-[clamp(1.15rem,2.4vw,1.5rem)] leading-tight text-[var(--br-ink)]">Wireframe to product</h4>
+          <ExplorationStack
+            items={[
+              { title: 'Goal created', body: 'A branded success moment — “91% of people like you complete this goal.”', image: '/capabilities/trees/ui-1.webp' },
+              { title: 'Action plans', body: 'Matched plans as clean cards, ranked by fit.', image: '/capabilities/trees/ui-2.webp' },
+              { title: 'Plan detail', body: 'A real task checklist with a clear add-to-plan CTA.', image: '/capabilities/trees/ui-3.webp' },
             ]}
           />
         </div>
       </ModuleCard>
 
-      {/* Anchor B — Mindbody (B2B, desktop POS) — real desktop screens */}
-      <ModuleCard dark={dark}>
-        <AnchorHeader
-          dark={dark}
-          kicker="Anchor · B2B"
-          title="Mindbody — the system behind the counter"
-          role="UI/IXD + Design-Systems Lead"
-          blurb="Point-of-sale, payments, checkout, refunds, and reconciliation for a wellness platform — dense workflows that can’t break the power user."
-        />
-        <div className="grid grid-cols-1 gap-6 md:gap-7">
-          <Reveal>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/capabilities/mindbody/mb-pos-1.webp"
-              alt="Mindbody point-of-sale checkout"
-              className="w-full rounded-[var(--br-card-radius)] border border-[var(--br-line)] object-cover shadow-[0_10px_30px_rgba(7,14,44,0.10)]"
-              loading="lazy"
-            />
-          </Reveal>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-7">
-            <Reveal>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/capabilities/mindbody/mb-pos-2.webp"
-                alt="Mindbody retail checkout — payment"
-                className="w-full rounded-[var(--br-card-radius)] border border-[var(--br-line)] object-cover shadow-[0_10px_30px_rgba(7,14,44,0.10)]"
-                loading="lazy"
-              />
-            </Reveal>
-            <Reveal delay={80}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/capabilities/mindbody/mb-pos-3.webp"
-                alt="Mindbody retail checkout — cart"
-                className="w-full rounded-[var(--br-card-radius)] border border-[var(--br-line)] object-cover shadow-[0_10px_30px_rgba(7,14,44,0.10)]"
-                loading="lazy"
-              />
-            </Reveal>
-          </div>
-        </div>
-        <ModuleCaption dark={dark}>Point-of-sale & checkout across the retail counter.</ModuleCaption>
-      </ModuleCard>
-
-      {/* Breadth rail — full width */}
+      {/* Breadth rail — full width, now the shared draggable carousel + app icons */}
       <div>
         <AnchorHeader
           dark={dark}
@@ -232,41 +155,39 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
         />
         <BlueRail
           dark={dark}
-          fullBleed
           ratio="phone"
-          /* breadth */
           items={[
-            { label: 'Raising Cane’s — app', src: '/capabilities/canes/ui-drink-1.webp' },
-            { label: 'CBTL — iOS app', src: '/capabilities/cbtl/ui-2.webp' },
-            { label: 'Dave & Buster’s — app', src: '/capabilities/dnb/app-1.webp' },
+            { label: 'Raising Cane’s — app', src: '/capabilities/canes/ui-drink-1.webp', icon: '/capabilities/logos/raising-canes.svg' },
+            { label: 'CBTL — iOS app', src: '/capabilities/cbtl/ui-2.webp', icon: '/capabilities/logos/authored/jubilee.png' },
+            { label: 'Dave & Buster’s — app', src: '/capabilities/dnb/app-1.webp', icon: '/capabilities/logos/dave-and-busters.svg' },
             { label: 'Wingstop — ordering', src: '/capabilities/breadth/wingstop.webp' },
             { label: 'Blaze — Android app', src: '/capabilities/blaze/android-2-delivery-tracker.webp' },
-            { label: 'Trees — self-improvement', src: '/capabilities/trees/ui-1.webp' },
+            { label: 'Trees — self-improvement', src: '/capabilities/trees/ui-1.webp', icon: '/capabilities/logos/authored/trees.svg' },
             'Panda Express — app',
             'True Food Kitchen — web',
             'Noodles & Co. — ordering',
           ]}
         />
+        <ModuleCaption dark={dark}>Drag → · products across four form factors</ModuleCaption>
       </div>
     </div>
   )
 }
 
 /**
- * KioskCompare — shows the D&B self-order kiosk inside an unmistakable
- * floor-standing KIOSK frame (wide bezel + pedestal base + scale label), with a
- * Wireframe⇄Finished toggle so the UX→UI progression reads at a glance.
+ * KioskScene — ONE screen inside a tall, floor-standing kiosk (McDonald's-style
+ * proportions), with the rest of the flow floating as a static fanned stack to
+ * its right. A Wireframe⇄Finished toggle swaps both.
  */
-function KioskCompare({ dark = false }: { dark?: boolean }) {
+function KioskScene({ dark = false }: { dark?: boolean }) {
   const [ui, setUi] = useState(true)
-  const screens = ui
+  const set = ui
     ? ['/capabilities/dnb/kiosk-ui-1.webp', '/capabilities/dnb/kiosk-ui-2.webp', '/capabilities/dnb/kiosk-ui-3.webp', '/capabilities/dnb/kiosk-ui-5.webp']
     : ['/capabilities/dnb/kiosk-ux-1.webp', '/capabilities/dnb/kiosk-ux-2.webp', '/capabilities/dnb/kiosk-ux-3.webp', '/capabilities/dnb/kiosk-ux-6.webp']
-  const labels = ui ? ['Home', 'Menu', 'Item', 'Complete'] : ['Home', 'Menu', 'Browse', 'Pay']
+  const [hero, ...rest] = set
   return (
     <div>
-      {/* toggle */}
-      <div className="mb-6 inline-flex rounded-full border border-[var(--br-line)] p-1">
+      <div className="mb-8 inline-flex rounded-full border border-[var(--br-line)] p-1">
         {[
           { k: false, t: 'Wireframe (UX)' },
           { k: true, t: 'Finished (UI)' },
@@ -276,45 +197,57 @@ function KioskCompare({ dark = false }: { dark?: boolean }) {
             type="button"
             onClick={() => setUi(o.k)}
             className="br-data rounded-full px-4 py-1.5 text-[11px] uppercase tracking-[0.06em] transition-colors"
-            style={
-              ui === o.k
-                ? { background: 'var(--br-ink)', color: '#fff' }
-                : { color: 'var(--br-muted-2)' }
-            }
+            style={ui === o.k ? { background: 'var(--br-ink)', color: '#fff' } : { color: 'var(--br-muted-2)' }}
           >
             {o.t}
           </button>
         ))}
       </div>
 
-      {/* the kiosk: a wide standing unit. Big bezel, brand light bar, pedestal. */}
-      <div className="mx-auto" style={{ maxWidth: 880 }}>
-        <div className="relative rounded-[28px] border-[10px] border-[#15171c] bg-[#15171c] shadow-[0_30px_70px_rgba(7,14,44,0.30)]">
-          {/* top light bar to signal a standing unit */}
-          <div className="mx-auto mb-2 h-1.5 w-24 rounded-full bg-white/20" />
-          <div className="grid grid-cols-2 gap-2 overflow-hidden rounded-[14px] bg-black sm:grid-cols-4">
-            {screens.map((s, i) => (
-              <figure key={s} className="relative bg-white">
+      <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,340px)_1fr] lg:gap-12">
+        {/* The tall floor-standing kiosk — one screen, McDonald's proportions */}
+        <Reveal>
+          <div className="mx-auto w-full max-w-[300px]">
+            {/* head unit */}
+            <div className="relative rounded-t-[26px] border-[12px] border-b-0 border-[#15171c] bg-[#15171c]">
+              <div className="mx-auto mb-2 h-1.5 w-16 rounded-full bg-white/20" />
+              <div className="overflow-hidden rounded-[10px] bg-black">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={s} alt={`D&B kiosk — ${labels[i]}`} className="aspect-[9/16] w-full object-cover object-top" loading="lazy" />
-                <figcaption className="br-data absolute bottom-0 left-0 right-0 bg-black/55 px-2 py-1 text-center text-[9px] uppercase tracking-[0.08em] text-white/85">
-                  {labels[i]}
-                </figcaption>
-              </figure>
-            ))}
+                <img src={hero} alt="D&B kiosk — primary screen" className="aspect-[9/19] w-full object-cover object-top" loading="lazy" />
+              </div>
+              <div className="flex items-center justify-center py-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-white/25" />
+              </div>
+            </div>
+            {/* neck + base pedestal */}
+            <div className="mx-auto h-14 w-16 bg-gradient-to-b from-[#1c1f26] to-[#15171c]" />
+            <div className="mx-auto h-4 w-44 rounded-[5px] bg-[#15171c]" />
+            <p className={`br-data mt-3 text-center text-[11px] uppercase tracking-[0.1em] ${dark ? 'text-white/50' : 'text-[var(--br-muted-2)]'}`}>
+              Floor-standing kiosk · ~32″ portrait touchscreen
+            </p>
           </div>
-          {/* camera + sensor dot row */}
-          <div className="mt-2 flex items-center justify-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-white/30" />
-            <span className="h-1 w-1 rounded-full bg-white/20" />
-          </div>
+        </Reveal>
+
+        {/* The rest of the flow, floating as a static fanned stack to the right */}
+        <div className="relative h-[360px] sm:h-[440px]">
+          {rest.map((s, i) => (
+            <figure
+              key={s}
+              className="absolute top-0 overflow-hidden rounded-[16px] border border-[var(--br-line)] bg-white"
+              style={{
+                left: `${i * 17}%`,
+                width: '40%',
+                maxWidth: 210,
+                transform: `translateY(${i * 14}px) rotate(${i * 1.5 - 1}deg)`,
+                zIndex: rest.length - i,
+                boxShadow: '0 24px 50px -28px rgba(7,14,44,0.45)',
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={s} alt={`D&B kiosk — screen ${i + 2}`} className="aspect-[9/16] w-full object-cover object-top" loading="lazy" />
+            </figure>
+          ))}
         </div>
-        {/* pedestal base — the visual cue that says FLOOR-STANDING, not handheld */}
-        <div className="mx-auto h-10 w-2/5 rounded-b-[6px] bg-gradient-to-b from-[#23262d] to-[#15171c]" />
-        <div className="mx-auto h-3 w-3/5 rounded-[4px] bg-[#15171c]" />
-        <p className="br-data mt-3 text-center text-[11px] uppercase tracking-[0.1em] text-[var(--br-muted-2)]">
-          Floor-standing self-order kiosk · ~32″ portrait touchscreen
-        </p>
       </div>
     </div>
   )
@@ -322,9 +255,8 @@ function KioskCompare({ dark = false }: { dark?: boolean }) {
 
 /**
  * ExplorationModule — the "how product UX starts" process card. A fanned deck of
- * feature pills on the left (the surface area of a product), and the exploration
- * steps on the right with the active step marked by a gold left border. Steps
- * advance on hover/auto so it reads as a process, mirroring the Baserate build.
+ * feature pills on the left, exploration steps on the right with the active step
+ * marked by a gold left border. Mirrors the Baserate build.
  */
 const EXPLORE_STEPS = [
   { k: 'Workflow analysis', d: 'From research and interviews we identified the current behaviors and tools that defined an investor’s workflow.' },
@@ -353,7 +285,6 @@ function ExplorationModule({ dark = false }: { dark?: boolean }) {
         blurb="Before any screen: map the workflow, the data, and how every feature relates. The exploration that turned a long feature list into a coherent product."
       />
       <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-2 md:gap-16">
-        {/* fanned feature-pill card */}
         <Reveal>
           <div className="relative">
             <div className="absolute -left-3 top-3 h-full w-full rounded-[18px] border border-[var(--br-line)] bg-[var(--br-bg-2)]/60" aria-hidden />
@@ -373,34 +304,18 @@ function ExplorationModule({ dark = false }: { dark?: boolean }) {
           </div>
         </Reveal>
 
-        {/* exploration steps */}
         <div>
           <p className="br-data mb-5 text-[11px] uppercase tracking-[0.14em] text-[var(--br-gold)]">Exploration</p>
           <div className="space-y-6">
             {EXPLORE_STEPS.map((s, i) => {
               const on = i === step
               return (
-                <button
-                  key={s.k}
-                  type="button"
-                  onMouseEnter={() => setStep(i)}
-                  onClick={() => setStep(i)}
-                  className="block w-full text-left"
-                >
-                  <div
-                    className="pl-4 transition-all"
-                    style={{ borderLeft: `2px solid ${on ? 'var(--br-gold)' : 'transparent'}` }}
-                  >
-                    <h4
-                      className="br-heading text-[clamp(1rem,1.8vw,1.25rem)] font-semibold uppercase tracking-[0.02em] transition-colors"
-                      style={{ color: on ? 'var(--br-ink)' : 'var(--br-muted-2)' }}
-                    >
+                <button key={s.k} type="button" onMouseEnter={() => setStep(i)} onClick={() => setStep(i)} className="block w-full text-left">
+                  <div className="pl-4 transition-all" style={{ borderLeft: `2px solid ${on ? 'var(--br-gold)' : 'transparent'}` }}>
+                    <h4 className="br-heading text-[clamp(1rem,1.8vw,1.25rem)] font-semibold uppercase tracking-[0.02em] transition-colors" style={{ color: on ? 'var(--br-ink)' : 'var(--br-muted-2)' }}>
                       {s.k}
                     </h4>
-                    <p
-                      className="mt-1 max-w-[46ch] text-[14px] leading-relaxed transition-colors"
-                      style={{ color: on ? 'var(--br-muted)' : 'var(--br-muted-2)' }}
-                    >
+                    <p className="mt-1 max-w-[46ch] text-[14px] leading-relaxed transition-colors" style={{ color: on ? 'var(--br-muted)' : 'var(--br-muted-2)' }}>
                       {s.d}
                     </p>
                   </div>
