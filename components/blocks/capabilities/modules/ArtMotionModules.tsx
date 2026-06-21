@@ -70,18 +70,17 @@ export function ArtMotionModules({ dark = false }: { dark?: boolean }) {
           title="Motion that reads, even paused"
           blurb="Interface motion and brand film — a looping reel with stills pulled from it, so the work lands whether or not it’s playing."
         />
-        {/* mb-motion is landscape (1280×746); pepsi is tall phone (750×1750).
-            Each at its native aspect — no letterbox, no caption. The pepsi phone
-            is sized so its height matches the landscape video's height. */}
-        <div className="flex flex-col items-start gap-5 md:flex-row md:gap-6">
-          <Reveal className="w-full md:flex-1">
-            <div className="overflow-hidden rounded-[var(--br-card-radius)] border border-[var(--br-line)]">
-              <LoopVideo src="/capabilities/motion/mb-motion.mp4" poster="/capabilities/motion/mb-motion-poster.webp" className="aspect-[1280/746] w-full object-cover" />
+        {/* mb-motion landscape (1280×746) + pepsi tall phone (750×1750), SAME
+            HEIGHT, each keeping its own aspect (widths derive from the height). */}
+        <div className="flex flex-col items-center gap-5 md:flex-row md:items-stretch md:gap-6" style={{ height: 'auto' }}>
+          <Reveal className="w-full md:h-[440px] md:w-auto">
+            <div className="h-full overflow-hidden rounded-[var(--br-card-radius)] border border-[var(--br-line)]">
+              <LoopVideo src="/capabilities/motion/mb-motion.mp4" poster="/capabilities/motion/mb-motion-poster.webp" className="aspect-[1280/746] h-full w-full object-cover md:w-auto" />
             </div>
           </Reveal>
-          <Reveal delay={60} className="w-[150px] shrink-0 md:w-[180px]">
-            <div className="overflow-hidden rounded-[20px] border border-[var(--br-line)]">
-              <LoopVideo src="/capabilities/motion/pepsi-motion.mp4" poster="/capabilities/motion/pepsi-motion-poster.webp" className="aspect-[750/1750] w-full object-cover" />
+          <Reveal delay={60} className="md:h-[440px]">
+            <div className="mx-auto h-full overflow-hidden rounded-[20px] border border-[var(--br-line)]">
+              <LoopVideo src="/capabilities/motion/pepsi-motion.mp4" poster="/capabilities/motion/pepsi-motion-poster.webp" className="aspect-[750/1750] h-full w-auto object-cover" />
             </div>
           </Reveal>
         </div>
@@ -114,31 +113,6 @@ export function ArtMotionModules({ dark = false }: { dark?: boolean }) {
               </figure>
             </Reveal>
           ))}
-        </div>
-      </div>
-
-      {/* Icon systems — CBTL + Mindbody libraries */}
-      <div>
-        <AnchorHeader
-          dark={dark}
-          kicker="Iconography"
-          title="Icon systems, designed and directed"
-          role="Mindbody · CBTL"
-          blurb="At Mindbody I designed and directed other designers to build a large product icon library; for CBTL I drew a bespoke, characterful set. Two ends of the icon spectrum."
-        />
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-12 md:gap-6 md:items-start">
-          <div className="md:col-span-7">
-            <figure className="overflow-hidden rounded-[var(--br-card-radius)] border border-[var(--br-line)] bg-white">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/capabilities/mindbody-new/icons-1.webp" alt="Mindbody product icon library" className="w-full object-cover" loading="lazy" />
-            </figure>
-          </div>
-          <div className="md:col-span-5">
-            <figure className="overflow-hidden rounded-[var(--br-card-radius)] border border-[var(--br-line)] bg-white">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/capabilities/cbtl/icons-1.webp" alt="CBTL bespoke icon set" className="w-full object-contain p-4" loading="lazy" />
-            </figure>
-          </div>
         </div>
       </div>
 

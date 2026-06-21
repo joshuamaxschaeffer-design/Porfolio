@@ -68,15 +68,19 @@ export function DesignSystemsModules({ dark = true }: { dark?: boolean }) {
           role="Mindbody · Lead Product Designer"
           blurb="One of my biggest Mindbody builds: the tool studios use to manage their retail catalog — a dense data-table admin, a full add/edit-product flow with a variant matrix, and category taxonomy. Built to stay legible under real operator load."
         />
-        <Reveal>
-          <ImgCard src="/capabilities/mindbody-new/nutool-1.webp" alt="Mindbody NUTool — product management admin" caption="Retail product management — list + detail panel" />
-        </Reveal>
-        <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-3 md:gap-6">
-          <Reveal><ImgCard src="/capabilities/mindbody-new/nutool-2.webp" alt="Add a product form with variant matrix" caption="Add product · variant matrix" /></Reveal>
-          <Reveal delay={60}><ImgCard src="/capabilities/mindbody-new/nutool-4.webp" alt="Edit variant with product imagery" caption="Edit variant · per-location" /></Reveal>
-          <Reveal delay={120}><ImgCard src="/capabilities/mindbody-new/nutool-6.webp" alt="Category taxonomy sidebar" caption="Category taxonomy / IA" /></Reveal>
+        <div className="mx-auto mt-2 max-w-[820px]">
+          <PageStack
+            dark={dark}
+            ratio="16 / 10"
+            pages={[
+              '/capabilities/mindbody-new/nutool-1.webp',
+              '/capabilities/mindbody-new/nutool-2.webp',
+              '/capabilities/mindbody-new/nutool-4.webp',
+              '/capabilities/mindbody-new/nutool-5.webp',
+              '/capabilities/mindbody-new/nutool-6.webp',
+            ]}
+          />
         </div>
-        <ModuleCaption dark={dark}>A dense admin tool — designed so power users move fast without errors.</ModuleCaption>
       </div>
 
       {/* Toolkits & handoff — atomic-design systems across brands */}

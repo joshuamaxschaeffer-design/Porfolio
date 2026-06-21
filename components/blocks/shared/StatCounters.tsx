@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, useReducedMotion } from 'motion/react'
+import { useReducedMotion } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
 
 export interface StatItem {
@@ -110,15 +110,7 @@ function Counter({ stat, index, dark = false }: { stat: StatItem; index: number;
         {shown}
         {stat.suffix ? <span style={{ color: accent }}>{stat.suffix}</span> : null}
       </p>
-      <motion.span
-        aria-hidden
-        className="mt-4 block h-[2px] origin-left"
-        style={{ background: accent }}
-        initial={reduce ? false : { scaleX: 0 }}
-        animate={inView || reduce ? { scaleX: 1 } : undefined}
-        transition={{ duration: 0.7, delay: 0.2 + index * 0.08, ease: [0.16, 1, 0.3, 1] }}
-      />
-      <p className={`br-data mt-3 text-[12px] uppercase leading-snug tracking-[0.1em] md:text-[13px] ${dark ? 'text-white/60' : 'text-[var(--br-muted)]'}`}>
+      <p className={`br-data mt-4 text-[12px] uppercase leading-snug tracking-[0.1em] md:text-[13px] ${dark ? 'text-white/60' : 'text-[var(--br-muted)]'}`}>
         {stat.label}
       </p>
     </div>

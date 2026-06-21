@@ -28,7 +28,31 @@ export function BrandModules({ dark = true }: { dark?: boolean }) {
           cols={4}
           brands={pick('blaze', 'dopa', 'jubilee', 'rosetta', 'trees', 'baserate', 'journalytic')}
         />
-        <ModuleCaption dark={dark}>Animated marks (Jubilee, Rosetta) loop here in the real build.</ModuleCaption>
+      </div>
+
+      {/* What every identity ships with — BENTO of real in-context brand mockups */}
+      <div>
+        <AnchorHeader
+          dark={dark}
+          kicker="The system"
+          title="What every identity ships with"
+          blurb="Direction, logomark construction, color, and in-context applications — a few from DOPA, Rosetta & Jubilee."
+        />
+        <div className="grid auto-rows-[150px] grid-cols-2 gap-3 md:auto-rows-[190px] md:grid-cols-4 md:gap-4">
+          {[
+            { src: '/capabilities/brand/rosetta-applied.webp', span: 'col-span-2 row-span-2', contain: false },
+            { src: '/capabilities/brand/dopa-mark.webp', span: 'col-span-1 row-span-1', contain: true },
+            { src: '/capabilities/brand/dopa-appicon.webp', span: 'col-span-1 row-span-1', contain: true },
+            { src: '/capabilities/brand/dopa-mockup.webp', span: 'col-span-2 row-span-1', contain: false },
+            { src: '/capabilities/brand/jubilee-applied.webp', span: 'col-span-2 row-span-1', contain: false },
+            { src: '/capabilities/brand/dopa-construction.webp', span: 'col-span-2 row-span-1', contain: false },
+          ].map((a) => (
+            <figure key={a.src} className={`overflow-hidden rounded-[var(--br-card-radius)] border border-white/10 bg-white ${a.span}`}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={a.src} alt="" className={`h-full w-full ${a.contain ? 'object-contain p-5' : 'object-cover'}`} loading="lazy" />
+            </figure>
+          ))}
+        </div>
       </div>
 
       {/* Blaze — a full brand FAMILY (one master + sub-brands), all real logos */}
@@ -52,19 +76,13 @@ export function BrandModules({ dark = true }: { dark?: boolean }) {
             { src: '/capabilities/blaze/logo-9-chevron-appicon.png', label: 'App icon' },
           ].map((l, i) => (
             <Reveal key={l.label} delay={i * 25}>
-              <figure className="flex h-full flex-col">
-                <div className="flex flex-1 items-center justify-center rounded-[var(--br-card-radius)] border border-white/10 bg-white p-5">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={l.src} alt={`Blaze — ${l.label}`} className="max-h-16 w-full object-contain" loading="lazy" />
-                </div>
-                <figcaption className="br-data mt-2 text-center text-[10px] uppercase tracking-[0.07em] text-[var(--br-muted-2)]">
-                  {l.label}
-                </figcaption>
+              <figure className="flex h-full items-center justify-center rounded-[var(--br-card-radius)] border border-white/10 bg-white p-5">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={l.src} alt={`Blaze — ${l.label}`} className="max-h-16 w-full object-contain" loading="lazy" />
               </figure>
             </Reveal>
           ))}
         </div>
-        <ModuleCaption dark={dark}>One system, three product lines — sub-brands that stay a family.</ModuleCaption>
       </div>
 
     </div>

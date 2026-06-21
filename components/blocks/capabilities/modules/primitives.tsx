@@ -134,7 +134,7 @@ export function BlueRail({
   const cards = norm.map((it) => (
     <div key={it.label} className={cardW}>
       {it.src ? (
-        <figure className="relative pb-3 pl-3">
+        <figure className="relative pb-6 pl-6">
           <div
             className={`overflow-hidden rounded-[18px] border bg-white ${
               dark ? 'border-white/10' : 'border-[var(--br-line)]'
@@ -149,9 +149,9 @@ export function BlueRail({
               loading="lazy"
             />
           </div>
-          {/* iOS-style app icon — sits OUTSIDE the screen, bottom-left, slightly overlapping */}
+          {/* iOS-style app icon — 2× larger, sits OUTSIDE the screen, bottom-left, overlapping */}
           {it.icon && (
-            <span className="absolute bottom-0 left-0 flex h-12 w-12 items-center justify-center overflow-hidden rounded-[12px] border border-black/10 bg-white p-1.5 shadow-[0_6px_16px_rgba(0,0,0,0.22)]">
+            <span className="absolute bottom-0 left-0 flex h-[88px] w-[88px] items-center justify-center overflow-hidden rounded-[20px] border border-black/10 bg-white p-2.5 shadow-[0_8px_22px_rgba(0,0,0,0.25)]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={it.icon} alt="" draggable={false} className="h-full w-full object-contain" />
             </span>

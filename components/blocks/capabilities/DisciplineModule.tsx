@@ -22,6 +22,8 @@ export interface DisciplineModuleProps {
   statsNote?: string
   /** flat background color for the whole section */
   bg: SectionBg
+  /** optional row of client logos (brands this discipline's work was for) */
+  clientLogos?: string[]
   children?: React.ReactNode
 }
 
@@ -39,30 +41,22 @@ export function DisciplineModule({
   positioning,
   capabilities,
   stats,
-  statsNote,
   bg,
+  clientLogos,
   children,
 }: DisciplineModuleProps) {
   const dark = BG[bg].dark
   const gold = dark ? 'var(--br-gold-soft)' : 'var(--br-gold)'
   const ink = dark ? 'text-white' : 'text-[var(--br-ink)]'
-  const cardBg = dark ? 'bg-white/[0.05] border-white/15' : 'bg-white border-[var(--br-line)]'
-  const cardNote = dark ? 'text-white/55' : 'text-[var(--br-muted-2)]'
-  const statNote = dark ? 'text-white/50' : 'text-[var(--br-muted-2)]'
 
   return (
     <section id={id} className={BG[bg].className}>
       <div className="br-container py-16 md:py-24">
-        {/* Number + title */}
+        {/* Number INLINE with the title (no separate little number) */}
         <Reveal>
-          <div className="flex items-baseline gap-4">
-            <span className="br-data text-[15px] font-semibold tracking-[0.1em] md:text-[17px]" style={{ color: gold }}>
-              {num}
-            </span>
-            <h2 className={`text-[30px] font-medium uppercase leading-none tracking-[-0.01em] md:text-[46px] ${ink}`}>
-              {title}
-            </h2>
-          </div>
+          <h2 className={`text-[30px] font-medium uppercase leading-none tracking-[-0.01em] md:text-[46px] ${ink}`}>
+            <span style={{ color: gold }}>{num}</span>&nbsp;&nbsp;{title}
+          </h2>
         </Reveal>
 
         {/* Positioning sentence */}
@@ -72,42 +66,42 @@ export function DisciplineModule({
           </p>
         </Reveal>
 
-        {/* Capability CARDS (icon + label + note) */}
+        {/* Optional client-logo row — brands I did this discipline's work for */}
+        {clientLogos && clientLogos.length > 0 && (
+          <Reveal delay={90}>
+            <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-5 md:mt-10 md:gap-x-12">
+              {clientLogos.map((src) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={src}
+                  src={src}
+                  alt=""
+                  className={`h-7 w-auto max-w-[120px] object-contain md:h-8 ${dark ? 'opacity-80 brightness-0 invert' : 'opacity-70'}`}
+                  loading="lazy"
+                />
+              ))}
+            </div>
+          </Reveal>
+        )}
+
+        {/* Capability list — borderless, label only (no card, no 2nd line) */}
         <Reveal delay={120}>
-          <div className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2 md:mt-12 md:grid-cols-3 md:gap-4">
+          <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 md:mt-12 md:grid-cols-3 md:gap-x-10 md:gap-y-5">
             {capabilities.map((c) => (
-              <div
-                key={c.label}
-                className={`group flex h-full items-start gap-3.5 rounded-[var(--br-card-radius)] border p-4 transition-all duration-300 hover:-translate-y-0.5 md:p-5 ${cardBg} ${dark ? 'hover:border-white/30' : 'hover:border-[var(--br-gold)]'}`}
-              >
-                <span
-                  className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px]"
-                  style={{ background: dark ? 'rgba(199,144,22,0.18)' : 'rgba(174,125,0,0.10)', color: gold }}
-                >
+              <div key={c.label} className="flex items-center gap-3">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px]" style={{ background: dark ? 'rgba(199,144,22,0.18)' : 'rgba(174,125,0,0.10)', color: gold }}>
                   <CapIcon name={c.icon} />
                 </span>
-                <div>
-                  <p className={`text-[15px] font-medium leading-tight ${dark ? 'text-white' : 'text-[var(--br-body)]'}`}>
-                    {c.label}
-                  </p>
-                  {c.note && (
-                    <p className={`mt-1 text-[13px] leading-snug ${cardNote}`}>{c.note}</p>
-                  )}
-                </div>
+                <p className={`text-[15px] font-medium leading-tight ${dark ? 'text-white' : 'text-[var(--br-body)]'}`}>{c.label}</p>
               </div>
             ))}
           </div>
         </Reveal>
 
-        {/* Full-width stat row — flat on the section background (no card) */}
+        {/* Full-width stat row — flat on the section background (no card, no note) */}
         <Reveal delay={100}>
           <div className="mt-12 border-t pt-10 md:mt-16" style={{ borderColor: dark ? 'rgba(255,255,255,0.12)' : 'var(--br-line)' }}>
             <StatCounters stats={dark ? stats.map((s) => ({ ...s, accent: gold })) : stats} dark={dark} />
-            {statsNote && (
-              <p className={`br-data mt-7 text-[11px] uppercase leading-relaxed tracking-[0.08em] ${statNote}`}>
-                {statsNote}
-              </p>
-            )}
           </div>
         </Reveal>
 
