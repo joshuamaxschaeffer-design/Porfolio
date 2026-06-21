@@ -68,9 +68,6 @@ export function CapabilitiesPage(props: CapabilitiesPageProps = {}) {
           </p>
           <div className="mt-12 border-t border-[var(--br-line)] pt-10 md:mt-16">
             <StatCounters stats={heroStats} />
-            <p className="br-data mt-7 text-[11px] uppercase leading-relaxed tracking-[0.08em] text-[var(--br-muted-2)]">
-              {heroCopy.statsNote}
-            </p>
           </div>
         </div>
         {/* Instant proof — real-logo marquee */}

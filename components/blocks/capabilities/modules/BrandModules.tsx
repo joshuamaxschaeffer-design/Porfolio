@@ -1,9 +1,8 @@
 'use client'
 
-import { Reveal } from '../../../animation/Reveal'
 import { BrandWall } from '../BrandLogo'
 import { pick } from '../brands'
-import { AnchorHeader, ModuleCaption } from './primitives'
+import { AnchorHeader } from './primitives'
 
 /**
  * Section 02 — Brand & Identity (BLACK section, dark tone).
@@ -51,36 +50,6 @@ export function BrandModules({ dark = true }: { dark?: boolean }) {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={a.src} alt="" className={`h-full w-full ${a.contain ? 'object-contain p-5' : 'object-cover'}`} loading="lazy" />
             </figure>
-          ))}
-        </div>
-      </div>
-
-      {/* Blaze — a full brand FAMILY (one master + sub-brands), all real logos */}
-      <div>
-        <AnchorHeader
-          dark={dark}
-          kicker="Deep dive · brand family"
-          title="Blaze — a master brand and its sub-brands"
-          blurb="Not one logo — a family. A master wordmark plus distinct identities for each product line (Extract, Center, Warehouse), each with horizontal, stacked, and app-icon lockups."
-        />
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5 md:gap-4">
-          {[
-            { src: '/capabilities/blaze/logo-1-blaze-wordmark.png', label: 'Master wordmark' },
-            { src: '/capabilities/blaze/logo-3-extract-horizontal.png', label: 'Extract' },
-            { src: '/capabilities/blaze/logo-4-extract-vertical.png', label: 'Extract · stacked' },
-            { src: '/capabilities/blaze/logo-5-extract-appicon.png', label: 'Extract · icon' },
-            { src: '/capabilities/blaze/logo-7-center-horizontal.png', label: 'Center' },
-            { src: '/capabilities/blaze/logo-8-center-vertical.png', label: 'Center · stacked' },
-            { src: '/capabilities/blaze/logo-10-warehouse-horizontal.png', label: 'Warehouse' },
-            { src: '/capabilities/blaze/logo-11-warehouse-vertical.png', label: 'Warehouse · stacked' },
-            { src: '/capabilities/blaze/logo-9-chevron-appicon.png', label: 'App icon' },
-          ].map((l, i) => (
-            <Reveal key={l.label} delay={i * 25}>
-              <figure className="flex h-full items-center justify-center rounded-[var(--br-card-radius)] border border-white/10 bg-white p-5">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={l.src} alt={`Blaze — ${l.label}`} className="max-h-16 w-full object-contain" loading="lazy" />
-              </figure>
-            </Reveal>
           ))}
         </div>
       </div>
