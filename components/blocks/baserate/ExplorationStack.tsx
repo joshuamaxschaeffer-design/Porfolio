@@ -24,7 +24,19 @@ export interface ExplorationItem {
  * washed) so the card underneath is never blank while dragging; at md+ they
  * keep the clean white card-back look.
  */
-export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag?: string }) {
+export function ExplorationStack({
+  items,
+  tag,
+  cardAspect = '874/932',
+  fit = 'contain',
+}: {
+  items: ExplorationItem[]
+  tag?: string
+  /** CSS aspect-ratio for the cards. Default = Baserate's square-ish. Pass e.g. '9/19.5' for phone screens. */
+  cardAspect?: string
+  /** object-fit for the front image. Default 'contain' (Baserate). Use 'cover' for phone screens to fill. */
+  fit?: 'contain' | 'cover'
+}) {
   const reduce = useReducedMotion()
   const [active, setActive] = useState(0)
   const [hover, setHover] = useState<number | null>(null)
@@ -115,7 +127,7 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
     >
       {/* Image stack — Cover Flow perspective. Front card faces forward; cards
           behind angle away (rotateY), fanning left. */}
-      <div className="relative mx-auto aspect-[874/932] w-full max-w-[440px] pl-8 lg:pl-20" style={{ perspective: '1200px' }}>
+      <div className="relative mx-auto w-full max-w-[440px] pl-8 lg:pl-20" style={{ perspective: '1200px', aspectRatio: cardAspect }}>
         {items.map((item, i) => {
           const depth = (i - current + n) % n
           const isFront = depth === 0
@@ -160,7 +172,7 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
             >
               {isFront ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={item.image} alt={item.title} draggable={false} className="h-full w-full object-contain" />
+                <img src={item.image} alt={item.title} draggable={false} className={`h-full w-full ${fit === 'cover' ? 'object-cover object-top' : 'object-contain'}`} />
               ) : (
                 <>
                   {/* MOBILE: the under-card shows its REAL image (lightly
@@ -172,7 +184,7 @@ export function ExplorationStack({ items, tag }: { items: ExplorationItem[]; tag
                     alt=""
                     aria-hidden
                     draggable={false}
-                    className="h-full w-full object-contain lg:hidden"
+                    className={`h-full w-full lg:hidden ${fit === 'cover' ? 'object-cover object-top' : 'object-contain'}`}
                   />
                   <span aria-hidden className="absolute inset-0 bg-white/40 lg:hidden" />
                   <span aria-hidden className="absolute inset-0 hidden bg-white lg:block" />

@@ -57,18 +57,6 @@ export function MarketingWebModules({ dark = true }: { dark?: boolean }) {
         </div>
       </div>
 
-      {/* A full page at length — real TFK seasonal */}
-      <div>
-        <AnchorHeader dark={dark} kicker="Web · at length" title="Art-directed, top to bottom" blurb="Full pages designed as a journey — brand storytelling and conversion in one scroll." />
-        <Reveal>
-          <figure className="overflow-hidden rounded-[var(--br-card-radius)] border border-white/10 bg-white">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/capabilities/web/tfk-seasonal.webp" alt="True Food Kitchen seasonal page" className="w-full object-cover" loading="lazy" />
-            <figcaption className="br-data px-4 py-3 text-[11px] uppercase tracking-[0.08em] text-[var(--br-muted-2)]">True Food Kitchen — seasonal feature</figcaption>
-          </figure>
-        </Reveal>
-      </div>
-
       {/* CRM / lifecycle — real DQ mailers + Chandon */}
       <div>
         <AnchorHeader

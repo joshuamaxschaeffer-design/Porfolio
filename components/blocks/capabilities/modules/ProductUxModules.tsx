@@ -34,26 +34,13 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
             { src: '/capabilities/canes/ui-confirm.webp', alt: 'Cane’s order status' },
           ]}
         />
-        <div className="mt-10">
-          <p className="br-data mb-4 text-[11px] uppercase tracking-[0.12em] text-[var(--br-gold)]">The core flow</p>
-          <BlueFlowRow
-            dark={dark}
-            steps={[
-              { label: 'Welcome', src: '/capabilities/canes/ui-welcome.webp' },
-              { label: 'Onboarding', src: '/capabilities/canes/ui-onboard.webp' },
-              { label: 'Build the order', src: '/capabilities/canes/ui-build.webp' },
-              { label: 'Account', src: '/capabilities/canes/ui-account.webp' },
-              { label: 'Confirmation', src: '/capabilities/canes/ui-confirm.webp' },
-              { label: 'Menu', src: '/capabilities/canes/ui-home.webp' },
-            ]}
-            caption="Onboarding → menu → checkout — the real ordering flow"
-          />
-        </div>
         {/* Cover-Flow detail of the drink-customization states (reuses the Baserate ExplorationStack) */}
-        <div className="mt-12">
+        <div className="mt-14">
           <p className="br-data mb-2 text-[11px] uppercase tracking-[0.12em] text-[var(--br-gold)]">Detail · order customization</p>
           <h4 className="br-heading mb-6 text-[clamp(1.15rem,2.4vw,1.5rem)] leading-tight text-[var(--br-ink)]">Every modifier, dialed in</h4>
           <ExplorationStack
+            cardAspect="9/19.5"
+            fit="cover"
             items={[
               { title: 'Combo builder', body: 'Quantity steppers, swaps, and add-ons drawn to the same spec as the rest of the system.', image: '/capabilities/canes/ui-features.webp' },
               { title: 'Fountain drink', body: 'Pick a size, choose your drink, decide on ice — one decision per screen.', image: '/capabilities/canes/ui-drink-1.webp' },
@@ -74,6 +61,8 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
           blurb="The membership app that fuses dining and arcade — Power Card balance, food ordering, and play, in a bold dark interface."
         />
         <ExplorationStack
+          cardAspect="9/19.5"
+          fit="cover"
           items={[
             { title: 'Dashboard', body: 'Eat/Play toggling, a points balance, and deals tied to movies and menu — the dark UI keeps the energy of the room.', image: '/capabilities/dnb/app-1.webp' },
             { title: 'Recommendations', body: 'Personalized “try these” games and food, surfaced on the home base.', image: '/capabilities/dnb/app-2.webp' },
@@ -136,6 +125,8 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
           <p className="br-data mb-2 text-[11px] uppercase tracking-[0.12em] text-[var(--br-gold)]">Then · the finished UI</p>
           <h4 className="br-heading mb-6 text-[clamp(1.15rem,2.4vw,1.5rem)] leading-tight text-[var(--br-ink)]">Wireframe to product</h4>
           <ExplorationStack
+            cardAspect="9/19.5"
+            fit="cover"
             items={[
               { title: 'Goal created', body: 'A branded success moment — “91% of people like you complete this goal.”', image: '/capabilities/trees/ui-1.webp' },
               { title: 'Action plans', body: 'Matched plans as clean cards, ranked by fit.', image: '/capabilities/trees/ui-2.webp' },
@@ -204,42 +195,48 @@ function KioskScene({ dark = false }: { dark?: boolean }) {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,340px)_1fr] lg:gap-12">
-        {/* The tall floor-standing kiosk — one screen, McDonald's proportions */}
+      <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,300px)_1fr] lg:gap-16">
+        {/* The tall floor-standing kiosk — McDonald's proportions: narrow column,
+            screen up top, a long pedestal body below so it reads floor-height. */}
         <Reveal>
-          <div className="mx-auto w-full max-w-[300px]">
-            {/* head unit */}
-            <div className="relative rounded-t-[26px] border-[12px] border-b-0 border-[#15171c] bg-[#15171c]">
-              <div className="mx-auto mb-2 h-1.5 w-16 rounded-full bg-white/20" />
-              <div className="overflow-hidden rounded-[10px] bg-black">
+          <div className="mx-auto w-full max-w-[230px]">
+            {/* head unit: thick bezel housing the touchscreen */}
+            <div className="relative rounded-[20px] border-[10px] border-[#1a1c22] bg-[#1a1c22] shadow-[0_30px_60px_-24px_rgba(7,14,44,0.5)]">
+              <div className="mx-auto mb-2 h-1 w-10 rounded-full bg-white/20" />
+              <div className="overflow-hidden rounded-[8px] bg-black">
+                {/* show the kiosk screen at its true 9:16 — no extra cropping */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={hero} alt="D&B kiosk — primary screen" className="aspect-[9/19] w-full object-cover object-top" loading="lazy" />
+                <img src={hero} alt="D&B kiosk — primary screen" className="aspect-[9/16] w-full object-cover object-top" loading="lazy" />
               </div>
-              <div className="flex items-center justify-center py-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-white/25" />
+              <div className="flex items-center justify-center py-1.5">
+                <span className="h-1 w-1 rounded-full bg-white/25" />
               </div>
             </div>
-            {/* neck + base pedestal */}
-            <div className="mx-auto h-14 w-16 bg-gradient-to-b from-[#1c1f26] to-[#15171c]" />
-            <div className="mx-auto h-4 w-44 rounded-[5px] bg-[#15171c]" />
-            <p className={`br-data mt-3 text-center text-[11px] uppercase tracking-[0.1em] ${dark ? 'text-white/50' : 'text-[var(--br-muted-2)]'}`}>
+            {/* slim neck */}
+            <div className="mx-auto h-3 w-10 bg-[#1a1c22]" />
+            {/* tall pedestal body — this is what makes it read as a floor kiosk */}
+            <div className="mx-auto h-40 w-24 rounded-b-[6px] bg-gradient-to-b from-[#23262d] via-[#1a1c22] to-[#14161b]" />
+            {/* base foot */}
+            <div className="mx-auto h-3 w-40 rounded-[4px] bg-[#14161b]" />
+            <div className="mx-auto mt-1 h-1.5 w-48 rounded-full bg-black/10" />
+            <p className={`br-data mt-4 text-center text-[11px] uppercase tracking-[0.1em] ${dark ? 'text-white/50' : 'text-[var(--br-muted-2)]'}`}>
               Floor-standing kiosk · ~32″ portrait touchscreen
             </p>
           </div>
         </Reveal>
 
-        {/* The rest of the flow, floating as a static fanned stack to the right */}
-        <div className="relative h-[360px] sm:h-[440px]">
+        {/* The rest of the flow, floating as a static fanned stack to the right —
+            shown at true 9:16, fully visible (no crop). */}
+        <div className="relative mx-auto flex w-full max-w-[640px] items-start justify-center gap-3 sm:gap-4">
           {rest.map((s, i) => (
             <figure
               key={s}
-              className="absolute top-0 overflow-hidden rounded-[16px] border border-[var(--br-line)] bg-white"
+              className="relative shrink-0 overflow-hidden rounded-[14px] border border-[var(--br-line)] bg-white"
               style={{
-                left: `${i * 17}%`,
-                width: '40%',
-                maxWidth: 210,
-                transform: `translateY(${i * 14}px) rotate(${i * 1.5 - 1}deg)`,
-                zIndex: rest.length - i,
+                width: '31%',
+                maxWidth: 190,
+                transform: `translateY(${i * 18}px) rotate(${(i - 1) * 2}deg)`,
+                zIndex: i,
                 boxShadow: '0 24px 50px -28px rgba(7,14,44,0.45)',
               }}
             >
