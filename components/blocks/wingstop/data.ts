@@ -287,12 +287,12 @@ export const webNeeds = {
   heading: 'Everything around the order',
   intro: 'Beyond the core experience, the team and I shipped the supporting surfaces across the site. Store-finder, locations, and careers.',
   items: [
-    { src: '/wingstop/location/loc-1.webp', label: 'Locations' },
-    { src: '/wingstop/location/loc-finder.webp', label: 'Store finder' },
-    { src: '/wingstop/location/loc-2.webp', label: 'Location detail' },
-    { src: '/wingstop/careers/careers.webp', label: 'Careers' },
-    { src: '/wingstop/careers/restaurant.webp', label: 'Restaurant careers' },
-    { src: '/wingstop/careers/corporate.webp', label: 'Corporate careers' },
+    { src: '/wingstop/webneeds/d-locations.webp', label: 'Locations' },
+    { src: '/wingstop/webneeds/d-storefinder.webp', label: 'Store finder' },
+    { src: '/wingstop/webneeds/d-menu.webp', label: 'Menu' },
+    { src: '/wingstop/webneeds/d-careers-welcome.webp', label: 'Careers' },
+    { src: '/wingstop/webneeds/d-careers-restaurant.webp', label: 'Restaurant careers' },
+    { src: '/wingstop/webneeds/d-careers-corporate.webp', label: 'Corporate careers' },
   ],
 }
 
