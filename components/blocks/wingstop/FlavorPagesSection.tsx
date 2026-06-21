@@ -26,17 +26,30 @@ export function FlavorPagesSection() {
         } as React.CSSProperties
       }
     >
-      <div className="br-container pt-16 md:pt-24">
-        <p className="br-data text-[14px] uppercase tracking-[0.12em] text-[var(--ws-green)]">4. {defaults.eyebrow}</p>
-        <h2 className="mt-3 text-[32px] font-medium leading-[1.05] text-white md:text-[40px]">{defaults.heading}</h2>
-        <p className="mt-3 max-w-3xl text-lg text-white/80 md:text-[22px]">{defaults.intro}</p>
-      </div>
+      {/* Heading on the LEFT (vertically centered), the receding perspective
+          fan on the RIGHT. The whole beat is cut off by a hairline divider so
+          the tilted pages never bleed into the "In motion" video module below. */}
+      <div className="border-b border-white/12">
+        {/* DESKTOP / TABLET: two columns — text left & centered, fan right. */}
+        <div className="mx-auto hidden w-full max-w-[1600px] grid-cols-[minmax(280px,360px)_minmax(0,1fr)] items-center gap-6 lg:grid">
+          <div className="py-20 pl-6 md:pl-12">
+            <p className="br-data text-[14px] uppercase tracking-[0.12em] text-[var(--ws-green)]">4. {defaults.eyebrow}</p>
+            <h2 className="mt-3 text-[34px] font-medium leading-[1.05] text-white md:text-[42px]">{defaults.heading}</h2>
+            <p className="mt-4 max-w-[42ch] text-lg text-white/80">{defaults.intro}</p>
+          </div>
+          <FlavorPageFan pages={defaults.pages} />
+        </div>
 
-      {/* The flavor pages are the aesthetic peak — laid down in a receding 3D
-          perspective fan (Samsung "Product and landing pages" treatment): the
-          three full pages tilt back and step toward the viewer, bleeding off the
-          top/bottom of the band, with alternating scroll parallax. */}
-      <FlavorPageFan pages={defaults.pages} />
+        {/* MOBILE: heading stacked above the calmer fan. */}
+        <div className="lg:hidden">
+          <div className="br-container pt-16">
+            <p className="br-data text-[14px] uppercase tracking-[0.12em] text-[var(--ws-green)]">4. {defaults.eyebrow}</p>
+            <h2 className="mt-3 text-[32px] font-medium leading-[1.05] text-white">{defaults.heading}</h2>
+            <p className="mt-3 max-w-3xl text-lg text-white/80">{defaults.intro}</p>
+          </div>
+          <FlavorPageFan pages={defaults.pages} mobileOnly />
+        </div>
+      </div>
 
       {/* Autoplay flavor video */}
       <div className="br-container pb-20 pt-14 md:pb-[120px] md:pt-24">
@@ -59,7 +72,7 @@ export function FlavorPagesSection() {
  *  tilts back as one preserve-3d group; each successive page steps nearer +
  *  larger; alternating pages drift opposite directions on scroll. Pages bleed
  *  off the top/bottom of the band for a cinematic feel. */
-function FlavorPageFan({ pages }: { pages: string[] }) {
+function FlavorPageFan({ pages, mobileOnly = false }: { pages: string[]; mobileOnly?: boolean }) {
   const ref = useRef<HTMLDivElement>(null)
   const [progress, setProgress] = useState(0)
   const reduce = useRef(false)
@@ -94,11 +107,14 @@ function FlavorPageFan({ pages }: { pages: string[] }) {
 
   return (
     <>
-      {/* DESKTOP / TABLET: the perspective fan */}
+      {/* DESKTOP / TABLET: the perspective fan. Lives in the RIGHT grid column,
+          so it fills that column and the pages sit right-of-center (the left
+          column holds the heading). Not rendered in the mobile pass. */}
+      {!mobileOnly && (
       <div
         ref={ref}
-        className="relative mx-auto mt-10 hidden h-[680px] w-full max-w-[1500px] md:mt-16 lg:block"
-        style={{ perspective: '2200px', perspectiveOrigin: '50% 50%' }}
+        className="relative hidden h-[640px] w-full pr-4 md:pr-8 lg:block"
+        style={{ perspective: '2200px', perspectiveOrigin: '60% 50%' }}
       >
         <div
           className="absolute left-1/2 top-1/2 flex items-center gap-8 md:gap-12"
@@ -132,9 +148,11 @@ function FlavorPageFan({ pages }: { pages: string[] }) {
           })}
         </div>
       </div>
+      )}
 
       {/* MOBILE: a calmer single-tilt overlap (the wide fan is illegible small) */}
-      <div className="relative mx-auto mt-10 w-full max-w-[460px] px-5 lg:hidden" style={{ perspective: '1400px' }}>
+      {mobileOnly && (
+      <div className="relative mx-auto mt-10 mb-16 w-full max-w-[460px] px-5 lg:hidden" style={{ perspective: '1400px' }}>
         <div className="flex items-center justify-center" style={{ transform: 'rotateY(-16deg) rotateZ(5deg)', transformStyle: 'preserve-3d' }}>
           {pages.slice(0, 3).map((p, i) => (
             <figure
@@ -153,6 +171,7 @@ function FlavorPageFan({ pages }: { pages: string[] }) {
           ))}
         </div>
       </div>
+      )}
     </>
   )
 }

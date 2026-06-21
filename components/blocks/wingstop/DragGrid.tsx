@@ -18,11 +18,14 @@ export function DragGrid({
   tone = 'light',
   aspect = 'aspect-square',
   tileClass = '',
+  fit = 'cover',
 }: {
   items: { src: string; label?: string }[]
   tone?: 'light' | 'dark'
   aspect?: string
   tileClass?: string
+  /** `cover` fills the tile (default); `contain` shows the whole image padded. */
+  fit?: 'cover' | 'contain'
 }) {
   const reduce = useReducedMotion()
   const viewport = useRef<HTMLDivElement>(null)
@@ -40,12 +43,24 @@ export function DragGrid({
   const Tile = ({ it }: { it: { src: string; label?: string } }) => (
     <figure className={`w-[260px] shrink-0 sm:w-[300px] ${tileClass}`}>
       <div
-        className={`${aspect} overflow-hidden rounded-2xl ${
+        className={`${aspect} flex items-center justify-center overflow-hidden rounded-2xl ${
+          fit === 'contain' ? 'p-4' : ''
+        } ${
           tone === 'dark' ? 'border border-white/12 bg-white/[0.04]' : 'border border-[var(--br-line)] bg-[var(--br-bg-2)]'
         } [box-shadow:0_18px_40px_rgba(0,0,0,0.18)]`}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={it.src} alt={it.label ?? ''} loading="lazy" className="h-full w-full object-cover" draggable={false} />
+        <img
+          src={it.src}
+          alt={it.label ?? ''}
+          loading="lazy"
+          className={
+            fit === 'contain'
+              ? 'max-h-full max-w-full rounded-lg object-contain [box-shadow:0_8px_22px_rgba(0,0,0,0.12)]'
+              : 'h-full w-full object-cover'
+          }
+          draggable={false}
+        />
       </div>
       {it.label && (
         <figcaption

@@ -68,15 +68,15 @@ function DarkModeStack() {
   }, [])
 
   const F = 1500
-  // Subtle spread: the stack opens just a little as it scrolls through view —
-  // NO scroll pin (the section is a normal height and scrolls past naturally),
-  // and the spread growth is gentle (base gap + a small scroll-linked delta).
-  const GAP = 300 + p * 120
+  // Tighter recede + bigger cards. A SMALLER per-card gap keeps the screens
+  // close together (no huge gaps), and a small scroll-linked delta opens the
+  // stack just slightly as it passes through view. NO scroll pin.
+  const GAP = 150 + p * 70
 
   return (
     <div ref={ref} className="relative mt-16 bg-[#0a0a0b]">
       <div
-        className="ws-dark relative h-[88vh] overflow-hidden text-white md:h-[92vh]"
+        className="ws-dark relative h-[80vh] overflow-hidden text-white md:h-[86vh]"
         style={{ '--ws-green': '#23c265' } as React.CSSProperties}
       >
         <div className="br-container pt-14">
@@ -90,11 +90,12 @@ function DarkModeStack() {
           {defaults.darkMode.screens.map((src, i) => {
             const z = i * GAP
             const s = F / (F + z)
-            // anchor front card lower-left, recede cleanly up-and-to-the-right
-            const frontX = 26,
-              frontY = 58,
-              vpX = 90,
-              vpY = 22
+            // anchor front card lower-left; recede up-and-right toward a CLOSER
+            // vanishing point so the cards stay near each other (less spread).
+            const frontX = 30,
+              frontY = 56,
+              vpX = 68,
+              vpY = 34
             const x = frontX + (vpX - frontX) * (1 - s)
             const y = frontY + (vpY - frontY) * (1 - s)
             // normalized depth across the whole stack (0 = hero front, 1 = back card)
@@ -107,8 +108,10 @@ function DarkModeStack() {
                 style={{
                   left: `${x}%`,
                   top: `${y}%`,
-                  width: '22%',
-                  maxWidth: 250,
+                  // ~2x the old footprint (22% → 38%, 250 → 460) so the screens
+                  // read large and confident.
+                  width: '38%',
+                  maxWidth: 460,
                   transform: `translate(-50%,-50%) scale(${s})`,
                   zIndex: defaults.darkMode.screens.length - i,
                   filter: `brightness(${1 - 0.5 * d}) blur(${(6 * d * d).toFixed(2)}px)`,
@@ -126,7 +129,10 @@ function DarkModeStack() {
   )
 }
 
-/** UI improvement — side-scroll carousel of 3 screens + autoplay video. */
+/** UI improvement — one horizontal row of FOUR phones: the autoplay video on
+ *  the far LEFT, then the three usability screens. They share a height and read
+ *  as a single before/after-style sequence. On small screens the row scrolls
+ *  horizontally instead of squashing. */
 function Improvement() {
   return (
     <div className="br-container pb-20 pt-16 md:pb-[120px] md:pt-24">
@@ -136,23 +142,20 @@ function Improvement() {
       <h3 className="mt-2 text-2xl font-semibold text-[var(--br-ink)] sm:text-[28px]">{defaults.improvement.title}</h3>
       <p className="mt-2 max-w-[60ch] text-[15px] text-[var(--br-muted)] sm:text-base">{defaults.improvement.body}</p>
 
-      {/* Video FIRST and large (matched to the screenshot scale), screens below
-          as a supporting row. */}
-      <div className="mt-8">
-        <ImprovementVideo src={defaults.improvement.video} poster={defaults.improvement.poster} />
-
-        {/* 3 supporting screens, side-scroll on small screens */}
-        <div className="-mx-6 mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-3 md:mx-0 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible md:px-0 [scrollbar-width:thin]">
-          {defaults.improvement.screens.map((s) => (
-            <div
-              key={s}
-              className="w-[200px] shrink-0 snap-start overflow-hidden rounded-[14%/6.5%] border border-[var(--br-line)] bg-white [box-shadow:var(--br-card-shadow)] md:w-auto"
-            >
+      {/* All four in one row, video first. Each phone is a flex item with a
+          shared basis so they line up; the row scrolls on small screens. */}
+      <div className="-mx-6 mt-8 flex items-end gap-5 overflow-x-auto px-6 pb-3 md:mx-0 md:gap-6 md:px-0 lg:overflow-visible [scrollbar-width:thin]">
+        <div className="w-[200px] shrink-0 sm:w-[230px] md:w-auto md:flex-1">
+          <ImprovementVideo src={defaults.improvement.video} poster={defaults.improvement.poster} />
+        </div>
+        {defaults.improvement.screens.map((s) => (
+          <div key={s} className="w-[200px] shrink-0 sm:w-[230px] md:w-auto md:flex-1">
+            <div className="overflow-hidden rounded-[14%/6.5%] border border-[var(--br-line)] bg-white [box-shadow:var(--br-card-shadow)]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={s} alt="" loading="lazy" className="block aspect-[750/1624] w-full object-cover object-top" />
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </div>
   )
@@ -176,8 +179,8 @@ function ImprovementVideo({ src, poster }: { src: string; poster?: string }) {
     return () => io.disconnect()
   }, [])
   return (
-    <div className="mx-auto w-[72%] max-w-[340px] overflow-hidden rounded-[14%/6.5%] bg-black shadow-[0_30px_70px_-12px_rgba(0,0,0,0.5)] ring-1 ring-black/10 sm:max-w-[380px]">
-      <video ref={ref} className="block aspect-[886/1920] w-full object-cover" src={src} poster={poster} muted loop playsInline controls={false} preload="metadata" />
+    <div className="overflow-hidden rounded-[14%/6.5%] bg-black shadow-[0_30px_70px_-12px_rgba(0,0,0,0.5)] ring-1 ring-black/10">
+      <video ref={ref} className="block aspect-[750/1624] w-full object-cover" src={src} poster={poster} muted loop playsInline controls={false} preload="metadata" />
     </div>
   )
 }

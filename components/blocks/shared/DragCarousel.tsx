@@ -18,12 +18,16 @@ export function DragCarousel({
   gapClass = 'gap-6',
   dark = false,
   pills = true,
+  accent,
 }: {
   items: ReactNode[]
   labels?: string[]
   gapClass?: string
   dark?: boolean
   pills?: boolean
+  /** Active-pill fill. Defaults to the Baserate gold; pass a hex to override
+   *  (e.g. Wingstop green). */
+  accent?: string
 }) {
   const trackRef = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(0)
@@ -42,6 +46,7 @@ export function DragCarousel({
   })
   const momentumRaf = useRef<number | null>(null)
   const dragRaf = useRef<number | null>(null)
+  const pillRaf = useRef<number | null>(null)
 
   const stopMomentum = useCallback(() => {
     if (momentumRaf.current != null) {
@@ -130,18 +135,45 @@ export function DragCarousel({
   useEffect(
     () => () => {
       if (dragRaf.current != null) cancelAnimationFrame(dragRaf.current)
+      if (pillRaf.current != null) cancelAnimationFrame(pillRaf.current)
     },
     [],
   )
 
-  const scrollToCard = useCallback((i: number) => {
-    const el = trackRef.current
-    if (!el) return
-    const card = el.querySelectorAll<HTMLElement>('[data-card]')[i]
-    if (!card) return
-    const padLeft = parseFloat(getComputedStyle(el).paddingLeft) || 0
-    el.scrollTo({ left: card.offsetLeft - padLeft, behavior: 'smooth' })
-  }, [])
+  const scrollToCard = useCallback(
+    (i: number) => {
+      const el = trackRef.current
+      if (!el) return
+      const card = el.querySelectorAll<HTMLElement>('[data-card]')[i]
+      if (!card) return
+      // Stop any drag momentum so it doesn't fight the jump.
+      stopMomentum()
+      if (pillRaf.current != null) cancelAnimationFrame(pillRaf.current)
+      const padLeft = parseFloat(getComputedStyle(el).paddingLeft) || 0
+      const maxLeft = el.scrollWidth - el.clientWidth
+      const to = Math.max(0, Math.min(maxLeft, card.offsetLeft - padLeft))
+      // Manual rAF tween on scrollLeft. We do NOT use scrollTo({behavior:'smooth'}):
+      // Lenis ships lenis.css which forces scroll-behavior:auto globally, so the
+      // native smooth jump is a no-op. Driving scrollLeft directly is Lenis-safe.
+      const from = el.scrollLeft
+      const dist = to - from
+      if (Math.abs(dist) < 1) return
+      const dur = Math.min(620, 240 + Math.abs(dist) * 0.5)
+      const start = performance.now()
+      const ease = (t: number) => 1 - Math.pow(1 - t, 3) // easeOutCubic
+      const step = (now: number) => {
+        const p = Math.min(1, (now - start) / dur)
+        el.scrollLeft = from + dist * ease(p)
+        if (p < 1) {
+          pillRaf.current = requestAnimationFrame(step)
+        } else {
+          pillRaf.current = null
+        }
+      }
+      pillRaf.current = requestAnimationFrame(step)
+    },
+    [stopMomentum],
+  )
 
   const dragTick = useCallback(() => {
     const el = trackRef.current
@@ -204,7 +236,7 @@ export function DragCarousel({
     }
   }
 
-  const gold = dark ? 'var(--br-gold-soft)' : 'var(--br-gold)'
+  const gold = accent ?? (dark ? 'var(--br-gold-soft)' : 'var(--br-gold)')
 
   return (
     <div className="mt-2 relative left-1/2 right-1/2 -mx-[50vw] w-screen">

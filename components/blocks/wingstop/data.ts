@@ -130,7 +130,7 @@ export const app = {
   eyebrow: 'THE WINGSTOP APP',
   heading: 'The native ordering app, end to end',
   intro: 'I designed the full ordering experience as a system of features. Browse, customize, cart, account, then built the component library that kept it consistent.',
-  pills: ['Features', 'Components', 'Desktop', 'Shipped'],
+  pills: ['Ordering', 'Customization', 'Cart & Checkout', 'Components', 'Desktop'],
   /** A few KEY features, each shown as app screens (3-go-right carousel). */
   features: [
     {

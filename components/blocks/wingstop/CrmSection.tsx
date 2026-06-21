@@ -32,6 +32,9 @@ export function CrmSection() {
   )
 }
 
+/** Soft drop shadow for the food props (cast down-right, light upper-left). */
+const FOOD_SHADOW = 'drop-shadow(6px 16px 24px rgba(0,0,0,0.20))'
+
 /* ── Module 1: angled / staggered email scatter (Panda MvpScatter model) ────── */
 
 const TILT_DEG = 15.43
@@ -53,19 +56,23 @@ interface EmailNode {
   row: 1 | 2 | 3 | 4
 }
 /** Five emails fanned across a receding diagonal (back → front paint order),
- *  positions as % of the band; rows 1&3 drift up the tilt axis, 2&4 down it. */
+ *  positions as % of the band; rows 1&3 drift up the tilt axis, 2&4 down it.
+ *  Modelled on Panda's MvpScatter: the windows are BIG and bleed off the top
+ *  and bottom of the (short) band, so the row reads as a confident stream of
+ *  campaigns rather than small floating thumbnails. */
 const SCATTER: EmailNode[] = [
-  { src: defaults.scope.emails[4], cx: 80.5, cy: -2, w: 19, row: 2 },
-  { src: defaults.scope.emails[0], cx: 20, cy: 40, w: 19.5, row: 1 },
-  { src: defaults.scope.emails[1], cx: 38.5, cy: 70, w: 19.5, row: 2 },
-  { src: defaults.scope.emails[2], cx: 60.5, cy: 62, w: 19.5, row: 3 },
-  { src: defaults.scope.emails[3], cx: 80, cy: 96, w: 19, row: 4 },
+  { src: defaults.scope.emails[4], cx: 81, cy: -8, w: 24, row: 2 },
+  { src: defaults.scope.emails[0], cx: 19, cy: 46, w: 25, row: 1 },
+  { src: defaults.scope.emails[1], cx: 39.5, cy: 82, w: 25, row: 2 },
+  { src: defaults.scope.emails[2], cx: 61, cy: 70, w: 25, row: 3 },
+  { src: defaults.scope.emails[3], cx: 81.5, cy: 108, w: 24, row: 4 },
 ]
-/** Top-down food props framing the scatter (left/top/width as % of band). */
+/** Top-down food props framing the scatter (left/top/width as % of band).
+ *  Bigger than before and pushed to clip off the side edges (Panda model). */
 const FOOD = [
-  { src: defaults.scope.food[0], left: 4, top: 8, w: 12, rot: -10 },
-  { src: defaults.scope.food[1], left: 86, top: 50, w: 13, rot: 8 },
-  { src: defaults.scope.food[2], left: 49, top: 90, w: 9, rot: -6 },
+  { src: defaults.scope.food[0], left: 2, top: 6, w: 17, rot: -10 },
+  { src: defaults.scope.food[1], left: 88, top: 52, w: 19, rot: 8 },
+  { src: defaults.scope.food[2], left: 49, top: 96, w: 13, rot: -6 },
 ]
 
 const rowDir = (row: 1 | 2 | 3 | 4) => (row === 1 || row === 3 ? 1 : -1)
@@ -119,23 +126,22 @@ function CrmEmailScatter() {
   } as const
 
   return (
-    <div aria-label="Campaign after campaign">
-      {/* heading plate */}
-      <div className="br-container mt-10 md:mt-14">
-        <span className="br-data text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ws-green)]">
-          {defaults.scope.eyebrow}
-        </span>
-        <h3 className="mt-2 text-[26px] font-semibold text-[var(--br-ink)] sm:text-[32px]">{defaults.scope.title}</h3>
-      </div>
-
-      {/* ── DESKTOP / TABLET (≥1024px): the Panda-style scatter band ───────── */}
-      <div ref={stageRef} className="relative mx-auto mt-4 hidden aspect-[1443/720] w-full max-w-[1500px] lg:block">
+    <div aria-label="Campaign after campaign" className="mt-12 md:mt-16">
+      {/* ── DESKTOP / TABLET (≥1024px): the Panda-reorder scatter band ───────
+          A SHORT, fixed-aspect band cut off top + bottom by hairline dividers
+          (border-y). Big email windows + big food props bleed off all four edges,
+          exactly like Panda's "Seamless simple reordering" section. The heading
+          rides in a bordered plate at the top-left of the band. */}
+      <div
+        ref={stageRef}
+        className="relative mx-auto hidden aspect-[1443/560] w-full max-w-[1600px] overflow-hidden border-y border-[var(--br-line)] lg:block"
+      >
         {/* food props (behind emails) */}
         {FOOD.map((f) => (
           <div
             key={f.src}
-            className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 opacity-95"
-            style={{ left: `${f.left}%`, top: `${f.top}%`, width: `${f.w}%`, filter: 'drop-shadow(0 16px 26px rgba(0,0,0,0.16))' }}
+            className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2"
+            style={{ left: `${f.left}%`, top: `${f.top}%`, width: `${f.w}%`, filter: FOOD_SHADOW }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={f.src} alt="" aria-hidden className="block w-full max-w-none" style={{ transform: `rotate(${f.rot}deg)` }} />
@@ -164,11 +170,27 @@ function CrmEmailScatter() {
             </div>
           )
         })}
+
+        {/* heading plate — bordered, top-left (Panda MvpScatter style) */}
+        <div className="absolute left-[5%] top-[9%] z-30 max-w-[420px] rounded-[10px] border border-[var(--br-line)] bg-white/95 p-6 shadow-[var(--br-card-shadow)] backdrop-blur-sm lg:p-7">
+          <span className="br-data text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ws-green)]">
+            {defaults.scope.eyebrow}
+          </span>
+          <h3 className="mt-2 text-[26px] font-semibold leading-tight text-[var(--br-ink)] sm:text-[30px]">
+            {defaults.scope.title}
+          </h3>
+        </div>
       </div>
 
       {/* ── MOBILE (<1024px): calmer 3-email fan ──────────────────────────── */}
-      <div className="relative mx-auto mt-6 w-full max-w-[520px] px-5 pb-14 lg:hidden">
-        <div className="relative aspect-[360/440] w-full">
+      <div className="relative mx-auto w-full max-w-[520px] px-5 pb-14 pt-2 lg:hidden">
+        <div className="br-container px-0">
+          <span className="br-data text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ws-green)]">
+            {defaults.scope.eyebrow}
+          </span>
+          <h3 className="mt-2 text-[26px] font-semibold text-[var(--br-ink)]">{defaults.scope.title}</h3>
+        </div>
+        <div className="relative mt-8 aspect-[360/440] w-full">
           <div className="pointer-events-none absolute -left-[8%] bottom-[2%] z-0 w-[38%]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={defaults.scope.food[0]} alt="" aria-hidden className="block w-full max-w-none" />
@@ -206,18 +228,27 @@ function CrmAnimatedGrid() {
 
       {/* Desktop: Panda-style bento grid (varied tile spans) including the gifs.
           4 gifs → tile0 is the 2×2 anchor, the other three fill the right column
-          + bottom-right span (a 4-col × 2-row bento). */}
+          + bottom-right span (a 4-col × 2-row bento). The gif is CONTAINED inside
+          each card (padded, object-contain) so the whole animation reads — it
+          doesn't fill / crop the card — and the label sits in its own strip. */}
       <div className="mt-7 hidden gap-4 lg:grid lg:grid-cols-4 lg:grid-rows-2 lg:aspect-[1443/620]">
         {defaults.animated.gifs.map((g, i) => {
           const span = i === 0 ? 'lg:col-span-2 lg:row-span-2' : i === 3 ? 'lg:col-span-2' : ''
           return (
             <figure
               key={g.src}
-              className={`group relative overflow-hidden rounded-2xl border border-[var(--br-line)] bg-[var(--br-bg-2)] [box-shadow:var(--br-card-shadow)] ${span}`}
+              className={`group relative flex flex-col overflow-hidden rounded-2xl border border-[var(--br-line)] bg-[var(--br-bg-2)] [box-shadow:var(--br-card-shadow)] ${span}`}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={g.src} alt={g.label} loading="lazy" className="h-full w-full object-cover" />
-              <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-white">
+              <div className="flex min-h-0 flex-1 items-center justify-center p-4">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={g.src}
+                  alt={g.label}
+                  loading="lazy"
+                  className="max-h-full max-w-full rounded-lg object-contain [box-shadow:0_8px_22px_rgba(0,0,0,0.12)]"
+                />
+              </div>
+              <figcaption className="br-data shrink-0 px-4 pb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--br-muted-2)]">
                 {g.label}
               </figcaption>
             </figure>
@@ -227,7 +258,7 @@ function CrmAnimatedGrid() {
 
       {/* Mobile: draggable carousel with label pills below */}
       <div className="mt-6 lg:hidden">
-        <DragGrid items={defaults.animated.gifs} tone="light" />
+        <DragGrid items={defaults.animated.gifs} tone="light" aspect="aspect-[4/3]" fit="contain" />
         <div className="br-noscrollbar mt-4 flex gap-2 overflow-x-auto" style={{ touchAction: 'pan-x pan-y' }}>
           {defaults.animated.gifs.map((g) => (
             <span
