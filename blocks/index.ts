@@ -20,6 +20,7 @@ import { SamsungCaseStudy } from './SamsungCaseStudy'
 import { CapabilitiesPage } from './CapabilitiesPage'
 import { HomeFlagshipBaserate, HomeFlagshipPanda } from './HomeFlagship'
 import { HomeSecondaryRow } from './HomeSecondaryRow'
+import { HomeHero, HomeAboutCta } from './HomeHero'
 
 export const allBlocks = [
   Hero,
@@ -43,9 +44,11 @@ export const allBlocks = [
   WingstopCaseStudy,
   SamsungCaseStudy,
   CapabilitiesPage,
+  HomeHero,
   HomeFlagshipBaserate,
   HomeFlagshipPanda,
   HomeSecondaryRow,
+  HomeAboutCta,
 ]
 
 export {
@@ -69,7 +72,9 @@ export {
   WingstopCaseStudy,
   SamsungCaseStudy,
   CapabilitiesPage,
+  HomeHero,
   HomeFlagshipBaserate,
   HomeFlagshipPanda,
   HomeSecondaryRow,
+  HomeAboutCta,
 }

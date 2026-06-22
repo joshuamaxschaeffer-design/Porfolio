@@ -561,6 +561,19 @@ export interface Page {
           }
         | {
             /**
+             * Big wordmark. Blank = "Schaeffer".
+             */
+            name?: string | null;
+            /**
+             * Small label under it. Blank = "Design".
+             */
+            label?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'homeHero';
+          }
+        | {
+            /**
              * e.g. "01 — Investor Systems". Blank = default.
              */
             kicker?: string | null;
@@ -617,6 +630,18 @@ export interface Page {
             id?: string | null;
             blockName?: string | null;
             blockType: 'homeSecondaryRow';
+          }
+        | {
+            ctaHeading?: string | null;
+            ctaBody?: string | null;
+            ctaLabel?: string | null;
+            /**
+             * Default /contact.
+             */
+            ctaUrl?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'homeAboutCta';
           }
       )[]
     | null;
@@ -1110,6 +1135,19 @@ export interface CaseStudy {
           }
         | {
             /**
+             * Big wordmark. Blank = "Schaeffer".
+             */
+            name?: string | null;
+            /**
+             * Small label under it. Blank = "Design".
+             */
+            label?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'homeHero';
+          }
+        | {
+            /**
              * e.g. "01 — Investor Systems". Blank = default.
              */
             kicker?: string | null;
@@ -1166,6 +1204,18 @@ export interface CaseStudy {
             id?: string | null;
             blockName?: string | null;
             blockType: 'homeSecondaryRow';
+          }
+        | {
+            ctaHeading?: string | null;
+            ctaBody?: string | null;
+            ctaLabel?: string | null;
+            /**
+             * Default /contact.
+             */
+            ctaUrl?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'homeAboutCta';
           }
       )[]
     | null;
@@ -1785,6 +1835,14 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        homeHero?:
+          | T
+          | {
+              name?: T;
+              label?: T;
+              id?: T;
+              blockName?: T;
+            };
         homeFlagshipBaserate?:
           | T
           | {
@@ -1820,6 +1878,16 @@ export interface PagesSelect<T extends boolean = true> {
                     href?: T;
                     id?: T;
                   };
+              id?: T;
+              blockName?: T;
+            };
+        homeAboutCta?:
+          | T
+          | {
+              ctaHeading?: T;
+              ctaBody?: T;
+              ctaLabel?: T;
+              ctaUrl?: T;
               id?: T;
               blockName?: T;
             };
@@ -2150,6 +2218,14 @@ export interface CaseStudiesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        homeHero?:
+          | T
+          | {
+              name?: T;
+              label?: T;
+              id?: T;
+              blockName?: T;
+            };
         homeFlagshipBaserate?:
           | T
           | {
@@ -2185,6 +2261,16 @@ export interface CaseStudiesSelect<T extends boolean = true> {
                     href?: T;
                     id?: T;
                   };
+              id?: T;
+              blockName?: T;
+            };
+        homeAboutCta?:
+          | T
+          | {
+              ctaHeading?: T;
+              ctaBody?: T;
+              ctaLabel?: T;
+              ctaUrl?: T;
               id?: T;
               blockName?: T;
             };

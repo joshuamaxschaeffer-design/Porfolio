@@ -51,10 +51,14 @@ export function Nav({ nav, settings, brand }: NavProps) {
       }
     >
       <nav className="mx-auto flex h-[52px] w-full max-w-[1443px] items-center justify-between px-6 md:px-20">
-        {/* Wordmark — Lexend Deca Medium, uppercase, tracked. */}
+        {/* Wordmark — Lexend Deca Medium, uppercase, tracked.
+            data-nav-wordmark lets the HOME page hide it until the big hero name
+            scrolls past (HomeNameReveal toggles [data-home-name-shown] on <html>);
+            on every other page it's always visible. */}
         <Link
           href="/"
-          className="uppercase tracking-[0.08em] text-[var(--nav-fg)]"
+          data-nav-wordmark
+          className="uppercase tracking-[0.08em] text-[var(--nav-fg)] transition-opacity duration-300 ease-out"
           style={{ fontFamily: 'var(--font-heading)', fontWeight: 500, fontSize: '18px' }}
         >
           {siteName}

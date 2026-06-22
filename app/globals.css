@@ -267,3 +267,59 @@ body {
   -webkit-mask-image: linear-gradient(to right, transparent 0, black var(--edgefade), black calc(100% - var(--edgefade)), transparent 100%);
   mask-image: linear-gradient(to right, transparent 0, black var(--edgefade), black calc(100% - var(--edgefade)), transparent 100%);
 }
+
+
+/* ============================================================
+ * Home page — name-aware nav
+ *
+ * The home hero shows the big "SCHAEFFER" wordmark. The nav wordmark must stay
+ * hidden until that hero name has scrolled past, then fade in. HomeNameReveal
+ * (client) sets data-home-hero on <html> while the home page is mounted and
+ * toggles data-home-name-shown once the hero name leaves the top of the
+ * viewport. Outside the home page neither attribute is present, so the nav
+ * wordmark renders normally.
+ * ============================================================ */
+html[data-home-hero] [data-nav-wordmark] {
+  opacity: 0;
+  pointer-events: none;
+}
+html[data-home-hero][data-home-name-shown] [data-nav-wordmark] {
+  opacity: 1;
+  pointer-events: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-nav-wordmark] {
+    transition: none !important;
+  }
+}
+
+/* ============================================================
+ * Home page — shared helpers
+ *
+ * The home page runs wider than the 1443px case-study column: a cinematic
+ * field up to 1512px content with generous gutters. .home-container centers it.
+ * ============================================================ */
+.home-container {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1512px;
+  padding-inline: 1.5rem;
+}
+@media (min-width: 768px) {
+  .home-container {
+    padding-inline: 5rem; /* 80px — matches Figma left/right margins */
+  }
+}
+
+/* Panda red sunburst — radial rays behind the flagship phones, baked as a CSS
+ * conic gradient so it costs nothing to ship and scales to any width. */
+.home-panda-rays {
+  background:
+    repeating-conic-gradient(
+      from 0deg at 50% 42%,
+      rgba(255, 255, 255, 0.10) 0deg 2.2deg,
+      rgba(255, 255, 255, 0) 2.2deg 7deg
+    );
+  -webkit-mask-image: radial-gradient(60% 60% at 50% 42%, transparent 0%, transparent 24%, black 60%);
+  mask-image: radial-gradient(60% 60% at 50% 42%, transparent 0%, transparent 24%, black 60%);
+}

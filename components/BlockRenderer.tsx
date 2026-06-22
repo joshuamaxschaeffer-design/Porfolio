@@ -21,6 +21,8 @@ import { CapabilitiesPageBlock } from './blocks/CapabilitiesPageBlock'
 import { HomeFlagshipBaserateBlock } from './blocks/HomeFlagshipBaserateBlock'
 import { HomeFlagshipPandaBlock } from './blocks/HomeFlagshipPandaBlock'
 import { HomeSecondaryRowBlock } from './blocks/HomeSecondaryRowBlock'
+import { HomeHeroBlock } from './blocks/HomeHeroBlock'
+import { HomeAboutCtaBlock } from './blocks/HomeAboutCtaBlock'
 
 const blockComponents: Record<string, React.ComponentType<any>> = {
   hero: HeroBlock,
@@ -44,9 +46,11 @@ const blockComponents: Record<string, React.ComponentType<any>> = {
   wingstopCaseStudy: WingstopCaseStudyBlock,
   samsungCaseStudy: SamsungCaseStudyBlock,
   capabilitiesPage: CapabilitiesPageBlock,
+  homeHero: HomeHeroBlock,
   homeFlagshipBaserate: HomeFlagshipBaserateBlock,
   homeFlagshipPanda: HomeFlagshipPandaBlock,
   homeSecondaryRow: HomeSecondaryRowBlock,
+  homeAboutCta: HomeAboutCtaBlock,
 }
 
 interface BlockRendererProps {

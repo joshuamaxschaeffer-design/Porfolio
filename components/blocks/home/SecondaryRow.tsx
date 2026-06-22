@@ -1,184 +1,277 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
-import { motion, useReducedMotion } from 'motion/react'
+import { useReducedMotion } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
-import { secondary as defaultItems, type SecondaryItem } from './data'
 
 export interface SecondaryRowProps {
   heading?: string
-  items?: { title?: string; blurb?: string; meta?: string; href?: string }[]
 }
 
-/**
- * The lower three — Wingstop · Samsung · Capabilities. Tall (9:16) vertical
- * cards, each a grey visual slot with a white label card inset at the bottom
- * (title · role · blurb).
- *
- * - Desktop (lg+): all three fit side by side in a static row.
- * - Below lg: a horizontal rail you can drag/fling with inertia (~1.2 cards
- *   visible so the next one peeks), falling back to a plain snap-scroll rail
- *   under prefers-reduced-motion.
- *
- * Cards stay real <Link>s; dragging suppresses the click so a fling never
- * navigates by accident.
+/* --- Wingstop flavor chips: scattered around the phone ------------------- *
+ * Positions/rotations mirror the Figma scatter. Each chip gets a parallax
+ * phase so it bobs up/down a few px and rotates ±~20° as the section scrolls.
  */
-export function SecondaryRow({ heading, items }: SecondaryRowProps) {
-  const cards: SecondaryItem[] =
-    items?.length
-      ? items.map((it, i) => ({ ...defaultItems[i], ...stripEmpty(it) }))
-      : defaultItems
+interface Chip {
+  src: string
+  /** % left/top within the green panel */
+  left: number
+  top: number
+  /** rendered width in px (desktop) */
+  size: number
+  /** base rotation (deg) */
+  rot: number
+  /** parallax phase 0..1 — staggers motion between chips */
+  phase: number
+}
 
+const CHIPS: Chip[] = [
+  { src: '/wingstop/flavor-chips/dragon-breath.png', left: -4, top: 12, size: 92, rot: 14, phase: 0.0 },
+  { src: '/wingstop/flavor-chips/lemon-garlic.png', left: 10, top: -7, size: 120, rot: 33, phase: 0.2 },
+  { src: '/wingstop/flavor-chips/atomic-bbq.png', left: -7, top: 44, size: 150, rot: -18, phase: 0.45 },
+  { src: '/wingstop/flavor-chips/bayou-bbq.png', left: 58, top: 30, size: 150, rot: -22, phase: 0.65 },
+  { src: '/wingstop/flavor-chips/mango-volcano.png', left: 74, top: 8, size: 120, rot: -4, phase: 0.8 },
+  { src: '/wingstop/flavor-chips/hot-lemon.png', left: 70, top: 58, size: 150, rot: -22, phase: 1.0 },
+]
+
+/**
+ * Home secondary row (Figma 335-73147): Wingstop (green) + Samsung (black) side
+ * by side, then the Full Capabilities card (3 staggered phone screens) below.
+ */
+export function SecondaryRow(_props: SecondaryRowProps) {
   return (
-    // Cinematic home width — breaks out of the 1443 case-study container and
-    // runs up to 1920px with generous gutters, then centers.
-    <section className="mx-auto my-24 w-full max-w-[1920px] px-6 md:my-32 md:px-12 xl:px-20">
-      <p className="font-mono text-xs uppercase tracking-[0.2em] text-neutral-500">
-        {heading ?? 'More work'}
-      </p>
-
-      {/* Desktop: all three fit, big. */}
-      <div className="mt-10 hidden gap-6 lg:grid lg:grid-cols-3 lg:gap-8 xl:gap-10">
-        {cards.map((c) => (
-          <Card key={c.title} card={c} />
-        ))}
+    <section className="home-container py-20 md:py-28">
+      <div className="grid gap-7 lg:grid-cols-2">
+        <WingstopCard />
+        <SamsungCard />
       </div>
-
-      {/* Mobile / tablet: draggable inertia rail. */}
-      <SwipeRail cards={cards} className="mt-10 lg:hidden" />
+      <CapabilitiesCard />
     </section>
   )
 }
 
-/* --- one tall card ------------------------------------------------------- */
+/* --- Wingstop --------------------------------------------------------------*/
 
-function Card({ card }: { card: SecondaryItem }) {
+function WingstopCard() {
+  const reduce = useReducedMotion()
+  const ref = useRef<HTMLDivElement>(null)
+  const [p, setP] = useState(0)
+
+  useEffect(() => {
+    if (reduce) return
+    const el = ref.current
+    if (!el) return
+    let raf = 0
+    const onScroll = () => {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => {
+        const r = el.getBoundingClientRect()
+        // 0 when section centered in viewport; ±1 toward the edges.
+        const prog = (window.innerHeight / 2 - (r.top + r.height / 2)) / (window.innerHeight || 1)
+        setP(Math.max(-1.2, Math.min(1.2, prog)))
+      })
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
+  }, [reduce])
+
   return (
-    <Link href={card.href} className="group block h-full">
-      {/* Tall, cinematic. Height steps UP with viewport WIDTH (not height), so
-          the cards stay poster-tall on a normal-height laptop window too. */}
-      <div className="relative h-[460px] overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-900 sm:h-[540px] lg:h-[600px] xl:h-[720px] 2xl:h-[820px] xl:rounded-3xl">
-        {/* Visual slot watermark (placeholder until real media drops in). */}
-        <span className="pointer-events-none absolute left-5 top-5 select-none font-mono text-[11px] uppercase tracking-[0.16em] text-neutral-400 xl:left-7 xl:top-7">
-          {card.title} — visual slot
-        </span>
-
-        {/* White label card inset at the bottom. */}
-        <div className="absolute inset-x-3 bottom-3 rounded-xl border border-neutral-200/80 bg-white p-4 shadow-sm transition-transform duration-300 group-hover:-translate-y-0.5 dark:border-neutral-700 dark:bg-neutral-950 xl:inset-x-4 xl:bottom-4 xl:rounded-2xl xl:p-6">
-          <div className="flex items-baseline justify-between gap-3">
-            <h3 className="text-lg font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 md:text-xl xl:text-2xl">
-              {card.title}
-            </h3>
-            <span className="shrink-0 text-xs text-neutral-500 xl:text-sm">{card.meta}</span>
+    <Link href="/work/wingstop" className="group block">
+      <div
+        ref={ref}
+        className="relative h-[560px] overflow-hidden rounded-[10px] bg-[#00a653] md:h-[600px]"
+      >
+        {/* phone, centered (sits high so chips + label have room) */}
+        <div className="absolute left-1/2 top-[3%] w-[40%] max-w-[230px] -translate-x-1/2">
+          <div className="overflow-hidden rounded-[1.6rem] border-[5px] border-black/85 bg-black shadow-[0_24px_44px_rgba(0,0,0,0.3)]">
+            <Image
+              src="/wingstop/mobileapp/m-flavor-customize.webp"
+              alt="Wingstop app — flavor customization"
+              width={750}
+              height={1624}
+              sizes="(max-width: 1024px) 40vw, 220px"
+              className="h-auto w-full"
+            />
           </div>
-          <p className="mt-1.5 text-sm text-neutral-600 dark:text-neutral-400 xl:mt-2.5 xl:text-base">
-            {card.blurb}
-          </p>
         </div>
+
+        {/* scattered flavor chips — bob + rotate on scroll (parallax) */}
+        {CHIPS.map((c, i) => {
+          // smooth phase-offset oscillation; amplitude scales with chip size.
+          const wave = Math.sin((p * Math.PI) + c.phase * Math.PI * 2)
+          const bob = reduce ? 0 : wave * (10 + c.size * 0.05)
+          const spin = reduce ? c.rot : c.rot + wave * 20
+          return (
+            <div
+              key={i}
+              className="pointer-events-none absolute will-change-transform"
+              style={{
+                left: `${c.left}%`,
+                top: `${c.top}%`,
+                width: `clamp(${c.size * 0.6}px, ${c.size / 6}vw, ${c.size}px)`,
+                transform: `translateY(${bob}px) rotate(${spin}deg)`,
+                filter: 'drop-shadow(6px 18px 12px rgba(0,0,0,0.28))',
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={c.src} alt="" aria-hidden className="h-auto w-full" />
+            </div>
+          )
+        })}
+
+        {/* label card */}
+        <LabelCard
+          className="border-white text-white"
+          logo={
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src="/wingstop/logo/wingstop-white.svg" alt="Wingstop" className="h-[60px] w-auto" />
+          }
+          title="App + Digital"
+          pills={['Lead Design', 'Art Director', 'UX', 'UI']}
+        />
       </div>
     </Link>
   )
 }
 
-/* --- draggable rail (below lg) ------------------------------------------- */
+/* --- Samsung ---------------------------------------------------------------*/
 
-function SwipeRail({ cards, className }: { cards: SecondaryItem[]; className?: string }) {
-  const reduce = useReducedMotion()
-  const viewport = useRef<HTMLDivElement>(null)
-  const track = useRef<HTMLDivElement>(null)
-  const [constraint, setConstraint] = useState(0)
-
-  useEffect(() => {
-    const measure = () => {
-      const vp = viewport.current?.offsetWidth ?? 0
-      const tw = track.current?.scrollWidth ?? 0
-      setConstraint(Math.max(0, tw - vp))
-    }
-    measure()
-    const ro = new ResizeObserver(measure)
-    if (track.current) ro.observe(track.current)
-    window.addEventListener('resize', measure)
-    return () => {
-      ro.disconnect()
-      window.removeEventListener('resize', measure)
-    }
-  }, [cards.length])
-
-  // ~1.2 cards visible so the next one peeks; capped so tablet cards stay
-  // portrait-sized rather than stretching to 60vw.
-  const cardW = 'w-[74vw] max-w-[300px] sm:w-[46vw]'
-
-  if (reduce) {
-    return (
-      <div
-        className={`-mx-6 flex snap-x snap-mandatory gap-4 overflow-x-auto px-6 pb-2 br-noscrollbar ${className ?? ''}`}
-      >
-        {cards.map((c) => (
-          <div key={c.title} className={`${cardW} shrink-0 snap-start`}>
-            <Card card={c} />
-          </div>
-        ))}
-      </div>
-    )
-  }
-
+function SamsungCard() {
   return (
-    <div ref={viewport} className={`-mx-6 overflow-hidden px-6 ${className ?? ''}`}>
-      <motion.div
-        ref={track}
-        className="flex w-max cursor-grab gap-4 pb-2 active:cursor-grabbing"
-        drag="x"
-        dragConstraints={{ left: -constraint, right: 0 }}
-        dragElastic={0.12}
-        dragTransition={{ power: 0.3, timeConstant: 350, bounceStiffness: 300, bounceDamping: 40 }}
-      >
-        {cards.map((c) => (
-          <DragCard key={c.title} card={c} cardW={cardW} />
-        ))}
-      </motion.div>
-    </div>
+    <Link href="/work/samsung" className="group block">
+      <div className="relative h-[560px] overflow-hidden rounded-[10px] bg-black md:h-[600px]">
+        {/* interactive table device, bleeding off the top */}
+        <div className="absolute -left-[14%] -top-[18%] w-[120%]">
+          <Image
+            src="/samsung/work/table-device.webp"
+            alt="Samsung Galaxy interactive retail table"
+            width={3226}
+            height={2985}
+            sizes="(max-width: 1024px) 90vw, 600px"
+            className="h-auto w-full"
+          />
+        </div>
+
+        <LabelCard
+          className="border-white text-white"
+          logo={
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src="/samsung/brand/samsung-wordmark-white.png" alt="Samsung" className="h-[26px] w-auto" />
+          }
+          title="Digital + Social"
+          pills={['Design', 'UI', 'UX', 'Social Posts']}
+        />
+      </div>
+    </Link>
   )
 }
 
-/**
- * A rail card that distinguishes a tap from a drag: if the pointer moved more
- * than a few px between down and up, the click is suppressed so flinging the
- * rail never navigates.
- */
-function DragCard({ card, cardW }: { card: SecondaryItem; cardW: string }) {
-  const start = useRef<{ x: number; y: number } | null>(null)
-  const moved = useRef(false)
+/* --- shared inset label card ---------------------------------------------- */
 
+function LabelCard({
+  logo,
+  title,
+  pills,
+  className,
+}: {
+  logo: React.ReactNode
+  title: string
+  pills: string[]
+  className?: string
+}) {
   return (
     <div
-      className={`${cardW} shrink-0`}
-      onPointerDownCapture={(e) => {
-        start.current = { x: e.clientX, y: e.clientY }
-        moved.current = false
-      }}
-      onPointerMoveCapture={(e) => {
-        if (!start.current) return
-        if (Math.abs(e.clientX - start.current.x) > 6) moved.current = true
-      }}
-      onClickCapture={(e) => {
-        if (moved.current) {
-          e.preventDefault()
-          e.stopPropagation()
-        }
-      }}
+      className={`absolute inset-x-5 bottom-5 flex flex-col items-center gap-4 rounded-[6px] border bg-transparent px-6 py-7 text-center backdrop-blur-[2px] transition-transform duration-300 group-hover:-translate-y-1 ${className || ''}`}
     >
-      <Card card={card} />
+      <span className="flex h-[64px] items-center justify-center">{logo}</span>
+      <p
+        className="uppercase"
+        style={{ fontFamily: 'var(--font-heading)', fontWeight: 500, fontSize: 'clamp(18px, 1.8vw, 26px)' }}
+      >
+        {title}
+      </p>
+      <ul className="flex flex-wrap justify-center gap-2.5">
+        {pills.map((p) => (
+          <li
+            key={p}
+            className="rounded-[2px] border border-current px-2 py-1"
+            style={{ fontFamily: 'var(--font-body)', fontSize: '14px' }}
+          >
+            {p}
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }
 
-/* --- helpers ------------------------------------------------------------- */
+/* --- Full Capabilities: 3 staggered phone screens ------------------------- */
 
-// Strip undefined / null / '' so blank CMS fields fall back to defaults
-// (Payload returns null for unset optional fields; a null href would crash
-// Next's <Link> url formatter at render).
-function stripEmpty<T extends object>(obj: T): Partial<T> {
-  return Object.fromEntries(
-    Object.entries(obj).filter(([, v]) => v !== undefined && v !== null && v !== ''),
-  ) as Partial<T>
+const CAP_PHONES = [
+  { src: '/capabilities/cbtl/ui-1.webp', alt: 'Coffee Bean & Tea Leaf app', w: 560, h: 996 },
+  { src: '/capabilities/dnb/app-1.webp', alt: 'Dave & Buster’s rewards app', w: 560, h: 1213 },
+  { src: '/capabilities/trees/ui-1.webp', alt: 'Trees goal-setting app', w: 560, h: 1212 },
+]
+
+function CapabilitiesCard() {
+  return (
+    <Link href="/work/capabilities" className="group mt-7 block">
+      <div className="relative overflow-hidden rounded-[10px] border border-[#dcdce1] bg-[#f3f3f3]">
+        <div className="grid items-center gap-8 p-8 md:grid-cols-[minmax(0,360px)_minmax(0,1fr)] md:p-12">
+          {/* copy */}
+          <div>
+            <p
+              className="uppercase text-[#070e2c]"
+              style={{ fontFamily: 'var(--font-heading)', fontWeight: 500, fontSize: 'clamp(20px, 2vw, 28px)' }}
+            >
+              Full Capabilities
+            </p>
+            <p
+              className="mt-5 max-w-sm text-[#242627]"
+              style={{ fontFamily: 'var(--font-body)', fontSize: '17px', lineHeight: 1.5 }}
+            >
+              Countless clients and consistent deliverables across design
+              disciplines, form factors, and use cases.
+            </p>
+            <span className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-[#070e2c]">
+              See the full range
+              <span aria-hidden className="transition-transform group-hover:translate-x-0.5">→</span>
+            </span>
+          </div>
+
+          {/* three phones, staggered down left→right */}
+          <div className="relative h-[320px] md:h-[400px]">
+            {CAP_PHONES.map((p, i) => (
+              <div
+                key={p.src}
+                className="absolute w-[34%] max-w-[190px] overflow-hidden rounded-[1.5rem] border-[5px] border-[#1a1a1a] bg-[#1a1a1a] shadow-[0_22px_44px_rgba(0,0,0,0.22)] transition-transform duration-300 group-hover:-translate-y-1"
+                style={{
+                  left: `${i * 30}%`,
+                  top: `${i * 34}px`,
+                  zIndex: i,
+                  transitionDelay: `${i * 40}ms`,
+                }}
+              >
+                <Image
+                  src={p.src}
+                  alt={p.alt}
+                  width={p.w}
+                  height={p.h}
+                  sizes="(max-width: 1024px) 30vw, 160px"
+                  className="h-auto w-full"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </Link>
+  )
 }
