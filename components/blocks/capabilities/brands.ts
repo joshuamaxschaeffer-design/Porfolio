@@ -29,9 +29,9 @@ export const BRANDS: Record<string, BrandDef> = {
   dopa: { name: 'DOPA', src: `${L}/authored/dopa-black.png`, color: '#1a2233' },
   dopaWhite: { name: 'DOPA', src: `${L}/authored/dopa-white.png`, color: '#ffffff' },
   jubilee: { name: 'Jubilee', src: `${L}/authored/jubilee.png`, color: '#1a2233' },
-  trees: { name: 'Trees', src: `${L}/authored/trees.svg`, color: '#2e7d32' },
+  trees: { name: 'Trees', src: `${L}/trees.svg`, color: '#2e7d32' },
   rosetta: { name: 'Rosetta', wordmark: 'Rosetta', color: '#1a2233' },
-  blaze: { name: 'Blaze', wordmark: 'BLAZE', color: '#F5A623' },
+  blaze: { name: 'Blaze', src: `${L}/blaze.png`, color: '#F5A623' },
 
   // ── Client brands — REAL logos (verified); 3 remain wordmarks ──
   mindbody: { name: 'Mindbody', src: `${L}/mindbody.svg`, color: '#00B0B9' },
@@ -45,7 +45,7 @@ export const BRANDS: Record<string, BrandDef> = {
   petsmart: { name: 'PetSmart', src: `${L}/petsmart.svg`, color: '#0072CE' },
   schick: { name: 'Schick', src: `${L}/schick.svg`, color: '#005EB8' },
   // ── still wordmarks (no clean logo sourced yet) ────────────
-  cbtl: { name: 'The Coffee Bean & Tea Leaf', wordmark: 'Coffee Bean & Tea Leaf', color: '#53277E' },
+  cbtl: { name: 'The Coffee Bean & Tea Leaf', src: `${L}/cbtl.png`, color: '#53277E' },
   trueFoodKitchen: { name: 'True Food Kitchen', wordmark: 'True Food Kitchen', color: '#2F7D3B' },
   noodles: { name: 'Noodles & Company', wordmark: 'Noodles & Co.', color: '#C8102E' },
   conco: { name: 'ConCo', wordmark: 'ConCo', color: '#1a2233' },

@@ -87,29 +87,23 @@ export function CapabilitiesPage(props: CapabilitiesPageProps = {}) {
       {/* ── 01 Product & UX — GREY ─────────────────────────────── */}
       <DisciplineModule
         {...sectionProps(productUx)}
-        clientLogos={[
-          '/capabilities/logos/raising-canes.svg',
-          '/capabilities/logos/dave-and-busters.svg',
-          '/capabilities/logos/mindbody.svg',
-          '/capabilities/logos/vf-corp.svg',
-          '/capabilities/logos/petsmart.svg',
-        ]}
+        clientBrands={pick(
+          'raisingCanes', 'daveAndBusters', 'mindbody', 'cbtl', 'wingstop', 'panda',
+          'blaze', 'trees', 'baserate', 'vfCorp', 'petsmart', 'trueFoodKitchen', 'noodles',
+        )}
       >
         <ProductUxModules dark={BG[productUx.bg].dark} />
       </DisciplineModule>
 
-      {/* ── 02 Brand & Identity — BLACK ────────────────────────── */}
-      <DisciplineModule
-        {...sectionProps(brand)}
-        clientLogos={['/capabilities/logos/authored/dopa-black.png', '/capabilities/logos/authored/jubilee.png', '/capabilities/logos/authored/trees.svg', '/capabilities/logos/pepsi.svg']}
-      >
+      {/* ── 02 Brand & Identity — BLACK (no logo row; brands shown right below) ── */}
+      <DisciplineModule {...sectionProps(brand)}>
         <BrandModules dark={BG[brand.bg].dark} />
       </DisciplineModule>
 
       {/* ── 03 Design Systems — NAVY ───────────────────────────── */}
       <DisciplineModule
         {...sectionProps(designSystems)}
-        clientLogos={['/capabilities/logos/mindbody.svg', '/capabilities/logos/raising-canes.svg', '/capabilities/logos/dave-and-busters.svg']}
+        clientBrands={pick('mindbody', 'raisingCanes', 'daveAndBusters', 'cbtl', 'trees', 'baserate')}
       >
         <DesignSystemsModules dark={BG[designSystems.bg].dark} />
       </DisciplineModule>
@@ -117,7 +111,7 @@ export function CapabilitiesPage(props: CapabilitiesPageProps = {}) {
       {/* ── 04 Motion & Illustration — GREY ────────────────────── */}
       <DisciplineModule
         {...sectionProps(artMotion)}
-        clientLogos={['/capabilities/logos/mindbody.svg', '/capabilities/logos/pepsi.svg']}
+        clientBrands={pick('mindbody', 'cbtl', 'pepsi')}
       >
         <ArtMotionModules dark={BG[artMotion.bg].dark} />
       </DisciplineModule>
@@ -125,7 +119,7 @@ export function CapabilitiesPage(props: CapabilitiesPageProps = {}) {
       {/* ── 05 Marketing & Web — BLACK ─────────────────────────── */}
       <DisciplineModule
         {...sectionProps(marketingWeb)}
-        clientLogos={['/capabilities/logos/dairy-queen.svg', '/capabilities/logos/chandon.svg', '/capabilities/logos/vf-corp.svg']}
+        clientBrands={pick('trueFoodKitchen', 'blaze', 'wingstop', 'panda', 'dairyQueen', 'chandon', 'pepsi', 'vfCorp')}
       >
         <MarketingWebModules dark={BG[marketingWeb.bg].dark} />
       </DisciplineModule>
