@@ -184,8 +184,8 @@ export function BrandingScene({ className = '' }: { className?: string }) {
               <StudioObject base="/baserate/branding/devices/phone" frameCount={SCRUB_FRAMES} fps={FPS} staticFrame={-1} shadowMode="svg" className="w-full" alt="Journalytic phone" />
             </Parallax>
 
-            {/* DESKTOP / tablet */}
-            <Parallax z={PZ.device} className="absolute left-[58%] top-[14%] z-10 w-[42%]">
+            {/* DESKTOP / tablet — pulled left toward the phone (~600px on screen) */}
+            <Parallax z={PZ.device} className="absolute left-[38%] top-[14%] z-10 w-[42%]">
               <StudioObject base="/baserate/branding/devices/desktop" frameCount={SCRUB_FRAMES} fps={FPS} staticFrame={-1} shadowMode="svg" className="w-full" alt="Baserate marketing site" />
             </Parallax>
 
@@ -193,7 +193,7 @@ export function BrandingScene({ className = '' }: { className?: string }) {
             <Parallax z={PZ.chip} className="absolute left-[20%] top-[2%] z-30">
               <BakedChip base="/baserate/branding/chips/journalytic" alt="Journalytic" reduce={reduce} frameCount={SCRUB_FRAMES} size={124} scaleW={132.3} ml={-4.3} mt={-6.3} scrub={chipScrub} />
             </Parallax>
-            <Parallax z={PZ.chip} className="absolute left-[57%] top-[40%] z-30">
+            <Parallax z={PZ.chip} className="absolute left-[40%] top-[40%] z-30">
               <BakedChip base="/baserate/branding/chips/baserate" alt="Baserate" reduce={reduce} frameCount={SCRUB_FRAMES} size={94} scaleW={103.2} ml={-6.2} mt={-3.3} delay={250} scrub={chipScrub} />
             </Parallax>
 
@@ -204,10 +204,10 @@ export function BrandingScene({ className = '' }: { className?: string }) {
             <Parallax z={PZ.orbFar} className="absolute left-[31%] top-[40%] z-[15]">
               <SwatchCard reduce={reduce} color="#3F93CF" hex="#3F93CF" w={72} rotX={8} rotY={6} dur={18} delay={1.2} />
             </Parallax>
-            <Parallax z={PZ.orbNear} className="absolute left-[70%] top-[8%] z-[15]">
+            <Parallax z={PZ.orbNear} className="absolute left-[52%] top-[8%] z-[15]">
               <SwatchCard reduce={reduce} color="#1A2436" hex="#1A2436" w={70} rotX={10} rotY={-5} dur={17} delay={2.2} />
             </Parallax>
-            <Parallax z={PZ.orbMid} className="absolute left-[56%] top-[62%] z-[15]">
+            <Parallax z={PZ.orbMid} className="absolute left-[40%] top-[62%] z-[15]">
               <SwatchCard reduce={reduce} color="#1551C0" hex="#1551C0" w={70} rotX={8} rotY={7} dur={14} delay={0.6} />
             </Parallax>
           </div>

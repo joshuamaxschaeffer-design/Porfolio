@@ -147,8 +147,8 @@ function WingstopCard() {
   return (
     <Link ref={ref} href="/work/wingstop" className="group block">
       {/* outer wrapper is NOT clipped, so the top chip can overflow the panel.
-          The whole card starts slightly smaller and scales to full size on hover. */}
-      <div className="relative aspect-[570/720] w-full origin-center scale-[0.93] transition-transform duration-500 ease-out will-change-transform group-hover:scale-100">
+          Container stays a fixed size; only the inner label box grows on hover. */}
+      <div className="relative aspect-[570/720] w-full">
         {/* the green panel — clips the phone + inner chips */}
         <div className="absolute inset-0 overflow-hidden rounded-[4px] bg-[#00a653]">
           {/* phone screen — exact Figma box; bleeds down behind the label card.
@@ -194,8 +194,8 @@ function WingstopCard() {
 function SamsungCard() {
   return (
     <Link href="/work/samsung" className="group block">
-      {/* whole card starts slightly smaller, scales to full size on hover */}
-      <div className="relative aspect-[570/720] w-full origin-center scale-[0.93] overflow-hidden rounded-[4px] bg-black transition-transform duration-500 ease-out will-change-transform group-hover:scale-100">
+      {/* container stays fixed; only the inner label box grows on hover */}
+      <div className="relative aspect-[570/720] w-full overflow-hidden rounded-[4px] bg-black">
         {/* interactive table device — exact Figma box, bleeds off top-left.
             Scales up on hover (origin at the table's visible centre). */}
         <div
@@ -241,7 +241,7 @@ function LabelCard({
 }) {
   return (
     <div
-      className="absolute flex flex-col items-center overflow-hidden rounded-[4px] border border-white text-white transition-transform duration-300 group-hover:-translate-y-1"
+      className="absolute flex origin-center scale-[0.94] flex-col items-center overflow-hidden rounded-[4px] border border-white text-white transition-transform duration-500 ease-out will-change-transform group-hover:scale-100"
       style={{ left: pctX(24), top: pctY(423), width: pctX(522), height: pctY(270), backgroundColor: bg }}
     >
       {/* logo zone — top ~52% of the card */}
