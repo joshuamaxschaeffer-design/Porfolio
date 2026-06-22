@@ -52,19 +52,29 @@ export function MarketingSection() {
           <WireframeStack pages={defaults.ux.wireframes.pages} />
         </div>
 
-        {/* COHESIVE SITE UX — the real page designs laid down on a receding plane */}
-        <div className="mt-20 lg:mt-28">
-          <Reveal>
-            <Eyebrow>{defaults.ux.eyebrow}</Eyebrow>
-            <h3 className="mt-2 text-xl font-semibold leading-tight text-white sm:text-2xl">
-              {defaults.ux.title}
-            </h3>
-            <p className="mt-3 max-w-[112ch] text-[15px] leading-relaxed text-white/70">
-              {defaults.ux.body}
-            </p>
-          </Reveal>
+        {/* COHESIVE SITE UX — the real page designs laid down on a receding plane.
+            A faint full-width hairline tops the deck (masks the angled top-crop);
+            the copy sits on a dark card floating IN FRONT of the screens. */}
+        <div className="relative mt-20 lg:mt-28">
+          {/* very faint full-width divider across the top of the deck */}
+          <div aria-hidden className="relative left-1/2 w-screen -translate-x-1/2 border-t border-white/10" />
+
+          {/* the laid-down deck */}
           <Reveal>
             <PerspectiveStack pages={defaults.ux.pages} />
+          </Reveal>
+
+          {/* copy card — black with a faint white stroke, sitting on top of the screens */}
+          <Reveal className="pointer-events-none absolute left-0 top-10 z-20 w-full sm:top-14 lg:top-16">
+            <div className="pointer-events-auto max-w-[460px] rounded-2xl border border-white/15 bg-black/80 p-6 backdrop-blur-md sm:p-7">
+              <Eyebrow>{defaults.ux.eyebrow}</Eyebrow>
+              <h3 className="mt-2 text-xl font-semibold leading-tight text-white sm:text-2xl">
+                {defaults.ux.title}
+              </h3>
+              <p className="mt-3 text-[15px] leading-relaxed text-white/70">
+                {defaults.ux.body}
+              </p>
+            </div>
           </Reveal>
         </div>
       </div>
