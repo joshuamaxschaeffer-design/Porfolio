@@ -43,6 +43,8 @@ const CHIPS: Chip[] = [
   { src: '/home/wingstop/chip-atomic-bbq.webp', boxLeft: -48, boxTop: 249, boxSize: 224.5, imgPct: 76.89, rot: -21.88, shadow: '10px 34px 14px rgba(0,0,0,0.25)', phase: 0.5 },
   { src: '/home/wingstop/chip-bayou-bbq.webp', boxLeft: 335, boxTop: 221, boxSize: 224.5, imgPct: 76.89, rot: -21.88, shadow: '10px 34px 14px rgba(0,0,0,0.25)', phase: 0.7 },
   { src: '/home/wingstop/chip-hot-lemon.webp', boxLeft: 452, boxTop: 416, boxSize: 222.85, imgPct: 76.89, rot: -21.88, shadow: '10px 34px 14px rgba(0,0,0,0.25)', phase: 0.9 },
+  // mango-volcano — top-right, bleeds off the right edge (Figma parent-group chip)
+  { src: '/home/wingstop/chip-mango-volcano.webp', boxLeft: 455, boxTop: 8, boxSize: 184.89, imgPct: 93.36, rot: -4.24, shadow: '10px 34px 14px rgba(0,0,0,0.25)', phase: 0.35 },
 ]
 
 export function SecondaryRow(_props: SecondaryRowProps) {
@@ -183,7 +185,7 @@ function SamsungCard() {
           bg="#000000"
           logo={
             // eslint-disable-next-line @next/next/no-img-element
-            <img src="/samsung/brand/samsung-wordmark-white.png" alt="Samsung" className="w-[62%] object-contain" />
+            <img src="/samsung/brand/samsung-wordmark-white.svg" alt="Samsung" className="w-[62%] object-contain" />
           }
           title="Digital + Social"
           pills={['Design', 'UI', 'UX', 'Social Posts']}
@@ -247,6 +249,37 @@ const CAP_PHONES = [
 ]
 
 function CapabilitiesCard() {
+  const reduce = useReducedMotion()
+  const ref = useRef<HTMLDivElement>(null)
+  const [p, setP] = useState(0)
+
+  // scroll progress through the card: 0 when its top enters the viewport bottom,
+  // 1 when it's scrolled to the viewport middle — drives the rightward spread.
+  useEffect(() => {
+    if (reduce) return
+    const el = ref.current
+    if (!el) return
+    let raf = 0
+    const onScroll = () => {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => {
+        const r = el.getBoundingClientRect()
+        const vh = window.innerHeight || 1
+        // 0 as the card rises from the bottom, → 1 once it passes the middle.
+        const prog = (vh - r.top) / (vh * 0.9)
+        setP(Math.max(0, Math.min(1, prog)))
+      })
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
+  }, [reduce])
+
   return (
     <Link href="/work/capabilities" className="group mt-5 block md:mt-6">
       <div className="relative overflow-hidden rounded-[4px] border border-[#dcdce1] bg-[#f3f3f3]">
@@ -272,15 +305,19 @@ function CapabilitiesCard() {
           </div>
 
           {/* phones ~2x bigger; the row is a fixed height so the bottoms clip
-              against the card edge (intentional — reads as the phones running
-              off the bottom). overflow-visible lets them extend down into the
-              card's bottom padding before the card's own overflow-hidden clips. */}
-          <div className="relative h-[300px] md:h-[360px]">
-            {CAP_PHONES.map((ph, i) => (
+              against the card edge (intentional). They start clustered and
+              SPREAD OUT to the right as the card scrolls into view (each phone
+              fans further than the last); static under reduced motion. */}
+          <div ref={ref} className="relative h-[300px] md:h-[360px]">
+            {CAP_PHONES.map((ph, i) => {
+              // base stagger + scroll-driven rightward spread (grows per phone)
+              const baseLeft = i * 14
+              const spread = reduce ? i * 8 : i * (8 + p * 16)
+              return (
               <div
                 key={ph.src}
-                className="absolute w-[58%] max-w-[300px] overflow-hidden rounded-[2rem] border-[6px] border-[#1a1a1a] bg-[#1a1a1a] shadow-[0_26px_50px_rgba(0,0,0,0.24)] transition-transform duration-300 group-hover:-translate-y-1.5"
-                style={{ left: `${i * 22}%`, top: `${i * 52}px`, zIndex: i, transitionDelay: `${i * 40}ms` }}
+                className="absolute w-[58%] max-w-[300px] overflow-hidden rounded-[2rem] border-[6px] border-[#1a1a1a] bg-[#1a1a1a] shadow-[0_26px_50px_rgba(0,0,0,0.24)] transition-transform duration-300 group-hover:-translate-y-1.5 will-change-transform"
+                style={{ left: `${baseLeft + spread}%`, top: `${i * 52}px`, zIndex: i, transitionDelay: `${i * 40}ms` }}
               >
                 <Image
                   src={ph.src}
@@ -291,7 +328,8 @@ function CapabilitiesCard() {
                   className="h-auto w-full"
                 />
               </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </div>

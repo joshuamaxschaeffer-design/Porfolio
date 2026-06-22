@@ -21,8 +21,6 @@ export interface FlagshipBaserateProps {
 const PILLS = ['Branding', 'Lead', 'UX', 'UI', 'Strategy']
 
 export function FlagshipBaserate({
-  oneLine = 'The investment operating system for family offices — brand, UI, and marketing site, designed end to end. 70+ features.',
-  meta = 'Lead Product & Brand Designer · 2022–2024',
   href = '/work/baserate',
 }: FlagshipBaserateProps) {
   return (
@@ -41,9 +39,13 @@ export function FlagshipBaserate({
       />
       <div className="home-container py-20 md:py-28">
         <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,440px)_minmax(0,1fr)] lg:gap-16">
-          {/* CARD — logo + FULL STACK DESIGN + gold pills (Figma) */}
+          {/* CARD — logo + FULL STACK DESIGN + gold pills (Figma). The whole
+              card links to the case study (text/CTA removed per Josh). */}
           <div className="order-2 lg:order-1">
-            <div className="inline-flex w-full max-w-[440px] flex-col gap-[22px] rounded-[8px] border border-[#d6d6d6] bg-white px-8 py-10 shadow-[0_18px_44px_rgba(7,14,44,0.10)]">
+            <Link
+              href={href}
+              className="inline-flex w-full max-w-[440px] flex-col gap-[22px] rounded-[8px] border border-[#d6d6d6] bg-white px-8 py-10 shadow-[0_18px_44px_rgba(7,14,44,0.10)] transition-shadow duration-300 hover:shadow-[0_24px_56px_rgba(7,14,44,0.16)]"
+            >
               <BaserateLogo className="h-[42px] w-auto" />
               <div className="flex flex-col gap-5">
                 <p
@@ -68,27 +70,6 @@ export function FlagshipBaserate({
                   ))}
                 </ul>
               </div>
-            </div>
-
-            {/* one-line + meta + link, under the card */}
-            <p
-              className="mt-8 max-w-md text-[#3a4159]"
-              style={{ fontFamily: 'var(--font-body)', fontSize: '17px', lineHeight: 1.5 }}
-            >
-              {oneLine}
-            </p>
-            <p
-              className="mt-4 uppercase tracking-[0.12em] text-[#9a9eb0]"
-              style={{ fontFamily: 'var(--font-data)', fontSize: '12px' }}
-            >
-              {meta}
-            </p>
-            <Link
-              href={href}
-              className="group mt-7 inline-flex items-center gap-2 rounded-full border border-[#070e2c]/30 px-6 py-3 text-sm font-medium text-[#070e2c] transition-colors hover:bg-[#070e2c] hover:text-white"
-            >
-              Read the case study
-              <span aria-hidden className="transition-transform group-hover:translate-x-0.5">→</span>
             </Link>
           </div>
 

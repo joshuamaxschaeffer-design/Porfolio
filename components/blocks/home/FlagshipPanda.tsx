@@ -20,7 +20,6 @@ const PILLS = ['Lead Design', 'Art Director', 'UX', 'UI']
  * centerpiece (scaled up); the Panda label card floats top-right, left-aligned.
  */
 export function FlagshipPanda({
-  oneLine = 'The rewards app came in two phases. First, a better, more native version of the launch app. Then a full rewards program: planned, designed, tested, and rolled out to every location.',
   href = '/work/panda-express',
 }: FlagshipPandaProps) {
   return (
@@ -33,7 +32,7 @@ export function FlagshipPanda({
       <Sparkles />
 
       <div className="home-container py-16 md:py-20">
-        {/* heading + intro, top-left (mirrors the case-study band) */}
+        {/* heading only, top-left (intro copy removed per Josh) */}
         <div className="relative z-20 max-w-[60ch]">
           <h2
             className="font-heading uppercase leading-none tracking-wide text-white"
@@ -41,12 +40,6 @@ export function FlagshipPanda({
           >
             Full Rewards App
           </h2>
-          <p
-            className="mt-5 max-w-[58ch] text-white/90"
-            style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(16px, 1.6vw, 22px)', lineHeight: 1.4 }}
-          >
-            {oneLine}
-          </p>
         </div>
 
         {/* big phones centerpiece, with the label card floated right over open
