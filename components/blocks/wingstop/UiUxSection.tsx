@@ -90,16 +90,19 @@ function DarkModeStack() {
           <p className="mt-3 max-w-[44ch] text-[15px] text-white/75 sm:text-base">{defaults.darkMode.body}</p>
         </div>
 
-        {/* RIGHT — receding device stack, confined to this column */}
-        <div className="relative h-[58vh] min-h-[420px] w-full lg:h-[62vh]">
+        {/* RIGHT — receding device stack, confined to this column. Column is
+            ~30% shorter than before; the stack is vertically centered in it
+            (device size unchanged — width is a % of column WIDTH, not height). */}
+        <div className="relative h-[40vh] min-h-[300px] w-full lg:h-[44vh]">
           {defaults.darkMode.screens.map((src, i) => {
             const z = i * GAP
             const s = F / (F + z)
-            // anchor front card lower-left of THIS column; recede up-and-right.
+            // front card sits just below center; recede up-and-right so the whole
+            // stack's centroid lands at the column's vertical middle.
             const frontX = 30,
-              frontY = 60,
+              frontY = 56,
               vpX = 78,
-              vpY = 34
+              vpY = 40
             const x = frontX + (vpX - frontX) * (1 - s)
             const y = frontY + (vpY - frontY) * (1 - s)
             const d = count > 1 ? i / (count - 1) : 0

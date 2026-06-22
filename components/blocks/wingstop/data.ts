@@ -288,7 +288,6 @@ export const webNeeds = {
   intro: 'Beyond the core experience, the team and I shipped the supporting surfaces across the site. Store-finder, locations, and careers.',
   items: [
     { src: '/wingstop/webneeds/d-locations.webp', label: 'Locations' },
-    { src: '/wingstop/webneeds/d-menu.webp', label: 'Menu' },
     { src: '/wingstop/webneeds/d-careers-welcome.webp', label: 'Careers' },
     { src: '/wingstop/webneeds/d-careers-restaurant.webp', label: 'Restaurant careers' },
     { src: '/wingstop/webneeds/d-careers-corporate.webp', label: 'Corporate careers' },

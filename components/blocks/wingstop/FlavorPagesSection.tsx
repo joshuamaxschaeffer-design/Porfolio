@@ -51,9 +51,10 @@ export function FlavorPagesSection() {
         </div>
       </div>
 
-      {/* Autoplay flavor video */}
+      {/* Autoplay flavor video — video on the LEFT, copy on the RIGHT. */}
       <div className="br-container pb-20 pt-14 md:pb-[120px] md:pt-24">
-        <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)] lg:gap-[50px]">
+        <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,360px)] lg:gap-[50px]">
+          <AutoplayVideo src={defaults.video.src} poster={defaults.video.poster} />
           <div>
             <span className="br-data text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ws-green)]">
               {defaults.video.eyebrow}
@@ -61,7 +62,6 @@ export function FlavorPagesSection() {
             <h3 className="mt-2 text-2xl font-semibold text-white sm:text-[28px]">{defaults.video.title}</h3>
             <p className="mt-2 max-w-[52ch] text-[15px] leading-relaxed text-white/80 sm:text-base">{defaults.video.body}</p>
           </div>
-          <AutoplayVideo src={defaults.video.src} poster={defaults.video.poster} />
         </div>
       </div>
     </section>
