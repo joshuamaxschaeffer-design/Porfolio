@@ -90,8 +90,9 @@ function WingstopCard() {
     }
   }, [reduce])
 
-  // chip transform for scroll parallax — noticeably rotates + drifts.
-  const chipStyle = (c: Chip) => {
+  // SCROLL transform for parallax — noticeably rotates + drifts (instant, no
+  // transition so it tracks the scroll position 1:1).
+  const chipScroll = (c: Chip) => {
     const wave = Math.sin(p * Math.PI + c.phase * Math.PI * 2)
     const wave2 = Math.cos(p * Math.PI + c.phase * Math.PI * 2)
     const bob = reduce ? 0 : wave * 16
@@ -99,20 +100,44 @@ function WingstopCard() {
     const spin = reduce ? c.rot : c.rot + wave * 16
     return `translate(${drift}px, ${bob}px) rotate(${spin}deg)`
   }
-  const renderChip = (c: Chip, i: number) => (
-    <div
-      key={i}
-      className="pointer-events-none absolute will-change-transform"
-      style={{ left: pctX(c.boxLeft), top: pctY(c.boxTop), width: pctX(c.boxSize), aspectRatio: '1' }}
-    >
-      <div className="flex h-full w-full items-center justify-center" style={{ transform: chipStyle(c) }}>
-        <div style={{ width: `${c.imgPct}%`, aspectRatio: '1', filter: `drop-shadow(${c.shadow})` }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={c.src} alt="" aria-hidden className="h-full w-full object-contain" />
+
+  // HOVER spread vector: push each chip away from the panel centre (570×720 →
+  // centre 285,360). Baked as CSS vars so the INNER layer eases on group-hover,
+  // composing with the OUTER scroll transform (nested transforms multiply).
+  const FRAME_CX = 285, FRAME_CY = 360
+  const spreadVec = (c: Chip) => {
+    const cx = c.boxLeft + c.boxSize / 2
+    const cy = c.boxTop + c.boxSize / 2
+    let dx = cx - FRAME_CX, dy = cy - FRAME_CY
+    const len = Math.hypot(dx, dy) || 1
+    const PUSH = 26 // px of outward spread on hover
+    return { x: (dx / len) * PUSH, y: (dy / len) * PUSH }
+  }
+
+  const renderChip = (c: Chip, i: number) => {
+    const s = spreadVec(c)
+    return (
+      <div
+        key={i}
+        className="pointer-events-none absolute will-change-transform"
+        style={{ left: pctX(c.boxLeft), top: pctY(c.boxTop), width: pctX(c.boxSize), aspectRatio: '1' }}
+      >
+        {/* OUTER = live scroll transform (instant) */}
+        <div className="h-full w-full will-change-transform" style={{ transform: chipScroll(c) }}>
+          {/* INNER = hover spread + scale (CSS-transitioned, composes w/ scroll) */}
+          <div
+            className="flex h-full w-full items-center justify-center transition-transform duration-500 ease-out [transform:translate(0,0)_scale(1)] group-hover:[transform:translate(var(--sx),var(--sy))_scale(1.14)]"
+            style={{ ['--sx' as string]: `${s.x}px`, ['--sy' as string]: `${s.y}px` }}
+          >
+            <div style={{ width: `${c.imgPct}%`, aspectRatio: '1', filter: `drop-shadow(${c.shadow})` }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={c.src} alt="" aria-hidden className="h-full w-full object-contain" />
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  )
+    )
+  }
 
   // CHIPS[0] (lemon-garlic, top) sits ON TOP of the card, NOT clipped — it pops
   // above the panel edge (per the Figma) so the composition feels dynamic. The
@@ -125,9 +150,11 @@ function WingstopCard() {
       <div className="relative aspect-[570/720] w-full">
         {/* the green panel — clips the phone + inner chips */}
         <div className="absolute inset-0 overflow-hidden rounded-[4px] bg-[#00a653]">
-          {/* phone screen — exact Figma box; bleeds down behind the label card */}
+          {/* phone screen — exact Figma box; bleeds down behind the label card.
+              On hover it scales up + drifts DOWN to make room for the spreading
+              chips (transform-origin top so it grows downward). */}
           <div
-            className="absolute"
+            className="absolute origin-top transition-transform duration-500 ease-out will-change-transform group-hover:[transform:translateY(26px)_scale(1.08)]"
             style={{ left: pctX(124), top: pctY(28), width: pctX(323), height: pctY(551) }}
           >
             <Image
@@ -167,9 +194,10 @@ function SamsungCard() {
   return (
     <Link href="/work/samsung" className="group block">
       <div className="relative aspect-[570/720] w-full overflow-hidden rounded-[4px] bg-black">
-        {/* interactive table device — exact Figma box, bleeds off top-left */}
+        {/* interactive table device — exact Figma box, bleeds off top-left.
+            Scales up on hover (origin at the table's visible centre). */}
         <div
-          className="absolute"
+          className="absolute origin-[60%_45%] transition-transform duration-500 ease-out will-change-transform group-hover:scale-[1.07]"
           style={{ left: pctX(-154), top: pctY(-259), width: pctX(1180), height: pctY(1091) }}
         >
           <Image
