@@ -64,10 +64,11 @@ export function BrandingSection() {
 }
 
 /** The chips now render FRONT-FACING (rendered upright in SD Studio), so on
- *  scroll we just rotate them slightly left/right — a gentle, alternating in-plane
- *  tilt — rather than re-posing them. Per-chip baseline rotation (deg) gives the
- *  resting set a touch of life; the scroll drift swings around it. */
-const CHIP_BASE_ROT = [-5, 4, -3, 5, -4, 3]
+ *  scroll the coins gently PIVOT in 3D around the vertical (Y) axis — like a coin
+ *  turning toward/away from you — rather than spinning flat in-plane. Per-chip
+ *  baseline Y-rotation (deg) gives the resting set a touch of life; the scroll
+ *  drift swings around it. */
+const CHIP_BASE_ROT = [-10, 8, -6, 9, -8, 7]
 
 function Chip({ chip, index }: { chip: { src: string; name: string; color: string }; index: number }) {
   const ref = useRef<HTMLDivElement>(null)
@@ -89,9 +90,9 @@ function Chip({ chip, index }: { chip: { src: string; name: string; color: strin
       const vh = window.innerHeight
       // center-relative progress: -1 (below) → 0 (centered) → 1 (above)
       const c = (r.top + r.height / 2 - vh / 2) / (vh / 2)
-      // gentle in-plane rotation; alternate direction per chip so adjacent coins
-      // rock opposite ways as the section scrolls past.
-      setDrift(Math.max(-9, Math.min(9, c * 8 * (index % 2 ? -1 : 1))))
+      // gentle 3D Y-axis pivot; alternate direction per chip so adjacent coins
+      // turn opposite ways as the section scrolls past.
+      setDrift(Math.max(-16, Math.min(16, c * 14 * (index % 2 ? -1 : 1))))
     }
     const schedule = () => {
       if (!raf) raf = requestAnimationFrame(onScroll)
@@ -108,9 +109,10 @@ function Chip({ chip, index }: { chip: { src: string; name: string; color: strin
 
   return (
     <div className="flex flex-col items-center">
-      {/* Front-facing 3D coin renders: a subtle scroll-linked in-plane rotation
-          (base tilt + drift), kept gentle so the glyph stays readable. */}
-      <div ref={ref} className="relative grid aspect-square w-full place-items-center will-change-transform">
+      {/* Front-facing 3D coin renders: a subtle scroll-linked 3D pivot around the
+          vertical (Y) axis — the coin turns toward/away — kept gentle so the glyph
+          stays readable. preserve-3d so the rotateY renders with real depth. */}
+      <div ref={ref} className="relative grid aspect-square w-full place-items-center [perspective:900px] will-change-transform">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={chip.src}
@@ -118,7 +120,8 @@ function Chip({ chip, index }: { chip: { src: string; name: string; color: strin
           loading="lazy"
           className="h-[88%] w-[88%] object-contain"
           style={{
-            transform: `rotate(${base + drift}deg)`,
+            transform: `rotateY(${base + drift}deg)`,
+            transformStyle: 'preserve-3d',
             filter: 'drop-shadow(0 18px 26px rgba(0,0,0,0.5))',
           }}
         />
