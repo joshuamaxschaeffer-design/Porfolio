@@ -26,7 +26,7 @@ export function BrandLogo({ brand, dark = false }: { brand: BrandDef; dark?: boo
       <img
         src={brand.src}
         alt={brand.name}
-        className="max-h-9 w-auto max-w-[140px] object-contain md:max-h-11"
+        className="max-h-10 w-auto max-w-[140px] object-contain md:max-h-12"
         loading="lazy"
       />
     )
