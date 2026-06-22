@@ -146,8 +146,9 @@ function WingstopCard() {
 
   return (
     <Link ref={ref} href="/work/wingstop" className="group block">
-      {/* outer wrapper is NOT clipped, so the top chip can overflow the panel */}
-      <div className="relative aspect-[570/720] w-full">
+      {/* outer wrapper is NOT clipped, so the top chip can overflow the panel.
+          The whole card starts slightly smaller and scales to full size on hover. */}
+      <div className="relative aspect-[570/720] w-full origin-center scale-[0.93] transition-transform duration-500 ease-out will-change-transform group-hover:scale-100">
         {/* the green panel — clips the phone + inner chips */}
         <div className="absolute inset-0 overflow-hidden rounded-[4px] bg-[#00a653]">
           {/* phone screen — exact Figma box; bleeds down behind the label card.
@@ -193,7 +194,8 @@ function WingstopCard() {
 function SamsungCard() {
   return (
     <Link href="/work/samsung" className="group block">
-      <div className="relative aspect-[570/720] w-full overflow-hidden rounded-[4px] bg-black">
+      {/* whole card starts slightly smaller, scales to full size on hover */}
+      <div className="relative aspect-[570/720] w-full origin-center scale-[0.93] overflow-hidden rounded-[4px] bg-black transition-transform duration-500 ease-out will-change-transform group-hover:scale-100">
         {/* interactive table device — exact Figma box, bleeds off top-left.
             Scales up on hover (origin at the table's visible centre). */}
         <div

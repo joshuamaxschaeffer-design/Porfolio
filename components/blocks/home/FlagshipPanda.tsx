@@ -33,11 +33,12 @@ export function FlagshipPanda({
 
       <div className="home-container py-20 md:py-24">
         {/* big phones centerpiece, with the label card floated right over open
-            red space. On desktop the stage is pulled left (max-w + mr-auto) so
-            the right phone clears the floating card. Heading/intro removed per Josh. */}
-        <div className="relative">
-          {/* the EXACT case-study rewards stage — scaled UP (was max-w-820) */}
-          <RewardsStage className="relative z-10 mx-auto w-full max-w-[1060px] lg:mx-0 lg:max-w-[64%]" />
+            red space. The stage is scaled up ~3x and pushed DOWN per Josh; the
+            section is tall + overflow-hidden so the enlarged phones are contained
+            and the bottoms run off the section edge. */}
+        <div className="relative min-h-[620px] lg:min-h-[820px]">
+          {/* the EXACT case-study rewards stage — scaled UP + moved down */}
+          <RewardsStage className="relative z-10 mx-auto w-full max-w-[1060px] origin-top scale-[1.4] lg:mx-0 lg:max-w-[58%] lg:origin-[40%_top] lg:translate-y-[60px] lg:scale-[1.65]" />
 
           {/* label card — floats right (upper) on desktop; stacks under on mobile.
               Content LEFT-aligned; no meta line. */}

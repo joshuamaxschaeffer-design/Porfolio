@@ -76,9 +76,11 @@ export function FlagshipBaserate({
           {/* MEDIA — the case study's "Brand & Marketing" floating scene
               (Journalytic phone + Baserate site device + colour swatches +
               app-icon chips), imported with its full scroll parallax. Sits to
-              the right of the card. */}
-          <div className="relative order-1 lg:order-2">
-            <BrandingScene className="mx-auto w-full max-w-[760px] lg:max-w-none" />
+              the right of the card. Devices scaled up ~3x per Josh — the scene
+              is enlarged via a transform so its internal layout stays intact;
+              the section clips the overflow. */}
+          <div className="relative order-1 flex min-h-[460px] items-center justify-center overflow-visible lg:order-2 lg:min-h-[620px] lg:justify-start">
+            <BrandingScene className="w-full max-w-[760px] origin-center scale-[1.55] lg:max-w-none lg:origin-left lg:scale-[1.85]" />
           </div>
         </div>
       </div>
