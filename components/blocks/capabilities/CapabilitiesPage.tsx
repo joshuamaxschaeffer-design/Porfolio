@@ -78,7 +78,7 @@ export function CapabilitiesPage(props: CapabilitiesPageProps = {}) {
           <LogoMarquee
             brands={pick(
               'panda', 'wingstop', 'samsung', 'mindbody', 'raisingCanes', 'daveAndBusters',
-              'pepsi', 'dairyQueen', 'kfc', 'vfCorp', 'chandon', 'petsmart', 'schick', 'baserate',
+              'pepsi', 'dairyQueen', 'vfCorp', 'chandon', 'petsmart', 'baserate',
             )}
           />
         </div>
