@@ -59,14 +59,14 @@ export function HomeHero({ name = 'Schaeffer', label = 'Design' }: HomeHeroProps
   }, [])
 
   return (
-    <section className="relative flex min-h-[78vh] items-end pb-16 pt-28 md:min-h-[86vh] md:pb-24">
+    <section className="relative flex min-h-[40vh] items-center py-14 md:min-h-[44vh] md:py-16">
       <div className="home-container">
         <h1
           className="font-heading uppercase leading-[0.9] tracking-[-0.01em] text-[var(--br-ink,#070e2c)]"
           style={{
             fontFamily: 'var(--font-heading)',
             fontWeight: 500,
-            fontSize: 'clamp(3.25rem, 13vw, 9.5rem)',
+            fontSize: 'clamp(3rem, 11vw, 8.5rem)',
           }}
         >
           {name}

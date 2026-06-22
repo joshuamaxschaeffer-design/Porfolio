@@ -129,8 +129,9 @@ function WingstopCard() {
           )
         })}
 
-        {/* label card — bottom inset, white border, green bg (phone bleeds behind) */}
+        {/* label card — bottom inset, white border, SOLID green (phone bleeds behind) */}
         <LabelCard
+          bg="#00a653"
           logo={
             // eslint-disable-next-line @next/next/no-img-element
             <img src="/home/wingstop/wingd-logo.webp" alt="Wingstop" className="w-[53%] object-contain" />
@@ -164,6 +165,7 @@ function SamsungCard() {
         </div>
 
         <LabelCard
+          bg="#000000"
           logo={
             // eslint-disable-next-line @next/next/no-img-element
             <img src="/samsung/brand/samsung-wordmark-white.png" alt="Samsung" className="w-[62%] object-contain" />
@@ -182,15 +184,18 @@ function LabelCard({
   logo,
   title,
   pills,
+  bg,
 }: {
   logo: React.ReactNode
   title: string
   pills: string[]
+  /** solid card background so the bleeding phone/table doesn't show through */
+  bg: string
 }) {
   return (
     <div
       className="absolute flex flex-col items-center overflow-hidden rounded-[4px] border border-white text-white transition-transform duration-300 group-hover:-translate-y-1"
-      style={{ left: pctX(24), top: pctY(423), width: pctX(522), height: pctY(270) }}
+      style={{ left: pctX(24), top: pctY(423), width: pctX(522), height: pctY(270), backgroundColor: bg }}
     >
       {/* logo zone — top ~52% of the card */}
       <div className="flex h-[52%] w-full items-center justify-center pt-[4%]">{logo}</div>
@@ -221,7 +226,7 @@ function LabelCard({
 /* --- Full Capabilities: 3 staggered phone screens (Figma 335:73171) -------- */
 
 const CAP_PHONES = [
-  { src: '/capabilities/cbtl/ui-1.webp', alt: 'Coffee Bean & Tea Leaf app', w: 560, h: 996 },
+  { src: '/capabilities/cbtl/ui-2.webp', alt: 'Coffee Bean & Tea Leaf app', w: 560, h: 1197 },
   { src: '/capabilities/dnb/app-1.webp', alt: 'Dave & Buster’s rewards app', w: 560, h: 1213 },
   { src: '/capabilities/trees/ui-1.webp', alt: 'Trees goal-setting app', w: 560, h: 1212 },
 ]

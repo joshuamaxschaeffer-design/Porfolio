@@ -58,22 +58,22 @@ export function FlagshipBaserate({
   return (
     <section
       data-flagship="Baserate"
-      className="relative isolate w-screen left-1/2 right-1/2 -mx-[50vw] overflow-hidden bg-[#070e2c] text-white"
+      className="relative isolate w-screen left-1/2 right-1/2 -mx-[50vw] overflow-hidden bg-white text-[#070e2c]"
     >
-      {/* deep navy radial field */}
+      {/* faint light field — a whisper of Baserate navy in the top-right */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
           background:
-            'radial-gradient(120% 100% at 72% 8%, #15336e 0%, #0c1c44 42%, #050a1e 100%)',
+            'radial-gradient(120% 100% at 78% 6%, #f3f6fc 0%, #ffffff 55%)',
         }}
       />
       <div ref={wrap} className="home-container py-24 md:py-36">
         <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,440px)_minmax(0,1fr)] lg:gap-16">
           {/* CARD — logo + FULL STACK DESIGN + gold pills (Figma) */}
           <div className="order-2 lg:order-1">
-            <div className="inline-flex w-full max-w-[440px] flex-col gap-[22px] rounded-[8px] border border-white/12 bg-white px-8 py-10 shadow-[0_24px_60px_rgba(0,0,0,0.35)]">
+            <div className="inline-flex w-full max-w-[440px] flex-col gap-[22px] rounded-[8px] border border-[#d6d6d6] bg-white px-8 py-10 shadow-[0_18px_44px_rgba(7,14,44,0.10)]">
               <BaserateLogo className="h-[42px] w-auto" />
               <div className="flex flex-col gap-5">
                 <p
@@ -102,20 +102,20 @@ export function FlagshipBaserate({
 
             {/* one-line + meta + link, under the card */}
             <p
-              className="mt-8 max-w-md text-white/80"
+              className="mt-8 max-w-md text-[#3a4159]"
               style={{ fontFamily: 'var(--font-body)', fontSize: '17px', lineHeight: 1.5 }}
             >
               {oneLine}
             </p>
             <p
-              className="mt-4 uppercase tracking-[0.12em] text-white/45"
+              className="mt-4 uppercase tracking-[0.12em] text-[#9a9eb0]"
               style={{ fontFamily: 'var(--font-data)', fontSize: '12px' }}
             >
               {meta}
             </p>
             <Link
               href={href}
-              className="group mt-7 inline-flex items-center gap-2 rounded-full border border-white/40 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-white hover:text-[#070e2c]"
+              className="group mt-7 inline-flex items-center gap-2 rounded-full border border-[#070e2c]/30 px-6 py-3 text-sm font-medium text-[#070e2c] transition-colors hover:bg-[#070e2c] hover:text-white"
             >
               Read the case study
               <span aria-hidden className="transition-transform group-hover:translate-x-0.5">→</span>
@@ -134,7 +134,7 @@ export function FlagshipBaserate({
                 width={1478}
                 height={1612}
                 sizes="(max-width: 1024px) 90vw, 600px"
-                className="h-auto w-full drop-shadow-[0_40px_80px_rgba(0,0,0,0.45)]"
+                className="h-auto w-full drop-shadow-[0_30px_60px_rgba(7,14,44,0.18)]"
                 priority={false}
               />
             </div>
