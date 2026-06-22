@@ -263,8 +263,8 @@ export const flavorPages = {
   ],
   video: {
     eyebrow: 'IN MOTION',
-    title: 'The pages animated on scroll',
-    body: 'The flavor pages animated as you scrolled. Here is the Lemon Pepper page in motion.',
+    title: 'Designed to be interactive',
+    body: 'Added motion to show the explosion of flavor offered in every wing.',
     src: '/wingstop/video/flavor-lemon-pepper.mp4',
     poster: '/wingstop/flavor/m-lemon-pepper.webp',
   },
