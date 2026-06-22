@@ -1,14 +1,12 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
 import { branding as defaults } from './data'
 
 /**
  * SECTION 5 — BRANDING. Black field. The flavor icons rendered as dimensional
- * 3D "chips" — each a real SD-Studio turntable (7 frames, 0–6) that scrubs
- * forward/back as the section scrolls past, so the coins genuinely rotate in 3D
- * rather than CSS-faking a pivot. Then a flat grid of the full set, noting they
- * had to match Wingstop's existing icon style.
+ * 3D "chips" (SD-Studio renders) — shown as static coins on a slight 3/4 angle.
+ * Then a flat grid of the full set, noting they had to match Wingstop's
+ * existing icon style.
  */
 export function BrandingSection() {
   return (
@@ -33,11 +31,11 @@ export function BrandingSection() {
         <p className="mt-3 max-w-3xl text-lg text-white/80 md:text-[22px]">{defaults.intro}</p>
       </div>
 
-      {/* 3D turntable chips */}
+      {/* 3D chips — static front-facing renders */}
       <div className="br-container pt-12 md:pt-16">
         <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-3">
-          {defaults.chips.map((c, i) => (
-            <TurntableChip key={c.name} chip={c} index={i} frameCount={defaults.chipFrameCount} />
+          {defaults.chips.map((c) => (
+            <Chip key={c.name} chip={c} />
           ))}
         </div>
       </div>
@@ -65,95 +63,27 @@ export function BrandingSection() {
 }
 
 /**
- * A single turntable chip. All `frameCount` frames are rendered stacked and
- * preloaded; only the active frame is opaque, so scrubbing never swaps `src`
- * (no decode flicker). The active frame is driven by the chip's center-relative
- * scroll progress: as the section travels from below the viewport to above it,
- * the turntable plays through a little over one full rotation. Alternate chips
- * spin opposite directions and start on a staggered frame so the set feels alive
- * rather than locked in sync. Reduced-motion users get a fixed 3/4 frame.
+ * A single static flavour chip — the SD-Studio render frozen on its resting
+ * 3/4 pose (frame index {@link CHIP_REST_FRAME}). No scroll/rotation: just the
+ * dimensional coin with a soft drop shadow.
  */
-const REST_FRAME = (count: number) => Math.floor(count * 0.4) // pleasant 3/4 resting pose
+const CHIP_REST_FRAME = 2 // pleasant 3/4 angle (matches the set's resting pose)
 
-function TurntableChip({
-  chip,
-  index,
-  frameCount,
-}: {
-  chip: { slug: string; name: string; color: string }
-  index: number
-  frameCount: number
-}) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [frame, setFrame] = useState(() => REST_FRAME(frameCount))
-
-  const frames = Array.from({ length: frameCount }, (_, n) => `/wingstop/flavor-chips/turntable/${chip.slug}-${n}.webp`)
-
-  useEffect(() => {
-    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-    if (reduce) {
-      setFrame(REST_FRAME(frameCount))
-      return
-    }
-    const dir = index % 2 ? -1 : 1 // alternate spin direction per chip
-    const offset = index * 0.6 // stagger so adjacent chips aren't synced
-    const turns = 1.15 // a little over one full turn across the travel
-
-    // Drive from a continuous rAF loop that re-reads getBoundingClientRect each
-    // frame. This is intentional: the site runs Lenis smooth-scroll, which moves
-    // a transform rather than emitting reliable native `scroll` events — a plain
-    // scroll listener gets frozen. Reading the rect every frame tracks the chip
-    // regardless of how the scroll is driven. The loop idles (no setState) while
-    // the chip is well off-screen, so it stays cheap.
-    let raf = 0
-    let lastIdx = -1
-    const tick = () => {
-      const el = ref.current
-      if (el) {
-        const r = el.getBoundingClientRect()
-        const vh = window.innerHeight
-        // Guard against a collapsed/unlaid-out box (height 0) — hold the rest
-        // pose rather than computing a garbage frame.
-        const onScreen = r.height > 0 && r.bottom > -vh * 0.25 && r.top < vh * 1.25
-        if (onScreen) {
-          // progress: 0 as the chip enters from the bottom, 1 as it exits the top
-          const p = Math.max(0, Math.min(1, (vh - r.top) / (vh + r.height)))
-          const raw = p * turns * dir + offset
-          const idx = ((Math.round(raw * frameCount) % frameCount) + frameCount) % frameCount
-          if (idx !== lastIdx) {
-            lastIdx = idx
-            setFrame(idx)
-          }
-        }
-      }
-      raf = requestAnimationFrame(tick)
-    }
-    raf = requestAnimationFrame(tick)
-    return () => {
-      if (raf) cancelAnimationFrame(raf)
-    }
-  }, [index, frameCount])
-
+function Chip({ chip }: { chip: { slug: string; name: string; color: string } }) {
+  const src = `/wingstop/flavor-chips/turntable/${chip.slug}-${CHIP_REST_FRAME}.webp`
   return (
     <div className="flex flex-col items-center">
-      <div ref={ref} className="relative grid aspect-square w-full place-items-center will-change-contents">
-        {frames.map((src, n) => (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            key={src}
-            src={src}
-            alt={n === 0 ? `${chip.name} flavour chip` : ''}
-            aria-hidden={n !== 0}
-            loading={n <= REST_FRAME(frameCount) ? 'eager' : 'lazy'}
-            decoding="async"
-            draggable={false}
-            className="col-start-1 row-start-1 h-[88%] w-[88%] object-contain"
-            style={{
-              opacity: n === frame ? 1 : 0,
-              filter: 'drop-shadow(0 18px 26px rgba(0,0,0,0.5))',
-            }}
-          />
-        ))}
+      <div className="relative grid aspect-square w-full place-items-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={src}
+          alt={`${chip.name} flavour chip`}
+          loading="lazy"
+          decoding="async"
+          draggable={false}
+          className="h-[88%] w-[88%] object-contain"
+          style={{ filter: 'drop-shadow(0 18px 26px rgba(0,0,0,0.5))' }}
+        />
       </div>
       <span className="br-data mt-3 text-center text-[11px] uppercase leading-tight tracking-[0.08em] text-white/65">
         {chip.name}
