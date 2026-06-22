@@ -201,7 +201,8 @@ export function BrandingScene({ className = '' }: { className?: string }) {
             <Parallax z={PZ.orbNear} className="absolute left-[12%] top-[6%] z-[15]">
               <SwatchCard reduce={reduce} color="#C08F2E" hex="#C08F2E" w={54} rotX={9} rotY={-7} dur={15} />
             </Parallax>
-            <Parallax z={PZ.orbFar} className="absolute left-[31%] top-[40%] z-[15]">
+            {/* #3F93CF — moved to the bottom-left of the phone */}
+            <Parallax z={PZ.orbFar} className="absolute left-[3%] top-[74%] z-[15]">
               <SwatchCard reduce={reduce} color="#3F93CF" hex="#3F93CF" w={72} rotX={8} rotY={6} dur={18} delay={1.2} />
             </Parallax>
             <Parallax z={PZ.orbNear} className="absolute left-[52%] top-[8%] z-[15]">
