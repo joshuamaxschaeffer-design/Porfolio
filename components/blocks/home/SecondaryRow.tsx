@@ -88,57 +88,72 @@ function WingstopCard() {
     }
   }, [reduce])
 
+  // chip transform for scroll parallax — noticeably rotates + drifts.
+  const chipStyle = (c: Chip) => {
+    const wave = Math.sin(p * Math.PI + c.phase * Math.PI * 2)
+    const wave2 = Math.cos(p * Math.PI + c.phase * Math.PI * 2)
+    const bob = reduce ? 0 : wave * 16
+    const drift = reduce ? 0 : wave2 * 8
+    const spin = reduce ? c.rot : c.rot + wave * 16
+    return `translate(${drift}px, ${bob}px) rotate(${spin}deg)`
+  }
+  const renderChip = (c: Chip, i: number) => (
+    <div
+      key={i}
+      className="pointer-events-none absolute will-change-transform"
+      style={{ left: pctX(c.boxLeft), top: pctY(c.boxTop), width: pctX(c.boxSize), aspectRatio: '1' }}
+    >
+      <div className="flex h-full w-full items-center justify-center" style={{ transform: chipStyle(c) }}>
+        <div style={{ width: `${c.imgPct}%`, aspectRatio: '1', filter: `drop-shadow(${c.shadow})` }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={c.src} alt="" aria-hidden className="h-full w-full object-contain" />
+        </div>
+      </div>
+    </div>
+  )
+
+  // CHIPS[0] (lemon-garlic, top) sits ON TOP of the card, NOT clipped — it pops
+  // above the panel edge (per the Figma) so the composition feels dynamic. The
+  // rest are clipped inside the green panel.
+  const [topChip, ...innerChips] = CHIPS
+
   return (
     <Link ref={ref} href="/work/wingstop" className="group block">
-      <div className="relative aspect-[570/720] w-full overflow-hidden rounded-[4px] bg-[#00a653]">
-        {/* phone screen — exact Figma box; bleeds down behind the label card */}
-        <div
-          className="absolute"
-          style={{ left: pctX(124), top: pctY(28), width: pctX(323), height: pctY(551) }}
-        >
-          <Image
-            src="/home/wingstop/screen.webp"
-            alt="Wingstop app — flavor quantities"
-            fill
-            sizes="(max-width: 768px) 56vw, 290px"
-            className="object-contain object-top"
+      {/* outer wrapper is NOT clipped, so the top chip can overflow the panel */}
+      <div className="relative aspect-[570/720] w-full">
+        {/* the green panel — clips the phone + inner chips */}
+        <div className="absolute inset-0 overflow-hidden rounded-[4px] bg-[#00a653]">
+          {/* phone screen — exact Figma box; bleeds down behind the label card */}
+          <div
+            className="absolute"
+            style={{ left: pctX(124), top: pctY(28), width: pctX(323), height: pctY(551) }}
+          >
+            <Image
+              src="/home/wingstop/screen.webp"
+              alt="Wingstop app — flavor quantities"
+              fill
+              sizes="(max-width: 768px) 56vw, 290px"
+              className="object-contain object-top"
+            />
+          </div>
+
+          {/* scattered flavor chips (clipped to panel) — drift + rotate on scroll */}
+          {innerChips.map((c, i) => renderChip(c, i + 1))}
+
+          {/* label card — bottom inset, white border, SOLID green (phone bleeds behind) */}
+          <LabelCard
+            bg="#00a653"
+            logo={
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src="/home/wingstop/wingd-logo.webp" alt="Wingstop" className="w-[53%] object-contain" />
+            }
+            title="App + Digital"
+            pills={['Lead Design', 'Art Director', 'UX', 'UI']}
           />
         </div>
 
-        {/* scattered flavor chips — bob + rotate on scroll (parallax) */}
-        {CHIPS.map((c, i) => {
-          const wave = Math.sin(p * Math.PI + c.phase * Math.PI * 2)
-          const bob = reduce ? 0 : wave * 6
-          const spin = reduce ? c.rot : c.rot + wave * 6
-          return (
-            <div
-              key={i}
-              className="pointer-events-none absolute"
-              style={{ left: pctX(c.boxLeft), top: pctY(c.boxTop), width: pctX(c.boxSize), aspectRatio: '1' }}
-            >
-              <div
-                className="flex h-full w-full items-center justify-center"
-                style={{ transform: `translateY(${bob}px) rotate(${spin}deg)` }}
-              >
-                <div style={{ width: `${c.imgPct}%`, aspectRatio: '1', filter: `drop-shadow(${c.shadow})` }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={c.src} alt="" aria-hidden className="h-full w-full object-contain" />
-                </div>
-              </div>
-            </div>
-          )
-        })}
-
-        {/* label card — bottom inset, white border, SOLID green (phone bleeds behind) */}
-        <LabelCard
-          bg="#00a653"
-          logo={
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src="/home/wingstop/wingd-logo.webp" alt="Wingstop" className="w-[53%] object-contain" />
-          }
-          title="App + Digital"
-          pills={['Lead Design', 'Art Director', 'UX', 'UI']}
-        />
+        {/* the one chip that pops OUT on top (not clipped) */}
+        {renderChip(topChip, 0)}
       </div>
     </Link>
   )
@@ -256,19 +271,23 @@ function CapabilitiesCard() {
             </span>
           </div>
 
-          <div className="relative h-[300px] md:h-[380px]">
+          {/* phones ~2x bigger; the row is a fixed height so the bottoms clip
+              against the card edge (intentional — reads as the phones running
+              off the bottom). overflow-visible lets them extend down into the
+              card's bottom padding before the card's own overflow-hidden clips. */}
+          <div className="relative h-[300px] md:h-[360px]">
             {CAP_PHONES.map((ph, i) => (
               <div
                 key={ph.src}
-                className="absolute w-[34%] max-w-[190px] overflow-hidden rounded-[1.5rem] border-[5px] border-[#1a1a1a] bg-[#1a1a1a] shadow-[0_22px_44px_rgba(0,0,0,0.22)] transition-transform duration-300 group-hover:-translate-y-1"
-                style={{ left: `${i * 30}%`, top: `${i * 34}px`, zIndex: i, transitionDelay: `${i * 40}ms` }}
+                className="absolute w-[58%] max-w-[300px] overflow-hidden rounded-[2rem] border-[6px] border-[#1a1a1a] bg-[#1a1a1a] shadow-[0_26px_50px_rgba(0,0,0,0.24)] transition-transform duration-300 group-hover:-translate-y-1.5"
+                style={{ left: `${i * 22}%`, top: `${i * 52}px`, zIndex: i, transitionDelay: `${i * 40}ms` }}
               >
                 <Image
                   src={ph.src}
                   alt={ph.alt}
                   width={ph.w}
                   height={ph.h}
-                  sizes="(max-width: 1024px) 30vw, 160px"
+                  sizes="(max-width: 1024px) 56vw, 290px"
                   className="h-auto w-full"
                 />
               </div>
