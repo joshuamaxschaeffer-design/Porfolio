@@ -128,7 +128,7 @@ function useEntryProgress(
  * 715.26×611.50 Figma group used in RewardsCard; only the OUTER box is bigger,
  * so the whole composition scales up cleanly. Motion is lifted 1:1.
  * ───────────────────────────────────────────────────────────────────────── */
-function RewardsStage({ className }: { className?: string }) {
+export function RewardsStage({ className }: { className?: string }) {
   const reduce = useReducedMotion()
   const stageRef = useRef<HTMLDivElement>(null)
   const progress = useEntryProgress(stageRef, !reduce)

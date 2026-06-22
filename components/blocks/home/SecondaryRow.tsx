@@ -9,40 +9,47 @@ export interface SecondaryRowProps {
   heading?: string
 }
 
-/* --- Wingstop flavor chips: scattered around the phone ------------------- *
- * Positions/rotations mirror the Figma scatter. Each chip gets a parallax
- * phase so it bobs up/down a few px and rotates ±~20° as the section scrolls.
- */
+/* ───────────────────────────────────────────────────────────────────────────
+ * Home secondary row — 1:1 from Figma 335-73147. Each card is the Figma's
+ * 570×720 frame reproduced as an aspect-ratio box; every child is positioned
+ * with the EXACT Figma px expressed as % of 570×720 so it scales perfectly at
+ * any width. Wingstop = green #00a653 (phone screen + 5 scattered flavor chips
+ * + bottom label card the phone bleeds behind). Samsung = black (interactive
+ * table bleeding top-left + bottom label card). Then the Full Capabilities card.
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+const FW = 570 // figma frame width
+const FH = 720 // figma frame height
+const pctX = (px: number) => `${(px / FW) * 100}%`
+const pctY = (px: number) => `${(px / FH) * 100}%`
+
+/** A flavor chip exactly as Figma: a square centering box (rotated) holding the
+ *  art at `imgPct` of the box. `phase` staggers the scroll parallax. */
 interface Chip {
   src: string
-  /** % left/top within the green panel */
-  left: number
-  top: number
-  /** rendered width in px (desktop) */
-  size: number
-  /** base rotation (deg) */
+  boxLeft: number
+  boxTop: number
+  boxSize: number // px (square)
+  imgPct: number // art size as % of box
   rot: number
-  /** parallax phase 0..1 — staggers motion between chips */
+  shadow: string
   phase: number
 }
 
+// px values lifted verbatim from the Figma dev code (node 335:73168).
 const CHIPS: Chip[] = [
-  { src: '/wingstop/flavor-chips/dragon-breath.png', left: -4, top: 12, size: 92, rot: 14, phase: 0.0 },
-  { src: '/wingstop/flavor-chips/lemon-garlic.png', left: 10, top: -7, size: 120, rot: 33, phase: 0.2 },
-  { src: '/wingstop/flavor-chips/atomic-bbq.png', left: -7, top: 44, size: 150, rot: -18, phase: 0.45 },
-  { src: '/wingstop/flavor-chips/bayou-bbq.png', left: 58, top: 30, size: 150, rot: -22, phase: 0.65 },
-  { src: '/wingstop/flavor-chips/mango-volcano.png', left: 74, top: 8, size: 120, rot: -4, phase: 0.8 },
-  { src: '/wingstop/flavor-chips/hot-lemon.png', left: 70, top: 58, size: 150, rot: -22, phase: 1.0 },
+  { src: '/home/wingstop/chip-lemon-garlic.webp', boxLeft: 25, boxTop: -65, boxSize: 191.81, imgPct: 72.18, rot: 33.44, shadow: '4px 14px 12px rgba(0,0,0,0.25)', phase: 0.0 },
+  { src: '/home/wingstop/chip-dragon-breath.webp', boxLeft: -43.53, boxTop: 90.47, boxSize: 163.57, imgPct: 76.89, rot: -21.88, shadow: '4px 14px 12px rgba(0,0,0,0.25)', phase: 0.25 },
+  { src: '/home/wingstop/chip-atomic-bbq.webp', boxLeft: -48, boxTop: 249, boxSize: 224.5, imgPct: 76.89, rot: -21.88, shadow: '10px 34px 14px rgba(0,0,0,0.25)', phase: 0.5 },
+  { src: '/home/wingstop/chip-bayou-bbq.webp', boxLeft: 335, boxTop: 221, boxSize: 224.5, imgPct: 76.89, rot: -21.88, shadow: '10px 34px 14px rgba(0,0,0,0.25)', phase: 0.7 },
+  { src: '/home/wingstop/chip-hot-lemon.webp', boxLeft: 452, boxTop: 416, boxSize: 222.85, imgPct: 76.89, rot: -21.88, shadow: '10px 34px 14px rgba(0,0,0,0.25)', phase: 0.9 },
 ]
 
-/**
- * Home secondary row (Figma 335-73147): Wingstop (green) + Samsung (black) side
- * by side, then the Full Capabilities card (3 staggered phone screens) below.
- */
 export function SecondaryRow(_props: SecondaryRowProps) {
   return (
-    <section className="home-container py-20 md:py-28">
-      <div className="grid gap-7 lg:grid-cols-2">
+    <section className="home-container py-16 md:py-20">
+      {/* two 570:720 cards, equal — match the Figma 24px gap (~4% of 570) */}
+      <div className="grid gap-5 md:grid-cols-2 md:gap-6">
         <WingstopCard />
         <SamsungCard />
       </div>
@@ -51,11 +58,11 @@ export function SecondaryRow(_props: SecondaryRowProps) {
   )
 }
 
-/* --- Wingstop --------------------------------------------------------------*/
+/* --- Wingstop -------------------------------------------------------------- */
 
 function WingstopCard() {
   const reduce = useReducedMotion()
-  const ref = useRef<HTMLDivElement>(null)
+  const ref = useRef<HTMLAnchorElement>(null)
   const [p, setP] = useState(0)
 
   useEffect(() => {
@@ -67,7 +74,6 @@ function WingstopCard() {
       cancelAnimationFrame(raf)
       raf = requestAnimationFrame(() => {
         const r = el.getBoundingClientRect()
-        // 0 when section centered in viewport; ±1 toward the edges.
         const prog = (window.innerHeight / 2 - (r.top + r.height / 2)) / (window.innerHeight || 1)
         setP(Math.max(-1.2, Math.min(1.2, prog)))
       })
@@ -83,55 +89,51 @@ function WingstopCard() {
   }, [reduce])
 
   return (
-    <Link href="/work/wingstop" className="group block">
-      <div
-        ref={ref}
-        className="relative h-[560px] overflow-hidden rounded-[10px] bg-[#00a653] md:h-[600px]"
-      >
-        {/* phone, centered (sits high so chips + label have room) */}
-        <div className="absolute left-1/2 top-[3%] w-[40%] max-w-[230px] -translate-x-1/2">
-          <div className="overflow-hidden rounded-[1.6rem] border-[5px] border-black/85 bg-black shadow-[0_24px_44px_rgba(0,0,0,0.3)]">
-            <Image
-              src="/wingstop/mobileapp/m-flavor-customize.webp"
-              alt="Wingstop app — flavor customization"
-              width={750}
-              height={1624}
-              sizes="(max-width: 1024px) 40vw, 220px"
-              className="h-auto w-full"
-            />
-          </div>
+    <Link ref={ref} href="/work/wingstop" className="group block">
+      <div className="relative aspect-[570/720] w-full overflow-hidden rounded-[4px] bg-[#00a653]">
+        {/* phone screen — exact Figma box; bleeds down behind the label card */}
+        <div
+          className="absolute"
+          style={{ left: pctX(124), top: pctY(28), width: pctX(323), height: pctY(551) }}
+        >
+          <Image
+            src="/home/wingstop/screen.webp"
+            alt="Wingstop app — flavor quantities"
+            fill
+            sizes="(max-width: 768px) 56vw, 290px"
+            className="object-contain object-top"
+          />
         </div>
 
         {/* scattered flavor chips — bob + rotate on scroll (parallax) */}
         {CHIPS.map((c, i) => {
-          // smooth phase-offset oscillation; amplitude scales with chip size.
-          const wave = Math.sin((p * Math.PI) + c.phase * Math.PI * 2)
-          const bob = reduce ? 0 : wave * (10 + c.size * 0.05)
-          const spin = reduce ? c.rot : c.rot + wave * 20
+          const wave = Math.sin(p * Math.PI + c.phase * Math.PI * 2)
+          const bob = reduce ? 0 : wave * 6
+          const spin = reduce ? c.rot : c.rot + wave * 6
           return (
             <div
               key={i}
-              className="pointer-events-none absolute will-change-transform"
-              style={{
-                left: `${c.left}%`,
-                top: `${c.top}%`,
-                width: `clamp(${c.size * 0.6}px, ${c.size / 6}vw, ${c.size}px)`,
-                transform: `translateY(${bob}px) rotate(${spin}deg)`,
-                filter: 'drop-shadow(6px 18px 12px rgba(0,0,0,0.28))',
-              }}
+              className="pointer-events-none absolute"
+              style={{ left: pctX(c.boxLeft), top: pctY(c.boxTop), width: pctX(c.boxSize), aspectRatio: '1' }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={c.src} alt="" aria-hidden className="h-auto w-full" />
+              <div
+                className="flex h-full w-full items-center justify-center"
+                style={{ transform: `translateY(${bob}px) rotate(${spin}deg)` }}
+              >
+                <div style={{ width: `${c.imgPct}%`, aspectRatio: '1', filter: `drop-shadow(${c.shadow})` }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={c.src} alt="" aria-hidden className="h-full w-full object-contain" />
+                </div>
+              </div>
             </div>
           )
         })}
 
-        {/* label card */}
+        {/* label card — bottom inset, white border, green bg (phone bleeds behind) */}
         <LabelCard
-          className="border-white text-white"
           logo={
             // eslint-disable-next-line @next/next/no-img-element
-            <img src="/wingstop/logo/wingstop-white.svg" alt="Wingstop" className="h-[60px] w-auto" />
+            <img src="/home/wingstop/wingd-logo.webp" alt="Wingstop" className="w-[53%] object-contain" />
           }
           title="App + Digital"
           pills={['Lead Design', 'Art Director', 'UX', 'UI']}
@@ -141,29 +143,30 @@ function WingstopCard() {
   )
 }
 
-/* --- Samsung ---------------------------------------------------------------*/
+/* --- Samsung --------------------------------------------------------------- */
 
 function SamsungCard() {
   return (
     <Link href="/work/samsung" className="group block">
-      <div className="relative h-[560px] overflow-hidden rounded-[10px] bg-black md:h-[600px]">
-        {/* interactive table device, bleeding off the top */}
-        <div className="absolute -left-[14%] -top-[18%] w-[120%]">
+      <div className="relative aspect-[570/720] w-full overflow-hidden rounded-[4px] bg-black">
+        {/* interactive table device — exact Figma box, bleeds off top-left */}
+        <div
+          className="absolute"
+          style={{ left: pctX(-154), top: pctY(-259), width: pctX(1180), height: pctY(1091) }}
+        >
           <Image
-            src="/samsung/work/table-device.webp"
+            src="/home/samsung/table.webp"
             alt="Samsung Galaxy interactive retail table"
-            width={3226}
-            height={2985}
-            sizes="(max-width: 1024px) 90vw, 600px"
-            className="h-auto w-full"
+            fill
+            sizes="(max-width: 768px) 110vw, 600px"
+            className="object-contain object-left-top"
           />
         </div>
 
         <LabelCard
-          className="border-white text-white"
           logo={
             // eslint-disable-next-line @next/next/no-img-element
-            <img src="/samsung/brand/samsung-wordmark-white.png" alt="Samsung" className="h-[26px] w-auto" />
+            <img src="/samsung/brand/samsung-wordmark-white.png" alt="Samsung" className="w-[62%] object-contain" />
           }
           title="Digital + Social"
           pills={['Design', 'UI', 'UX', 'Social Posts']}
@@ -173,46 +176,49 @@ function SamsungCard() {
   )
 }
 
-/* --- shared inset label card ---------------------------------------------- */
+/* --- shared label card (Figma: left 24, top 423, 522×270, white border) ----- */
 
 function LabelCard({
   logo,
   title,
   pills,
-  className,
 }: {
   logo: React.ReactNode
   title: string
   pills: string[]
-  className?: string
 }) {
   return (
     <div
-      className={`absolute inset-x-5 bottom-5 flex flex-col items-center gap-4 rounded-[6px] border bg-transparent px-6 py-7 text-center backdrop-blur-[2px] transition-transform duration-300 group-hover:-translate-y-1 ${className || ''}`}
+      className="absolute flex flex-col items-center overflow-hidden rounded-[4px] border border-white text-white transition-transform duration-300 group-hover:-translate-y-1"
+      style={{ left: pctX(24), top: pctY(423), width: pctX(522), height: pctY(270) }}
     >
-      <span className="flex h-[64px] items-center justify-center">{logo}</span>
-      <p
-        className="uppercase"
-        style={{ fontFamily: 'var(--font-heading)', fontWeight: 500, fontSize: 'clamp(18px, 1.8vw, 26px)' }}
-      >
-        {title}
-      </p>
-      <ul className="flex flex-wrap justify-center gap-2.5">
-        {pills.map((p) => (
-          <li
-            key={p}
-            className="rounded-[2px] border border-current px-2 py-1"
-            style={{ fontFamily: 'var(--font-body)', fontSize: '14px' }}
-          >
-            {p}
-          </li>
-        ))}
-      </ul>
+      {/* logo zone — top ~52% of the card */}
+      <div className="flex h-[52%] w-full items-center justify-center pt-[4%]">{logo}</div>
+      {/* title + pills */}
+      <div className="flex w-full flex-col items-center gap-[clamp(8px,1.6vw,18px)] px-[6%]">
+        <p
+          className="uppercase leading-none"
+          style={{ fontFamily: 'var(--font-heading)', fontWeight: 500, fontSize: 'clamp(15px, 3.4vw, 28px)' }}
+        >
+          {title}
+        </p>
+        <ul className="flex flex-wrap justify-center gap-[clamp(6px,1.4vw,16px)]">
+          {pills.map((pill) => (
+            <li
+              key={pill}
+              className="rounded-[2px] border border-white px-[8px] py-[6px] leading-none"
+              style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(11px, 2.4vw, 22px)' }}
+            >
+              {pill}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   )
 }
 
-/* --- Full Capabilities: 3 staggered phone screens ------------------------- */
+/* --- Full Capabilities: 3 staggered phone screens (Figma 335:73171) -------- */
 
 const CAP_PHONES = [
   { src: '/capabilities/cbtl/ui-1.webp', alt: 'Coffee Bean & Tea Leaf app', w: 560, h: 996 },
@@ -222,10 +228,9 @@ const CAP_PHONES = [
 
 function CapabilitiesCard() {
   return (
-    <Link href="/work/capabilities" className="group mt-7 block">
-      <div className="relative overflow-hidden rounded-[10px] border border-[#dcdce1] bg-[#f3f3f3]">
+    <Link href="/work/capabilities" className="group mt-5 block md:mt-6">
+      <div className="relative overflow-hidden rounded-[4px] border border-[#dcdce1] bg-[#f3f3f3]">
         <div className="grid items-center gap-8 p-8 md:grid-cols-[minmax(0,360px)_minmax(0,1fr)] md:p-12">
-          {/* copy */}
           <div>
             <p
               className="uppercase text-[#070e2c]"
@@ -246,24 +251,18 @@ function CapabilitiesCard() {
             </span>
           </div>
 
-          {/* three phones, staggered down left→right */}
-          <div className="relative h-[320px] md:h-[400px]">
-            {CAP_PHONES.map((p, i) => (
+          <div className="relative h-[300px] md:h-[380px]">
+            {CAP_PHONES.map((ph, i) => (
               <div
-                key={p.src}
+                key={ph.src}
                 className="absolute w-[34%] max-w-[190px] overflow-hidden rounded-[1.5rem] border-[5px] border-[#1a1a1a] bg-[#1a1a1a] shadow-[0_22px_44px_rgba(0,0,0,0.22)] transition-transform duration-300 group-hover:-translate-y-1"
-                style={{
-                  left: `${i * 30}%`,
-                  top: `${i * 34}px`,
-                  zIndex: i,
-                  transitionDelay: `${i * 40}ms`,
-                }}
+                style={{ left: `${i * 30}%`, top: `${i * 34}px`, zIndex: i, transitionDelay: `${i * 40}ms` }}
               >
                 <Image
-                  src={p.src}
-                  alt={p.alt}
-                  width={p.w}
-                  height={p.h}
+                  src={ph.src}
+                  alt={ph.alt}
+                  width={ph.w}
+                  height={ph.h}
                   sizes="(max-width: 1024px) 30vw, 160px"
                   className="h-auto w-full"
                 />
