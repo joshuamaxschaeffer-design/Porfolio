@@ -1,10 +1,8 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
-import { useReducedMotion } from 'motion/react'
-import { useEffect, useRef, useState } from 'react'
 import { BaserateLogo } from '../baserate/BaserateLogo'
+import { BrandingScene } from '../baserate/branding/BrandingScene'
 
 export interface FlagshipBaserateProps {
   title?: string
@@ -27,34 +25,6 @@ export function FlagshipBaserate({
   meta = 'Lead Product & Brand Designer · 2022–2024',
   href = '/work/baserate',
 }: FlagshipBaserateProps) {
-  const reduce = useReducedMotion()
-  const wrap = useRef<HTMLDivElement>(null)
-  const [shift, setShift] = useState(0)
-
-  useEffect(() => {
-    if (reduce) return
-    const el = wrap.current
-    if (!el) return
-    let raf = 0
-    const onScroll = () => {
-      cancelAnimationFrame(raf)
-      raf = requestAnimationFrame(() => {
-        const r = el.getBoundingClientRect()
-        // progress: -1 (below viewport) → 1 (above). Drives a small float.
-        const p = (window.innerHeight / 2 - (r.top + r.height / 2)) / window.innerHeight
-        setShift(Math.max(-1, Math.min(1, p)))
-      })
-    }
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onScroll)
-    return () => {
-      cancelAnimationFrame(raf)
-      window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', onScroll)
-    }
-  }, [reduce])
-
   return (
     <section
       data-flagship="Baserate"
@@ -69,7 +39,7 @@ export function FlagshipBaserate({
             'radial-gradient(120% 100% at 78% 6%, #f3f6fc 0%, #ffffff 55%)',
         }}
       />
-      <div ref={wrap} className="home-container py-24 md:py-36">
+      <div className="home-container py-20 md:py-28">
         <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,440px)_minmax(0,1fr)] lg:gap-16">
           {/* CARD — logo + FULL STACK DESIGN + gold pills (Figma) */}
           <div className="order-2 lg:order-1">
@@ -122,22 +92,12 @@ export function FlagshipBaserate({
             </Link>
           </div>
 
-          {/* MEDIA — angled Baserate device render, floats on scroll */}
+          {/* MEDIA — the case study's "Brand & Marketing" floating scene
+              (Journalytic phone + Baserate site device + colour swatches +
+              app-icon chips), imported with its full scroll parallax. Sits to
+              the right of the card. */}
           <div className="relative order-1 lg:order-2">
-            <div
-              className="relative mx-auto w-full max-w-[640px] will-change-transform"
-              style={{ transform: reduce ? undefined : `translateY(${shift * -26}px)` }}
-            >
-              <Image
-                src="/baserate/branding/devices/desktop/poster-v2.webp"
-                alt="Baserate — the investment operating system, shown on a tablet"
-                width={1478}
-                height={1612}
-                sizes="(max-width: 1024px) 90vw, 600px"
-                className="h-auto w-full drop-shadow-[0_30px_60px_rgba(7,14,44,0.18)]"
-                priority={false}
-              />
-            </div>
+            <BrandingScene className="mx-auto w-full max-w-[760px] lg:max-w-none" />
           </div>
         </div>
       </div>
