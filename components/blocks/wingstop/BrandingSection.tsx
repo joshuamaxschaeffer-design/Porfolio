@@ -5,9 +5,10 @@ import { branding as defaults } from './data'
 
 /**
  * SECTION 5 — BRANDING. Black field. The flavor icons rendered as dimensional
- * 3D "chips" that rotate subtly (~45°) on scroll, à la the Baserate chips
- * (CSS-3D stand-in for SD-Studio renders), then a flat grid of the full set
- * noting they had to match Wingstop's existing icon style.
+ * 3D "chips" — each a real SD-Studio turntable (7 frames, 0–6) that scrubs
+ * forward/back as the section scrolls past, so the coins genuinely rotate in 3D
+ * rather than CSS-faking a pivot. Then a flat grid of the full set, noting they
+ * had to match Wingstop's existing icon style.
  */
 export function BrandingSection() {
   return (
@@ -32,11 +33,11 @@ export function BrandingSection() {
         <p className="mt-3 max-w-3xl text-lg text-white/80 md:text-[22px]">{defaults.intro}</p>
       </div>
 
-      {/* 3D chips */}
-      <div className="br-container pt-12 md:pt-16" style={{ perspective: '1200px' }}>
+      {/* 3D turntable chips */}
+      <div className="br-container pt-12 md:pt-16">
         <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-3">
           {defaults.chips.map((c, i) => (
-            <Chip key={c.name} chip={c} index={i} />
+            <TurntableChip key={c.name} chip={c} index={i} frameCount={defaults.chipFrameCount} />
           ))}
         </div>
       </div>
@@ -63,68 +64,96 @@ export function BrandingSection() {
   )
 }
 
-/** The chips now render FRONT-FACING (rendered upright in SD Studio), so on
- *  scroll the coins gently PIVOT in 3D around the vertical (Y) axis — like a coin
- *  turning toward/away from you — rather than spinning flat in-plane. Per-chip
- *  baseline Y-rotation (deg) gives the resting set a touch of life; the scroll
- *  drift swings around it. */
-const CHIP_BASE_ROT = [-10, 8, -6, 9, -8, 7]
+/**
+ * A single turntable chip. All `frameCount` frames are rendered stacked and
+ * preloaded; only the active frame is opaque, so scrubbing never swaps `src`
+ * (no decode flicker). The active frame is driven by the chip's center-relative
+ * scroll progress: as the section travels from below the viewport to above it,
+ * the turntable plays through a little over one full rotation. Alternate chips
+ * spin opposite directions and start on a staggered frame so the set feels alive
+ * rather than locked in sync. Reduced-motion users get a fixed 3/4 frame.
+ */
+const REST_FRAME = (count: number) => Math.floor(count * 0.4) // pleasant 3/4 resting pose
 
-function Chip({ chip, index }: { chip: { src: string; name: string; color: string }; index: number }) {
+function TurntableChip({
+  chip,
+  index,
+  frameCount,
+}: {
+  chip: { slug: string; name: string; color: string }
+  index: number
+  frameCount: number
+}) {
   const ref = useRef<HTMLDivElement>(null)
-  const [drift, setDrift] = useState(0)
-  const base = CHIP_BASE_ROT[index % CHIP_BASE_ROT.length]
+  const [frame, setFrame] = useState(() => REST_FRAME(frameCount))
+
+  const frames = Array.from({ length: frameCount }, (_, n) => `/wingstop/flavor-chips/turntable/${chip.slug}-${n}.webp`)
 
   useEffect(() => {
     const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
     if (reduce) {
-      setDrift(0)
+      setFrame(REST_FRAME(frameCount))
       return
     }
+    const dir = index % 2 ? -1 : 1 // alternate spin direction per chip
+    const offset = index * 0.6 // stagger so adjacent chips aren't synced
+    const turns = 1.15 // a little over one full turn across the travel
+
+    // Drive from a continuous rAF loop that re-reads getBoundingClientRect each
+    // frame. This is intentional: the site runs Lenis smooth-scroll, which moves
+    // a transform rather than emitting reliable native `scroll` events — a plain
+    // scroll listener gets frozen. Reading the rect every frame tracks the chip
+    // regardless of how the scroll is driven. The loop idles (no setState) while
+    // the chip is well off-screen, so it stays cheap.
     let raf = 0
-    const onScroll = () => {
-      raf = 0
+    let lastIdx = -1
+    const tick = () => {
       const el = ref.current
-      if (!el) return
-      const r = el.getBoundingClientRect()
-      const vh = window.innerHeight
-      // center-relative progress: -1 (below) → 0 (centered) → 1 (above)
-      const c = (r.top + r.height / 2 - vh / 2) / (vh / 2)
-      // gentle 3D Y-axis pivot; alternate direction per chip so adjacent coins
-      // turn opposite ways as the section scrolls past.
-      setDrift(Math.max(-16, Math.min(16, c * 14 * (index % 2 ? -1 : 1))))
+      if (el) {
+        const r = el.getBoundingClientRect()
+        const vh = window.innerHeight
+        // Guard against a collapsed/unlaid-out box (height 0) — hold the rest
+        // pose rather than computing a garbage frame.
+        const onScreen = r.height > 0 && r.bottom > -vh * 0.25 && r.top < vh * 1.25
+        if (onScreen) {
+          // progress: 0 as the chip enters from the bottom, 1 as it exits the top
+          const p = Math.max(0, Math.min(1, (vh - r.top) / (vh + r.height)))
+          const raw = p * turns * dir + offset
+          const idx = ((Math.round(raw * frameCount) % frameCount) + frameCount) % frameCount
+          if (idx !== lastIdx) {
+            lastIdx = idx
+            setFrame(idx)
+          }
+        }
+      }
+      raf = requestAnimationFrame(tick)
     }
-    const schedule = () => {
-      if (!raf) raf = requestAnimationFrame(onScroll)
-    }
-    onScroll()
-    window.addEventListener('scroll', schedule, { passive: true })
-    window.addEventListener('resize', schedule)
+    raf = requestAnimationFrame(tick)
     return () => {
-      window.removeEventListener('scroll', schedule)
-      window.removeEventListener('resize', schedule)
       if (raf) cancelAnimationFrame(raf)
     }
-  }, [index])
+  }, [index, frameCount])
 
   return (
     <div className="flex flex-col items-center">
-      {/* Front-facing 3D coin renders: a subtle scroll-linked 3D pivot around the
-          vertical (Y) axis — the coin turns toward/away — kept gentle so the glyph
-          stays readable. preserve-3d so the rotateY renders with real depth. */}
-      <div ref={ref} className="relative grid aspect-square w-full place-items-center [perspective:900px] will-change-transform">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={chip.src}
-          alt={`${chip.name} flavour chip`}
-          loading="lazy"
-          className="h-[88%] w-[88%] object-contain"
-          style={{
-            transform: `rotateY(${base + drift}deg)`,
-            transformStyle: 'preserve-3d',
-            filter: 'drop-shadow(0 18px 26px rgba(0,0,0,0.5))',
-          }}
-        />
+      <div ref={ref} className="relative grid aspect-square w-full place-items-center will-change-contents">
+        {frames.map((src, n) => (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            key={src}
+            src={src}
+            alt={n === 0 ? `${chip.name} flavour chip` : ''}
+            aria-hidden={n !== 0}
+            loading={n <= REST_FRAME(frameCount) ? 'eager' : 'lazy'}
+            decoding="async"
+            draggable={false}
+            className="col-start-1 row-start-1 h-[88%] w-[88%] object-contain"
+            style={{
+              opacity: n === frame ? 1 : 0,
+              filter: 'drop-shadow(0 18px 26px rgba(0,0,0,0.5))',
+            }}
+          />
+        ))}
       </div>
       <span className="br-data mt-3 text-center text-[11px] uppercase leading-tight tracking-[0.08em] text-white/65">
         {chip.name}

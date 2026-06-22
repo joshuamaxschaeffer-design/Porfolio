@@ -314,14 +314,18 @@ export const branding = {
   heading: 'Custom Flavor Icons',
   intro: 'Wingstop’s limited time flavors needed icons, so I designed a set of icons that felt exciting and new while sticking to their current brand style.',
   /** Real 3D chip renders (SD Studio): each flavour's actual glyph embossed on
-   *  a dimensional flavour-coloured coin. Replaces the CSS-3D stand-in. */
+   *  a dimensional flavour-coloured coin. Each chip is a 7-frame turntable
+   *  (frames 0–6) that scrubs as the section scrolls past, giving a genuine 3D
+   *  spin instead of the old CSS-3D pivot. `slug` resolves to
+   *  /wingstop/flavor-chips/turntable/<slug>-<frame>.webp. */
+  chipFrameCount: 7,
   chips: [
-    { src: '/wingstop/flavor-chips/atomic-bbq.png', name: 'Atomic BBQ', color: '#006938' },
-    { src: '/wingstop/flavor-chips/bayou-bbq.png', name: 'Bayou BBQ', color: '#006938' },
-    { src: '/wingstop/flavor-chips/dragon-breath.png', name: 'Dragon Breath', color: '#006938' },
-    { src: '/wingstop/flavor-chips/hot-lemon.png', name: 'Hot Lemon', color: '#006938' },
-    { src: '/wingstop/flavor-chips/lemon-garlic.png', name: 'Lemon Garlic', color: '#006938' },
-    { src: '/wingstop/flavor-chips/mango-volcano.png', name: 'Mango Volcano', color: '#006938' },
+    { slug: 'atomic-bbq', name: 'Atomic BBQ', color: '#006938' },
+    { slug: 'bayou-bbq', name: 'Bayou BBQ', color: '#006938' },
+    { slug: 'dragon-breath', name: 'Dragon Breath', color: '#006938' },
+    { slug: 'hot-lemon', name: 'Hot Lemon', color: '#006938' },
+    { slug: 'lemon-garlic', name: 'Lemon Garlic', color: '#006938' },
+    { slug: 'mango-volcano', name: 'Mango Volcano', color: '#006938' },
   ],
   gridEyebrow: 'MATCHED TO THE BRAND',
   gridNote: 'Wingstop’s existing flavor-icon language — the system I designed mine to sit alongside.',
