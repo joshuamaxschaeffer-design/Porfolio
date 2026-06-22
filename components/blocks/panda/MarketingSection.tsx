@@ -67,10 +67,6 @@ export function MarketingSection() {
             <PerspectiveStack pages={defaults.ux.pages} />
           </Reveal>
         </div>
-
-        <div className="mt-10">
-          <LiveLink />
-        </div>
       </div>
     </section>
   )
@@ -315,22 +311,6 @@ function WireframeCard({
 }
 
 /* ── shared ─────────────────────────────────────────────────────────────────── */
-
-function LiveLink() {
-  return (
-    <a
-      href={defaults.live.cta.href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="inline-flex items-center gap-2 rounded-full bg-[var(--px-red)] px-6 py-3 text-sm font-medium text-white transition-opacity hover:opacity-90"
-    >
-      {defaults.live.cta.label}
-      <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden>
-        <path d="M7 17L17 7M17 7H8M17 7v9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </a>
-  )
-}
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return <span className="br-data text-xs font-semibold uppercase tracking-[0.18em] text-[#ff5a4d]">{children}</span>

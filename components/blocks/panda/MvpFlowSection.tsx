@@ -500,6 +500,8 @@ function ScenarioChips({ activeId, onPick }: { activeId: string; onPick: (id: st
             role="tab"
             aria-selected={active}
             onClick={() => onPick(c.id)}
+            onMouseEnter={() => onPick(c.id)}
+            onFocus={() => onPick(c.id)}
             className="group flex items-center gap-2 rounded-full border px-4 py-2 text-[14px] font-medium leading-none transition-colors duration-200 md:text-[15px]"
             style={{
               borderColor: active ? col : 'var(--br-line)',
@@ -528,7 +530,6 @@ export function MvpFlowSection({ intro }: { intro?: string } = {}) {
   // default view = "all" (every flow shown in full colour); chips drill in.
   const [activeId, setActiveId] = useState<string>('all')
   const [progress, setProgress] = useState(0)
-  const [paused, setPaused] = useState(false)
 
   const scenarios = data.scenarios
   const scenario = scenarios.find((s) => s.id === activeId)
@@ -536,20 +537,15 @@ export function MvpFlowSection({ intro }: { intro?: string } = {}) {
 
   useEffect(() => setReduced(prefersReducedMotion()), [])
 
-  // sequential reveal only for a specific scenario (not "all"); no auto-cycle.
+  // No step-by-step reveal: the active scenario's whole path is shown instantly
+  // in its final state. (progress is kept = steps so the diagram lights the full
+  // path; the colour cross-fade between scenarios still reads cleanly.)
   useEffect(() => {
-    if (activeId === 'all' || !scenario) return
-    if (!inView || reduced) { setProgress(steps); return }
-    if (paused) return
-    if (progress < steps) {
-      const t = setTimeout(() => setProgress((p) => p + 1), 280)
-      return () => clearTimeout(t)
-    }
-  }, [activeId, scenario, inView, reduced, paused, progress, steps])
+    setProgress(steps)
+  }, [steps, activeId])
 
   const pick = useCallback((id: string) => {
     setActiveId(id)
-    setProgress(0)
   }, [])
 
   const lead = intro ?? data.intro
@@ -577,10 +573,6 @@ export function MvpFlowSection({ intro }: { intro?: string } = {}) {
         <div
           ref={ref}
           className="relative mt-8 overflow-hidden rounded-[var(--br-card-radius)] border border-[var(--br-line)] bg-white p-4 shadow-[var(--br-card-shadow)] md:mt-10 md:p-6"
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
-          onFocusCapture={() => setPaused(true)}
-          onBlurCapture={() => setPaused(false)}
         >
           <div className="hidden lg:block">
             <DesktopDiagram activeId={activeId} progress={progress} reduced={reduced} />
