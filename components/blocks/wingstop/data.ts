@@ -273,8 +273,8 @@ export const flavorPages = {
 /** SECTION 6 — In-Store screens (2 tall boards side by side). */
 export const inStoreSection = {
   eyebrow: 'IN-STORE SCREENS',
-  heading: 'Designed for the wall, too',
-  intro: 'The flavor-first system reached the restaurants. I designed the digital menu boards, vertical and horizontal, that were implemented in stores.',
+  heading: 'In-Store Menu Boards',
+  intro: 'When Wingstop decided to upgrade stores with digital in-store menus, they turned to us for a clean menu that clearly communicated their brand.',
   boards: [
     { src: '/wingstop/instore/board-1.webp', label: 'Combos & group packs' },
     { src: '/wingstop/instore/board-2.webp', label: 'Extras & drinks' },
@@ -311,8 +311,8 @@ export const appStore = {
  */
 export const branding = {
   eyebrow: 'BRANDING',
-  heading: 'A flavor icon system, in three dimensions',
-  intro: 'Every flavor needed its own mark. I designed an icon for each one and matched it to Wingstop’s existing icon language, then rendered them as a dimensional set.',
+  heading: 'Custom Flavor Icons',
+  intro: 'Wingstop’s limited time flavors needed icons, so I designed a set of icons that felt exciting and new while sticking to their current brand style.',
   /** Real 3D chip renders (SD Studio): each flavour's actual glyph embossed on
    *  a dimensional flavour-coloured coin. Replaces the CSS-3D stand-in. */
   chips: [
@@ -349,8 +349,8 @@ export const branding = {
  */
 export const uiux = {
   eyebrow: 'UI/UX UPDATES',
-  heading: 'The UX work underneath',
-  intro: 'The redesign was built on real UX work: flows for every key task, a full dark mode, and a measurable usability overhaul.',
+  heading: 'Full UX overhaul',
+  intro: 'After a year of research and an expanded budget, the UX was revisited to be cleaner, simpler, and more intuitive.',
   flows: [
     {
       name: 'Hub-and-spoke ordering',
@@ -391,8 +391,8 @@ export const uiux = {
   ],
   darkMode: {
     eyebrow: 'DARK MODE',
-    title: 'The whole app, after dark',
-    body: 'A full dark theme so the food photography only got richer. Every screen, re-themed.',
+    title: 'Dark Mode for Late-Night Orders',
+    body: 'The Wingstop brand hardly felt complete without a dark mode, so the whole app and component library was revisited to include dark mode on every page.',
     screens: [
       '/wingstop/darkmode/dm-1.webp',
       '/wingstop/darkmode/dm-2.webp',
@@ -403,8 +403,8 @@ export const uiux = {
   },
   improvement: {
     eyebrow: 'UI IMPROVEMENT',
-    title: 'A complicated order, made simple',
-    body: 'A measured usability overhaul of the build-your-meal flow. Here it is in motion.',
+    title: 'The improved UI',
+    body: 'Better UX gave opportunity for better UI. A larger focus on food, cleaner UI components.',
     screens: [
       '/wingstop/usability/step-1-flavors.webp',
       '/wingstop/usability/step-2-side.webp',
