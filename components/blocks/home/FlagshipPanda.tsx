@@ -31,21 +31,11 @@ export function FlagshipPanda({
       {/* gold sparkles + fireworks across the band (imported from the case study) */}
       <Sparkles />
 
-      <div className="home-container py-16 md:py-20">
-        {/* heading only, top-left (intro copy removed per Josh) */}
-        <div className="relative z-20 max-w-[60ch]">
-          <h2
-            className="font-heading uppercase leading-none tracking-wide text-white"
-            style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 'clamp(30px, 4.4vw, 52px)' }}
-          >
-            Full Rewards App
-          </h2>
-        </div>
-
+      <div className="home-container py-20 md:py-24">
         {/* big phones centerpiece, with the label card floated right over open
             red space. On desktop the stage is pulled left (max-w + mr-auto) so
-            the right phone clears the floating card. */}
-        <div className="relative mt-2">
+            the right phone clears the floating card. Heading/intro removed per Josh. */}
+        <div className="relative">
           {/* the EXACT case-study rewards stage — scaled UP (was max-w-820) */}
           <RewardsStage className="relative z-10 mx-auto w-full max-w-[1060px] lg:mx-0 lg:max-w-[64%]" />
 
@@ -76,10 +66,10 @@ export function FlagshipPanda({
               </ul>
               <Link
                 href={href}
-                className="group mt-1 inline-flex items-center gap-2 rounded-full border border-white/60 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-white hover:text-[var(--px-red,#c81f25)]"
+                className="group mt-2 inline-flex items-center gap-2 text-sm font-medium text-white"
               >
                 Read the case study
-                <span aria-hidden className="transition-transform group-hover:translate-x-0.5">→</span>
+                <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
               </Link>
             </div>
           </div>
