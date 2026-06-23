@@ -148,12 +148,13 @@ export function RewardsStage({ className, hovered = false }: { className?: strin
   useEffect(() => { hoverRaw.set(reduce ? 0 : hovered ? 1 : 0) }, [hovered, reduce, hoverRaw])
   const h = useSpring(hoverRaw, { stiffness: 140, damping: 18, mass: 0.7 })
   // per-phone hover deltas (px / deg / scale). Phone1 front-left, Phone2 back-right.
-  const h1x = useTransform(h, (v) => -46 * v)
-  const h1y = useTransform(h, (v) => -26 * v)
+  // Movement is 2× (the phones travel further apart); scale unchanged.
+  const h1x = useTransform(h, (v) => -92 * v)
+  const h1y = useTransform(h, (v) => -52 * v)
   const h1r = useTransform(h, (v) => -3 * v)
   const h1s = useTransform(h, (v) => 1 + 0.09 * v)
-  const h2x = useTransform(h, (v) => 52 * v)
-  const h2y = useTransform(h, (v) => 22 * v)
+  const h2x = useTransform(h, (v) => 104 * v)
+  const h2y = useTransform(h, (v) => 44 * v)
   const h2r = useTransform(h, (v) => 4 * v)
   const h2s = useTransform(h, (v) => 1 + 0.11 * v)
 
@@ -185,11 +186,13 @@ export function RewardsStage({ className, hovered = false }: { className?: strin
   const s2op = useTransform(a, (v) => 0.3 * (1 - 0.6 * v))
   const s2blur = useTransform(a, (v) => `blur(${12 * v}px)`)
   // Phone 1's CLIPPED cast shadow on Phone 2 (art moves inside a fixed mask).
-  const cs1x = useTransform([a, h1x] as const, ([v, hv]: number[]) => -90 * v + hv)
-  const cs1y = useTransform([a, h1y] as const, ([v, hv]: number[]) => 80 * v + 28 * v + hv)
+  // As the phones SEPARATE on hover (h→1) the cast shadow drifts DOWN, fades, and
+  // blurs — the front phone lifting away from the back one. (h drives those.)
+  const cs1x = useTransform([a, h1x] as const, ([v, hv]: number[]) => -90 * v + hv * 0.5)
+  const cs1y = useTransform([a, h] as const, ([v, hov]: number[]) => 80 * v + 28 * v + 60 * hov)
   const cs1r = useTransform(a, (v) => 8 * v)
-  const cs1op = useTransform(a, (v) => 0.9 * (1 - 0.55 * v))
-  const cs1blur = useTransform(a, (v) => `blur(${10 * v}px)`)
+  const cs1op = useTransform([a, h] as const, ([v, hov]: number[]) => 0.9 * (1 - 0.55 * v) * (1 - 0.6 * hov))
+  const cs1blur = useTransform([a, h] as const, ([v, hov]: number[]) => `blur(${10 * v + 12 * hov}px)`)
 
   return (
     <div

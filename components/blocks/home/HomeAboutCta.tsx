@@ -11,23 +11,27 @@ interface AboutItem {
   n: string
   title: string
   body: string
+  img: string
 }
 
 const ITEMS: AboutItem[] = [
   {
     n: '01',
-    title: 'Full Design Systems',
-    body: 'Long-term thinking and scalable architecture. Design as infrastructure, not decoration.',
+    title: 'Strategic Planning',
+    body: 'Research and user needs always inform product strategy.',
+    img: '/home/about/strategic-planning.webp',
   },
   {
     n: '02',
-    title: 'Strategy through execution',
-    body: 'Leadership backed by shipped product, not concept-only work.',
+    title: 'Product Clarity',
+    body: 'Long-term thinking, scalable architecture, clear leadership.',
+    img: '/home/about/product-clarity.webp',
   },
   {
     n: '03',
-    title: 'Clarity and Trust',
-    body: 'A UX philosophy tuned for fintech, enterprise, and high-stakes interfaces.',
+    title: 'Full System Design',
+    body: 'UX, UI, and Branding all form one complete product system.',
+    img: '/home/about/full-system-design.webp',
   },
 ]
 
@@ -48,11 +52,12 @@ export function HomeAboutCta({
       <div className="grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
         {ITEMS.map((it) => (
           <div key={it.n}>
-            {/* icon placeholder — illustration drops in later */}
-            <div
-              className="mb-7 aspect-[283/171] w-full rounded-[2px] bg-[rgba(217,217,217,0.25)]"
-              aria-hidden
-            />
+            {/* iso illustration (square). Sits on a faint tint so it reads even
+                while the asset is being finalised. */}
+            <div className="mb-6 flex aspect-square w-full items-center justify-center rounded-[2px]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={it.img} alt="" aria-hidden className="h-full w-full object-contain" />
+            </div>
             <p
               className="uppercase text-[#7e7f88]"
               style={{ fontFamily: 'var(--font-data)', fontSize: '16px' }}
@@ -75,23 +80,34 @@ export function HomeAboutCta({
         ))}
       </div>
 
-      {/* CTA panel */}
-      <div className="mt-20 flex min-h-[320px] flex-col items-center justify-center rounded-[10px] bg-[#f3f3f3] px-6 py-16 text-center md:mt-24">
+      {/* CTA panel — faint sketches photo background under a 70% white overlay.
+          The image + overlay ARE the panel background (no solid fill on top, or
+          it would hide the photo); content sits above via relative z-10. */}
+      <div className="relative isolate mt-20 flex min-h-[320px] flex-col items-center justify-center overflow-hidden rounded-[10px] bg-[#f3f3f3] px-6 py-16 text-center md:mt-24">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/home/about/cta-sketches.webp"
+          alt=""
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
+        />
+        {/* 70% white overlay to keep the photo really faint */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 z-0 bg-white/[0.72]" />
         <h2
-          className="uppercase text-black"
+          className="relative z-10 uppercase text-black"
           style={{ fontFamily: 'var(--font-heading)', fontWeight: 500, fontSize: 'clamp(22px, 3vw, 30px)' }}
         >
           {ctaHeading}
         </h2>
         <p
-          className="mt-4 max-w-xl text-black"
+          className="relative z-10 mt-4 max-w-xl text-black"
           style={{ fontFamily: 'var(--font-body)', fontSize: '16px' }}
         >
           {ctaBody}
         </p>
         <Link
           href={ctaUrl}
-          className="group mt-7 inline-flex items-center gap-2 rounded-full border border-black/20 px-4 py-2 text-black transition-colors hover:border-black/50 hover:bg-black hover:text-white"
+          className="group relative z-10 mt-7 inline-flex items-center gap-2 rounded-full border border-black/20 px-4 py-2 text-black transition-colors hover:border-black/50 hover:bg-black hover:text-white"
           style={{ fontFamily: 'var(--font-sans)', fontSize: '12px' }}
         >
           {ctaLabel}
