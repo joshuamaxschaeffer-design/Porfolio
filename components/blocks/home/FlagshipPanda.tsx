@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import { useState } from 'react'
 import { RewardsStage } from '../panda/PremiumRewardsSection'
 import { Sparkles } from '../panda/Sparkles'
 
@@ -22,6 +25,7 @@ const PILLS = ['Lead Design', 'Art Director', 'UX', 'UI']
 export function FlagshipPanda({
   href = '/work/panda-express',
 }: FlagshipPandaProps) {
+  const [cardHover, setCardHover] = useState(false)
   return (
     <section
       data-flagship="Panda Express"
@@ -37,13 +41,24 @@ export function FlagshipPanda({
             section is tall + overflow-hidden so the enlarged phones are contained
             and the bottoms run off the section edge. */}
         <div className="relative min-h-[620px] lg:min-h-[820px]">
-          {/* the EXACT case-study rewards stage — scaled UP + moved down */}
-          <RewardsStage className="relative z-10 mx-auto w-full max-w-[1060px] origin-top scale-[1.4] lg:mx-0 lg:max-w-[58%] lg:origin-[40%_top] lg:translate-y-[60px] lg:scale-[1.65]" />
+          {/* the EXACT case-study rewards stage — scaled UP + moved down. The
+              outer wrapper adds the card-hover "zoom in" (scale), nested OUTSIDE
+              the stage's own scale + its internal scroll fly-in so they compose. */}
+          <div
+            className="relative z-10 origin-top transition-transform duration-[600ms] ease-out will-change-transform lg:origin-[40%_top]"
+            style={{ transform: cardHover ? 'scale(1.07)' : 'scale(1)' }}
+          >
+            <RewardsStage className="mx-auto w-full max-w-[1060px] origin-top scale-[1.4] lg:mx-0 lg:max-w-[58%] lg:origin-[40%_top] lg:translate-y-[60px] lg:scale-[1.65]" />
+          </div>
 
           {/* label card — floats right (upper) on desktop; stacks under on mobile.
               Content LEFT-aligned; no meta line. */}
-          <div className="relative z-20 mt-8 w-full max-w-[480px] lg:absolute lg:right-0 lg:top-[42%] lg:mt-0 lg:-translate-y-1/2">
-            <div className="flex aspect-[480/375] flex-col items-start justify-center gap-5 rounded-[8px] border border-white/35 bg-[#c0282c] px-8 py-8 text-left shadow-[0_24px_60px_rgba(0,0,0,0.25)]">
+          <div
+            className="relative z-20 mt-8 w-full max-w-[480px] lg:absolute lg:right-0 lg:top-[42%] lg:mt-0 lg:-translate-y-1/2"
+            onMouseEnter={() => setCardHover(true)}
+            onMouseLeave={() => setCardHover(false)}
+          >
+            <div className="flex aspect-[480/375] origin-center flex-col items-start justify-center gap-5 rounded-[8px] border border-white/35 bg-[#c0282c] px-8 py-8 text-left shadow-[0_24px_60px_rgba(0,0,0,0.25)] transition-transform duration-[600ms] ease-out will-change-transform hover:scale-[0.965]">
               <span className="flex h-[96px] w-[96px] items-center justify-center rounded-full bg-white shadow-lg">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/panda/panda-logo.svg" alt="Panda Express" className="h-[62px] w-[62px] object-contain" />

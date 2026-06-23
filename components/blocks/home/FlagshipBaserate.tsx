@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useState } from 'react'
 import { BaserateLogo } from '../baserate/BaserateLogo'
 import { BrandingScene } from '../baserate/branding/BrandingScene'
 
@@ -23,6 +24,7 @@ const PILLS = ['Branding', 'Lead', 'UX', 'UI', 'Strategy']
 export function FlagshipBaserate({
   href = '/work/baserate',
 }: FlagshipBaserateProps) {
+  const [cardHover, setCardHover] = useState(false)
   return (
     <section
       data-flagship="Baserate"
@@ -44,7 +46,9 @@ export function FlagshipBaserate({
           <div className="order-2 lg:order-1">
             <Link
               href={href}
-              className="group/card flex aspect-[480/375] w-full max-w-[480px] flex-col justify-center gap-[22px] rounded-[8px] border border-[#d6d6d6] bg-white px-8 py-9 shadow-[0_18px_44px_rgba(7,14,44,0.10)] transition-shadow duration-300 hover:shadow-[0_24px_56px_rgba(7,14,44,0.16)]"
+              onMouseEnter={() => setCardHover(true)}
+              onMouseLeave={() => setCardHover(false)}
+              className="group/card flex aspect-[480/375] w-full max-w-[480px] origin-center flex-col justify-center gap-[22px] rounded-[8px] border border-[#d6d6d6] bg-white px-8 py-9 shadow-[0_18px_44px_rgba(7,14,44,0.10)] transition-[transform,box-shadow] duration-[600ms] ease-out will-change-transform hover:scale-[0.965] hover:shadow-[0_28px_64px_rgba(7,14,44,0.14)]"
             >
               <BaserateLogo className="h-[42px] w-auto" />
               <p
@@ -79,7 +83,7 @@ export function FlagshipBaserate({
               is enlarged via a transform so its internal layout stays intact;
               the section clips the overflow. */}
           <div className="relative order-1 flex min-h-[460px] items-center justify-center overflow-visible lg:order-2 lg:min-h-[620px] lg:justify-start">
-            <BrandingScene className="w-full max-w-[760px] origin-center scale-[1.55] lg:max-w-none lg:origin-left lg:scale-[1.85]" />
+            <BrandingScene hovered={cardHover} className="w-full max-w-[760px] origin-center scale-[1.55] lg:max-w-none lg:origin-left lg:scale-[1.85]" />
           </div>
         </div>
       </div>

@@ -32,6 +32,8 @@ const FPS = 30
 const PZ = { device: 28, chip: 60, orbFar: 60, orbMid: 80, orbNear: 104 }
 
 const ParallaxContext = createContext<MotionValue<number> | null>(null)
+// card-hover "explode" — true while the Baserate CARD (not the section) is hovered.
+const HoverContext = createContext<boolean>(false)
 
 function useParallaxY(z: number): MotionValue<number> | number {
   const factor = useContext(ParallaxContext)
@@ -40,15 +42,36 @@ function useParallaxY(z: number): MotionValue<number> | number {
   return useTransform(signal, (v) => -v * z)
 }
 
+/**
+ * `pos` = the element's approximate center within the scene (x%,y%). On card
+ * hover the element drifts OUTWARD from the scene centre (50,50) + scales up,
+ * giving the "zoom in & explode" feel. This hover transform lives on an INNER
+ * layer (CSS-transitioned) nested inside the scroll-parallax `y` on the outer
+ * motion.div, so the two compose cleanly (Wingstop nested-transform lesson).
+ */
 function Parallax({
-  z, className = '', style, children,
+  z, pos, exDist = 26, className = '', style, children,
 }: {
-  z: number; className?: string; style?: React.CSSProperties; children: React.ReactNode
+  z: number; pos?: { x: number; y: number }; exDist?: number
+  className?: string; style?: React.CSSProperties; children: React.ReactNode
 }) {
   const y = useParallaxY(z)
+  const hovered = useContext(HoverContext)
+  let ex = 0, ey = 0
+  if (pos) {
+    const dx = pos.x - 50, dy = pos.y - 50
+    const len = Math.hypot(dx, dy) || 1
+    ex = (dx / len) * exDist
+    ey = (dy / len) * exDist
+  }
   return (
     <motion.div className={className} style={{ ...style, y }}>
-      {children}
+      <div
+        className="h-full w-full transition-transform duration-[600ms] ease-out will-change-transform"
+        style={{ transform: hovered ? `translate(${ex}px, ${ey}px) scale(1.09)` : 'translate(0,0) scale(1)' }}
+      >
+        {children}
+      </div>
     </motion.div>
   )
 }
@@ -124,7 +147,7 @@ function SwatchCard({
  * The floating scene. Renders inside a 1443/893 aspect box (positions are the
  * Figma coords). Drop it in any positioned container; it sizes to that box.
  */
-export function BrandingScene({ className = '' }: { className?: string }) {
+export function BrandingScene({ className = '', hovered = false }: { className?: string; hovered?: boolean }) {
   const reduce = useReducedMotion()
   const isSafari = useIsSafari()
   const [mounted, setMounted] = useState(false)
@@ -178,40 +201,42 @@ export function BrandingScene({ className = '' }: { className?: string }) {
 
       {mounted && (
         <ParallaxContext.Provider value={parallax}>
+        <HoverContext.Provider value={reduce ? false : hovered}>
           <div className="pointer-events-none absolute inset-0">
             {/* PHONE */}
-            <Parallax z={PZ.device} className="absolute left-[6%] top-[16%] z-10 w-[26%]">
+            <Parallax z={PZ.device} pos={{ x: 19, y: 46 }} exDist={22} className="absolute left-[6%] top-[16%] z-10 w-[26%]">
               <StudioObject base="/baserate/branding/devices/phone" frameCount={SCRUB_FRAMES} fps={FPS} staticFrame={-1} shadowMode="svg" className="w-full" alt="Journalytic phone" />
             </Parallax>
 
             {/* DESKTOP / tablet — pulled left toward the phone (~600px on screen) */}
-            <Parallax z={PZ.device} className="absolute left-[38%] top-[14%] z-10 w-[42%]">
+            <Parallax z={PZ.device} pos={{ x: 62, y: 42 }} exDist={22} className="absolute left-[38%] top-[14%] z-10 w-[42%]">
               <StudioObject base="/baserate/branding/devices/desktop" frameCount={SCRUB_FRAMES} fps={FPS} staticFrame={-1} shadowMode="svg" className="w-full" alt="Baserate marketing site" />
             </Parallax>
 
             {/* app-icon chips */}
-            <Parallax z={PZ.chip} className="absolute left-[20%] top-[2%] z-30">
+            <Parallax z={PZ.chip} pos={{ x: 26, y: 10 }} exDist={40} className="absolute left-[20%] top-[2%] z-30">
               <BakedChip base="/baserate/branding/chips/journalytic" alt="Journalytic" reduce={reduce} frameCount={SCRUB_FRAMES} size={124} scaleW={132.3} ml={-4.3} mt={-6.3} scrub={chipScrub} />
             </Parallax>
-            <Parallax z={PZ.chip} className="absolute left-[40%] top-[62%] z-30">
+            <Parallax z={PZ.chip} pos={{ x: 44, y: 66 }} exDist={40} className="absolute left-[40%] top-[62%] z-30">
               <BakedChip base="/baserate/branding/chips/baserate" alt="Baserate" reduce={reduce} frameCount={SCRUB_FRAMES} size={94} scaleW={103.2} ml={-6.2} mt={-3.3} delay={250} scrub={chipScrub} />
             </Parallax>
 
             {/* brand colour swatch cards */}
-            <Parallax z={PZ.orbNear} className="absolute left-[12%] top-[6%] z-[15]">
+            <Parallax z={PZ.orbNear} pos={{ x: 15, y: 12 }} exDist={44} className="absolute left-[12%] top-[6%] z-[15]">
               <SwatchCard reduce={reduce} color="#C08F2E" hex="#C08F2E" w={54} rotX={9} rotY={-7} dur={15} />
             </Parallax>
             {/* #3F93CF — moved to the bottom-left of the phone */}
-            <Parallax z={PZ.orbFar} className="absolute left-[3%] top-[74%] z-[15]">
+            <Parallax z={PZ.orbFar} pos={{ x: 6, y: 80 }} exDist={44} className="absolute left-[3%] top-[74%] z-[15]">
               <SwatchCard reduce={reduce} color="#3F93CF" hex="#3F93CF" w={72} rotX={8} rotY={6} dur={18} delay={1.2} />
             </Parallax>
-            <Parallax z={PZ.orbNear} className="absolute left-[52%] top-[8%] z-[15]">
+            <Parallax z={PZ.orbNear} pos={{ x: 56, y: 14 }} exDist={44} className="absolute left-[52%] top-[8%] z-[15]">
               <SwatchCard reduce={reduce} color="#1A2436" hex="#1A2436" w={70} rotX={10} rotY={-5} dur={17} delay={2.2} />
             </Parallax>
-            <Parallax z={PZ.orbMid} className="absolute left-[calc(40%-30px)] top-[40%] z-[15]">
+            <Parallax z={PZ.orbMid} pos={{ x: 42, y: 46 }} exDist={44} className="absolute left-[calc(40%-30px)] top-[40%] z-[15]">
               <SwatchCard reduce={reduce} color="#1551C0" hex="#1551C0" w={70} rotX={8} rotY={7} dur={14} delay={0.6} />
             </Parallax>
           </div>
+        </HoverContext.Provider>
         </ParallaxContext.Provider>
       )}
     </div>
