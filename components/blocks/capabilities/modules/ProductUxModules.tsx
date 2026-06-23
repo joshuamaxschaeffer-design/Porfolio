@@ -23,30 +23,13 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
         <CapDeviceFan
           dark={dark}
           screens={[
-            { src: '/capabilities/canes/ui-welcome.webp', alt: 'Cane’s welcome' },
-            { src: '/capabilities/canes/ui-onboard.webp', alt: 'Cane’s onboarding' },
-            { src: '/capabilities/canes/ui-home.webp', alt: 'Cane’s menu' },
-            { src: '/capabilities/canes/ui-build.webp', alt: 'Cane’s order builder' },
-            { src: '/capabilities/canes/ui-account.webp', alt: 'Cane’s account' },
-            { src: '/capabilities/canes/ui-confirm.webp', alt: 'Cane’s order status' },
+            { src: '/capabilities/canes/new-onboarding.webp', alt: 'Cane’s onboarding — Clickin’ for Chicken' },
+            { src: '/capabilities/canes/new-pdp-combo.webp', alt: 'Cane’s product detail — The Box Combo' },
+            { src: '/capabilities/canes/new-pdp-drink.webp', alt: 'Cane’s drink customization — Unsweet Tea' },
+            { src: '/capabilities/canes/new-pickup.webp', alt: 'Cane’s pickup options' },
+            { src: '/capabilities/canes/new-checkout.webp', alt: 'Cane’s checkout — GeoTrack order' },
           ]}
         />
-        {/* Detail of the drink-customization states — Cover-Flow swap (compact) */}
-        <div className="mt-12">
-          <p className="br-data mb-2 text-[11px] uppercase tracking-[0.12em] text-[var(--br-gold)]">Detail · order customization</p>
-          <h4 className="br-heading mb-6 text-[clamp(1.15rem,2.4vw,1.5rem)] leading-tight text-[var(--br-ink)]">Every modifier, dialed in</h4>
-          <ExplorationStack
-            cardAspect="9/19.5"
-            fit="cover"
-            maxW={300}
-            items={[
-              { title: 'Combo builder', body: 'Quantity steppers, swaps, and add-ons drawn to the same spec as the rest of the system.', image: '/capabilities/canes/ui-features.webp' },
-              { title: 'Fountain drink', body: 'Pick a size, choose your drink, decide on ice — one decision per screen.', image: '/capabilities/canes/ui-drink-1.webp' },
-              { title: 'Unsweet tea', body: 'The same builder, a different product — consistent controls everywhere.', image: '/capabilities/canes/ui-drink-2.webp' },
-              { title: 'Add-ons', body: 'Up-sells and extras layered in without crowding the core choice.', image: '/capabilities/canes/ui-drink-3.webp' },
-            ]}
-          />
-        </div>
       </ModuleCard>
 
       {/* Anchor — Dave & Buster's app — receding ScreenStack + ordering flow */}
