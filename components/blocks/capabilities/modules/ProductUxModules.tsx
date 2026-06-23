@@ -5,6 +5,7 @@ import { Reveal } from '../../../animation/Reveal'
 import { CapDeviceFan } from '../../shared/CapDeviceFan'
 import { ExplorationStack } from '../../baserate/ExplorationStack'
 import { AnchorHeader, BlueRail, BlueFlowRow, ModuleCard } from './primitives'
+import { TreesUxFlow } from '../trees/TreesUxFlow'
 
 /** Section 01 — Product & UX work modules (grey section, light tone). */
 export function ProductUxModules({ dark = false }: { dark?: boolean }) {
@@ -100,6 +101,11 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
               { label: '6 · Track + rate', src: '/capabilities/trees/wire-6.webp' },
             ]}
           />
+        </div>
+        <div className="mt-12">
+          <p className="br-data mb-2 text-[11px] uppercase tracking-[0.12em] text-[var(--br-gold)]">Architecture · the UX behind it</p>
+          <h4 className="br-heading mb-6 text-[clamp(1.15rem,2.4vw,1.5rem)] leading-tight text-[var(--br-ink)]">Goal to action plan, mapped</h4>
+          <TreesUxFlow />
         </div>
         <div className="mt-12">
           <p className="br-data mb-2 text-[11px] uppercase tracking-[0.12em] text-[var(--br-gold)]">Then · the finished UI</p>
