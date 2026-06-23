@@ -342,11 +342,13 @@ function CapabilitiesCard() {
             {CAP_PHONES.map((ph, i) => {
               // base stagger + scroll-driven rightward spread (grows per phone).
               // The spread is CAPPED (progress clamped to SPREAD_MAX) so it stops
-              // expanding once it reaches this fanned-out state.
+              // expanding once it reaches this fanned-out state, and a strong
+              // cubic EASE-OUT is applied so the fan-out lands softly/smoothly.
               const SPREAD_MAX = 0.6
-              const pc = Math.min(p, SPREAD_MAX)
+              const pc = Math.min(p, SPREAD_MAX) / SPREAD_MAX // 0..1 within the cap
+              const eased = 1 - Math.pow(1 - pc, 3) // cubic ease-out (soft landing)
               const baseLeft = i * 14
-              const spread = reduce ? i * 8 : i * (8 + pc * 16)
+              const spread = reduce ? i * 8 : i * (8 + eased * (16 * SPREAD_MAX))
               return (
               <div
                 key={ph.src}
