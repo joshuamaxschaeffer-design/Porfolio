@@ -1,11 +1,12 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { HeroTimeline } from './HeroTimeline'
 
 export interface HomeHeroProps {
   /** Big wordmark. Defaults to "Schaeffer". */
   name?: string
-  /** Small label under the wordmark. Defaults to "Design". */
+  /** Small label under the wordmark. Defaults to "Design Solutions". */
   label?: string
 }
 
@@ -21,7 +22,7 @@ export interface HomeHeroProps {
  * other pages get a normal nav. Collapses to "always shown" under reduced
  * motion is unnecessary — the reveal is a fade, and the name is always reachable.
  */
-export function HomeHero({ name = 'Schaeffer', label = 'Design' }: HomeHeroProps) {
+export function HomeHero({ name = 'Schaeffer', label = 'Design Solutions' }: HomeHeroProps) {
   const sentinel = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -61,24 +62,34 @@ export function HomeHero({ name = 'Schaeffer', label = 'Design' }: HomeHeroProps
   return (
     <section className="relative flex min-h-[40vh] items-center py-14 md:min-h-[44vh] md:py-16">
       <div className="home-container">
-        <h1
-          className="font-heading uppercase leading-[0.9] tracking-[-0.01em] text-[var(--br-ink,#070e2c)]"
-          style={{
-            fontFamily: 'var(--font-heading)',
-            fontWeight: 500,
-            fontSize: 'clamp(3rem, 11vw, 8.5rem)',
-          }}
-        >
-          {name}
-        </h1>
-        {/* Sentinel anchored to the baseline of the name. */}
-        <div ref={sentinel} aria-hidden className="h-px w-px" />
-        <p
-          className="mt-3 uppercase tracking-[0.18em] text-[var(--br-muted,#585b6b)]"
-          style={{ fontFamily: 'var(--font-data)', fontSize: '13px' }}
-        >
-          {label}
-        </p>
+        {/* w-fit so the label+timeline row below spans exactly the wordmark's
+            width — the timeline's right edge lands on SCHAEFFER's right edge. */}
+        <div className="w-fit">
+          <h1
+            className="font-heading uppercase leading-[0.9] tracking-[-0.01em] text-[var(--br-ink,#070e2c)]"
+            style={{
+              fontFamily: 'var(--font-heading)',
+              fontWeight: 500,
+              fontSize: 'clamp(3rem, 11vw, 8.5rem)',
+            }}
+          >
+            {name}
+          </h1>
+          {/* Sentinel anchored to the baseline of the name. */}
+          <div ref={sentinel} aria-hidden className="h-px w-px" />
+
+          {/* DESIGN SOLUTIONS label + the interactive process timeline filling
+              the rest of the row to the wordmark's right edge. */}
+          <div className="mt-4 flex items-center gap-4">
+            <p
+              className="shrink-0 whitespace-nowrap uppercase text-[var(--br-ink,#070e2c)]"
+              style={{ fontFamily: 'var(--font-data)', fontSize: '14px', letterSpacing: '0.02em' }}
+            >
+              {label}
+            </p>
+            <HeroTimeline className="min-w-0 flex-1" />
+          </div>
+        </div>
       </div>
     </section>
   )

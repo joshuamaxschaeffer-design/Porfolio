@@ -52,9 +52,8 @@ export function HomeAboutCta({
       <div className="grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
         {ITEMS.map((it) => (
           <div key={it.n}>
-            {/* iso illustration (square). Sits on a faint tint so it reads even
-                while the asset is being finalised. */}
-            <div className="mb-6 flex aspect-square w-full items-center justify-center rounded-[2px]">
+            {/* iso illustration — ~1/3 the block width, left-aligned. */}
+            <div className="mb-5 flex aspect-square w-1/3 max-w-[120px] items-center justify-start">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={it.img} alt="" aria-hidden className="h-full w-full object-contain" />
             </div>
@@ -83,7 +82,7 @@ export function HomeAboutCta({
       {/* CTA panel — faint sketches photo background under a 70% white overlay.
           The image + overlay ARE the panel background (no solid fill on top, or
           it would hide the photo); content sits above via relative z-10. */}
-      <div className="relative isolate mt-20 flex min-h-[320px] flex-col items-center justify-center overflow-hidden rounded-[10px] bg-[#f3f3f3] px-6 py-16 text-center md:mt-24">
+      <div className="relative isolate mt-20 flex min-h-[480px] flex-col items-center justify-center overflow-hidden rounded-[10px] bg-[#f3f3f3] px-6 py-20 text-center md:mt-24 md:min-h-[520px]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/home/about/cta-sketches.webp"
@@ -91,28 +90,33 @@ export function HomeAboutCta({
           aria-hidden
           className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
         />
-        {/* 70% white overlay to keep the photo really faint */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 z-0 bg-white/[0.72]" />
-        <h2
-          className="relative z-10 uppercase text-black"
-          style={{ fontFamily: 'var(--font-heading)', fontWeight: 500, fontSize: 'clamp(22px, 3vw, 30px)' }}
-        >
-          {ctaHeading}
-        </h2>
-        <p
-          className="relative z-10 mt-4 max-w-xl text-black"
-          style={{ fontFamily: 'var(--font-body)', fontSize: '16px' }}
-        >
-          {ctaBody}
-        </p>
-        <Link
-          href={ctaUrl}
-          className="group relative z-10 mt-7 inline-flex items-center gap-2 rounded-full border border-black/20 px-4 py-2 text-black transition-colors hover:border-black/50 hover:bg-black hover:text-white"
-          style={{ fontFamily: 'var(--font-sans)', fontSize: '12px' }}
-        >
-          {ctaLabel}
-          <span aria-hidden className="transition-transform group-hover:translate-x-0.5">→</span>
-        </Link>
+        {/* light overlay to keep the photo faint (lighter now that the text sits
+            on its own white card, so more of the sketches shows around it) */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 z-0 bg-white/55" />
+
+        {/* white card carrying the text, centered over the sketches */}
+        <div className="relative z-10 w-full max-w-2xl rounded-[10px] border border-black/5 bg-white px-8 py-12 shadow-[0_24px_60px_rgba(7,14,44,0.10)]">
+          <h2
+            className="uppercase text-black"
+            style={{ fontFamily: 'var(--font-heading)', fontWeight: 500, fontSize: 'clamp(22px, 3vw, 30px)' }}
+          >
+            {ctaHeading}
+          </h2>
+          <p
+            className="mx-auto mt-4 max-w-xl text-black"
+            style={{ fontFamily: 'var(--font-body)', fontSize: '16px' }}
+          >
+            {ctaBody}
+          </p>
+          <Link
+            href={ctaUrl}
+            className="group mt-7 inline-flex items-center gap-2 rounded-full border border-black/20 px-4 py-2 text-black transition-colors hover:border-black/50 hover:bg-black hover:text-white"
+            style={{ fontFamily: 'var(--font-sans)', fontSize: '12px' }}
+          >
+            {ctaLabel}
+            <span aria-hidden className="transition-transform group-hover:translate-x-0.5">→</span>
+          </Link>
+        </div>
       </div>
     </section>
   )
