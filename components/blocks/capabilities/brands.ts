@@ -31,7 +31,7 @@ export const BRANDS: Record<string, BrandDef> = {
   jubilee: { name: 'Jubilee', src: `${L}/authored/jubilee.png`, color: '#1a2233' },
   trees: { name: 'Trees', src: `${L}/trees.svg`, color: '#2e7d32' },
   rosetta: { name: 'Rosetta', wordmark: 'Rosetta', color: '#1a2233' },
-  blaze: { name: 'Blaze', src: `${L}/blaze.png`, color: '#F5A623' },
+  blaze: { name: 'Blaze', src: `${L}/blaze.svg`, color: '#F5A623' },
 
   // ── Client brands — REAL logos (verified); 3 remain wordmarks ──
   mindbody: { name: 'Mindbody', src: `${L}/mindbody.svg`, color: '#00B0B9' },
