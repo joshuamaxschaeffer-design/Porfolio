@@ -1,5 +1,7 @@
 'use client'
 
+import { useLayoutEffect, useRef, useState } from 'react'
+
 /**
  * BrandLogo — renders a brand mark in a logo wall / rail.
  *
@@ -8,6 +10,45 @@
  * in the brand's color. Uniform height, centered, so a heterogeneous wall still
  * reads intentional. `dark` swaps to light-friendly treatment for dark bands.
  */
+
+/**
+ * Wordmark — a nowrap brand wordmark that scales DOWN to fit its container so
+ * long names (e.g. "True Food Kitchen") never clip on narrow cards. Measures the
+ * text vs the available width and applies a transform: scale(); re-measures on
+ * resize. Never scales above 1 (keeps short wordmarks at their natural size).
+ */
+function Wordmark({ text, color }: { text: string; color: string }) {
+  const wrapRef = useRef<HTMLSpanElement>(null)
+  const textRef = useRef<HTMLSpanElement>(null)
+  const [scale, setScale] = useState(1)
+
+  useLayoutEffect(() => {
+    const fit = () => {
+      const wrap = wrapRef.current
+      const el = textRef.current
+      if (!wrap || !el) return
+      const avail = wrap.clientWidth
+      const natural = el.scrollWidth
+      setScale(natural > avail && natural > 0 ? Math.min(1, avail / natural) : 1)
+    }
+    fit()
+    const ro = new ResizeObserver(fit)
+    if (wrapRef.current) ro.observe(wrapRef.current)
+    return () => ro.disconnect()
+  }, [text])
+
+  return (
+    <span ref={wrapRef} className="flex w-full items-center justify-center overflow-hidden">
+      <span
+        ref={textRef}
+        className="select-none whitespace-nowrap text-[17px] font-semibold tracking-[-0.01em] md:text-[19px]"
+        style={{ color, transform: `scale(${scale})`, transformOrigin: 'center' }}
+      >
+        {text}
+      </span>
+    </span>
+  )
+}
 
 export interface BrandDef {
   name: string
@@ -31,16 +72,9 @@ export function BrandLogo({ brand, dark = false }: { brand: BrandDef; dark?: boo
       />
     )
   }
-  // Styled wordmark fallback (clean, brand-colored)
+  // Styled wordmark fallback (clean, brand-colored) — auto-shrinks to fit its card
   const color = brand.color ?? (dark ? '#e9eef7' : '#1a2233')
-  return (
-    <span
-      className="select-none whitespace-nowrap text-[17px] font-semibold tracking-[-0.01em] md:text-[19px]"
-      style={{ color }}
-    >
-      {brand.wordmark ?? brand.name}
-    </span>
-  )
+  return <Wordmark text={brand.wordmark ?? brand.name} color={color} />
 }
 
 /**

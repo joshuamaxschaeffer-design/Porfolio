@@ -85,13 +85,13 @@ export function DisciplineModule({
 
         {/* Capability list — borderless, label only (no card, no 2nd line) */}
         <Reveal delay={120}>
-          <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 md:mt-12 md:grid-cols-3 md:gap-x-10 md:gap-y-5">
+          <div className="mt-10 flex flex-col gap-y-4 md:mt-12 md:flex-row md:flex-nowrap md:items-center md:justify-between md:gap-x-5">
             {capabilities.map((c) => (
-              <div key={c.label} className="flex items-center gap-2.5">
+              <div key={c.label} className="flex items-center gap-2 md:gap-2.5">
                 <span className="flex h-5 w-5 shrink-0 items-center justify-center" style={{ color: gold }}>
                   <CapIcon name={c.icon} />
                 </span>
-                <p className={`whitespace-nowrap text-[15px] font-medium leading-tight ${dark ? 'text-white' : 'text-[var(--br-body)]'}`}>{c.label}</p>
+                <p className={`whitespace-nowrap text-[15px] font-medium leading-tight md:text-[14px] lg:text-[15px] ${dark ? 'text-white' : 'text-[var(--br-body)]'}`}>{c.label}</p>
               </div>
             ))}
           </div>

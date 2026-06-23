@@ -105,10 +105,10 @@ export const brand: Discipline = {
     'Complete identity systems — logo, type, color, and voice — built to scale across product and marketing. Not a logo file; a system that holds together everywhere it lands.',
   capabilities: [
     { icon: 'identity', label: 'Identity systems', note: 'Logo, logotype, clearspace, usage' },
-    { icon: 'color', label: 'Type & color systems', note: 'Scales, tokens, accessible palettes' },
-    { icon: 'systems', label: 'Sub-brand architecture', note: 'Product families under one system' },
+    { icon: 'color', label: 'Type & color', note: 'Scales, tokens, accessible palettes' },
+    { icon: 'systems', label: 'Sub-brand systems', note: 'Product families under one system' },
     { icon: 'voice', label: 'Brand voice', note: 'Tone that carries from app to OOH' },
-    { icon: 'grid', label: 'Logomark construction', note: 'Grids, anatomy, optical balance' },
+    { icon: 'grid', label: 'Logomark', note: 'Grids, anatomy, optical balance' },
     { icon: 'product', label: 'Brand-in-product', note: 'Identity applied across real screens' },
   ],
   stats: [
@@ -197,9 +197,9 @@ export const marketingWeb: Discipline = {
   positioning:
     'Launch and product sites that wrap the app — plus the lifecycle creative around them. Brand storytelling and conversion built into one responsive experience.',
   capabilities: [
-    { icon: 'web', label: 'Marketing & launch sites', note: 'Homepage → conversion' },
-    { icon: 'ecommerce', label: 'Product / ordering web', note: 'Full responsive ordering flows' },
-    { icon: 'responsive', label: 'Responsive systems', note: 'Desktop, tablet, mobile' },
+    { icon: 'web', label: 'Launch sites', note: 'Homepage → conversion' },
+    { icon: 'ecommerce', label: 'Ordering web', note: 'Full responsive ordering flows' },
+    { icon: 'responsive', label: 'Responsive', note: 'Desktop, tablet, mobile' },
     { icon: 'email', label: 'Email & lifecycle', note: 'Retention programs, not one-off mailers' },
     { icon: 'campaign', label: 'Campaign / promo', note: 'Seasonal, LTO, drops' },
     { icon: 'ai', label: 'E-commerce / AR', note: 'Shoppable, interactive surfaces' },
