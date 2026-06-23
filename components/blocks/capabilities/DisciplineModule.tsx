@@ -87,11 +87,11 @@ export function DisciplineModule({
         <Reveal delay={120}>
           <div className="mt-10 grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 md:mt-12 md:grid-cols-3 md:gap-x-10 md:gap-y-5">
             {capabilities.map((c) => (
-              <div key={c.label} className="flex items-center gap-3">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px]" style={{ background: dark ? 'rgba(199,144,22,0.18)' : 'rgba(174,125,0,0.10)', color: gold }}>
+              <div key={c.label} className="flex items-center gap-2.5">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center" style={{ color: gold }}>
                   <CapIcon name={c.icon} />
                 </span>
-                <p className={`text-[15px] font-medium leading-tight ${dark ? 'text-white' : 'text-[var(--br-body)]'}`}>{c.label}</p>
+                <p className={`whitespace-nowrap text-[15px] font-medium leading-tight ${dark ? 'text-white' : 'text-[var(--br-body)]'}`}>{c.label}</p>
               </div>
             ))}
           </div>

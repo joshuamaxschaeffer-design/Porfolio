@@ -77,8 +77,8 @@ export const productUx: Discipline = {
     { icon: 'ia', label: 'Information architecture', note: 'Sitemaps, flows, permissions models' },
     { icon: 'app', label: 'End-to-end app UX', note: 'Onboarding → ordering → loyalty → account' },
     { icon: 'surfaces', label: 'Multi-surface', note: 'Kiosk, mobile web, native, desktop' },
-    { icon: 'workflow', label: 'B2B / power-user workflows', note: 'POS, checkout, reconciliation, reporting' },
-    { icon: 'loyalty', label: 'Ordering & loyalty systems', note: 'Cart, rewards, scan, group ordering' },
+    { icon: 'workflow', label: 'B2B / power-user UX', note: 'POS, checkout, reconciliation, reporting' },
+    { icon: 'loyalty', label: 'Ordering & loyalty', note: 'Cart, rewards, scan, group ordering' },
   ],
   stats: [
     { value: 14, label: 'Brands shipped in this discipline' },
@@ -138,7 +138,7 @@ export const designSystems: Discipline = {
     { icon: 'components', label: 'Component libraries', note: '300–800-component systems per product' },
     { icon: 'tokens', label: 'Design tokens', note: 'Color, type, spacing as decisions' },
     { icon: 'handoff', label: 'Developer handoff', note: 'Specs, redlines, design-to-code' },
-    { icon: 'consistency', label: 'Cross-surface consistency', note: 'One system, every form factor' },
+    { icon: 'consistency', label: 'Cross-surface', note: 'One system, every form factor' },
     { icon: 'dataviz', label: 'Data-viz & dashboards', note: 'Charts, metrics, executive + analyst views' },
     { icon: 'icons', label: 'Iconography', note: 'UI glyph sets at scale' },
   ],
@@ -170,7 +170,7 @@ export const artMotion: Discipline = {
     { icon: 'illustration', label: 'Illustration systems', note: 'A documented, reusable style' },
     { icon: 'identity', label: 'Animated identity', note: 'Logo systems in motion' },
     { icon: 'systems', label: 'Motion languages', note: 'Documented principles teams follow' },
-    { icon: 'character', label: 'Character & icon animation', note: 'Loops, loaders, mascots' },
+    { icon: 'character', label: 'Character & icon', note: 'Loops, loaders, mascots' },
     { icon: 'film', label: 'Brand film', note: '4K product & brand films' },
   ],
   stats: [
@@ -229,7 +229,7 @@ export const leadership: Discipline = {
   capabilities: [
     { icon: 'leadership', label: 'Design leadership', note: 'Lead → Art Director → Head of Design' },
     { icon: 'advocacy', label: 'Internal advocacy', note: 'Pitched the Mindbody illustration program' },
-    { icon: 'systems', label: 'Systems other teams extend', note: 'Toolkits built for handoff' },
+    { icon: 'systems', label: 'Systems teams extend', note: 'Toolkits built for handoff' },
     { icon: 'ai', label: 'AI product prototyping', note: 'Building with models in the loop' },
   ],
   stats: [

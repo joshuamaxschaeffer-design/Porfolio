@@ -72,9 +72,6 @@ export function CapabilitiesPage(props: CapabilitiesPageProps = {}) {
         </div>
         {/* Instant proof — real-logo marquee */}
         <div className="pb-14 md:pb-20">
-          <p className="br-container br-data mb-5 text-[11px] uppercase tracking-[0.14em] text-[var(--br-muted-2)]">
-            Selected brands across 13 years
-          </p>
           <LogoMarquee
             brands={pick(
               'panda', 'wingstop', 'samsung', 'mindbody', 'raisingCanes', 'daveAndBusters',
