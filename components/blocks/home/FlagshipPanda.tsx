@@ -43,30 +43,29 @@ export function FlagshipPanda({
           {/* label card — floats right (upper) on desktop; stacks under on mobile.
               Content LEFT-aligned; no meta line. */}
           <div className="relative z-20 mt-8 w-full max-w-[480px] lg:absolute lg:right-0 lg:top-[42%] lg:mt-0 lg:-translate-y-1/2">
-            <div className="flex aspect-[480/375] flex-col items-start justify-between rounded-[8px] border border-white/35 bg-[#c0282c] px-8 py-8 text-left shadow-[0_24px_60px_rgba(0,0,0,0.25)]">
-              <div className="flex flex-col items-start gap-5">
-                <span className="flex h-[96px] w-[96px] items-center justify-center rounded-full bg-white shadow-lg">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/panda/panda-logo.svg" alt="Panda Express" className="h-[62px] w-[62px] object-contain" />
-                </span>
-                <p
-                  className="uppercase"
-                  style={{ fontFamily: 'var(--font-heading)', fontWeight: 500, fontSize: 'clamp(20px, 2vw, 28px)' }}
-                >
-                  Panda Express App
-                </p>
-                <ul className="flex flex-wrap gap-2.5">
-                  {PILLS.map((t) => (
-                    <li
-                      key={t}
-                      className="rounded-[2px] border border-white px-2 py-1.5"
-                      style={{ fontFamily: 'var(--font-body)', fontSize: '15px' }}
-                    >
-                      {t}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            <div className="flex aspect-[480/375] flex-col items-start justify-center gap-5 rounded-[8px] border border-white/35 bg-[#c0282c] px-8 py-8 text-left shadow-[0_24px_60px_rgba(0,0,0,0.25)]">
+              <span className="flex h-[96px] w-[96px] items-center justify-center rounded-full bg-white shadow-lg">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/panda/panda-logo.svg" alt="Panda Express" className="h-[62px] w-[62px] object-contain" />
+              </span>
+              <p
+                className="uppercase"
+                style={{ fontFamily: 'var(--font-heading)', fontWeight: 500, fontSize: 'clamp(20px, 2vw, 28px)' }}
+              >
+                Panda Express App
+              </p>
+              <ul className="flex flex-wrap gap-2.5">
+                {PILLS.map((t) => (
+                  <li
+                    key={t}
+                    className="rounded-[2px] border border-white px-2 py-1.5"
+                    style={{ fontFamily: 'var(--font-body)', fontSize: '15px' }}
+                  >
+                    {t}
+                  </li>
+                ))}
+              </ul>
+              {/* case study text + arrow — sits just below the pills */}
               <Link
                 href={href}
                 className="group inline-flex items-center gap-2 text-sm font-medium text-white"
