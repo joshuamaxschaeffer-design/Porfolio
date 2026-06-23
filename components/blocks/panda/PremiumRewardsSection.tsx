@@ -128,7 +128,7 @@ function useEntryProgress(
  * 715.26×611.50 Figma group used in RewardsCard; only the OUTER box is bigger,
  * so the whole composition scales up cleanly. Motion is lifted 1:1.
  * ───────────────────────────────────────────────────────────────────────── */
-export function RewardsStage({ className }: { className?: string }) {
+export function RewardsStage({ className, hovered = false }: { className?: string; hovered?: boolean }) {
   const reduce = useReducedMotion()
   const stageRef = useRef<HTMLDivElement>(null)
   const progress = useEntryProgress(stageRef, !reduce)
@@ -139,34 +139,54 @@ export function RewardsStage({ className }: { className?: string }) {
     return d * d
   })
 
+  // CARD-HOVER explode (home only): a 0→1 spring that eases the two phones APART
+  // + up/down a touch + a hair of extra rotation, so they separate individually
+  // (not a uniform group zoom — the radial behind them does NOT move). Each phone
+  // also gets its own scale. Composed (added) onto the scroll fly-in transforms,
+  // and the shadows get the SAME deltas so they track. Disabled under reduced motion.
+  const hoverRaw = useMotionValue(0)
+  useEffect(() => { hoverRaw.set(reduce ? 0 : hovered ? 1 : 0) }, [hovered, reduce, hoverRaw])
+  const h = useSpring(hoverRaw, { stiffness: 140, damping: 18, mass: 0.7 })
+  // per-phone hover deltas (px / deg / scale). Phone1 front-left, Phone2 back-right.
+  const h1x = useTransform(h, (v) => -46 * v)
+  const h1y = useTransform(h, (v) => -26 * v)
+  const h1r = useTransform(h, (v) => -3 * v)
+  const h1s = useTransform(h, (v) => 1 + 0.09 * v)
+  const h2x = useTransform(h, (v) => 52 * v)
+  const h2y = useTransform(h, (v) => 22 * v)
+  const h2r = useTransform(h, (v) => 4 * v)
+  const h2s = useTransform(h, (v) => 1 + 0.11 * v)
+
   // Phones sit a touch higher than their raw slot so their centres land over
   // the radial's centre. Scaled up from RewardsCard's −70 to suit the hero.
   const REST_Y = -90
 
   // ── Phone 1 (front / left): slides in from lower-left, slightly extra CCW.
-  const p1x = useTransform(a, (v) => -90 * v)
-  const p1y = useTransform(a, (v) => REST_Y + 80 * v)
-  const p1r = useTransform(a, (v) => -8 * v)
+  //    + hover explode delta (h1*).
+  const p1x = useTransform([a, h1x] as const, ([v, hv]: number[]) => -90 * v + hv)
+  const p1y = useTransform([a, h1y] as const, ([v, hv]: number[]) => REST_Y + 80 * v + hv)
+  const p1r = useTransform([a, h1r] as const, ([v, hv]: number[]) => -8 * v + hv)
   // ── Phone 2 (back / right): slides in from lower-right, slightly extra CW.
-  const p2x = useTransform(a, (v) => 90 * v)
-  const p2y = useTransform(a, (v) => REST_Y + 80 * v)
-  const p2r = useTransform(a, (v) => 8 * v)
+  const p2x = useTransform([a, h2x] as const, ([v, hv]: number[]) => 90 * v + hv)
+  const p2y = useTransform([a, h2y] as const, ([v, hv]: number[]) => REST_Y + 80 * v + hv)
+  const p2r = useTransform([a, h2r] as const, ([v, hv]: number[]) => 8 * v + hv)
 
-  // ── Shadows. Horizontal: track the device (same sign). Rotation: opposite.
-  // Vertical/elevation: as a→1 push DOWN + lighter + blurrier; settle at rest.
-  const s1x = useTransform(a, (v) => -90 * v)
-  const s1y = useTransform(a, (v) => REST_Y + 80 * v + 34 * v)
+  // ── Shadows. Horizontal: track the device (same sign, + hover delta). Rotation:
+  // opposite. Vertical/elevation: as a→1 push DOWN + lighter + blurrier; settle at
+  // rest. The hover deltas are added so the shadows move WITH the phones.
+  const s1x = useTransform([a, h1x] as const, ([v, hv]: number[]) => -90 * v + hv)
+  const s1y = useTransform([a, h1y] as const, ([v, hv]: number[]) => REST_Y + 80 * v + 34 * v + hv)
   const s1r = useTransform(a, (v) => 8 * v)
   const s1op = useTransform(a, (v) => 0.3 * (1 - 0.6 * v))
   const s1blur = useTransform(a, (v) => `blur(${12 * v}px)`)
-  const s2x = useTransform(a, (v) => 90 * v)
-  const s2y = useTransform(a, (v) => REST_Y + 80 * v + 34 * v)
+  const s2x = useTransform([a, h2x] as const, ([v, hv]: number[]) => 90 * v + hv)
+  const s2y = useTransform([a, h2y] as const, ([v, hv]: number[]) => REST_Y + 80 * v + 34 * v + hv)
   const s2r = useTransform(a, (v) => -8 * v)
   const s2op = useTransform(a, (v) => 0.3 * (1 - 0.6 * v))
   const s2blur = useTransform(a, (v) => `blur(${12 * v}px)`)
   // Phone 1's CLIPPED cast shadow on Phone 2 (art moves inside a fixed mask).
-  const cs1x = useTransform(a, (v) => -90 * v)
-  const cs1y = useTransform(a, (v) => 80 * v + 28 * v)
+  const cs1x = useTransform([a, h1x] as const, ([v, hv]: number[]) => -90 * v + hv)
+  const cs1y = useTransform([a, h1y] as const, ([v, hv]: number[]) => 80 * v + 28 * v + hv)
   const cs1r = useTransform(a, (v) => 8 * v)
   const cs1op = useTransform(a, (v) => 0.9 * (1 - 0.55 * v))
   const cs1blur = useTransform(a, (v) => `blur(${10 * v}px)`)

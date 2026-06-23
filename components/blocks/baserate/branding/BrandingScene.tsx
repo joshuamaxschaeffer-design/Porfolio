@@ -208,8 +208,10 @@ export function BrandingScene({ className = '', hovered = false }: { className?:
               <StudioObject base="/baserate/branding/devices/phone" frameCount={SCRUB_FRAMES} fps={FPS} staticFrame={-1} shadowMode="svg" className="w-full" alt="Journalytic phone" />
             </Parallax>
 
-            {/* DESKTOP / tablet — pulled left toward the phone (~600px on screen) */}
-            <Parallax z={PZ.device} pos={{ x: 62, y: 42 }} exDist={22} className="absolute left-[38%] top-[14%] z-10 w-[42%]">
+            {/* DESKTOP / tablet — pulled left toward the phone; sized so neither
+                it nor its shadow reaches the section's right edge (avoids the
+                hard clip-to-white line when the scene scales/explodes). */}
+            <Parallax z={PZ.device} pos={{ x: 58, y: 42 }} exDist={18} className="absolute left-[34%] top-[14%] z-10 w-[39%]">
               <StudioObject base="/baserate/branding/devices/desktop" frameCount={SCRUB_FRAMES} fps={FPS} staticFrame={-1} shadowMode="svg" className="w-full" alt="Baserate marketing site" />
             </Parallax>
 
@@ -229,7 +231,7 @@ export function BrandingScene({ className = '', hovered = false }: { className?:
             <Parallax z={PZ.orbFar} pos={{ x: 6, y: 80 }} exDist={44} className="absolute left-[3%] top-[74%] z-[15]">
               <SwatchCard reduce={reduce} color="#3F93CF" hex="#3F93CF" w={72} rotX={8} rotY={6} dur={18} delay={1.2} />
             </Parallax>
-            <Parallax z={PZ.orbNear} pos={{ x: 56, y: 14 }} exDist={44} className="absolute left-[52%] top-[8%] z-[15]">
+            <Parallax z={PZ.orbNear} pos={{ x: 50, y: 14 }} exDist={40} className="absolute left-[48%] top-[8%] z-[15]">
               <SwatchCard reduce={reduce} color="#1A2436" hex="#1A2436" w={70} rotX={10} rotY={-5} dur={17} delay={2.2} />
             </Parallax>
             <Parallax z={PZ.orbMid} pos={{ x: 42, y: 46 }} exDist={44} className="absolute left-[calc(40%-30px)] top-[40%] z-[15]">

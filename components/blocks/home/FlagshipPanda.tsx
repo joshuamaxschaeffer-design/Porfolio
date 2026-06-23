@@ -41,15 +41,10 @@ export function FlagshipPanda({
             section is tall + overflow-hidden so the enlarged phones are contained
             and the bottoms run off the section edge. */}
         <div className="relative min-h-[620px] lg:min-h-[820px]">
-          {/* the EXACT case-study rewards stage — scaled UP + moved down. The
-              outer wrapper adds the card-hover "zoom in" (scale), nested OUTSIDE
-              the stage's own scale + its internal scroll fly-in so they compose. */}
-          <div
-            className="relative z-10 origin-top transition-transform duration-[600ms] ease-out will-change-transform lg:origin-[40%_top]"
-            style={{ transform: cardHover ? 'scale(1.07)' : 'scale(1)' }}
-          >
-            <RewardsStage className="mx-auto w-full max-w-[1060px] origin-top scale-[1.4] lg:mx-0 lg:max-w-[58%] lg:origin-[40%_top] lg:translate-y-[60px] lg:scale-[1.65]" />
-          </div>
+          {/* the EXACT case-study rewards stage — scaled UP + moved down. Card
+              hover passes `hovered` into RewardsStage, which explodes only the
+              two PHONES apart individually (radial stays put), shadows tracking. */}
+          <RewardsStage hovered={cardHover} className="relative z-10 mx-auto w-full max-w-[1060px] origin-top scale-[1.4] lg:mx-0 lg:max-w-[58%] lg:origin-[40%_top] lg:translate-y-[60px] lg:scale-[1.65]" />
 
           {/* label card — floats right (upper) on desktop; stacks under on mobile.
               Content LEFT-aligned; no meta line. */}
