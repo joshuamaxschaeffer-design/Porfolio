@@ -157,24 +157,32 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
  * with the kiosk screen, NOT rotated. A Wireframe⇄Finished toggle swaps both.
  */
 function KioskScene({ dark = false }: { dark?: boolean }) {
-  const [ui, setUi] = useState(true)
-  const set = ui
-    ? ['/capabilities/dnb/kiosk-ui-1.webp', '/capabilities/dnb/kiosk-ui-2.webp', '/capabilities/dnb/kiosk-ui-3.webp', '/capabilities/dnb/kiosk-ui-5.webp']
-    : ['/capabilities/dnb/kiosk-ux-1.webp', '/capabilities/dnb/kiosk-ux-2.webp', '/capabilities/dnb/kiosk-ux-3.webp', '/capabilities/dnb/kiosk-ux-6.webp']
+  // Eat (food ordering), Play (Power Card / games) and Wireframe sets. Swaps on
+  // HOVER (and click for touch / a11y); defaults to Eat.
+  const SETS: Record<string, string[]> = {
+    eat: ['/capabilities/dnb/kiosk-eat-1.webp', '/capabilities/dnb/kiosk-eat-2.webp', '/capabilities/dnb/kiosk-eat-3.webp', '/capabilities/dnb/kiosk-eat-4.webp'],
+    play: ['/capabilities/dnb/kiosk-play-1.webp', '/capabilities/dnb/kiosk-play-2.webp', '/capabilities/dnb/kiosk-play-3.webp', '/capabilities/dnb/kiosk-play-4.webp'],
+    wireframe: ['/capabilities/dnb/kiosk-ux-1.webp', '/capabilities/dnb/kiosk-ux-2.webp', '/capabilities/dnb/kiosk-ux-3.webp', '/capabilities/dnb/kiosk-ux-6.webp'],
+  }
+  const [mode, setMode] = useState<'eat' | 'play' | 'wireframe'>('eat')
+  const set = SETS[mode]
   const [hero, ...rest] = set
   return (
     <div>
       <div className="mb-8 inline-flex rounded-full border border-[var(--br-line)] p-1">
-        {[
-          { k: false, t: 'Wireframe (UX)' },
-          { k: true, t: 'Finished (UI)' },
-        ].map((o) => (
+        {([
+          { k: 'eat', t: 'Eat' },
+          { k: 'play', t: 'Play' },
+          { k: 'wireframe', t: 'Wireframe' },
+        ] as const).map((o) => (
           <button
-            key={o.t}
+            key={o.k}
             type="button"
-            onClick={() => setUi(o.k)}
+            onMouseEnter={() => setMode(o.k)}
+            onFocus={() => setMode(o.k)}
+            onClick={() => setMode(o.k)}
             className="br-data rounded-full px-4 py-1.5 text-[11px] uppercase tracking-[0.06em] transition-colors"
-            style={ui === o.k ? { background: 'var(--br-ink)', color: '#fff' } : { color: 'var(--br-muted-2)' }}
+            style={mode === o.k ? { background: 'var(--br-ink)', color: '#fff' } : { color: 'var(--br-muted-2)' }}
           >
             {o.t}
           </button>
