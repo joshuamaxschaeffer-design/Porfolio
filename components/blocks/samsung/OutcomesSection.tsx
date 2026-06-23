@@ -115,11 +115,6 @@ export function OutcomesSection({ intro }: { intro?: string } = {}) {
             <StatCell key={stat.label} stat={stat} index={i} />
           ))}
         </div>
-
-        {/* Source footnote — public figures, quietly cited */}
-        <p className="br-data mt-12 max-w-4xl text-[12px] leading-relaxed text-[var(--br-muted-2)] md:mt-16">
-          {data.sources}
-        </p>
       </div>
     </section>
   )

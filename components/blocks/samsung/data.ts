@@ -152,6 +152,4 @@ export const outcomes = {
       description: 'For context, not credit: Samsung led global smartphone shipments through these years (IDC). It was a serious brand to learn on.',
     },
   ] as SamsungStat[],
-  sources:
-    'Context figure: IDC Worldwide Quarterly Mobile Phone Tracker (Samsung #1 by annual smartphone shipments, 2013–2017). Output figures are an estimate from the period.',
 }
