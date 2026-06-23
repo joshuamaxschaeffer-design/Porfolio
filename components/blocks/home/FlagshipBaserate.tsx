@@ -44,32 +44,35 @@ export function FlagshipBaserate({
           <div className="order-2 lg:order-1">
             <Link
               href={href}
-              className="inline-flex w-full max-w-[440px] flex-col gap-[22px] rounded-[8px] border border-[#d6d6d6] bg-white px-8 py-10 shadow-[0_18px_44px_rgba(7,14,44,0.10)] transition-shadow duration-300 hover:shadow-[0_24px_56px_rgba(7,14,44,0.16)]"
+              className="group/card flex aspect-[480/375] w-full max-w-[480px] flex-col justify-between rounded-[8px] border border-[#d6d6d6] bg-white px-8 py-9 shadow-[0_18px_44px_rgba(7,14,44,0.10)] transition-shadow duration-300 hover:shadow-[0_24px_56px_rgba(7,14,44,0.16)]"
             >
-              <BaserateLogo className="h-[42px] w-auto" />
-              <div className="flex flex-col gap-5">
-                <p
-                  className="uppercase text-[#070e2c]"
-                  style={{
-                    fontFamily: 'var(--font-heading)',
-                    fontWeight: 500,
-                    fontSize: 'clamp(20px, 2.2vw, 28px)',
-                  }}
-                >
-                  Full Stack Design
-                </p>
-                <ul className="flex flex-wrap gap-3">
-                  {PILLS.map((p) => (
-                    <li
-                      key={p}
-                      className="rounded-[2px] border border-[#ae7d00] px-2 py-1.5 text-[#ae7d00]"
-                      style={{ fontFamily: 'var(--font-body)', fontSize: '16px' }}
-                    >
-                      {p}
-                    </li>
-                  ))}
-                </ul>
+              <div className="flex flex-col gap-[22px]">
+                <BaserateLogo className="h-[42px] w-auto" />
+                <div className="flex flex-col gap-5">
+                  <p
+                    className="uppercase text-[#070e2c]"
+                    style={{ fontFamily: 'var(--font-heading)', fontWeight: 500, fontSize: 'clamp(20px, 2.2vw, 28px)' }}
+                  >
+                    Full Stack Design
+                  </p>
+                  <ul className="flex flex-wrap gap-3">
+                    {PILLS.map((p) => (
+                      <li
+                        key={p}
+                        className="rounded-[2px] border border-[#ae7d00] px-2 py-1.5 text-[#ae7d00]"
+                        style={{ fontFamily: 'var(--font-body)', fontSize: '16px' }}
+                      >
+                        {p}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
+              {/* case study text + arrow (matches the Panda card) */}
+              <span className="inline-flex items-center gap-2 text-sm font-medium text-[#070e2c]">
+                Read the case study
+                <span aria-hidden className="transition-transform group-hover/card:translate-x-1">→</span>
+              </span>
             </Link>
           </div>
 

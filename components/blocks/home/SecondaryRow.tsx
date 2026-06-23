@@ -241,7 +241,7 @@ function LabelCard({
 }) {
   return (
     <div
-      className="absolute flex origin-center scale-[0.94] flex-col items-center overflow-hidden rounded-[4px] border border-white text-white transition-transform duration-500 ease-out will-change-transform group-hover:scale-100"
+      className="absolute flex origin-center flex-col items-center overflow-hidden rounded-[4px] border border-white text-white transition-transform duration-500 ease-out will-change-transform group-hover:scale-[0.94]"
       style={{ left: pctX(24), top: pctY(423), width: pctX(522), height: pctY(270), backgroundColor: bg }}
     >
       {/* logo zone — top ~52% of the card */}
@@ -340,14 +340,18 @@ function CapabilitiesCard() {
               fans further than the last); static under reduced motion. */}
           <div ref={ref} className="relative h-[300px] md:h-[360px]">
             {CAP_PHONES.map((ph, i) => {
-              // base stagger + scroll-driven rightward spread (grows per phone)
+              // base stagger + scroll-driven rightward spread (grows per phone).
+              // The spread is CAPPED (progress clamped to SPREAD_MAX) so it stops
+              // expanding once it reaches this fanned-out state.
+              const SPREAD_MAX = 0.6
+              const pc = Math.min(p, SPREAD_MAX)
               const baseLeft = i * 14
-              const spread = reduce ? i * 8 : i * (8 + p * 16)
+              const spread = reduce ? i * 8 : i * (8 + pc * 16)
               return (
               <div
                 key={ph.src}
                 className="absolute w-[58%] max-w-[300px] overflow-hidden rounded-[2rem] border-[6px] border-[#1a1a1a] bg-[#1a1a1a] shadow-[0_26px_50px_rgba(0,0,0,0.24)] transition-transform duration-300 group-hover:-translate-y-1.5 will-change-transform"
-                style={{ left: `${baseLeft + spread}%`, top: `${i * 52}px`, zIndex: i, transitionDelay: `${i * 40}ms` }}
+                style={{ left: `${baseLeft + spread}%`, top: `${i * 52}px`, zIndex: CAP_PHONES.length - i, transitionDelay: `${i * 40}ms` }}
               >
                 <Image
                   src={ph.src}
