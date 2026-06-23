@@ -23,7 +23,7 @@ export function CapDeviceFan({
     <div className="relative mt-6 overflow-hidden rounded-[var(--br-card-radius)]">
       <div className="mx-auto" style={{ perspective: '2000px', perspectiveOrigin: '50% 30%' }}>
         <div
-          className="mx-auto flex items-start justify-center gap-[1.5%] px-[4%] pb-[5%] pt-[1%]"
+          className="mx-auto flex items-start justify-center gap-[1.5%] px-[4%] pb-[5%] pt-[9%]"
           style={{
             transformStyle: 'preserve-3d',
             transform: 'rotateX(36deg) rotateZ(-20deg) scale(0.98)',

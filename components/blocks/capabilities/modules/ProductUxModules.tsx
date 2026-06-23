@@ -14,6 +14,7 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
       <ModuleCard dark={dark}>
         <AnchorHeader
           dark={dark}
+          onCard
           kicker="Anchor · Consumer"
           title="Raising Cane’s — the “Caniac” ordering app"
           role="Lead Designer → Art Director"

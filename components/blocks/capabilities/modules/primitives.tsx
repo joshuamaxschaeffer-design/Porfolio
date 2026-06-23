@@ -19,16 +19,27 @@ import { DragCarousel } from '../../shared/DragCarousel'
 export function AnchorHeader({
   title,
   dark = false,
+  onCard = false,
 }: {
   kicker?: string
   title: string
   role?: string
   blurb?: string
   dark?: boolean
+  /** render the title on its own white card so it stays legible over media */
+  onCard?: boolean
 }) {
   return (
     <Reveal>
-      <h3 className={`mb-7 text-[22px] font-medium tracking-[-0.01em] md:mb-9 md:text-[30px] ${dark ? 'text-white' : 'text-[var(--br-ink)]'}`}>
+      <h3
+        className={`relative z-[2] mb-7 text-[22px] font-medium tracking-[-0.01em] md:mb-9 md:text-[30px] ${
+          onCard
+            ? 'inline-block rounded-[14px] bg-white px-5 py-3 text-[var(--br-ink)] shadow-[0_6px_20px_rgba(7,14,44,0.08)] md:px-7 md:py-4'
+            : dark
+              ? 'text-white'
+              : 'text-[var(--br-ink)]'
+        }`}
+      >
         {title}
       </h3>
     </Reveal>
