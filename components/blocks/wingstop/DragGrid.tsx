@@ -100,7 +100,12 @@ export function DragGrid({
         <motion.div
           ref={track}
           className="flex cursor-grab gap-4 active:cursor-grabbing"
-          style={{ x }}
+          // touchAction: pan-y set explicitly (not just relying on Motion's
+          // auto-injection for drag="x") so a finger's horizontal pan is always
+          // handed to Motion's drag and never claimed by the browser/page. This
+          // grid is the MOBILE-ONLY (lg:hidden) variant with no arrows, so drag
+          // is the only way to navigate it — it must never be blocked.
+          style={{ x, touchAction: 'pan-y' }}
           drag="x"
           dragConstraints={viewport}
           dragElastic={0.06}

@@ -81,7 +81,11 @@ export function SocialCarousel() {
         <motion.div
           ref={track}
           className="sg-social-grid cursor-grab active:cursor-grabbing"
-          style={{ x }}
+          // touchAction: pan-y set explicitly (not just relying on Motion's
+          // auto-injection for drag="x") so a finger's horizontal pan is always
+          // handed to Motion's drag and never claimed by the browser/page —
+          // robust against CSS-layer ordering overriding Motion's inline style.
+          style={{ x, touchAction: 'pan-y' }}
           drag="x"
           dragConstraints={viewport}
           dragElastic={0.12}
