@@ -63,18 +63,19 @@ export function PremiumRewardsSection({ intro }: { intro?: string } = {}) {
       </div>
 
       {/* ── MOBILE (<1024px) ───────────────────────────────────────────── */}
-      {/* extra bottom padding holds the enlarged + lowered device (it's pushed
-          down 250px and scaled 1.5× from the top, so the band has to grow to
-          contain it). */}
-      <div className="relative mx-auto w-full max-w-[520px] px-5 pt-12 pb-[300px] lg:hidden">
+      {/* the device stage is pushed down 150px + scaled 1.5× from the top; the
+          short bottom padding (with the section's overflow-hidden) crops ~280px
+          off the bottom of the band so the empty red space below the phones is
+          gone. */}
+      <div className="relative mx-auto w-full max-w-[520px] px-5 pt-12 pb-[20px] lg:hidden">
         <div data-anim="premium-rewards-header" className="relative z-20">
           <h2 className="text-[30px] font-semibold uppercase leading-tight tracking-wide text-white">
             {defaults.heading}
           </h2>
           <p className="mt-4 text-[15px] leading-snug text-white/90">{intro ?? defaults.intro}</p>
         </div>
-        {/* device mockup: 250px lower + 50% bigger on mobile, grown from the top */}
-        <RewardsStage className="relative z-10 mt-4 w-full origin-top translate-y-[250px] scale-150" />
+        {/* device mockup: 150px lower + 50% bigger on mobile, grown from the top */}
+        <RewardsStage className="relative z-10 mt-4 w-full origin-top translate-y-[150px] scale-150" />
       </div>
     </section>
   )

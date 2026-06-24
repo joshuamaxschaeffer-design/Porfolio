@@ -366,15 +366,14 @@ function StoreModule() {
   const d = defaults.store
   return (
     <Module eyebrow={d.eyebrow} title={d.title} body={d.body}>
-      {/* tighter gaps on mobile so the module fits the locked card height */}
       <div className="grid grid-cols-1 items-center gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-10">
-        <ol className="order-2 flex flex-col gap-1.5 sm:order-1 sm:gap-2">
-          {/* on mobile the last tier is dropped so the module fits the locked
-              card height; the full ladder returns at sm+. */}
+        <ol className="order-2 flex flex-col gap-2 sm:order-1">
+          {/* mobile shows the full reward-number ladder (no device screens), so
+              the whole tier list fits and reads as the focus. */}
           {d.tiers.map((t) => (
             <li
               key={t.points}
-              className="flex items-center gap-4 rounded-xl border border-white/20 bg-white/[0.06] px-4 py-1 last:hidden sm:py-2 sm:last:flex"
+              className="flex items-center gap-4 rounded-xl border border-white/20 bg-white/[0.06] px-4 py-2"
             >
               <span
                 className="br-data shrink-0 rounded-md px-2.5 py-1 text-sm font-semibold tabular-nums text-[var(--px-red)]"
@@ -387,14 +386,14 @@ function StoreModule() {
             </li>
           ))}
         </ol>
-        {/* two real redemption screens: the rewards list + a reward detail,
-            the second tucked behind/below for a layered pair. Smaller on mobile
-            so the module fits the locked card height. */}
-        <div className="order-1 flex items-end justify-center gap-3 sm:order-2 sm:gap-4">
+        {/* two real redemption screens: the rewards list + a reward detail.
+            Hidden on mobile (the number cards carry the story there) — the
+            layered phone pair returns at sm+. */}
+        <div className="order-1 hidden items-end justify-center gap-3 sm:order-2 sm:flex sm:gap-4">
           {d.screens.map((s, i) => (
             <div
               key={s.src}
-              className={i === 0 ? 'w-[24%] max-w-[88px] sm:w-[150px] sm:max-w-[150px]' : 'mb-4 w-[21%] max-w-[78px] sm:mb-6 sm:w-[134px] sm:max-w-[134px]'}
+              className={i === 0 ? 'w-[150px] max-w-[150px]' : 'mb-6 w-[134px] max-w-[134px]'}
             >
               <Phone src={s.src} alt={s.alt} priority={i === 0} />
             </div>

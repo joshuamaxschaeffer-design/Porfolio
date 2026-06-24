@@ -257,14 +257,17 @@ function WireframeStack({ pages }: { pages: { key: string; label: string; src: s
 
   return (
     // Desktop: no overflow-hidden — let the fan breathe so the top corners
-    // aren't clipped. Mobile: the deck reads tiny, so scale the whole stage 3×
-    // (grown from the top); clip the far fanned edges and reserve the taller
-    // footprint so it doesn't collide with the section below.
-    <div className="relative mt-10 flex w-full justify-center overflow-hidden lg:overflow-visible">
-      <div className="h-[1020px] w-full lg:h-auto">
+    // aren't clipped. Mobile: the deck reads tiny, so scale the whole stage 3×.
+    // It grows from the TOP-LEFT so the front (largest) card stays anchored on
+    // screen and the fan trails right; the wrapper goes full-bleed (breaks the
+    // container's side padding) so nothing clips until the browser edges; the
+    // stage is pulled up 200px and the reserved height is short so ~500px is
+    // cropped off the bottom.
+    <div className="relative mt-10 flex w-[calc(100%+3rem)] justify-center overflow-hidden -mx-6 sm:w-[calc(100%+4rem)] sm:-mx-8 lg:mx-0 lg:w-full lg:overflow-visible">
+      <div className="h-[520px] w-full overflow-hidden lg:h-auto lg:overflow-visible">
         <div
           ref={stageRef}
-          className="relative h-[clamp(340px,44vw,560px)] w-full max-w-[1100px] origin-top scale-[3] lg:scale-100"
+          className="relative h-[clamp(340px,44vw,560px)] w-full max-w-[1100px] origin-top-left scale-[3] max-lg:-mt-[200px] lg:origin-top lg:mt-0 lg:scale-100"
         >
           {deck.map((pg, i) => (
             <WireframeCard key={pg.key} page={pg} index={i} total={deck.length} p={p} />
