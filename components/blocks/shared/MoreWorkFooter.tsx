@@ -157,14 +157,17 @@ function PandaCard() {
 function BaserateCard() {
   return (
     <CardFrame href="/work/baserate" bg="#000000" border="#d6d6d6">
-      <div className="pointer-events-none absolute inset-x-0 top-0 flex h-[62%] items-center justify-center overflow-hidden">
-        <div className="w-full origin-center transition-transform duration-500 ease-out will-change-transform group-hover:scale-[1.06]">
-          <BrandingScene hovered={false} className="w-[150%] max-w-none origin-center mx-auto scale-[0.92]" />
+      {/* device-focused scene matching the home page mobile treatment: just the
+          phone + computer (no scattered swatches/chips), centered + grounded so
+          their bottoms tuck under the label card below. */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 flex h-[62%] items-end justify-center overflow-hidden">
+        <div className="w-full origin-bottom transition-transform duration-500 ease-out will-change-transform group-hover:scale-[1.06]">
+          <BrandingScene compact devicesOnly hovered={false} className="w-full max-w-none origin-bottom mx-auto scale-[1.18]" />
         </div>
       </div>
       <LabelCard
         bg="#000000"
-        logo={<BaserateLogo className="h-[clamp(22px,6.5cqw,38px)] w-auto" />}
+        logo={<BaserateLogo className="h-[clamp(22px,6.5cqw,38px)] w-auto [filter:brightness(0)_invert(1)]" />}
         title="Full Stack Design"
         pills={['Branding', 'Lead', 'UX', 'UI', 'Strategy']}
       />
