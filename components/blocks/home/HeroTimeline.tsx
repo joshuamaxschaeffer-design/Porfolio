@@ -4,15 +4,15 @@ import { useRef, useState } from 'react'
 
 /**
  * Hero process timeline (Figma 335-73237). A thin horizontal line with 6 evenly
- * spaced tick marks, spanning from just after the "DESIGN SOLUTIONS" label to
- * the right edge of the SCHAEFFER wordmark.
+ * spaced tick marks, spanning from after "DESIGN SOLUTIONS" to SCHAEFFER's right
+ * edge.
  *
- * Interaction: the dark navy selector bar FOLLOWS the cursor horizontally across
- * the track (clamped to the ends). The phase NAME swaps at the MIDPOINT between
- * two ticks — i.e. it shows whichever tick's zone the cursor is in. A thin white
- * line sits in front of the dark bar. A tooltip with the phase name + an upward
- * beak rides under the bar. The trigger zone is tall (3×) so it's not finicky.
- * Styles matched to the Figma dev code: Recursive, #070e2c, rounded-2px, soft shadow.
+ * Interaction (matches Figma): a dark navy BOX stays anchored at the active
+ * phase's tick (the section being referenced). A dark FILLED line runs from that
+ * box to an open CIRCLE that follows the cursor. The phase name swaps at the
+ * MIDPOINT between ticks. The tooltip (name + upward beak) rides under the
+ * circle. The trigger zone is tall (~3×) so hovering isn't finicky.
+ * Styles: Recursive, #070e2c, rounded-2px, soft drop shadow.
  */
 const PHASES = ['Strategy', 'Branding', 'UX', 'UI', 'Implementation', 'Marketing']
 
@@ -29,9 +29,16 @@ export function HeroTimeline({ className = '' }: { className?: string }) {
   }
 
   const n = PHASES.length
-  // active phase = the zone the cursor is in (zones split at the midpoints).
   const idx = x === null ? null : Math.max(0, Math.min(n - 1, Math.round(x * (n - 1))))
-  const active = idx !== null
+  const active = idx !== null && x !== null
+  // The hollow dot + tooltip follow the RAW cursor; the phase name swaps at the
+  // midpoint between ticks (via idx). The filled square anchors to whichever END
+  // the cursor is nearest: in the left half it sits at the start and the line
+  // runs rightward; once the cursor crosses the halfway point the square jumps
+  // to the right end and the line + label flip to the right side.
+  const cursor = x === null ? 0 : x * 100 // % — follower dot at the raw cursor
+  const rightSide = x !== null && x >= 0.5 // past the halfway point
+  const anchor = rightSide ? 100 : 0 // % — origin square end
 
   return (
     <div
@@ -40,8 +47,7 @@ export function HeroTimeline({ className = '' }: { className?: string }) {
       onPointerMove={onMove}
       onPointerLeave={() => setX(null)}
     >
-      {/* the visual row (centred in the tall, easy-to-hit trigger zone) */}
-      <div className="relative h-[11px] w-full">
+      <div className="relative h-[12px] w-full">
         {/* base line */}
         <div className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-[#070e2c]/35" />
 
@@ -54,28 +60,53 @@ export function HeroTimeline({ className = '' }: { className?: string }) {
           />
         ))}
 
-        {/* the selector bar — follows the cursor x; dark navy w/ a white centre line */}
-        {active && x !== null && (
-          <div
-            className="pointer-events-none absolute top-1/2 z-10 -translate-x-1/2 -translate-y-1/2"
-            style={{ left: `${x * 100}%` }}
-          >
-            <div className="relative h-[11px] w-[8px] rounded-[2px] bg-[#070e2c]">
-              {/* white line in front of the box */}
-              <div className="absolute left-1/2 top-1/2 h-[7px] w-px -translate-x-1/2 -translate-y-1/2 bg-white" />
+        {active && (
+          <>
+            {/* DARK filled line between the anchored square and the cursor dot */}
+            <div
+              className="pointer-events-none absolute top-1/2 h-[2px] -translate-y-1/2 bg-[#070e2c]"
+              style={{
+                left: `${Math.min(anchor, cursor)}%`,
+                width: `${Math.abs(anchor - cursor)}%`,
+              }}
+            />
+
+            {/* anchored BOX at the nearest end (with a white centre line) */}
+            <div
+              className="pointer-events-none absolute top-1/2 z-10 h-[12px] w-[9px] -translate-x-1/2 -translate-y-1/2 rounded-[2px] bg-[#070e2c]"
+              style={{ left: `${anchor}%` }}
+            >
+              <div className="absolute left-1/2 top-1/2 h-[8px] w-px -translate-x-1/2 -translate-y-1/2 bg-white" />
             </div>
 
-            {/* tooltip below */}
-            <div className="absolute left-1/2 top-[16px] -translate-x-1/2">
-              <div className="absolute left-1/2 top-[-3px] h-[8px] w-[8px] -translate-x-1/2 rotate-45 rounded-[1px] bg-[#070e2c]" />
+            {/* hollow CIRCLE at the cursor + tooltip directly below it */}
+            <div
+              className="pointer-events-none absolute top-1/2 z-20 -translate-x-1/2 -translate-y-1/2"
+              style={{ left: `${cursor}%` }}
+            >
+              <div className="h-[12px] w-[12px] rounded-full border-[2px] border-[#070e2c] bg-white" />
+              {/* tooltip below the circle — flips to the right side past the midpoint */}
               <div
-                className="relative whitespace-nowrap rounded-[2px] bg-[#070e2c] px-[9px] pb-[6px] pt-[7px] uppercase text-white shadow-[0px_1px_2px_rgba(12,12,13,0.1),0px_1px_2px_rgba(12,12,13,0.05)]"
-                style={{ fontFamily: 'var(--font-data)', fontSize: '12px', lineHeight: 1 }}
+                className="absolute top-[13px]"
+                style={
+                  rightSide
+                    ? { right: '-6px' } // anchor to the right of the dot
+                    : { left: '-6px' } // anchor to the left of the dot
+                }
               >
-                {PHASES[idx!]}
+                <div
+                  className="absolute top-[-3px] h-[8px] w-[8px] rotate-45 rounded-[1px] bg-[#070e2c]"
+                  style={rightSide ? { right: '6px' } : { left: '6px' }}
+                />
+                <div
+                  className="relative whitespace-nowrap rounded-[2px] bg-[#070e2c] px-[9px] pb-[6px] pt-[7px] uppercase text-white shadow-[0px_1px_2px_rgba(12,12,13,0.1),0px_1px_2px_rgba(12,12,13,0.05)]"
+                  style={{ fontFamily: 'var(--font-data)', fontSize: '12px', lineHeight: 1 }}
+                >
+                  {PHASES[idx!]}
+                </div>
               </div>
             </div>
-          </div>
+          </>
         )}
       </div>
     </div>
