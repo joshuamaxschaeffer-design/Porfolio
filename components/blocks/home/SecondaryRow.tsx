@@ -311,7 +311,7 @@ function CapabilitiesCard() {
   }, [reduce])
 
   return (
-    <Link href="/work/capabilities" className="group mt-5 block md:mt-6">
+    <Link href="/work/capabilities" className="group mt-[120px] block md:mt-[124px]">
       <div className="relative overflow-hidden rounded-[4px] border border-[#dcdce1] bg-[#f3f3f3]">
         <div className="grid items-center gap-8 p-8 md:grid-cols-[minmax(0,360px)_minmax(0,1fr)] md:p-12">
           <div>
