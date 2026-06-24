@@ -3,13 +3,12 @@
 import { Reveal } from '../../animation/Reveal'
 import { StatCounters, type StatItem } from '../shared/StatCounters'
 import { BG, type SectionBg } from './disciplines'
-import { CapIcon } from './CapIcon'
 import { BrandLogo, type BrandDef } from './BrandLogo'
 
 export interface CapabilityItem {
   label: string
   note?: string
-  /** icon key (see CapIcon) */
+  /** icon key (formerly CapIcon; chip row removed) */
   icon?: string
 }
 
@@ -18,7 +17,8 @@ export interface DisciplineModuleProps {
   id: string
   title: string
   positioning: string
-  capabilities: CapabilityItem[]
+  /** legacy: capability chips were removed from the UI; kept optional so data/call sites don't break */
+  capabilities?: CapabilityItem[]
   stats: StatItem[]
   statsNote?: string
   /** flat background color for the whole section */
@@ -40,7 +40,6 @@ export function DisciplineModule({
   id,
   title,
   positioning,
-  capabilities,
   stats,
   bg,
   clientBrands,
@@ -83,23 +82,11 @@ export function DisciplineModule({
           </Reveal>
         )}
 
-        {/* Capability list — borderless, label only (no card, no 2nd line) */}
-        <Reveal delay={120}>
-          <div className="mt-10 flex flex-col gap-y-4 md:mt-12 md:flex-row md:flex-nowrap md:items-center md:justify-between md:gap-x-5">
-            {capabilities.map((c) => (
-              <div key={c.label} className="flex items-center gap-2 md:gap-2.5">
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center" style={{ color: gold }}>
-                  <CapIcon name={c.icon} />
-                </span>
-                <p className={`whitespace-nowrap text-[15px] font-medium leading-tight md:text-[14px] lg:text-[15px] ${dark ? 'text-white' : 'text-[var(--br-body)]'}`}>{c.label}</p>
-              </div>
-            ))}
-          </div>
-        </Reveal>
+        {/* Capability chip row removed per design — section goes straight to the stat row */}
 
         {/* Full-width stat row — flat on the section background (no card, no note) */}
         <Reveal delay={100}>
-          <div className="mt-12 border-t pt-10 md:mt-16" style={{ borderColor: dark ? 'rgba(255,255,255,0.12)' : 'var(--br-line)' }}>
+          <div className="mt-12 md:mt-16">
             <StatCounters stats={dark ? stats.map((s) => ({ ...s, accent: gold })) : stats} dark={dark} />
           </div>
         </Reveal>
