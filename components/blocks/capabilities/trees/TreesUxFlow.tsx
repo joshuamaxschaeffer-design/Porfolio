@@ -221,9 +221,9 @@ function Legend() {
       {/* Related Group swatch (dashed) + label */}
       <div className="absolute" style={{ left: pct(667, W), top: pct(2267, H), width: pct(110, W), height: pct(63, H), border: `${(2 / W) * 100}cqw dashed #000`, borderRadius: `${(6 / W) * 100}cqw` }} />
       <span className="absolute font-black text-black" style={{ left: pct(793, W), top: pct(2276, H), fontSize: `${(30 / W) * 100}cqw`, whiteSpace: 'nowrap' }}>Related Group</span>
-      {/* Repository swatch (cylinder) + label */}
-      <Cylinder x={787} y={2364} w={96} h={85} />
-      <span className="absolute font-black text-black" style={{ left: pct(900, W), top: pct(2385, H), fontSize: `${(30 / W) * 100}cqw`, whiteSpace: 'nowrap' }}>Repository/Algorithm</span>
+      {/* Repository swatch (cylinder) + label — aligned to the Related Group column */}
+      <Cylinder x={667} y={2360} w={96} h={85} />
+      <span className="absolute font-black text-black" style={{ left: pct(793, W), top: pct(2385, H), fontSize: `${(30 / W) * 100}cqw`, whiteSpace: 'nowrap' }}>Repository/Algorithm</span>
     </>
   )
 }
@@ -250,10 +250,25 @@ export function TreesUxFlow() {
         {/* connectors under the blocks */}
         <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" className="absolute inset-0 h-full w-full" aria-hidden>
           {LINES.map((pts, i) => (
-            <polyline key={i} points={pts.map((p) => p.join(',')).join(' ')} fill="none" stroke="#1a1a1a" strokeWidth={2.4} />
+            <polyline
+              key={i}
+              points={pts.map((p) => p.join(',')).join(' ')}
+              fill="none"
+              stroke="#1a1a1a"
+              strokeWidth={2.4}
+              vectorEffect="non-scaling-stroke"
+              shapeRendering="crispEdges"
+            />
           ))}
-          <polyline points={DASHED.map((p) => p.join(',')).join(' ')} fill="none" stroke={BLUE} strokeWidth={2.4} strokeDasharray="9 7" />
-          <circle cx={809 + 14} cy={892} r={13} fill="white" stroke={BLUE} strokeWidth={2.4} />
+          <polyline
+            points={DASHED.map((p) => p.join(',')).join(' ')}
+            fill="none"
+            stroke={BLUE}
+            strokeWidth={2.4}
+            strokeDasharray="9 7"
+            vectorEffect="non-scaling-stroke"
+          />
+          <circle cx={809 + 14} cy={892} r={13} fill="white" stroke={BLUE} strokeWidth={2.4} vectorEffect="non-scaling-stroke" />
         </svg>
 
         {/* dashed Related Group rectangles */}

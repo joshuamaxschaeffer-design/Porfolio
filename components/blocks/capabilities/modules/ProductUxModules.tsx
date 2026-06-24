@@ -136,14 +136,14 @@ export function ProductUxModules({ dark = false }: { dark?: boolean }) {
           ratio="phone"
           items={[
             { label: 'Raising Cane’s — app', src: '/capabilities/canes/ui-drink-1.webp', icon: '/capabilities/logos/raising-canes.svg' },
-            { label: 'CBTL — iOS app', src: '/capabilities/cbtl/ui-2.webp', icon: '/capabilities/logos/authored/jubilee.png' },
+            { label: 'CBTL — iOS app', src: '/capabilities/cbtl/ui-2.webp', icon: '/capabilities/logos/cbtl.png' },
             { label: 'Dave & Buster’s — app', src: '/capabilities/dnb/app-1.webp', icon: '/capabilities/logos/dave-and-busters.svg' },
-            { label: 'Wingstop — ordering', src: '/capabilities/breadth/wingstop.webp' },
-            { label: 'Blaze — Android app', src: '/capabilities/blaze/android-2-delivery-tracker.webp' },
-            { label: 'Trees — self-improvement', src: '/capabilities/trees/ui-1.webp', icon: '/capabilities/logos/authored/trees.svg' },
-            'Panda Express — app',
-            'True Food Kitchen — web',
-            'Noodles & Co. — ordering',
+            { label: 'Wingstop — ordering', src: '/capabilities/breadth/wingstop.webp', icon: '/capabilities/logos/wingstop.svg' },
+            { label: 'Blaze — Android app', src: '/capabilities/blaze/android-2-delivery-tracker.webp', icon: '/capabilities/blaze/logo-5-extract-appicon.png' },
+            { label: 'Trees — self-improvement', src: '/capabilities/trees/ui-1.webp', icon: '/capabilities/logos/authored/trees-icon.svg' },
+            { label: 'Panda Express — app', src: '/capabilities/panda/app-home.webp', icon: '/capabilities/logos/panda.svg' },
+            { label: 'True Food Kitchen — web', src: '/capabilities/web/tfk-mobile-hero.webp' },
+            { label: 'Noodles & Co. — ordering', src: '/capabilities/breadth/noodles.webp' },
           ]}
         />
       </div>
