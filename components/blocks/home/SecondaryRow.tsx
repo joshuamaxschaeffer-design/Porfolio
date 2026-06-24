@@ -49,7 +49,7 @@ const CHIPS: Chip[] = [
 
 export function SecondaryRow(_props: SecondaryRowProps) {
   return (
-    <section className="home-container py-16 md:py-20">
+    <section className="home-container pb-16 pt-[264px] md:pb-20 md:pt-[280px]">
       {/* two 570:720 cards, equal — match the Figma 24px gap (~4% of 570) */}
       <div className="grid gap-5 md:grid-cols-2 md:gap-6">
         <WingstopCard />
