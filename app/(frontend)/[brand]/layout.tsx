@@ -1,9 +1,8 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { asBrand, BRANDS, type Brand } from '@/lib/brand'
-import { getSettings, getNavigation, getFooter } from '@/lib/queries'
+import { getSettings, getNavigation } from '@/lib/queries'
 import { Nav } from '@/components/Nav'
-import { Footer } from '@/components/Footer'
 
 interface BrandLayoutProps {
   children: React.ReactNode
@@ -49,9 +48,8 @@ export default async function BrandLayout({ children, params }: BrandLayoutProps
   if (rawBrand !== 'personal' && rawBrand !== 'practice') notFound()
   const brand: Brand = rawBrand
 
-  const [nav, footer, settings] = await Promise.all([
+  const [nav, settings] = await Promise.all([
     getNavigation(brand),
-    getFooter(brand),
     getSettings(brand),
   ])
 
@@ -59,7 +57,6 @@ export default async function BrandLayout({ children, params }: BrandLayoutProps
     <div data-brand={brand} className="contents">
       <Nav nav={nav} settings={settings} brand={brand} />
       <main>{children}</main>
-      <Footer footer={footer} settings={settings} brand={brand} />
     </div>
   )
 }
