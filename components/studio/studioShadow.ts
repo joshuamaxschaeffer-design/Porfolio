@@ -535,7 +535,10 @@ export function createSvgShadow(svg: SVGSVGElement, shadowAlpha = 1) {
         .join(' ')
       // crisp-ish blur from the low height; opacity from the contact (low-h) alpha
       const cSigma = Math.max(1.5, (s0 + s1 * h0) * 1.1)
-      const cAlpha = Math.max(0, Math.min(0.5, (a0 + a1 * h0) * 1.5 + 0.12))
+      // shadowAlpha also scales the dark CONTACT (umbra) pool — it's the tight
+      // dark shadow right under the object, so without this the device still
+      // reads heavy even when the soft cast layers are dialed down.
+      const cAlpha = Math.max(0, Math.min(0.5, (a0 + a1 * h0) * 1.5 + 0.12)) * shadowAlpha
       if (cAlpha <= 0.004) { contact.g.style.display = 'none' }
       else {
         contact.g.style.display = ''

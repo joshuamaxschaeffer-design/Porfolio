@@ -490,13 +490,22 @@ export function MoreWorkFooter({ currentSlug, heading = 'More Work' }: MoreWorkF
       targetScroll: el.scrollLeft,
       samples: [{ x: e.clientX, t: now }],
     }
-    el.setPointerCapture(e.pointerId)
+    // NOTE: do NOT setPointerCapture here. Capturing on pointerdown retargets the
+    // follow-up `click` to the track instead of the <a> under the cursor, so a
+    // plain click on a card never navigates. We capture only once a real drag
+    // begins (in onPointerMove), so a click is always delivered to the link.
     if (dragRaf.current == null) dragRaf.current = requestAnimationFrame(dragTick)
   }
   const onPointerMove = (e: React.PointerEvent) => {
     if (!drag.current.down) return
     const dx = e.clientX - drag.current.startX
-    if (Math.abs(dx) > 4) drag.current.moved = true
+    if (Math.abs(dx) > 4 && !drag.current.moved) {
+      drag.current.moved = true
+      // a genuine drag started → now capture the pointer for smooth tracking
+      try {
+        trackRef.current?.setPointerCapture(e.pointerId)
+      } catch {}
+    }
     drag.current.targetScroll = drag.current.startScroll - dx
     const now = performance.now()
     const s = drag.current.samples
