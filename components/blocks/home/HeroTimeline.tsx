@@ -66,7 +66,12 @@ export function HeroTimeline({ className = '' }: { className?: string }) {
   return (
     <div
       ref={track}
-      className={`relative flex h-[40px] items-center ${className}`}
+      // 2x-tall pointer hit area (80px) so the bar activates sooner as the
+      // cursor nears it vertically. -my-5 makes the extra 40px grow symmetrically
+      // (20px up / 20px down) BEYOND the old 40px box, so the visible line +
+      // tooltip stay put and the hero row doesn't reflow. The inner h-[12px]
+      // strip stays vertically centred, so nothing visual moves.
+      className={`relative -my-5 flex h-[80px] items-center ${className}`}
       onPointerMove={onMove}
       onPointerLeave={() => setPx(null)}
     >
