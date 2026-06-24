@@ -73,12 +73,12 @@ function Chip({ chip }: { chip: { slug: string; name: string; color: string } })
   const src = `/wingstop/flavor-chips/turntable/${chip.slug}-${CHIP_REST_FRAME}.webp`
   return (
     <div className="flex flex-col items-center">
-      <div className="relative grid aspect-square w-full place-items-center">
+      <div className="relative grid aspect-square w-full place-items-center rounded-xl border border-white/12 bg-white/[0.06] p-2">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={src}
           alt={`${chip.name} flavour chip`}
-          loading="lazy"
+          loading="eager"
           decoding="async"
           draggable={false}
           className="h-[88%] w-[88%] object-contain"

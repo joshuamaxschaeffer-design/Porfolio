@@ -51,9 +51,6 @@ export function InStoreSection() {
                 <img src={b.src} alt={b.label} loading="lazy" className="block h-full w-full object-cover" />
               </div>
             </div>
-            <figcaption className="br-data relative z-[1] mt-4 text-[13px] uppercase tracking-[0.1em] text-[var(--br-muted-2)]">
-              {b.label}
-            </figcaption>
           </figure>
         ))}
       </div>
