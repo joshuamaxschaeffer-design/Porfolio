@@ -96,11 +96,12 @@ export function ProductPagesStage() {
               (right-[6%]) and the pages are halved (see --pp-w below) so the
               whole fan reads inside the band. lg+ restores right-[2%]. */}
           <div
-            className="absolute right-[6%] top-1/2 flex items-center gap-3 [--pp-w:clamp(150px,18vw,260px)] [--pp-x:20vw] sm:gap-4 lg:right-[2%] lg:gap-7 lg:[--pp-w:clamp(300px,32vw,520px)] lg:[--pp-x:0px]"
+            className="absolute right-[6%] top-1/2 flex items-center gap-3 [--pp-w:clamp(150px,18vw,260px)] [--pp-x:calc(20vw_-_160px)] sm:gap-4 lg:right-[2%] lg:gap-7 lg:[--pp-w:clamp(300px,32vw,520px)] lg:[--pp-x:0px]"
             style={{
-              // --pp-x shifts the whole fan rightward on narrow screens so it
-              // stops bleeding off the left edge and reads inside the band; 0 at
-              // lg+ where the two-column layout already places it (2026-06-24).
+              // --pp-x shifts the whole fan horizontally on narrow screens; per
+              // Joshua (2026-06-24) it's calc(20vw - 160px) so the pages sit well
+              // left (deliberately cropping off the left edge). 0 at lg+ where the
+              // two-column layout already places it.
               transform:
                 'translateY(-50%) translateX(var(--pp-x, 0px)) rotateX(10deg) rotateY(-32deg) rotateZ(8deg)',
               transformStyle: 'preserve-3d',
