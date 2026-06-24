@@ -74,7 +74,7 @@ export function FlagshipBaserate({
               </ul>
               {/* case study CTA — solid BLACK pill, white text (matches Panda's
                   pill; the whole section is the link so this is just visual). */}
-              <span className="inline-flex items-center gap-2 rounded-full bg-black px-5 py-2.5 text-sm font-semibold text-white">
+              <span className="inline-flex w-fit self-start items-center gap-2 rounded-full bg-black px-5 py-2.5 text-sm font-semibold text-white">
                 Case Study
                 <span aria-hidden className="transition-transform group-hover/card:translate-x-1">→</span>
               </span>
