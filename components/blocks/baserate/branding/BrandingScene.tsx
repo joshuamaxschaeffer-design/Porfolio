@@ -209,15 +209,12 @@ export function BrandingScene({ className = '', hovered = false }: { className?:
                 its left/right edges so no hard shadow-box line shows (the device
                 itself sits centred in the box, well inside the fade). */}
             <Parallax z={PZ.device} pos={{ x: 19, y: 46 }} exDist={22} className="absolute left-[6%] top-[16%] z-10 w-[26%]">
-              <div
-                className="w-full"
-                style={{
-                  WebkitMaskImage: 'linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%)',
-                  maskImage: 'linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%)',
-                }}
-              >
-                <StudioObject base="/baserate/branding/devices/phone" frameCount={SCRUB_FRAMES} fps={FPS} staticFrame={-1} shadowMode="svg" className="w-full" alt="Journalytic phone" />
-              </div>
+              {/* No CSS mask here: a mask clips to the element's BORDER BOX, which
+                  would slice off the StudioObject's cast shadow where it extends
+                  below/right of the phone canvas (a hard horizontal line). The
+                  shadow's own SVG gradient already feathers all four edges, so no
+                  mask is needed. */}
+              <StudioObject base="/baserate/branding/devices/phone" frameCount={SCRUB_FRAMES} fps={FPS} staticFrame={-1} shadowMode="svg" className="w-full" alt="Journalytic phone" />
             </Parallax>
 
             {/* DESKTOP / tablet — pulled left toward the phone; sized so neither

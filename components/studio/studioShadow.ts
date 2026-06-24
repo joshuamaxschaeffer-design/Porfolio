@@ -495,12 +495,16 @@ export function createSvgShadow(svg: SVGSVGElement) {
       // and feathers to 0 just outside → stacked slabs sum to a smooth ramp.
       L.grad.setAttribute('x1', near[0].toFixed(1)); L.grad.setAttribute('y1', near[1].toFixed(1))
       L.grad.setAttribute('x2', far[0].toFixed(1)); L.grad.setAttribute('y2', far[1].toFixed(1))
+      const isLast = i === layers.length - 1
       const oA = i === 0 ? 0 : cl(t0 - F)            // first layer is opaque from the contact edge
-      const oM = tm
-      const oB = i === layers.length - 1 ? 1 : cl(t1 + F) // last layer opaque to the far edge
+      // The OUTERMOST layer fades to 0 at the far edge (a smooth tail). Its
+      // opaque mid is pulled inward so there's a gradient ramp down to the
+      // polygon edge — otherwise the cast shadow ends in a faint flat line.
+      const oM = isLast ? t0 + (t1 - t0) * 0.3 : tm
+      const oB = isLast ? 1 : cl(t1 + F)            // last layer's far stop reaches the polygon edge
       L.stopA.setAttribute('offset', `${(oA * 100).toFixed(1)}%`); L.stopA.setAttribute('stop-opacity', i === 0 ? '1' : '0')
       L.stopM.setAttribute('offset', `${(oM * 100).toFixed(1)}%`); L.stopM.setAttribute('stop-opacity', '1')
-      L.stopB.setAttribute('offset', `${(oB * 100).toFixed(1)}%`); L.stopB.setAttribute('stop-opacity', i === layers.length - 1 ? '1' : '0')
+      L.stopB.setAttribute('offset', `${(oB * 100).toFixed(1)}%`); L.stopB.setAttribute('stop-opacity', '0')
     }
 
     // ── CONTACT (umbra) ── tight, darker, lightly-blurred pool at the base.
