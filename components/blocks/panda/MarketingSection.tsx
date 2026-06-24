@@ -53,13 +53,12 @@ export function MarketingSection() {
         </div>
 
         {/* COHESIVE SITE UX — the real page designs laid down on a receding plane.
-            A faint full-width hairline tops the deck (masks the angled top-crop);
-            the copy sits on a dark card floating IN FRONT of the screens. */}
+            A faint full-width hairline tops the deck and is ALSO the clip edge, so
+            the raised right-hand screens crop cleanly at the divider instead of
+            poking above it; the copy sits on a dark card floating IN FRONT. */}
         <div className="relative mt-20 lg:mt-28">
-          {/* very faint full-width divider across the top of the deck */}
-          <div aria-hidden className="relative left-1/2 w-screen -translate-x-1/2 border-t border-white/10" />
-
-          {/* the laid-down deck */}
+          {/* the laid-down deck (its full-bleed wrapper carries the top divider
+              and clips the angled screens exactly at that hairline) */}
           <Reveal>
             <PerspectiveStack pages={defaults.ux.pages} />
           </Reveal>
@@ -105,8 +104,11 @@ function PerspectiveStack({ pages }: { pages: DeckPage[] }) {
     .slice(0, 7)
     .sort((a, b) => (b.ratio ?? WINDOW_RATIO) - (a.ratio ?? WINDOW_RATIO))
   return (
-    // full-bleed: break out of the centered container to the whole viewport
-    <div className="relative left-1/2 mt-10 w-screen -translate-x-1/2 overflow-hidden">
+    // full-bleed: break out of the centered container to the whole viewport.
+    // The top border is the section hairline AND the clip edge: pt-10 holds the
+    // breathing gap INSIDE the clip box, so the angled screens that rise past the
+    // deck top are cropped exactly at the divider instead of above it.
+    <div className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden border-t border-white/10 pt-10">
       <div
         className="mx-auto"
         style={{ perspective: '2200px', perspectiveOrigin: '50% 30%' }}
