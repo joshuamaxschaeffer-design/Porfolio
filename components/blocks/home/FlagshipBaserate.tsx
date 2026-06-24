@@ -39,7 +39,7 @@ export function FlagshipBaserate({
             'radial-gradient(120% 100% at 78% 6%, #f3f6fc 0%, #ffffff 55%)',
         }}
       />
-      <div className="home-container pt-20 pb-[188px] md:pt-28 md:pb-[260px]">
+      <div className="home-container pt-0 pb-[188px] md:pt-28 md:pb-[260px]">
         <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,440px)_minmax(0,1fr)] lg:gap-16">
           {/* CARD — logo + FULL STACK DESIGN + gold pills (Figma). The whole
               card links to the case study (text/CTA removed per Josh). */}
@@ -86,8 +86,8 @@ export function FlagshipBaserate({
               the cluster keeps its proportions in the narrow column; centered
               horizontally and pulled DOWN with a negative bottom margin so the
               text card (order-2, below) overlaps and covers the device bottoms. */}
-          <div className="relative order-1 -mb-[96px] flex min-h-[420px] items-center justify-center overflow-visible lg:hidden">
-            <BrandingScene compact hovered={cardHover} className="w-full max-w-none origin-center scale-[1.28]" />
+          <div className="relative order-1 -mb-[64px] flex min-h-[300px] items-start justify-center overflow-visible pt-2 lg:hidden">
+            <BrandingScene compact devicesOnly hovered={cardHover} className="w-full max-w-none origin-top scale-[1.22]" />
           </div>
           {/* DESKTOP scene — unchanged. */}
           <div className="relative order-1 hidden min-h-[460px] items-center overflow-visible lg:order-2 lg:flex lg:min-h-[620px] lg:justify-start">

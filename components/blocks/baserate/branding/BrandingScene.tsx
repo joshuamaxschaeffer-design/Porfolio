@@ -151,6 +151,7 @@ export function BrandingScene({
   className = '',
   hovered = false,
   compact = false,
+  devicesOnly = false,
 }: {
   className?: string
   hovered?: boolean
@@ -158,6 +159,10 @@ export function BrandingScene({
    *  percentage-width devices, so the cluster keeps its proportions in a narrow
    *  box (otherwise swatches read huge + devices tiny). Desktop = false. */
   compact?: boolean
+  /** Render ONLY the phone + desktop devices — drop the swatch cards and the
+   *  app-icon chips. Used on mobile where the scattered swatches/logos read as
+   *  clutter in a narrow column. */
+  devicesOnly?: boolean
 }) {
   // swatch/chip pixel sizes are absolute, so in a narrow mobile box they look
   // oversized vs the %-width devices — scale them DOWN; scale devices UP.
@@ -240,6 +245,8 @@ export function BrandingScene({
               <StudioObject base="/baserate/branding/devices/desktop" frameCount={SCRUB_FRAMES} fps={FPS} staticFrame={-1} shadowMode="svg" shadowAlpha={0.6} className="w-full" alt="Baserate marketing site" />
             </Parallax>
 
+            {/* swatch cards + app-icon chips — hidden in devicesOnly (mobile) */}
+            {!devicesOnly && <>
             {/* app-icon chips */}
             <Parallax z={PZ.chip} pos={{ x: 26, y: 10 }} exDist={40} className="absolute left-[20%] top-[2%] z-30">
               <BakedChip base="/baserate/branding/chips/journalytic" alt="Journalytic" reduce={reduce} frameCount={SCRUB_FRAMES} size={r(124)} scaleW={132.3 * sw} ml={-4.3 * sw} mt={-6.3 * sw} scrub={chipScrub} shadowAlpha={0.6} />
@@ -262,6 +269,7 @@ export function BrandingScene({
             <Parallax z={PZ.orbMid} pos={{ x: 42, y: 46 }} exDist={44} className="absolute left-[calc(40%-30px)] top-[40%] z-[15]">
               <SwatchCard reduce={reduce} color="#1551C0" hex="#1551C0" w={r(70)} rotX={8} rotY={7} dur={14} delay={0.6} />
             </Parallax>
+            </>}
           </div>
         </HoverContext.Provider>
         </ParallaxContext.Provider>
