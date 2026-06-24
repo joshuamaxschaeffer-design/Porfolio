@@ -186,21 +186,25 @@ function CrmEmailScatter() {
 
       {/* ── MOBILE (<1024px): calmer 3-email fan ──────────────────────────── */}
       <div className="relative mx-auto w-full max-w-[520px] px-5 pb-14 pt-2 lg:hidden">
-        <div className="br-container px-0">
+        {/* Heading rides in a white card ABOVE the tilted emails (z-30) so the
+            text stays readable over the screens (mirrors the desktop plate). */}
+        <div className="relative z-30 rounded-[12px] border border-[var(--br-line)] bg-white/95 p-5 shadow-[var(--br-card-shadow)] backdrop-blur-sm">
           <span className="br-data text-xs font-semibold uppercase tracking-[0.18em] text-[var(--ws-green)]">
             {defaults.scope.eyebrow}
           </span>
-          <h3 className="mt-2 text-[26px] font-semibold text-[var(--br-ink)]">{defaults.scope.title}</h3>
+          <h3 className="mt-2 text-[26px] font-semibold leading-tight text-[var(--br-ink)]">{defaults.scope.title}</h3>
         </div>
-        <div className="relative mt-8 aspect-[360/440] w-full">
+        {/* Stage clips the tall tilted emails so they tuck behind the heading
+            card and don't bleed into the next module. Pulled up under the card. */}
+        <div className="relative -mt-6 aspect-[360/440] w-full overflow-hidden">
           <div className="pointer-events-none absolute -left-[8%] bottom-[2%] z-0 w-[38%]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={defaults.scope.food[0]} alt="" aria-hidden className="block w-full max-w-none" />
           </div>
           {[
-            { src: defaults.scope.emails[2], l: 50, t: 44, w: 50, z: 10 },
-            { src: defaults.scope.emails[1], l: 70, t: 60, w: 50, z: 20 },
-            { src: defaults.scope.emails[0], l: 32, t: 62, w: 52, z: 20 },
+            { src: defaults.scope.emails[2], l: 50, t: 50, w: 50, z: 10 },
+            { src: defaults.scope.emails[1], l: 72, t: 64, w: 50, z: 20 },
+            { src: defaults.scope.emails[0], l: 30, t: 66, w: 52, z: 20 },
           ].map((e, i) => (
             <div key={i} className="absolute" style={{ left: `${e.l}%`, top: `${e.t}%`, width: `${e.w}%`, zIndex: e.z, transform: 'translate(-50%,-50%)' }}>
               <div style={{ filter: EMAIL_SHADOW }}>

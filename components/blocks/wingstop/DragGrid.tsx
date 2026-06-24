@@ -74,7 +74,7 @@ export function DragGrid({
 
   if (reduce) {
     return (
-      <div className="-mx-6 flex gap-4 overflow-x-auto px-6 pb-4 md:-mx-20 md:px-20 [scrollbar-width:thin]">
+      <div className="br-noscrollbar -mx-6 flex gap-4 overflow-x-auto px-6 py-6 md:-mx-20 md:px-20">
         {items.map((it) => (
           <Tile key={it.src} it={it} />
         ))}
@@ -89,10 +89,14 @@ export function DragGrid({
 
   return (
     <div className="relative">
-      <div ref={viewport} className="overflow-hidden">
+      {/* Full-bleed to the screen edge (break out of the container's side
+          padding). Generous vertical padding so the tiles' drop shadows have
+          room and aren't clipped top/bottom by the drag overflow-hidden. The
+          negative vertical margin keeps surrounding spacing unchanged. */}
+      <div ref={viewport} className="-mx-6 -my-10 overflow-hidden px-6 py-10 md:-mx-20 md:px-20">
         <motion.div
           ref={track}
-          className="flex cursor-grab gap-4 pb-1 active:cursor-grabbing"
+          className="flex cursor-grab gap-4 active:cursor-grabbing"
           style={{ x }}
           drag="x"
           dragConstraints={viewport}
