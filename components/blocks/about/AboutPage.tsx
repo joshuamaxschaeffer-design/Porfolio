@@ -80,22 +80,38 @@ export function AboutPage() {
           </div>
 
           {/* Close — its own movement, pulled up beside the timeline on desktop.
-              On desktop the column stretches (`self-stretch`) so the grey card
-              fills the same height as the timeline; the card centers its content
-              vertically. (Room left for an image later.) Mobile: stacks below. */}
+              Matches the home CTA treatment: the faint logo-sketches photo is the
+              panel background under a white overlay, with the text on its own
+              white card centered over it. On desktop the column stretches
+              (`self-stretch`) so the panel fills the timeline's height. Mobile:
+              stacks below. */}
           <div className="mt-16 lg:mt-0 lg:self-stretch">
             <Appear onView className="lg:h-full">
-              <div className="flex h-full flex-col justify-center rounded-lg bg-[var(--br-bg-2)] p-8 md:p-10 lg:p-12">
-                <p className="max-w-md text-[28px] font-medium leading-snug tracking-[-0.015em] text-[var(--br-ink)] md:text-[34px]">
-                  {outro.line}
-                </p>
-                <Link
-                  href={outro.ctaHref}
-                  className="br-data mt-7 inline-flex w-fit items-center gap-2 rounded-[var(--br-tag-radius)] bg-[var(--br-ink)] px-6 py-3.5 text-sm font-semibold uppercase tracking-[0.04em] text-white transition-opacity hover:opacity-90"
-                >
-                  {outro.ctaLabel}
-                  <span aria-hidden>→</span>
-                </Link>
+              <div className="relative isolate flex h-full min-h-[420px] flex-col items-center justify-center overflow-hidden rounded-lg bg-[var(--br-bg-2)] px-6 py-16 text-center md:px-8">
+                {/* faint sketches photo — the same logo image used on the home
+                    page. It IS the panel background (no solid fill above it). */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/home/about/cta-sketches.webp"
+                  alt=""
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover"
+                />
+                <div aria-hidden className="pointer-events-none absolute inset-0 z-0 bg-white/55" />
+
+                {/* white card carrying the text, centered over the sketches */}
+                <div className="relative z-10 w-full max-w-md rounded-lg border border-black/5 bg-white px-8 py-12 shadow-[0_24px_60px_rgba(7,14,44,0.10)]">
+                  <p className="text-[28px] font-medium leading-snug tracking-[-0.015em] text-[var(--br-ink)] md:text-[34px]">
+                    {outro.line}
+                  </p>
+                  <Link
+                    href={outro.ctaHref}
+                    className="br-data mt-7 inline-flex w-fit items-center gap-2 rounded-[var(--br-tag-radius)] bg-[var(--br-ink)] px-6 py-3.5 text-sm font-semibold uppercase tracking-[0.04em] text-white transition-opacity hover:opacity-90"
+                  >
+                    {outro.ctaLabel}
+                    <span aria-hidden>→</span>
+                  </Link>
+                </div>
               </div>
             </Appear>
           </div>
