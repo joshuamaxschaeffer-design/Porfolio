@@ -68,14 +68,15 @@ export function AboutPage() {
         <div className="grid grid-cols-1 gap-x-10 gap-y-8 sm:grid-cols-2 md:gap-y-10 lg:grid-cols-3">
           {VALUE_CARDS.map((c, i) => (
             <Appear key={c.n} onView delay={i * 90} className="h-full">
-              <div className="flex h-full flex-col rounded-[8px] border border-[#e3e3e6] bg-white p-7">
-                {/* iso illustration — ~1/3 the card width, left-aligned */}
-                <div className="mb-5 flex aspect-square w-1/3 max-w-[120px] items-center justify-start">
+              <div className="relative flex h-full flex-col items-center rounded-[8px] border border-[#e3e3e6] bg-white p-7 pt-12 text-center">
+                {/* number — pinned to the card's inner top-left corner */}
+                <span className="br-data absolute left-7 top-6 text-sm font-semibold text-[#7e7f88]">{c.n}</span>
+                {/* iso illustration — centered */}
+                <div className="mb-5 flex aspect-square w-1/3 max-w-[120px] items-center justify-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={c.img} alt="" aria-hidden className="h-full w-full object-contain" />
                 </div>
-                <span className="br-data text-sm font-semibold text-[#7e7f88]">{c.n}</span>
-                <h2 className="mt-3 text-[16px] font-medium uppercase leading-snug tracking-[0.01em] text-[var(--br-ink)]">
+                <h2 className="text-[16px] font-medium uppercase leading-snug tracking-[0.01em] text-[var(--br-ink)]">
                   {c.title}
                 </h2>
                 <p className="mt-3 max-w-[300px] text-[15px] leading-relaxed text-[var(--br-muted)] md:text-base">

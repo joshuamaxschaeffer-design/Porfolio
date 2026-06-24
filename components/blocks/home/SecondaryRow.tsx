@@ -49,7 +49,7 @@ const CHIPS: Chip[] = [
 
 export function SecondaryRow(_props: SecondaryRowProps) {
   return (
-    <section className="home-container pb-16 pt-[264px] md:pb-20 md:pt-[280px]">
+    <section className="home-container pb-16 pt-[44px] md:pb-20 md:pt-[280px]">
       {/* two 570:720 cards, equal — match the Figma 24px gap (~4% of 570) */}
       <div className="grid gap-5 md:grid-cols-2 md:gap-6">
         <WingstopCard />
@@ -315,7 +315,7 @@ function CapabilitiesCard() {
   }, [reduce])
 
   return (
-    <Link href="/work/capabilities" className="group mt-[120px] block md:mt-[124px]">
+    <Link href="/work/capabilities" className="group mt-[70px] block md:mt-[124px]">
       <div className="relative overflow-hidden rounded-[4px] border border-[#dcdce1] bg-[#f3f3f3]">
         <div className="grid items-center gap-8 p-8 md:grid-cols-[minmax(0,360px)_minmax(0,1fr)] md:p-12">
           <div>

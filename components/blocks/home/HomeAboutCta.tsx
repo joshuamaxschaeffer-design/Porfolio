@@ -53,21 +53,22 @@ export function HomeAboutCta({
         {ITEMS.map((it) => (
           <div
             key={it.n}
-            className="rounded-[8px] border border-[#e3e3e6] bg-white p-7"
+            className="relative flex flex-col items-center rounded-[8px] border border-[#e3e3e6] bg-white p-7 pt-12 text-center"
           >
-            {/* iso illustration — ~1/3 the block width, left-aligned. */}
-            <div className="mb-5 flex aspect-square w-1/3 max-w-[120px] items-center justify-start">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={it.img} alt="" aria-hidden className="h-full w-full object-contain" />
-            </div>
+            {/* number — pinned to the card's inner top-left corner */}
             <p
-              className="uppercase text-[#7e7f88]"
+              className="absolute left-7 top-6 uppercase text-[#7e7f88]"
               style={{ fontFamily: 'var(--font-data)', fontSize: '16px' }}
             >
               {it.n}
             </p>
+            {/* iso illustration — centered. */}
+            <div className="mb-5 flex aspect-square w-1/3 max-w-[120px] items-center justify-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={it.img} alt="" aria-hidden className="h-full w-full object-contain" />
+            </div>
             <h3
-              className="mt-3 uppercase text-[#070e2c]"
+              className="uppercase text-[#070e2c]"
               style={{ fontFamily: 'var(--font-heading)', fontWeight: 500, fontSize: '16px' }}
             >
               {it.title}

@@ -82,8 +82,16 @@ export function FlagshipBaserate({
               the right of the card. Devices scaled up ~3x per Josh — the scene
               is enlarged via a transform so its internal layout stays intact;
               the section clips the overflow. */}
-          <div className="relative order-1 flex min-h-[460px] items-center justify-center overflow-visible lg:order-2 lg:min-h-[620px] lg:justify-start">
-            <BrandingScene hovered={cardHover} className="w-full max-w-[760px] origin-center scale-[1.55] lg:max-w-none lg:origin-left lg:scale-[1.85]" />
+          {/* MOBILE scene (compact): swatches/chips shrunk + devices enlarged so
+              the cluster keeps its proportions in the narrow column; centered
+              horizontally and pulled DOWN with a negative bottom margin so the
+              text card (order-2, below) overlaps and covers the device bottoms. */}
+          <div className="relative order-1 -mb-[96px] flex min-h-[420px] items-center justify-center overflow-visible lg:hidden">
+            <BrandingScene compact hovered={cardHover} className="w-full max-w-none origin-center scale-[1.28]" />
+          </div>
+          {/* DESKTOP scene — unchanged. */}
+          <div className="relative order-1 hidden min-h-[460px] items-center overflow-visible lg:order-2 lg:flex lg:min-h-[620px] lg:justify-start">
+            <BrandingScene hovered={cardHover} className="w-full max-w-none origin-left scale-[1.85]" />
           </div>
         </div>
       </div>

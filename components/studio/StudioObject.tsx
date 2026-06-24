@@ -37,6 +37,7 @@ export function StudioObject({
   scrub,
   staticFrame,
   shadowMode = 'canvas',
+  shadowAlpha = 1,
 }: {
   base: string
   frameCount?: number
@@ -45,6 +46,10 @@ export function StudioObject({
   className?: string
   alt?: string
   scrub?: MotionValue<number>
+  /** Multiplier on the SVG cast-shadow opacity (svg shadowMode only). <1 makes
+   *  this object's shadow lighter/softer without touching other objects — e.g.
+   *  to match a lighter reference shadow. Default 1. */
+  shadowAlpha?: number
   /** Render exactly ONE frame (its image + shadow) once, then nothing else —
    *  no sequence preload, no scroll subscription, no per-scroll canvas work.
    *  Use the settled-pose index for a fast static hero. -1 = last frame. */
@@ -69,7 +74,7 @@ export function StudioObject({
     const isSeq = frameCount > 1
     const useSvg = shadowMode === 'svg' && !!svgRef.current
     const pipe = createShadowPipeline(canvas, shadow)
-    const svgShadow = useSvg ? createSvgShadow(svgRef.current!) : null
+    const svgShadow = useSvg ? createSvgShadow(svgRef.current!, shadowAlpha) : null
     let raf = 0
     let disposed = false
     const imgs: HTMLImageElement[] = []
@@ -293,7 +298,7 @@ export function StudioObject({
       io.disconnect()
       cancelAnimationFrame(raf)
     }
-  }, [base, frameCount, fps, delay, scrub, staticFrame, shadowMode])
+  }, [base, frameCount, fps, delay, scrub, staticFrame, shadowMode, shadowAlpha])
 
   const padPct = `${(STUDIO_PAD * 100).toFixed(0)}%`
   // Canvas shadow box: symmetric STUDIO_PAD on all sides (matches the canvas

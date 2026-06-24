@@ -77,11 +77,11 @@ function Parallax({
 }
 
 function BakedChip({
-  base, frameCount, size, scaleW, ml, mt, delay = 0, reduce, className = '', alt, shadowMode = 'svg', scrub,
+  base, frameCount, size, scaleW, ml, mt, delay = 0, reduce, className = '', alt, shadowMode = 'svg', scrub, shadowAlpha = 1,
 }: {
   base: string; frameCount: number; size: number; scaleW: number; ml: number; mt: number
   delay?: number; reduce: boolean | null; className?: string; alt: string; shadowMode?: 'canvas' | 'svg'
-  scrub?: MotionValue<number>
+  scrub?: MotionValue<number>; shadowAlpha?: number
 }) {
   return (
     <div className={`pointer-events-none ${className}`} style={{ width: size, height: size }}>
@@ -92,7 +92,7 @@ function BakedChip({
         animate={reduce ? {} : { y: [0, -8, 0] }}
         transition={{ duration: 7.5, repeat: Infinity, ease: 'easeInOut', delay: delay / 1000 }}
       >
-        <StudioObject base={base} frameCount={frameCount} fps={30} scrub={scrub} staticFrame={scrub ? undefined : -1} shadowMode={shadowMode} className="w-full" alt={alt} />
+        <StudioObject base={base} frameCount={frameCount} fps={30} scrub={scrub} staticFrame={scrub ? undefined : -1} shadowMode={shadowMode} shadowAlpha={shadowAlpha} className="w-full" alt={alt} />
       </motion.div>
     </div>
   )
@@ -147,7 +147,22 @@ function SwatchCard({
  * The floating scene. Renders inside a 1443/893 aspect box (positions are the
  * Figma coords). Drop it in any positioned container; it sizes to that box.
  */
-export function BrandingScene({ className = '', hovered = false }: { className?: string; hovered?: boolean }) {
+export function BrandingScene({
+  className = '',
+  hovered = false,
+  compact = false,
+}: {
+  className?: string
+  hovered?: boolean
+  /** Mobile layout: shrink the fixed-px swatches/chips and ENLARGE the
+   *  percentage-width devices, so the cluster keeps its proportions in a narrow
+   *  box (otherwise swatches read huge + devices tiny). Desktop = false. */
+  compact?: boolean
+}) {
+  // swatch/chip pixel sizes are absolute, so in a narrow mobile box they look
+  // oversized vs the %-width devices — scale them DOWN; scale devices UP.
+  const sw = compact ? 0.6 : 1 // swatch + chip size multiplier
+  const r = (n: number) => Math.round(n * sw)
   const reduce = useReducedMotion()
   const isSafari = useIsSafari()
   const [mounted, setMounted] = useState(false)
@@ -192,10 +207,11 @@ export function BrandingScene({ className = '', hovered = false }: { className?:
       ref={stageRef}
       className={`relative w-full ${className}`}
       style={{
-        // Softer + blurrier than before so the swatch shadows match the
-        // device (StudioObject) cast shadows — larger blur radii, lower alpha.
+        // Softer + LIGHTER so the swatch shadows match the phone's gentle cast
+        // shadow (per Josh): bigger blur radii, smaller offsets, lower alpha —
+        // a diffuse lift rather than a dark drop.
         ['--hero-shadow' as string]:
-          '3px 5px 10px rgba(28,50,82,0.16), 8px 14px 26px rgba(28,50,82,0.12), 18px 30px 50px rgba(28,50,82,0.09), 30px 52px 80px rgba(28,50,82,0.06)',
+          '2px 4px 12px rgba(28,50,82,0.09), 5px 11px 28px rgba(28,50,82,0.07), 12px 24px 52px rgba(28,50,82,0.05), 22px 42px 84px rgba(28,50,82,0.035)',
       }}
     >
       {/* aspect spacer (Figma artboard ratio) */}
@@ -208,7 +224,7 @@ export function BrandingScene({ className = '', hovered = false }: { className?:
             {/* PHONE — the StudioObject shadow canvas has a finite box; feather
                 its left/right edges so no hard shadow-box line shows (the device
                 itself sits centred in the box, well inside the fade). */}
-            <Parallax z={PZ.device} pos={{ x: 19, y: 46 }} exDist={22} className="absolute left-[6%] top-[16%] z-10 w-[26%]">
+            <Parallax z={PZ.device} pos={{ x: 19, y: 46 }} exDist={22} className={`absolute left-[6%] top-[16%] z-10 ${compact ? 'w-[46%]' : 'w-[26%]'}`}>
               {/* No CSS mask here: a mask clips to the element's BORDER BOX, which
                   would slice off the StudioObject's cast shadow where it extends
                   below/right of the phone canvas (a hard horizontal line). The
@@ -220,31 +236,31 @@ export function BrandingScene({ className = '', hovered = false }: { className?:
             {/* DESKTOP / tablet — pulled left toward the phone; sized so neither
                 it nor its shadow reaches the section's right edge (avoids the
                 hard clip-to-white line when the scene scales/explodes). */}
-            <Parallax z={PZ.device} pos={{ x: 58, y: 42 }} exDist={18} className="absolute left-[34%] top-[14%] z-10 w-[39%]">
-              <StudioObject base="/baserate/branding/devices/desktop" frameCount={SCRUB_FRAMES} fps={FPS} staticFrame={-1} shadowMode="svg" className="w-full" alt="Baserate marketing site" />
+            <Parallax z={PZ.device} pos={{ x: 58, y: 42 }} exDist={18} className={`absolute left-[34%] top-[14%] z-10 ${compact ? 'w-[62%]' : 'w-[39%]'}`}>
+              <StudioObject base="/baserate/branding/devices/desktop" frameCount={SCRUB_FRAMES} fps={FPS} staticFrame={-1} shadowMode="svg" shadowAlpha={0.6} className="w-full" alt="Baserate marketing site" />
             </Parallax>
 
             {/* app-icon chips */}
             <Parallax z={PZ.chip} pos={{ x: 26, y: 10 }} exDist={40} className="absolute left-[20%] top-[2%] z-30">
-              <BakedChip base="/baserate/branding/chips/journalytic" alt="Journalytic" reduce={reduce} frameCount={SCRUB_FRAMES} size={124} scaleW={132.3} ml={-4.3} mt={-6.3} scrub={chipScrub} />
+              <BakedChip base="/baserate/branding/chips/journalytic" alt="Journalytic" reduce={reduce} frameCount={SCRUB_FRAMES} size={r(124)} scaleW={132.3 * sw} ml={-4.3 * sw} mt={-6.3 * sw} scrub={chipScrub} shadowAlpha={0.6} />
             </Parallax>
             <Parallax z={PZ.chip} pos={{ x: 44, y: 66 }} exDist={40} className="absolute left-[40%] top-[62%] z-30">
-              <BakedChip base="/baserate/branding/chips/baserate" alt="Baserate" reduce={reduce} frameCount={SCRUB_FRAMES} size={94} scaleW={103.2} ml={-6.2} mt={-3.3} delay={250} scrub={chipScrub} />
+              <BakedChip base="/baserate/branding/chips/baserate" alt="Baserate" reduce={reduce} frameCount={SCRUB_FRAMES} size={r(94)} scaleW={103.2 * sw} ml={-6.2 * sw} mt={-3.3 * sw} delay={250} scrub={chipScrub} shadowAlpha={0.6} />
             </Parallax>
 
             {/* brand colour swatch cards */}
             <Parallax z={PZ.orbNear} pos={{ x: 15, y: 12 }} exDist={44} className="absolute left-[12%] top-[6%] z-[15]">
-              <SwatchCard reduce={reduce} color="#C08F2E" hex="#C08F2E" w={54} rotX={9} rotY={-7} dur={15} />
+              <SwatchCard reduce={reduce} color="#C08F2E" hex="#C08F2E" w={r(54)} rotX={9} rotY={-7} dur={15} />
             </Parallax>
             {/* #3F93CF — moved to the bottom-left of the phone */}
             <Parallax z={PZ.orbFar} pos={{ x: 6, y: 80 }} exDist={44} className="absolute left-[3%] top-[74%] z-[15]">
-              <SwatchCard reduce={reduce} color="#3F93CF" hex="#3F93CF" w={72} rotX={8} rotY={6} dur={18} delay={1.2} />
+              <SwatchCard reduce={reduce} color="#3F93CF" hex="#3F93CF" w={r(72)} rotX={8} rotY={6} dur={18} delay={1.2} />
             </Parallax>
             <Parallax z={PZ.orbNear} pos={{ x: 50, y: 14 }} exDist={40} className="absolute left-[48%] top-[8%] z-[15]">
-              <SwatchCard reduce={reduce} color="#1A2436" hex="#1A2436" w={70} rotX={10} rotY={-5} dur={17} delay={2.2} />
+              <SwatchCard reduce={reduce} color="#1A2436" hex="#1A2436" w={r(70)} rotX={10} rotY={-5} dur={17} delay={2.2} />
             </Parallax>
             <Parallax z={PZ.orbMid} pos={{ x: 42, y: 46 }} exDist={44} className="absolute left-[calc(40%-30px)] top-[40%] z-[15]">
-              <SwatchCard reduce={reduce} color="#1551C0" hex="#1551C0" w={70} rotX={8} rotY={7} dur={14} delay={0.6} />
+              <SwatchCard reduce={reduce} color="#1551C0" hex="#1551C0" w={r(70)} rotX={8} rotY={7} dur={14} delay={0.6} />
             </Parallax>
           </div>
         </HoverContext.Provider>

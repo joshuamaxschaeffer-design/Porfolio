@@ -306,7 +306,7 @@ const SVGNS = 'http://www.w3.org/2000/svg'
 // how many blur layers approximate the near→far blur ramp (3 = sharp/mid/soft)
 const SVG_BLUR_LAYERS = 3
 
-export function createSvgShadow(svg: SVGSVGElement) {
+export function createSvgShadow(svg: SVGSVGElement, shadowAlpha = 1) {
   let W = 0
   let H = 0
   let uid = Math.random().toString(36).slice(2, 8)
@@ -485,9 +485,9 @@ export function createSvgShadow(svg: SVGSVGElement) {
       // reads slightly tighter than the canvas chain at the same number.
       const sigma = Math.max(0.6, (s0 + s1 * hMid) * 1.6)
       const alpha = Math.max(0, (a0 + a1 * hMid) * 1.7)
-      if (alpha <= 0.004) { L.g.style.display = 'none'; continue }
+      if (alpha * shadowAlpha <= 0.004) { L.g.style.display = 'none'; continue }
       L.g.style.display = ''
-      L.g.style.opacity = String(Math.min(1, alpha))
+      L.g.style.opacity = String(Math.min(1, alpha * shadowAlpha))
       L.blur.setAttribute('stdDeviation', sigma.toFixed(2))
       L.poly.setAttribute('points', polyStr)
       // gradient runs along the near→far axis (userSpace), so its 0..1 offsets
