@@ -152,8 +152,10 @@ function Improvement() {
       <p className="mt-2 max-w-[60ch] text-[15px] text-[var(--br-muted)] sm:text-base">{defaults.improvement.body}</p>
 
       {/* All four in one row, video first. Each phone is a flex item with a
-          shared basis so they line up; the row scrolls on small screens. */}
-      <div className="br-noscrollbar -mx-6 mt-8 flex items-end gap-5 overflow-x-auto px-6 pb-10 md:mx-0 md:gap-6 md:px-0 lg:overflow-visible lg:pb-3">
+          shared basis so they line up; the row scrolls on small screens. The
+          vertical padding (with compensating -my) gives the phone drop-shadows
+          room so they aren't clipped top/bottom by the horizontal overflow. */}
+      <div className="br-noscrollbar -mx-6 mt-4 -my-6 flex items-end gap-5 overflow-x-auto px-6 py-6 md:mx-0 md:gap-6 md:px-0 lg:overflow-visible">
         <div className="w-[200px] shrink-0 sm:w-[230px] md:w-auto md:flex-1">
           <ImprovementVideo src={defaults.improvement.video} poster={defaults.improvement.poster} />
         </div>

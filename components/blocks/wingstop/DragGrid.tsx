@@ -19,6 +19,7 @@ export function DragGrid({
   aspect = 'aspect-square',
   tileClass = '',
   fit = 'cover',
+  showArrows = true,
 }: {
   items: { src: string; label?: string }[]
   tone?: 'light' | 'dark'
@@ -26,6 +27,8 @@ export function DragGrid({
   tileClass?: string
   /** `cover` fills the tile (default); `contain` shows the whole image padded. */
   fit?: 'cover' | 'contain'
+  /** Show the prev/next nudge arrows below the row. */
+  showArrows?: boolean
 }) {
   const reduce = useReducedMotion()
   const viewport = useRef<HTMLDivElement>(null)
@@ -109,6 +112,7 @@ export function DragGrid({
         </motion.div>
       </div>
       {/* arrow controls */}
+      {showArrows && (
       <div className="mt-5 flex gap-2">
         <button
           type="button"
@@ -131,6 +135,7 @@ export function DragGrid({
           </svg>
         </button>
       </div>
+      )}
     </div>
   )
 }

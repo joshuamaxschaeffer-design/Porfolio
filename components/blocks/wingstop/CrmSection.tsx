@@ -265,7 +265,7 @@ function CrmAnimatedGrid() {
 
       {/* Mobile: draggable carousel with label pills below */}
       <div className="mt-6 lg:hidden">
-        <DragGrid items={defaults.animated.gifs} tone="light" aspect="aspect-[4/3]" fit="contain" />
+        <DragGrid items={defaults.animated.gifs} tone="light" aspect="aspect-[4/3]" fit="contain" showArrows={false} />
         <div className="br-noscrollbar mt-4 flex gap-2 overflow-x-auto" style={{ touchAction: 'pan-x pan-y' }}>
           {defaults.animated.gifs.map((g) => (
             <span
