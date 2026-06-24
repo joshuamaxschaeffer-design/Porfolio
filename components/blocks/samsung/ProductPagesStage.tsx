@@ -85,16 +85,24 @@ export function ProductPagesStage() {
             sit slightly under the copy (per Joshua). Bounded height at sub-lg so
             the absolutely-positioned fan has room and can't cover the copy. */}
         <div
-          className="relative order-2 h-[440px] sm:h-[560px] lg:order-1 lg:h-full"
+          className="relative order-2 h-[260px] sm:h-[320px] lg:order-1 lg:h-full"
           style={{ perspective: '2200px', perspectiveOrigin: '50% 50%' }}
         >
           {/* Right-anchored, rendered Note→Tab→Gear left-to-right so the GEAR
               page lands FARTHEST RIGHT and largest/nearest; the others recede
-              and bleed off the left. */}
+              and bleed off the left.
+              Narrow view (per Joshua, 2026-06-24): the fan was pushed off the
+              LEFT edge and clipped, so on sub-lg it's nudged in from the right
+              (right-[6%]) and the pages are halved (see --pp-w below) so the
+              whole fan reads inside the band. lg+ restores right-[2%]. */}
           <div
-            className="absolute right-[2%] top-1/2 flex items-center gap-5 md:gap-7"
+            className="absolute right-[6%] top-1/2 flex items-center gap-3 [--pp-w:clamp(150px,18vw,260px)] [--pp-x:20vw] sm:gap-4 lg:right-[2%] lg:gap-7 lg:[--pp-w:clamp(300px,32vw,520px)] lg:[--pp-x:0px]"
             style={{
-              transform: 'translateY(-50%) rotateX(10deg) rotateY(-32deg) rotateZ(8deg)',
+              // --pp-x shifts the whole fan rightward on narrow screens so it
+              // stops bleeding off the left edge and reads inside the band; 0 at
+              // lg+ where the two-column layout already places it (2026-06-24).
+              transform:
+                'translateY(-50%) translateX(var(--pp-x, 0px)) rotateX(10deg) rotateY(-32deg) rotateZ(8deg)',
               transformStyle: 'preserve-3d',
             }}
           >
@@ -158,7 +166,9 @@ function ParallaxPage({
     <figure
       className="relative shrink-0 overflow-hidden ring-1 ring-white/20"
       style={{
-        width: 'clamp(300px, 32vw, 520px)',
+        // Width is driven by the --pp-w CSS var set on the fan wrapper so it can
+        // be halved on narrow viewports and restored at lg+ (Joshua, 2026-06-24).
+        width: 'var(--pp-w, clamp(300px, 32vw, 520px))',
         transform: `translateY(${offset}px) translateZ(${z}px) scale(${scale})`,
         transformOrigin: 'center center',
         boxShadow: '0 50px 90px -28px rgba(0,0,0,0.6), 0 12px 28px -10px rgba(0,0,0,0.5)',
