@@ -39,7 +39,7 @@ export function FlagshipBaserate({
             'radial-gradient(120% 100% at 78% 6%, #f3f6fc 0%, #ffffff 55%)',
         }}
       />
-      <div className="home-container pt-20 pb-48 md:pt-28 md:pb-64">
+      <div className="home-container pt-20 pb-72 md:pt-28 md:pb-[360px]">
         <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,440px)_minmax(0,1fr)] lg:gap-16">
           {/* CARD — logo + FULL STACK DESIGN + gold pills (Figma). The whole
               card links to the case study (text/CTA removed per Josh). */}

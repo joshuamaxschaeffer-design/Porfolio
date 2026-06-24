@@ -91,10 +91,21 @@ export function HeroTimeline({ className = '' }: { className?: string }) {
               style={{ width: `${head}%` }}
             />
 
-            {/* anchored origin BOX at the start (with a white centre line) */}
-            <div className="pointer-events-none absolute top-1/2 left-0 z-10 h-[12px] w-[9px] -translate-x-1/2 -translate-y-1/2 rounded-[2px] bg-[#070e2c]">
-              <div className="absolute left-1/2 top-1/2 h-[8px] w-px -translate-x-1/2 -translate-y-1/2 bg-white" />
-            </div>
+            {/* every tick at or BEFORE the head is "selected" -> black box with
+                white centre line (the origin is tick 0, always selected). */}
+            {PHASES.map((label, i) => {
+              const tickPct = (i / (n - 1)) * 100
+              if (tickPct > head + 0.5) return null
+              return (
+                <div
+                  key={`passed-${label}`}
+                  className="pointer-events-none absolute top-1/2 z-10 h-[12px] w-[9px] -translate-x-1/2 -translate-y-1/2 rounded-[2px] bg-[#070e2c]"
+                  style={{ left: `${tickPct}%` }}
+                >
+                  <div className="absolute left-1/2 top-1/2 h-[8px] w-px -translate-x-1/2 -translate-y-1/2 bg-white" />
+                </div>
+              )
+            })}
 
             {/* HEAD marker + tooltip, centred on the head position */}
             <div
