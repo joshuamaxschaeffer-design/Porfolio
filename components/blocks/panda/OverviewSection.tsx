@@ -26,8 +26,10 @@ export function OverviewSection(props: OverviewProps) {
     >
       <div className="br-container relative py-16 md:py-24">
         <div className="relative grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,820px)_minmax(0,1fr)] lg:gap-8">
-          {/* ── Left: solid red card ──────────────────────────────── */}
-          <div className="relative z-10 rounded-[var(--br-card-radius)] border border-white/70 bg-[var(--px-red)] p-7 sm:p-10 md:p-[60px]">
+          {/* ── Left: solid red card. On mobile it un-cards (no border/padding)
+              so the heading, lead, and scope pills get the full column width;
+              the card framing returns at sm+. ──────────────────────────── */}
+          <div className="relative z-10 p-0 sm:rounded-[var(--br-card-radius)] sm:border sm:border-white/70 sm:bg-[var(--px-red)] sm:p-10 md:p-[60px]">
             <div className="flex flex-col gap-5">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -93,8 +95,9 @@ export function OverviewSection(props: OverviewProps) {
             </div>
           </div>
 
-          {/* ── Right: food image, bleeds off the right edge on desktop ── */}
-          <div className="pointer-events-none relative flex justify-center lg:absolute lg:inset-y-0 lg:right-[-5rem] lg:left-[calc(820px-2rem)] lg:items-center lg:justify-end">
+          {/* ── Right: food image, bleeds off the right edge on desktop.
+              Hidden on mobile (not important there) — returns at lg. ── */}
+          <div className="pointer-events-none relative hidden justify-center lg:absolute lg:inset-y-0 lg:right-[-5rem] lg:left-[calc(820px-2rem)] lg:flex lg:items-center lg:justify-end">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/panda/firecracker-shrimp.webp"

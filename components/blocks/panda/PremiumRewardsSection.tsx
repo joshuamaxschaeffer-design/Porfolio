@@ -63,14 +63,18 @@ export function PremiumRewardsSection({ intro }: { intro?: string } = {}) {
       </div>
 
       {/* ── MOBILE (<1024px) ───────────────────────────────────────────── */}
-      <div className="relative mx-auto w-full max-w-[520px] px-5 pt-12 pb-6 lg:hidden">
+      {/* extra bottom padding holds the enlarged + lowered device (it's pushed
+          down 250px and scaled 1.5× from the top, so the band has to grow to
+          contain it). */}
+      <div className="relative mx-auto w-full max-w-[520px] px-5 pt-12 pb-[300px] lg:hidden">
         <div data-anim="premium-rewards-header" className="relative z-20">
           <h2 className="text-[30px] font-semibold uppercase leading-tight tracking-wide text-white">
             {defaults.heading}
           </h2>
           <p className="mt-4 text-[15px] leading-snug text-white/90">{intro ?? defaults.intro}</p>
         </div>
-        <RewardsStage className="relative z-10 mt-4 w-full" />
+        {/* device mockup: 250px lower + 50% bigger on mobile, grown from the top */}
+        <RewardsStage className="relative z-10 mt-4 w-full origin-top translate-y-[250px] scale-150" />
       </div>
     </section>
   )

@@ -45,7 +45,7 @@ export function ReleasesSection({ intro }: { intro?: string } = {}) {
         {/* ── Two cards. items-center so the shorter MVP card centers against
             the taller Full Rewards card — MVP ends up inset (shorter at the top
             AND bottom), matching the Figma. ── */}
-        <div className="mt-10 grid grid-cols-1 items-center gap-7 lg:grid-cols-2 lg:gap-8 md:mt-14">
+        <div className="mt-10 grid grid-cols-1 items-center gap-[108px] lg:grid-cols-2 lg:gap-8 md:mt-14">
           <MvpCard />
           <RewardsCard />
         </div>

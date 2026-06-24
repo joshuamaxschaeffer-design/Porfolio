@@ -34,9 +34,6 @@ const COLOR: Record<MvpColor, string> = {
   purple: '#9356C4', // Add from Category
   orange: '#E8941C', // Choose Location
 }
-// dim (unselected) line + card colour
-const DIM_LINE = '#d8d8de'
-const DIM_CARD = '#c9ccd2'
 
 /* ── one-shot in-view detector ───────────────────────────────────────────── */
 function useInViewOnce<T extends HTMLElement>(threshold = 0.2) {
@@ -429,59 +426,8 @@ function DesktopDiagram({ activeId, progress, reduced }: DiagramProps) {
   )
 }
 
-/* ── mobile fallback — vertical step list of the active path ──────────────── */
-function MobileFlow({ activeId, progress, reduced }: DiagramProps) {
-  const { edges, scenarios } = defaults
-  const scenario = scenarios.find((s) => s.id === activeId) ?? scenarios[0]
-  const col = COLOR[scenario.color]
-  const revealed = reduced ? scenario.path.length : progress + 1
-  const edgeByKey = useMemo(() => {
-    const m = new Map<string, MvpEdge>()
-    edges.forEach((e) => m.set(`${e.from}->${e.to}`, e))
-    return m
-  }, [edges])
-  // de-dupe consecutive repeats (e.g. product appears twice in location path)
-  return (
-    <ol className="mx-auto flex max-w-[420px] list-none flex-col">
-      {scenario.path.map((id, i) => {
-        const node = nodeById.get(id)!
-        const reached = i < revealed
-        const nextId = scenario.path[i + 1]
-        const ed = nextId ? edgeByKey.get(`${id}->${nextId}`) : undefined
-        const connOn = i + 1 < revealed
-        return (
-          <li key={`${id}-${i}`} className="flex gap-4">
-            <div className="flex flex-col items-center">
-              <div
-                className="grid h-[54px] w-[54px] shrink-0 place-items-center rounded-[12px] transition-colors duration-300"
-                style={{ background: reached ? col : DIM_CARD }}
-              >
-                <div className="h-[34px] w-[26px] rounded-[5px] bg-white">
-                  <svg viewBox="0 0 70 62" className="h-full w-full" aria-hidden>
-                    <ScreenUI screen={node.screen} sx={4} sy={4} sw={62} sh={54} />
-                  </svg>
-                </div>
-              </div>
-              {nextId && (
-                <span className="my-1 w-[2px] flex-1 rounded-full transition-colors duration-300" style={{ minHeight: 30, background: connOn ? col : DIM_LINE }} />
-              )}
-            </div>
-            <div className={nextId ? 'pb-3 pt-2' : 'pt-2'}>
-              <p className="text-[15px] font-medium leading-tight transition-colors duration-300" style={{ color: reached ? 'var(--br-ink)' : '#aeaeb6' }}>
-                {node.label}
-              </p>
-              {ed?.label && (
-                <p className="br-data mt-1 text-[12px] leading-none transition-colors duration-300" style={{ color: connOn ? col : '#bcbcc4' }}>
-                  ↓ {ed.label}
-                </p>
-              )}
-            </div>
-          </li>
-        )
-      })}
-    </ol>
-  )
-}
+/* (MobileFlow — the old vertical step-list mobile fallback — was removed: mobile
+    now renders the full diagram scaled down, same as desktop's 'all' state.) */
 
 /* ── scenario selector chips: "All" (shows every flow) + one per scenario ─── */
 function ScenarioChips({ activeId, onPick }: { activeId: string; onPick: (id: string) => void }) {
@@ -560,27 +506,34 @@ export function MvpFlowSection({ intro }: { intro?: string } = {}) {
         </h2>
         <p className="mt-5 max-w-3xl text-lg leading-snug text-[var(--br-muted)] md:text-[22px]">{lead}</p>
 
-        {/* Core UX: headline → one line of body → scenario chips */}
+        {/* Core UX: headline → one line of body → scenario chips.
+            On mobile the chips are hidden (no room to drive the flow); the whole
+            diagram just renders in its 'all' state, scaled tiny. */}
         <div className="mt-10 flex flex-col gap-4 md:mt-12">
           <h3 className="text-[20px] font-semibold uppercase leading-none text-[var(--br-ink)] md:text-[22px]">
             {data.callout.title}
           </h3>
           <p className="text-[15px] leading-snug text-[var(--br-muted)] md:text-base">{data.callout.body}</p>
-          <ScenarioChips activeId={activeId} onPick={pick} />
+          <div className="hidden lg:block">
+            <ScenarioChips activeId={activeId} onPick={pick} />
+          </div>
         </div>
 
-        {/* the flow */}
+        {/* the flow. Desktop: carded interactive diagram. Mobile: the SAME full
+            diagram (every path lit in its 'all' state) shown bare — no card —
+            scaled down to fit the column; in-diagram text is hidden because it's
+            far too small to read (the shape of the flow is the point here). */}
         <div
           ref={ref}
-          className="relative mt-8 overflow-hidden rounded-[var(--br-card-radius)] border border-[var(--br-line)] bg-white p-4 shadow-[var(--br-card-shadow)] md:mt-10 md:p-6"
+          className="pxmvp-flow relative mt-8 overflow-hidden lg:rounded-[var(--br-card-radius)] lg:border lg:border-[var(--br-line)] lg:bg-white lg:p-6 lg:shadow-[var(--br-card-shadow)] md:mt-10"
         >
-          <div className="hidden lg:block">
-            <DesktopDiagram activeId={activeId} progress={progress} reduced={reduced} />
-          </div>
-          <div className="lg:hidden">
-            <MobileFlow activeId={activeId} progress={progress} reduced={reduced} />
-          </div>
+          {/* Desktop stays fully interactive (chips drive activeId). On mobile
+              the chips are hidden, so activeId holds its default 'all' and the
+              whole flow shows lit. */}
+          <DesktopDiagram activeId={activeId} progress={progress} reduced={reduced} />
         </div>
+        {/* mobile: blank out the tiny, unreadable in-diagram text */}
+        <style>{`@media (max-width:1023px){.pxmvp-flow svg text{display:none}}`}</style>
 
         {/* Component Libraries — nested module in this section */}
         <ComponentLibrariesSection />

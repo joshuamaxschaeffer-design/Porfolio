@@ -149,9 +149,14 @@ function StatCell({ stat, index }: { stat: MvpBentoStat; index: number }) {
  * device bezel is drawn — the captures already include the marketing frame. */
 function AppStoreGallery({ screens, alts }: { screens: string[]; alts?: string[] }) {
   return (
-    <div className="relative mt-6">
+    // Break OUT of the card's padding (p-6 / md:p-7) on the left + right so the
+    // scroll track — and the right-edge fade — run all the way to the card's
+    // edges. Inner px-* puts the first screen back at the card's text inset, and
+    // scroll-padding keeps snap starts aligned there; the strip now clips at the
+    // card's right edge, not 24px short of it.
+    <div className="relative -mx-6 mt-6 md:-mx-7">
       <ul
-        className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-2 pt-1 [scrollbar-width:none] md:gap-4 [&::-webkit-scrollbar]:hidden"
+        className="flex snap-x snap-mandatory gap-3 overflow-x-auto px-6 pb-2 pt-1 [scrollbar-width:none] md:gap-4 md:px-7 [scroll-padding-left:1.5rem] md:[scroll-padding-left:1.75rem] [&::-webkit-scrollbar]:hidden"
         aria-label="Panda Express App Store screenshots"
       >
         {screens.map((src, i) => (
@@ -171,7 +176,8 @@ function AppStoreGallery({ screens, alts }: { screens: string[]; alts?: string[]
           </li>
         ))}
       </ul>
-      {/* right-edge fade — signals the strip continues (matches the white card) */}
+      {/* right-edge fade — pinned to the card's true right edge (signals more to
+          swipe; matches the white card). */}
       <div
         className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-white to-transparent"
         aria-hidden
@@ -216,7 +222,7 @@ export function MvpLaunchBento({
             "Panda Delivers" copy overlays at the BOTTOM, over the red — a soft
             dark scrim along the bottom keeps it legible. The phone-app +
             web-checkout pairing is the section's whole point. */}
-        <div className="relative isolate flex min-h-[420px] flex-col justify-end overflow-hidden rounded-[10px] bg-[var(--px-red)] text-white shadow-[0_18px_44px_-18px_rgba(0,0,0,0.5)] lg:min-h-0 lg:col-span-5 lg:row-span-2">
+        <div className="relative isolate flex min-h-[620px] flex-col justify-end overflow-hidden rounded-[10px] bg-[var(--px-red)] text-white shadow-[0_18px_44px_-18px_rgba(0,0,0,0.5)] lg:min-h-0 lg:col-span-5 lg:row-span-2">
           {/* background composition */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

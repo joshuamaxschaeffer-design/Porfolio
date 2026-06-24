@@ -256,12 +256,20 @@ function WireframeStack({ pages }: { pages: { key: string; label: string; src: s
   }, [raw, reduce])
 
   return (
-    // no overflow-hidden here — let the fan breathe so the top corners aren't clipped
-    <div className="relative mt-10 flex w-full justify-center">
-      <div ref={stageRef} className="relative h-[clamp(340px,44vw,560px)] w-full max-w-[1100px]">
-        {deck.map((pg, i) => (
-          <WireframeCard key={pg.key} page={pg} index={i} total={deck.length} p={p} />
-        ))}
+    // Desktop: no overflow-hidden — let the fan breathe so the top corners
+    // aren't clipped. Mobile: the deck reads tiny, so scale the whole stage 3×
+    // (grown from the top); clip the far fanned edges and reserve the taller
+    // footprint so it doesn't collide with the section below.
+    <div className="relative mt-10 flex w-full justify-center overflow-hidden lg:overflow-visible">
+      <div className="h-[1020px] w-full lg:h-auto">
+        <div
+          ref={stageRef}
+          className="relative h-[clamp(340px,44vw,560px)] w-full max-w-[1100px] origin-top scale-[3] lg:scale-100"
+        >
+          {deck.map((pg, i) => (
+            <WireframeCard key={pg.key} page={pg} index={i} total={deck.length} p={p} />
+          ))}
+        </div>
       </div>
     </div>
   )
