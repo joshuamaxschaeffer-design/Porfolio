@@ -1,7 +1,9 @@
 import { BrandingHero } from './BrandingHero'
 import { BrandShowcase } from './BrandShowcase'
 import { B2BExploration } from './B2BExploration'
-import { MarketingContent } from './MarketingContent'
+// Marketing Content (the brand/MCP video on black) hidden for now — re-enable
+// with the render below.
+// import { MarketingContent } from './MarketingContent'
 
 /**
  * The full Branding section of the Baserate case study — matched to the Figma
@@ -28,7 +30,9 @@ export function BrandingSection() {
         <B2BExploration />
       </div>
       <BrandShowcase theme="baserate" />
-      <MarketingContent />
+      {/* MARKETING CONTENT (brand/MCP video on black) — HIDDEN per Josh
+          (2026-06-24) until needed. One-line restore: uncomment import + line. */}
+      {/* <MarketingContent /> */}
     </div>
   )
 }
