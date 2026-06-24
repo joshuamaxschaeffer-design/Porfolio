@@ -192,8 +192,10 @@ export function BrandingScene({ className = '', hovered = false }: { className?:
       ref={stageRef}
       className={`relative w-full ${className}`}
       style={{
+        // Softer + blurrier than before so the swatch shadows match the
+        // device (StudioObject) cast shadows — larger blur radii, lower alpha.
         ['--hero-shadow' as string]:
-          '2px 3px 3px rgba(28,50,82,0.30), 6px 9px 9px rgba(28,50,82,0.18), 14px 22px 20px rgba(28,50,82,0.13), 24px 40px 36px rgba(28,50,82,0.10)',
+          '3px 5px 10px rgba(28,50,82,0.16), 8px 14px 26px rgba(28,50,82,0.12), 18px 30px 50px rgba(28,50,82,0.09), 30px 52px 80px rgba(28,50,82,0.06)',
       }}
     >
       {/* aspect spacer (Figma artboard ratio) */}
@@ -203,9 +205,19 @@ export function BrandingScene({ className = '', hovered = false }: { className?:
         <ParallaxContext.Provider value={parallax}>
         <HoverContext.Provider value={reduce ? false : hovered}>
           <div className="pointer-events-none absolute inset-0">
-            {/* PHONE */}
+            {/* PHONE — the StudioObject shadow canvas has a finite box; feather
+                its left/right edges so no hard shadow-box line shows (the device
+                itself sits centred in the box, well inside the fade). */}
             <Parallax z={PZ.device} pos={{ x: 19, y: 46 }} exDist={22} className="absolute left-[6%] top-[16%] z-10 w-[26%]">
-              <StudioObject base="/baserate/branding/devices/phone" frameCount={SCRUB_FRAMES} fps={FPS} staticFrame={-1} shadowMode="svg" className="w-full" alt="Journalytic phone" />
+              <div
+                className="w-full"
+                style={{
+                  WebkitMaskImage: 'linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%)',
+                  maskImage: 'linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%)',
+                }}
+              >
+                <StudioObject base="/baserate/branding/devices/phone" frameCount={SCRUB_FRAMES} fps={FPS} staticFrame={-1} shadowMode="svg" className="w-full" alt="Journalytic phone" />
+              </div>
             </Parallax>
 
             {/* DESKTOP / tablet — pulled left toward the phone; sized so neither
