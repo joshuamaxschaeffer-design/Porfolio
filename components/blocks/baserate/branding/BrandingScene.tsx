@@ -77,11 +77,11 @@ function Parallax({
 }
 
 function BakedChip({
-  base, frameCount, size, scaleW, ml, mt, delay = 0, reduce, className = '', alt, shadowMode = 'svg', scrub, shadowAlpha = 1,
+  base, frameCount, size, scaleW, ml, mt, delay = 0, reduce, className = '', alt, shadowMode = 'svg', scrub, shadowAlpha = 1, shadowBlur = 1,
 }: {
   base: string; frameCount: number; size: number; scaleW: number; ml: number; mt: number
   delay?: number; reduce: boolean | null; className?: string; alt: string; shadowMode?: 'canvas' | 'svg'
-  scrub?: MotionValue<number>; shadowAlpha?: number
+  scrub?: MotionValue<number>; shadowAlpha?: number; shadowBlur?: number
 }) {
   return (
     <div className={`pointer-events-none ${className}`} style={{ width: size, height: size }}>
@@ -92,7 +92,7 @@ function BakedChip({
         animate={reduce ? {} : { y: [0, -8, 0] }}
         transition={{ duration: 7.5, repeat: Infinity, ease: 'easeInOut', delay: delay / 1000 }}
       >
-        <StudioObject base={base} frameCount={frameCount} fps={30} scrub={scrub} staticFrame={scrub ? undefined : -1} shadowMode={shadowMode} shadowAlpha={shadowAlpha} className="w-full" alt={alt} />
+        <StudioObject base={base} frameCount={frameCount} fps={30} scrub={scrub} staticFrame={scrub ? undefined : -1} shadowMode={shadowMode} shadowAlpha={shadowAlpha} shadowBlur={shadowBlur} className="w-full" alt={alt} />
       </motion.div>
     </div>
   )
@@ -242,17 +242,17 @@ export function BrandingScene({
                 it nor its shadow reaches the section's right edge (avoids the
                 hard clip-to-white line when the scene scales/explodes). */}
             <Parallax z={PZ.device} pos={{ x: 58, y: 42 }} exDist={18} className={`absolute left-[34%] top-[14%] z-10 ${compact ? 'w-[62%]' : 'w-[39%]'}`}>
-              <StudioObject base="/baserate/branding/devices/desktop" frameCount={SCRUB_FRAMES} fps={FPS} staticFrame={-1} shadowMode="svg" shadowAlpha={0.35} className="w-full" alt="Baserate marketing site" />
+              <StudioObject base="/baserate/branding/devices/desktop" frameCount={SCRUB_FRAMES} fps={FPS} staticFrame={-1} shadowMode="svg" shadowAlpha={0.18} shadowBlur={1.7} className="w-full" alt="Baserate marketing site" />
             </Parallax>
 
             {/* swatch cards + app-icon chips — hidden in devicesOnly (mobile) */}
             {!devicesOnly && <>
             {/* app-icon chips */}
             <Parallax z={PZ.chip} pos={{ x: 26, y: 10 }} exDist={40} className="absolute left-[20%] top-[2%] z-30">
-              <BakedChip base="/baserate/branding/chips/journalytic" alt="Journalytic" reduce={reduce} frameCount={SCRUB_FRAMES} size={r(124)} scaleW={132.3 * sw} ml={-4.3 * sw} mt={-6.3 * sw} scrub={chipScrub} shadowAlpha={0.35} />
+              <BakedChip base="/baserate/branding/chips/journalytic" alt="Journalytic" reduce={reduce} frameCount={SCRUB_FRAMES} size={r(124)} scaleW={132.3 * sw} ml={-4.3 * sw} mt={-6.3 * sw} scrub={chipScrub} shadowAlpha={0.35} shadowBlur={1.5} />
             </Parallax>
             <Parallax z={PZ.chip} pos={{ x: 44, y: 66 }} exDist={40} className="absolute left-[40%] top-[62%] z-30">
-              <BakedChip base="/baserate/branding/chips/baserate" alt="Baserate" reduce={reduce} frameCount={SCRUB_FRAMES} size={r(94)} scaleW={103.2 * sw} ml={-6.2 * sw} mt={-3.3 * sw} delay={250} scrub={chipScrub} shadowAlpha={0.35} />
+              <BakedChip base="/baserate/branding/chips/baserate" alt="Baserate" reduce={reduce} frameCount={SCRUB_FRAMES} size={r(94)} scaleW={103.2 * sw} ml={-6.2 * sw} mt={-3.3 * sw} delay={250} scrub={chipScrub} shadowAlpha={0.35} shadowBlur={1.5} />
             </Parallax>
 
             {/* brand colour swatch cards */}

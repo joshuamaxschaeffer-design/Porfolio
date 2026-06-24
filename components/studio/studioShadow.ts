@@ -306,7 +306,7 @@ const SVGNS = 'http://www.w3.org/2000/svg'
 // how many blur layers approximate the near→far blur ramp (3 = sharp/mid/soft)
 const SVG_BLUR_LAYERS = 3
 
-export function createSvgShadow(svg: SVGSVGElement, shadowAlpha = 1) {
+export function createSvgShadow(svg: SVGSVGElement, shadowAlpha = 1, shadowBlur = 1) {
   let W = 0
   let H = 0
   let uid = Math.random().toString(36).slice(2, 8)
@@ -483,11 +483,17 @@ export function createSvgShadow(svg: SVGSVGElement, shadowAlpha = 1) {
       // calibrated silhouette the canvas bands warp), so push blur + opacity up
       // a bit to land near the canvas look. SVG feGaussianBlur stdDeviation also
       // reads slightly tighter than the canvas chain at the same number.
-      const sigma = Math.max(0.6, (s0 + s1 * hMid) * 1.6)
+      // shadowBlur fluffs the whole stack (bigger σ = softer); a floor keeps even
+      // the near slab from being a sharp dark band.
+      const sigma = Math.max(0.6, (s0 + s1 * hMid) * 1.6) * shadowBlur
       const alpha = Math.max(0, (a0 + a1 * hMid) * 1.7)
-      if (alpha * shadowAlpha <= 0.004) { L.g.style.display = 'none'; continue }
+      // final opacity = calibrated alpha × shadowAlpha, but capped so NO single
+      // layer can read as a hard near-opaque band (the desktop's calib produced
+      // an alpha≈2.9 slab that clamped to 1.0 — that was the heavy hard shadow).
+      const layerOp = Math.min(0.9, alpha) * shadowAlpha
+      if (layerOp <= 0.004) { L.g.style.display = 'none'; continue }
       L.g.style.display = ''
-      L.g.style.opacity = String(Math.min(1, alpha * shadowAlpha))
+      L.g.style.opacity = String(Math.min(1, layerOp))
       L.blur.setAttribute('stdDeviation', sigma.toFixed(2))
       L.poly.setAttribute('points', polyStr)
       // gradient runs along the near→far axis (userSpace), so its 0..1 offsets
@@ -534,7 +540,7 @@ export function createSvgShadow(svg: SVGSVGElement, shadowAlpha = 1) {
         })
         .join(' ')
       // crisp-ish blur from the low height; opacity from the contact (low-h) alpha
-      const cSigma = Math.max(1.5, (s0 + s1 * h0) * 1.1)
+      const cSigma = Math.max(1.5, (s0 + s1 * h0) * 1.1) * shadowBlur
       // shadowAlpha also scales the dark CONTACT (umbra) pool — it's the tight
       // dark shadow right under the object, so without this the device still
       // reads heavy even when the soft cast layers are dialed down.
