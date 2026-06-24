@@ -35,7 +35,7 @@ export function FlagshipPanda({
       {/* gold sparkles + fireworks across the band (imported from the case study) */}
       <Sparkles />
 
-      <div className="home-container py-20 md:py-24">
+      <div className="home-container pt-0 pb-20 md:py-24">
         {/* big phones centerpiece, with the label card floated right over open
             red space. The stage is scaled up ~3x and pushed DOWN per Josh; the
             section is tall + overflow-hidden so the enlarged phones are contained
@@ -44,7 +44,7 @@ export function FlagshipPanda({
           {/* the EXACT case-study rewards stage — scaled UP + moved down. Card
               hover passes `hovered` into RewardsStage, which explodes only the
               two PHONES apart individually (radial stays put), shadows tracking. */}
-          <RewardsStage hovered={cardHover} className="relative z-10 mx-auto mt-[200px] w-full max-w-[1060px] origin-top scale-[1.8] lg:mx-0 lg:mt-0 lg:max-w-[58%] lg:origin-[40%_top] lg:translate-y-[60px] lg:scale-[1.325]" />
+          <RewardsStage hovered={cardHover} className="relative z-10 mx-auto mt-[160px] w-full max-w-[1060px] origin-top scale-[1.8] lg:mx-0 lg:mt-0 lg:max-w-[58%] lg:origin-[40%_top] lg:translate-y-[60px] lg:scale-[1.325]" />
 
           {/* label card — floats right (upper) on desktop; stacks under on mobile.
               Content LEFT-aligned; no meta line. */}

@@ -331,7 +331,9 @@ function CapabilitiesCard() {
         >
           Countless clients and consistent deliverables across design disciplines, form factors, and use cases.
         </p>
-        <span className="mt-[5%] inline-flex items-center gap-2 font-medium" style={{ fontSize: 'clamp(11px, 2.6cqw, 13px)' }}>
+        {/* CTA hidden on small screens — the whole card is already a link, and
+            the narrow card needs the room for the body copy. */}
+        <span className="mt-[5%] hidden items-center gap-2 font-medium sm:inline-flex" style={{ fontSize: 'clamp(11px, 2.6cqw, 13px)' }}>
           See the full range
           <span aria-hidden className="transition-transform group-hover:translate-x-0.5">→</span>
         </span>
