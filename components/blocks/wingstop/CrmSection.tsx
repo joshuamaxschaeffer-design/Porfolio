@@ -17,7 +17,7 @@ import { DragGrid } from './DragGrid'
  */
 export function CrmSection() {
   return (
-    <section id="crm" className="relative w-full overflow-hidden bg-white pt-6 md:pt-8">
+    <section id="crm" className="relative w-full overflow-hidden bg-white">
       <CrmEmailScatter />
       <CrmAnimatedGrid />
     </section>
@@ -125,7 +125,7 @@ function CrmEmailScatter() {
   } as const
 
   return (
-    <div aria-label="Campaign after campaign" className="mt-2 md:mt-3">
+    <div aria-label="Campaign after campaign">
       {/* ── DESKTOP / TABLET (≥1024px): the Panda-reorder scatter band ───────
           A SHORT, fixed-aspect band cut off top + bottom by hairline dividers
           (border-y). Big email windows + big food props bleed off all four edges,

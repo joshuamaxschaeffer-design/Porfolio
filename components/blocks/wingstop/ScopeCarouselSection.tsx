@@ -376,7 +376,7 @@ function ModuleVisual({ m, green }: { m: Mod; green: boolean }) {
         <img
           src={mm.device as string}
           alt={m.title}
-          loading="lazy"
+          loading="eager"
           className="h-full max-h-[360px] w-auto object-contain drop-shadow-[0_18px_40px_rgba(0,0,0,0.5)]"
         />
       )
@@ -397,7 +397,7 @@ function ModuleVisual({ m, green }: { m: Mod; green: boolean }) {
       <div className="w-full max-w-[460px] overflow-hidden rounded-xl [box-shadow:0_22px_48px_rgba(0,0,0,0.28)]">
         <div className="aspect-[16/11] overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={mm.desktop as string} alt={m.title} loading="lazy" className="block w-full object-cover object-top" />
+          <img src={mm.desktop as string} alt={m.title} loading="eager" className="block w-full object-cover object-top" />
         </div>
       </div>
     )
@@ -424,7 +424,7 @@ function ModuleVisual({ m, green }: { m: Mod; green: boolean }) {
             style={{ aspectRatio: '9 / 16' }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={b} alt={m.title} loading="lazy" className="block h-full w-full object-cover" />
+            <img src={b} alt={m.title} loading="eager" className="block h-full w-full object-cover" />
           </div>
         ))}
       </div>
@@ -443,7 +443,7 @@ function ModuleVisual({ m, green }: { m: Mod; green: boolean }) {
             key={ic}
             src={ic}
             alt=""
-            loading="lazy"
+            loading="eager"
             className="aspect-square w-full object-contain drop-shadow-[0_10px_18px_rgba(0,0,0,0.18)]"
           />
         ))}
@@ -470,7 +470,7 @@ function ThumbStack({ srcs, green }: { srcs: string[]; green: boolean }) {
         >
           <div className="h-[340px] overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={s} alt="" loading="lazy" className="block w-full object-cover object-top" />
+            <img src={s} alt="" loading="eager" className="block w-full object-cover object-top" />
           </div>
         </div>
       ))}
@@ -503,7 +503,7 @@ function WindowStack({ srcs }: { srcs: string[] }) {
           </div>
           <div className="aspect-[16/10] overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={s} alt="" loading="lazy" className="block w-full object-cover object-top" />
+            <img src={s} alt="" loading="eager" className="block w-full object-cover object-top" />
           </div>
         </div>
       ))}
@@ -526,7 +526,7 @@ function Phone({ src, alt, dim = false }: { src: string; alt: string; dim?: bool
           src={src}
           alt={alt}
           draggable={false}
-          loading="lazy"
+          loading="eager"
           className="pointer-events-none h-full w-full object-cover object-top"
         />
       </div>
