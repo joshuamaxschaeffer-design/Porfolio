@@ -239,20 +239,18 @@ function CrmAnimatedGrid() {
           return (
             <figure
               key={g.src}
-              className={`group relative flex flex-col overflow-hidden rounded-2xl border border-[var(--br-line)] bg-[var(--br-bg-2)] [box-shadow:var(--br-card-shadow)] ${span}`}
+              className={`group relative flex flex-col overflow-hidden rounded-2xl ${span}`}
+              style={{ backgroundColor: g.bg }}
             >
               <div className="flex min-h-0 flex-1 items-center justify-center p-4">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={g.src}
                   alt={g.label}
-                  loading="lazy"
-                  className="max-h-full max-w-full rounded-lg object-contain [box-shadow:0_8px_22px_rgba(0,0,0,0.12)]"
+                  loading="eager"
+                  className="max-h-full max-w-full rounded-lg object-contain"
                 />
               </div>
-              <figcaption className="br-data shrink-0 px-4 pb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--br-muted-2)]">
-                {g.label}
-              </figcaption>
             </figure>
           )
         })}

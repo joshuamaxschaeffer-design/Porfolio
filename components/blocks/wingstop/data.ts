@@ -239,10 +239,10 @@ export const crmSection = {
     title: 'Animated for the inbox',
     body: 'Animated modules, flavor reveals, emoji reactions, explosions, that made the emails pop in the inbox.',
     gifs: [
-      { src: '/wingstop/crmgif/flavor-combos.gif', label: 'Flavor combos' },
-      { src: '/wingstop/crmgif/face-emoji.gif', label: 'Emoji reactions' },
-      { src: '/wingstop/crmgif/explosion.gif', label: 'Flavor explosion' },
-      { src: '/wingstop/crmgif/zoom.gif', label: 'Delivery zoom' },
+      { src: '/wingstop/crmgif/flavor-combos.gif', label: 'Flavor combos', bg: '#000000' },
+      { src: '/wingstop/crmgif/face-emoji.gif', label: 'Emoji reactions', bg: '#ffffff' },
+      { src: '/wingstop/crmgif/explosion.gif', label: 'Flavor explosion', bg: '#000000' },
+      { src: '/wingstop/crmgif/zoom.gif', label: 'Delivery zoom', bg: '#ffffff' },
     ],
   },
 }
