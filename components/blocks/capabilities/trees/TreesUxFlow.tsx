@@ -242,9 +242,12 @@ function Cylinder({ x, y, w, h, label }: { x: number; y: number; w: number; h: n
 export function TreesUxFlow() {
   // viewBox in artboard units so polylines use raw Figma coordinates
   return (
-    <div className="relative w-full overflow-x-auto">
+    <div className="relative w-full overflow-x-auto [scrollbar-width:thin]">
+      {/* On narrow screens the diagram keeps a legible min width and the
+          container scrolls horizontally, rather than crushing 30px labels down
+          to ~3px. cqw font sizing tracks this width so labels stay readable. */}
       <div
-        className="relative mx-auto"
+        className="relative mx-auto min-w-[900px]"
         style={{ width: '100%', aspectRatio: `${W} / ${H}`, containerType: 'inline-size' } as CSSProperties}
       >
         {/* connectors under the blocks */}
