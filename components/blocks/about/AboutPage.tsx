@@ -63,7 +63,7 @@ export function AboutPage() {
       {/* ── 2. Three value cards (iso illustrations) ───────────── */}
       <section
         aria-label="What sets the work apart"
-        className="br-container border-t border-[var(--br-line)] py-16 md:py-24"
+        className="br-container py-16 md:py-24"
       >
         <div className="grid grid-cols-1 gap-x-10 gap-y-8 sm:grid-cols-2 md:gap-y-10 lg:grid-cols-3">
           {VALUE_CARDS.map((c, i) => (
@@ -91,7 +91,7 @@ export function AboutPage() {
       {/* ── 3. Card timeline + availability close ──────────────── */}
       <section
         aria-label="Experience"
-        className="br-container border-t border-[var(--br-line)] py-16 md:py-24"
+        className="br-container py-16 md:py-24"
       >
         <Appear onView>
           <h2 className="mb-10 text-[26px] font-medium leading-tight tracking-[-0.01em] text-[var(--br-ink)] md:mb-14 md:text-[34px]">
