@@ -40,6 +40,11 @@ export function FlagshipPanda({
           the negative top margin pulls the whole inner block up under the
           section's overflow-hidden, so the top 160px of the composition is cut
           off. Both reset at md+ (desktop layout unchanged). */}
+      {/* The WHOLE section links to the case study: a Link wraps all the content
+          with cursor-default, so clicking anywhere navigates but the background
+          shows the normal arrow. Only the card below opts back into cursor-pointer
+          (the hand), so the affordance reads as "the card is the button". */}
+      <Link href={href} aria-label="Panda Express App — read the case study" className="block cursor-default">
       <div className="home-container -mt-[160px] pt-0 pb-20 md:mt-0 md:py-24">
         {/* big phones centerpiece, with the label card floated right over open
             red space. The stage is scaled up ~3x and pushed DOWN per Josh; the
@@ -58,7 +63,7 @@ export function FlagshipPanda({
             onMouseEnter={() => setCardHover(true)}
             onMouseLeave={() => setCardHover(false)}
           >
-            <div className="flex aspect-[480/375] origin-center flex-col items-start justify-center gap-5 rounded-[8px] border border-white/35 bg-[#c0282c] px-8 py-8 text-left shadow-[0_24px_60px_rgba(0,0,0,0.25)] transition-transform duration-[600ms] ease-out will-change-transform hover:scale-[0.965]">
+            <div className="flex aspect-[480/375] origin-center cursor-pointer flex-col items-start justify-center gap-5 rounded-[8px] border border-white/35 bg-[#c0282c] px-8 py-8 text-left shadow-[0_24px_60px_rgba(0,0,0,0.25)] transition-transform duration-[600ms] ease-out will-change-transform hover:scale-[0.965]">
               <span className="flex h-[96px] w-[96px] items-center justify-center rounded-full bg-white shadow-lg">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/panda/panda-logo.svg" alt="Panda Express" className="h-[62px] w-[62px] object-contain" />
@@ -80,18 +85,17 @@ export function FlagshipPanda({
                   </li>
                 ))}
               </ul>
-              {/* case study text + arrow — sits just below the pills */}
-              <Link
-                href={href}
-                className="group inline-flex items-center gap-2 text-sm font-medium text-white"
-              >
-                Read the case study
+              {/* case study CTA — solid WHITE pill, red text (the whole section
+                  is the link, so this is just a visual button, not an <a>). */}
+              <span className="group inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-[#c0282c]">
+                Case Study
                 <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
-              </Link>
+              </span>
             </div>
           </div>
         </div>
       </div>
+      </Link>
     </section>
   )
 }

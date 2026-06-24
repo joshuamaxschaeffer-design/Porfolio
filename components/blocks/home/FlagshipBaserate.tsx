@@ -39,6 +39,9 @@ export function FlagshipBaserate({
             'radial-gradient(120% 100% at 78% 6%, #f3f6fc 0%, #ffffff 55%)',
         }}
       />
+      {/* The WHOLE section links to the case study (cursor-default), so clicking
+          anywhere navigates but only the card opts back into the hand cursor. */}
+      <Link href={href} aria-label="Baserate — Full Stack Design — read the case study" className="block cursor-default">
       {/* mobile bottom gets +50px breathing room below the card (Josh,
           2026-06-24); desktop padding unchanged. */}
       <div className="home-container pt-0 pb-[50px] md:pt-28 md:pb-[260px]">
@@ -46,11 +49,10 @@ export function FlagshipBaserate({
           {/* CARD — logo + FULL STACK DESIGN + gold pills (Figma). The whole
               card links to the case study (text/CTA removed per Josh). */}
           <div className="order-2 lg:order-1">
-            <Link
-              href={href}
+            <div
               onMouseEnter={() => setCardHover(true)}
               onMouseLeave={() => setCardHover(false)}
-              className="group/card flex aspect-[480/375] w-full max-w-[480px] origin-center flex-col justify-center gap-[22px] rounded-[8px] border border-[#d6d6d6] bg-white px-8 py-9 shadow-[0_18px_44px_rgba(7,14,44,0.10)] transition-[transform,box-shadow] duration-[600ms] ease-out will-change-transform hover:scale-[0.965] hover:shadow-[0_28px_64px_rgba(7,14,44,0.14)]"
+              className="group/card flex aspect-[480/375] w-full max-w-[480px] origin-center cursor-pointer flex-col justify-center gap-[22px] rounded-[8px] border border-[#d6d6d6] bg-white px-8 py-9 shadow-[0_18px_44px_rgba(7,14,44,0.10)] transition-[transform,box-shadow] duration-[600ms] ease-out will-change-transform hover:scale-[0.965] hover:shadow-[0_28px_64px_rgba(7,14,44,0.14)]"
             >
               <BaserateLogo className="h-[42px] w-auto" />
               <p
@@ -70,12 +72,13 @@ export function FlagshipBaserate({
                   </li>
                 ))}
               </ul>
-              {/* case study text + arrow — sits just below the pills (matches Panda) */}
-              <span className="inline-flex items-center gap-2 text-sm font-medium text-[#070e2c]">
-                Read the case study
+              {/* case study CTA — solid BLACK pill, white text (matches Panda's
+                  pill; the whole section is the link so this is just visual). */}
+              <span className="inline-flex items-center gap-2 rounded-full bg-black px-5 py-2.5 text-sm font-semibold text-white">
+                Case Study
                 <span aria-hidden className="transition-transform group-hover/card:translate-x-1">→</span>
               </span>
-            </Link>
+            </div>
           </div>
 
           {/* MEDIA — the case study's "Brand & Marketing" floating scene
@@ -97,6 +100,7 @@ export function FlagshipBaserate({
           </div>
         </div>
       </div>
+      </Link>
     </section>
   )
 }
