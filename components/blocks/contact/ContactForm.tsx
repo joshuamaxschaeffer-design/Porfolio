@@ -163,22 +163,24 @@ export function ContactForm() {
           value={values.company}
           onChange={(e) => update('company', e.target.value)}
           className={inputCls(false)}
-          placeholder="Where you’re from"
+          placeholder="Who are you"
         />
       </Field>
 
-      {/* Dropdowns: project type + budget + timeline */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-        <Field label="What do you need?" htmlFor="projectType" error={errors.projectType}>
-          <Select
-            id="projectType"
-            value={values.projectType}
-            onChange={(v) => update('projectType', v)}
-            placeholder="Select…"
-            options={projectTypes}
-            invalid={!!errors.projectType}
-          />
-        </Field>
+      {/* What do you need? — own line so the option text never clips */}
+      <Field label="What do you need?" htmlFor="projectType" error={errors.projectType}>
+        <Select
+          id="projectType"
+          value={values.projectType}
+          onChange={(v) => update('projectType', v)}
+          placeholder="Select…"
+          options={projectTypes}
+          invalid={!!errors.projectType}
+        />
+      </Field>
+
+      {/* Budget + timeline share the next line for more horizontal room */}
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         <Field label="Budget" htmlFor="budget" error={errors.budget}>
           <Select
             id="budget"
@@ -209,7 +211,7 @@ export function ContactForm() {
           value={values.message}
           onChange={(e) => update('message', e.target.value)}
           className={inputCls(!!errors.message) + ' resize-y'}
-          placeholder="What are you building, what’s the goal, and where do you need help?"
+          placeholder="What are you building, what is your goal, and how can I help?"
         />
       </Field>
 
@@ -232,7 +234,7 @@ export function ContactForm() {
           disabled={status === 'submitting'}
           className="br-data inline-flex items-center justify-center gap-2 rounded-[var(--br-tag-radius)] bg-[var(--br-ink)] px-7 py-3.5 text-sm font-semibold uppercase tracking-[0.04em] text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {status === 'submitting' ? 'Sending…' : 'Send message'}
+          {status === 'submitting' ? 'Sending…' : 'Send'}
           {status !== 'submitting' && <span aria-hidden>→</span>}
         </button>
         <p className="max-w-xs text-[13px] leading-snug text-[var(--br-muted-2)]">{formNote}</p>

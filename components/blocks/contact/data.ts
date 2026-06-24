@@ -51,4 +51,4 @@ export const timelines = [
 
 /** Reassurance line under the submit button. */
 export const formNote =
-  'I read every message myself and reply within a couple of business days.'
+  'I read and respond to every message within a few business days.'
