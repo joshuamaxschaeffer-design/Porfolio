@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { asBrand, BRANDS } from '@/lib/brand'
 import { getCaseStudyBySlug, getAllCaseStudySlugsForBrand } from '@/lib/queries'
 import { BlockRenderer } from '@/components/BlockRenderer'
+import { MoreWorkFooter } from '@/components/blocks/shared/MoreWorkFooter'
 
 interface CaseStudyPageProps {
   params: Promise<{ brand: string; slug: string }>
@@ -36,6 +37,7 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
     return (
       <article>
         <BlockRenderer blocks={cs.blocks || []} />
+        <MoreWorkFooter currentSlug={slug} />
       </article>
     )
   }
@@ -117,6 +119,8 @@ export default async function CaseStudyPage({ params }: CaseStudyPageProps) {
           </blockquote>
         </section>
       )}
+
+      <MoreWorkFooter currentSlug={slug} />
     </article>
   )
 }
