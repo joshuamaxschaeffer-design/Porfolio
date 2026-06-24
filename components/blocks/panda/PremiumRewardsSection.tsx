@@ -148,15 +148,17 @@ export function RewardsStage({ className, hovered = false }: { className?: strin
   useEffect(() => { hoverRaw.set(reduce ? 0 : hovered ? 1 : 0) }, [hovered, reduce, hoverRaw])
   const h = useSpring(hoverRaw, { stiffness: 140, damping: 18, mass: 0.7 })
   // per-phone hover deltas (px / deg / scale). Phone1 front-left, Phone2 back-right.
-  // Movement is 2× (the phones travel further apart); scale unchanged.
-  const h1x = useTransform(h, (v) => -92 * v)
-  const h1y = useTransform(h, (v) => -52 * v)
+  // Movement is ~10% of the previous separation (they barely drift apart); each
+  // phone grows 15% in size. The radial behind them does NOT scale (only the
+  // phone <img>s + their shadows carry hNs).
+  const h1x = useTransform(h, (v) => -9 * v)
+  const h1y = useTransform(h, (v) => -5 * v)
   const h1r = useTransform(h, (v) => -3 * v)
-  const h1s = useTransform(h, (v) => 1 + 0.09 * v)
-  const h2x = useTransform(h, (v) => 104 * v)
-  const h2y = useTransform(h, (v) => 44 * v)
+  const h1s = useTransform(h, (v) => 1 + 0.15 * v)
+  const h2x = useTransform(h, (v) => 10 * v)
+  const h2y = useTransform(h, (v) => 4 * v)
   const h2r = useTransform(h, (v) => 4 * v)
-  const h2s = useTransform(h, (v) => 1 + 0.11 * v)
+  const h2s = useTransform(h, (v) => 1 + 0.15 * v)
 
   // Phones sit a touch higher than their raw slot so their centres land over
   // the radial's centre. Scaled up from RewardsCard's −70 to suit the hero.
@@ -210,7 +212,7 @@ export function RewardsStage({ className, hovered = false }: { className?: strin
       <motion.div
         data-anim="premium-phone2-back-shadow"
         className="pointer-events-none absolute z-[5] flex items-center justify-center"
-        style={{ left: '34.40%', top: '14.58%', width: '65.60%', height: '85.42%', x: s2x, y: s2y, rotate: s2r, opacity: s2op, filter: s2blur }}
+        style={{ left: '34.40%', top: '14.58%', width: '65.60%', height: '85.42%', x: s2x, y: s2y, rotate: s2r, opacity: s2op, filter: s2blur, scale: h2s }}
       >
         <div style={{ width: '70.50%', height: '82.06%', transform: 'rotate(22.41deg)' }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -235,7 +237,7 @@ export function RewardsStage({ className, hovered = false }: { className?: strin
         src={`${P}/phone2.webp`}
         alt="Panda Rewards — upgrade to premium entrée screen"
         className="absolute z-10 max-w-none"
-        style={{ left: '40.60%', top: '16.52%', width: '45.81%', height: '60.47%', x: p2x, y: p2y, rotate: p2r }}
+        style={{ left: '40.60%', top: '16.52%', width: '45.81%', height: '60.47%', x: p2x, y: p2y, rotate: p2r, scale: h2s }}
       />
 
       {/* CLIPPED shadow: Phone 1's cast shadow falling onto Phone 2. */}
@@ -250,6 +252,7 @@ export function RewardsStage({ className, hovered = false }: { className?: strin
           x: p2x,
           y: p2y,
           rotate: p2r,
+          scale: h2s,
           WebkitMaskImage: `url(${P}/phone2.webp)`,
           maskImage: `url(${P}/phone2.webp)`,
           WebkitMaskSize: '100% 100%',
@@ -274,7 +277,7 @@ export function RewardsStage({ className, hovered = false }: { className?: strin
         src={`${P}/phone1.webp`}
         alt="Panda Rewards — 520 Panda Points home screen"
         className="absolute z-20 max-w-none"
-        style={{ left: '15.30%', top: '6.10%', width: '45.81%', height: '60.47%', x: p1x, y: p1y, rotate: p1r }}
+        style={{ left: '15.30%', top: '6.10%', width: '45.81%', height: '60.47%', x: p1x, y: p1y, rotate: p1r, scale: h1s }}
       />
     </div>
   )
