@@ -236,11 +236,14 @@ function CrmAnimatedGrid() {
       <div className="mt-7 hidden gap-4 lg:grid lg:grid-cols-4 lg:grid-rows-2 lg:aspect-[1443/620]">
         {defaults.animated.gifs.map((g, i) => {
           const span = i === 0 ? 'lg:col-span-2 lg:row-span-2' : i === 3 ? 'lg:col-span-2' : ''
+          // Light-grey stroke so white cards read as distinct cards against the
+          // white page; black cards take a faint matching edge for consistency.
+          const isWhite = g.bg.toLowerCase() === '#ffffff'
           return (
             <figure
               key={g.src}
-              className={`group relative flex flex-col overflow-hidden rounded-2xl ${span}`}
-              style={{ backgroundColor: g.bg }}
+              className={`group relative flex flex-col overflow-hidden rounded-2xl border ${span}`}
+              style={{ backgroundColor: g.bg, borderColor: isWhite ? '#e2e3e5' : 'rgba(255,255,255,0.10)' }}
             >
               <div className="flex min-h-0 flex-1 items-center justify-center p-4">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
