@@ -240,8 +240,12 @@ function LabelCard({
   bg: string
 }) {
   return (
+    // Content is vertically CENTERED (justify-center). The box uses min-height,
+    // not a fixed height, so at narrow widths where the pills wrap to 2–3 lines
+    // it GROWS to fit instead of clipping — centered when short, never cut off
+    // when tall. (The earlier justify-end is what pushed content to the bottom.)
     <div
-      className="absolute flex origin-center flex-col items-center justify-end gap-[clamp(8px,1.6vw,16px)] rounded-[4px] border border-white py-[4%] text-white transition-transform duration-500 ease-out will-change-transform group-hover:scale-[0.94]"
+      className="absolute flex origin-center flex-col items-center justify-center gap-[clamp(8px,1.6vw,16px)] rounded-[4px] border border-white py-[6%] text-white transition-transform duration-500 ease-out will-change-transform group-hover:scale-[0.94]"
       style={{ left: pctX(24), bottom: pctY(27), width: pctX(522), minHeight: pctY(270), backgroundColor: bg }}
     >
       {/* logo zone */}
