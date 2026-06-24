@@ -1,7 +1,8 @@
 import { designSystems as defaults } from './data'
 import { ScalabilityTimeline } from './ScalabilityTimeline'
 import { HandoffSection } from './handoff/HandoffSection'
-import { AIPrototypingPanel } from './AIPrototypingPanel'
+// AI Prototyping panel hidden for now (re-enable with the render below).
+// import { AIPrototypingPanel } from './AIPrototypingPanel'
 
 interface DesignSystemsProps {
   heading?: string
@@ -65,8 +66,10 @@ export function DesignSystemsSection(props: DesignSystemsProps) {
       {/* ----- Panel 3: Handoff (live UI + code box) ----- */}
       <HandoffSection />
 
-      {/* ----- Panel 4: AI Prototyping (prototype video + Claude UI overlay) ----- */}
-      <AIPrototypingPanel />
+      {/* ----- Panel 4: AI Prototyping (prototype video + Claude UI overlay) -----
+          HIDDEN per Josh (2026-06-24) until it's ready to show again. Re-enable by
+          uncommenting the line below (the import stays so it's a one-line restore). */}
+      {/* <AIPrototypingPanel /> */}
     </section>
   )
 }
