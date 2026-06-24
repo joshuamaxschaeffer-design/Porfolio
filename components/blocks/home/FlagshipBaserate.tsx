@@ -28,7 +28,7 @@ export function FlagshipBaserate({
   return (
     <section
       data-flagship="Baserate"
-      className="relative isolate w-screen left-1/2 right-1/2 -mx-[50vw] overflow-hidden bg-white text-[#070e2c]"
+      className="relative isolate w-screen left-1/2 right-1/2 -mx-[50vw] overflow-hidden border-t border-[#e6e6ea] bg-white text-[#070e2c]"
     >
       {/* faint light field — a whisper of Baserate navy in the top-right */}
       <div

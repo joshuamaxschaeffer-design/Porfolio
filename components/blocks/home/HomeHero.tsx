@@ -60,7 +60,7 @@ export function HomeHero({ name = 'Schaeffer', label = 'Design Solutions' }: Hom
   }, [])
 
   return (
-    <section className="relative flex min-h-[40vh] items-center py-14 md:min-h-[44vh] md:py-16">
+    <section className="relative flex min-h-[20vh] items-center py-0 md:min-h-[44vh] md:py-16">
       <div className="home-container">
         {/* w-fit so the label+timeline row below spans exactly the wordmark's
             width — the timeline's right edge lands on SCHAEFFER's right edge. */}
