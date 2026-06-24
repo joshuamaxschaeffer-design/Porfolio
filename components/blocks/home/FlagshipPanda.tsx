@@ -40,7 +40,7 @@ export function FlagshipPanda({
             red space. The stage is scaled up ~3x and pushed DOWN per Josh; the
             section is tall + overflow-hidden so the enlarged phones are contained
             and the bottoms run off the section edge. */}
-        <div className="relative min-h-[620px] lg:min-h-[820px]">
+        <div className="relative min-h-[520px] lg:min-h-[720px]">
           {/* the EXACT case-study rewards stage — scaled UP + moved down. Card
               hover passes `hovered` into RewardsStage, which explodes only the
               two PHONES apart individually (radial stays put), shadows tracking. */}
