@@ -2,24 +2,18 @@ import { SectionNav, type SectionNavItem } from '../baserate/SectionNav'
 import { StatCounters } from '../shared/StatCounters'
 import { LogoMarquee } from './BrandLogo'
 import { pick } from './brands'
-import { DisciplineModule } from './DisciplineModule'
-import {
-  BG,
-  heroStats,
-  heroCopy,
-  productUx,
-  brand,
-  designSystems,
-  artMotion,
-  marketingWeb,
-  leadership,
-} from './disciplines'
-import { ProductUxModules } from './modules/ProductUxModules'
-import { BrandModules } from './modules/BrandModules'
-import { DesignSystemsModules } from './modules/DesignSystemsModules'
-import { ArtMotionModules } from './modules/ArtMotionModules'
-import { MarketingWebModules } from './modules/MarketingWebModules'
-import { LeadershipModules } from './modules/LeadershipModules'
+import { heroStats, heroCopy } from './disciplines'
+
+// NOTE: the six discipline sections are temporarily gated behind a "Coming Soon"
+// panel (see below). When restoring them, re-add these imports:
+//   import { DisciplineModule } from './DisciplineModule'
+//   import { BG, productUx, brand, designSystems, artMotion, marketingWeb, leadership } from './disciplines'
+//   import { ProductUxModules } from './modules/ProductUxModules'
+//   import { BrandModules } from './modules/BrandModules'
+//   import { DesignSystemsModules } from './modules/DesignSystemsModules'
+//   import { ArtMotionModules } from './modules/ArtMotionModules'
+//   import { MarketingWebModules } from './modules/MarketingWebModules'
+//   import { LeadershipModules } from './modules/LeadershipModules'
 
 export interface CapabilitiesPageProps {
   eyebrow?: string
@@ -40,14 +34,12 @@ export function CapabilitiesPage(props: CapabilitiesPageProps = {}) {
   const heading = props.heading ?? heroCopy.heading
   const lead = props.lead ?? heroCopy.lead
 
+  // Gated: only the Overview is public for now. The six discipline sections
+  // below are withheld behind a "Coming Soon" panel until the work is ready,
+  // so the rail shows just the two visible stops.
   const navItems: SectionNavItem[] = [
     { id: 'overview', title: 'Overview' },
-    { id: productUx.id, title: productUx.title },
-    { id: brand.id, title: brand.title },
-    { id: designSystems.id, title: designSystems.title },
-    { id: artMotion.id, title: artMotion.title },
-    { id: marketingWeb.id, title: marketingWeb.title },
-    { id: leadership.id, title: leadership.title },
+    { id: 'coming-soon', title: 'Coming Soon' },
   ]
 
   return (
@@ -81,7 +73,28 @@ export function CapabilitiesPage(props: CapabilitiesPageProps = {}) {
         </div>
       </section>
 
-      {/* ── 01 Product & UX — GREY ─────────────────────────────── */}
+      {/* ── Coming Soon — withholds the six discipline sections ──────────────
+          The full by-discipline breakdown is built but not public yet. Until it
+          is, everything below the Overview is gated behind this panel. To restore
+          the real sections: delete this block and uncomment the disciplines below,
+          and put the six stops back in `navItems` above. ──────────────────── */}
+      <section id="coming-soon" className="bg-[var(--br-bg-2)]">
+        <div className="br-container flex min-h-[58vh] flex-col items-center justify-center py-24 text-center md:min-h-[64vh] md:py-32">
+          <p className="br-data text-xs font-semibold uppercase tracking-[0.18em] text-[var(--br-gold)] md:text-sm">
+            In progress
+          </p>
+          <h2 className="mt-4 text-[34px] font-medium leading-[1.05] tracking-[-0.01em] text-[var(--br-ink)] md:text-[56px]">
+            Coming soon
+          </h2>
+          <p className="mt-6 max-w-xl text-base leading-relaxed text-[var(--br-muted)] md:text-lg">
+            I&rsquo;m currently sifting through my past work across thousands of
+            screens, clients, and brands. Check back soon for a full breakdown of
+            the work I&rsquo;ve done, organized by discipline.
+          </p>
+        </div>
+      </section>
+
+      {/* ── Discipline sections — GATED (hidden until ready) ─────────────────
       <DisciplineModule
         {...sectionProps(productUx)}
         clientBrands={pick(
@@ -92,12 +105,10 @@ export function CapabilitiesPage(props: CapabilitiesPageProps = {}) {
         <ProductUxModules dark={BG[productUx.bg].dark} />
       </DisciplineModule>
 
-      {/* ── 02 Brand & Identity — BLACK (no logo row; brands shown right below) ── */}
       <DisciplineModule {...sectionProps(brand)}>
         <BrandModules dark={BG[brand.bg].dark} />
       </DisciplineModule>
 
-      {/* ── 03 Design Systems — NAVY ───────────────────────────── */}
       <DisciplineModule
         {...sectionProps(designSystems)}
         clientBrands={pick('mindbody', 'raisingCanes', 'daveAndBusters', 'cbtl', 'trees', 'baserate')}
@@ -105,7 +116,6 @@ export function CapabilitiesPage(props: CapabilitiesPageProps = {}) {
         <DesignSystemsModules dark={BG[designSystems.bg].dark} />
       </DisciplineModule>
 
-      {/* ── 04 Motion & Illustration — GREY ────────────────────── */}
       <DisciplineModule
         {...sectionProps(artMotion)}
         clientBrands={pick('mindbody', 'cbtl', 'pepsi')}
@@ -113,7 +123,6 @@ export function CapabilitiesPage(props: CapabilitiesPageProps = {}) {
         <ArtMotionModules dark={BG[artMotion.bg].dark} />
       </DisciplineModule>
 
-      {/* ── 05 Marketing & Web — BLACK ─────────────────────────── */}
       <DisciplineModule
         {...sectionProps(marketingWeb)}
         clientBrands={pick('trueFoodKitchen', 'blaze', 'wingstop', 'panda', 'dairyQueen', 'chandon', 'pepsi', 'vfCorp')}
@@ -121,15 +130,16 @@ export function CapabilitiesPage(props: CapabilitiesPageProps = {}) {
         <MarketingWebModules dark={BG[marketingWeb.bg].dark} />
       </DisciplineModule>
 
-      {/* ── 06 Leadership — WHITE ──────────────────────────────── */}
       <DisciplineModule {...sectionProps(leadership)}>
         <LeadershipModules dark={BG[leadership.bg].dark} />
       </DisciplineModule>
+      ──────────────────────────────────────────────────────────────────── */}
     </article>
   )
 }
 
-/** Spread the shared DisciplineModule props from a discipline object. */
+/* Spread the shared DisciplineModule props from a discipline object.
+   Restore alongside the gated discipline sections above.
 function sectionProps(d: typeof productUx) {
   return {
     num: d.num,
@@ -142,3 +152,4 @@ function sectionProps(d: typeof productUx) {
     bg: d.bg,
   }
 }
+*/
