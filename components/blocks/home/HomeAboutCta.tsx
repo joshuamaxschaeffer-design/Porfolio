@@ -51,7 +51,10 @@ export function HomeAboutCta({
       {/* three numbered blocks */}
       <div className="grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
         {ITEMS.map((it) => (
-          <div key={it.n}>
+          <div
+            key={it.n}
+            className="rounded-[8px] border border-[#e3e3e6] bg-white p-7"
+          >
             {/* iso illustration — ~1/3 the block width, left-aligned. */}
             <div className="mb-5 flex aspect-square w-1/3 max-w-[120px] items-center justify-start">
               {/* eslint-disable-next-line @next/next/no-img-element */}
