@@ -93,19 +93,25 @@ function DarkModeStack() {
         {/* RIGHT — receding device stack, confined to this column. Column is
             ~30% shorter than before; the stack is vertically centered in it
             (device size unchanged — width is a % of column WIDTH, not height). */}
-        <div className="relative h-[40vh] min-h-[300px] w-full lg:h-[44vh]">
+        <div className="relative -mt-[25px] h-[40vh] min-h-[300px] w-full lg:h-[44vh]">
           {defaults.darkMode.screens.map((src, i) => {
             const z = i * GAP
             const s = F / (F + z)
-            // front card sits just below center; recede up-and-right so the whole
-            // stack's centroid lands at the column's vertical middle.
-            const frontX = 30,
-              frontY = 56,
-              vpX = 78,
-              vpY = 40
-            const x = frontX + (vpX - frontX) * (1 - s)
-            const y = frontY + (vpY - frontY) * (1 - s)
+            // front card sits just below center; recede up-and-right. The
             const d = count > 1 ? i / (count - 1) : 0
+            // HORIZONTAL spread: fan the deck EVENLY from a left anchor (front,
+            // fully visible) to a right anchor (back, near the edge) so the splay
+            // is wide and every screen stays on-screen — far wider than the old
+            // scale-compressed spread. A small scroll-linked term opens the fan
+            // a touch more by the end, but BOTH the start and end states are
+            // already widely splayed.
+            const leftX = 19 // front card center (left edge ≈ 0 at 38% width)
+            const rightX = 84 + p * 6 // back card center near the right edge
+            const x = leftX + (rightX - leftX) * d
+            // Depth still recedes up-and-right via scale/blur; y steps back too.
+            const frontY = 56,
+              vpY = 40
+            const y = frontY + (vpY - frontY) * (1 - s)
             return (
               <div
                 key={src}
@@ -113,8 +119,8 @@ function DarkModeStack() {
                 style={{
                   left: `${x}%`,
                   top: `${y}%`,
-                  width: '42%',
-                  maxWidth: 320,
+                  width: '38%',
+                  maxWidth: 300,
                   transform: `translate(-50%,-50%) scale(${s})`,
                   zIndex: count - i,
                   filter: `brightness(${1 - 0.5 * d}) blur(${(6 * d * d).toFixed(2)}px)`,
