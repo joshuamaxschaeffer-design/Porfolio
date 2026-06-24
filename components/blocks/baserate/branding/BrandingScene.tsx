@@ -242,17 +242,17 @@ export function BrandingScene({
                 it nor its shadow reaches the section's right edge (avoids the
                 hard clip-to-white line when the scene scales/explodes). */}
             <Parallax z={PZ.device} pos={{ x: 58, y: 42 }} exDist={18} className={`absolute left-[34%] top-[14%] z-10 ${compact ? 'w-[62%]' : 'w-[39%]'}`}>
-              <StudioObject base="/baserate/branding/devices/desktop" frameCount={SCRUB_FRAMES} fps={FPS} staticFrame={-1} shadowMode="svg" shadowAlpha={0.6} className="w-full" alt="Baserate marketing site" />
+              <StudioObject base="/baserate/branding/devices/desktop" frameCount={SCRUB_FRAMES} fps={FPS} staticFrame={-1} shadowMode="svg" shadowAlpha={0.35} className="w-full" alt="Baserate marketing site" />
             </Parallax>
 
             {/* swatch cards + app-icon chips — hidden in devicesOnly (mobile) */}
             {!devicesOnly && <>
             {/* app-icon chips */}
             <Parallax z={PZ.chip} pos={{ x: 26, y: 10 }} exDist={40} className="absolute left-[20%] top-[2%] z-30">
-              <BakedChip base="/baserate/branding/chips/journalytic" alt="Journalytic" reduce={reduce} frameCount={SCRUB_FRAMES} size={r(124)} scaleW={132.3 * sw} ml={-4.3 * sw} mt={-6.3 * sw} scrub={chipScrub} shadowAlpha={0.6} />
+              <BakedChip base="/baserate/branding/chips/journalytic" alt="Journalytic" reduce={reduce} frameCount={SCRUB_FRAMES} size={r(124)} scaleW={132.3 * sw} ml={-4.3 * sw} mt={-6.3 * sw} scrub={chipScrub} shadowAlpha={0.35} />
             </Parallax>
             <Parallax z={PZ.chip} pos={{ x: 44, y: 66 }} exDist={40} className="absolute left-[40%] top-[62%] z-30">
-              <BakedChip base="/baserate/branding/chips/baserate" alt="Baserate" reduce={reduce} frameCount={SCRUB_FRAMES} size={r(94)} scaleW={103.2 * sw} ml={-6.2 * sw} mt={-3.3 * sw} delay={250} scrub={chipScrub} shadowAlpha={0.6} />
+              <BakedChip base="/baserate/branding/chips/baserate" alt="Baserate" reduce={reduce} frameCount={SCRUB_FRAMES} size={r(94)} scaleW={103.2 * sw} ml={-6.2 * sw} mt={-3.3 * sw} delay={250} scrub={chipScrub} shadowAlpha={0.35} />
             </Parallax>
 
             {/* brand colour swatch cards */}
