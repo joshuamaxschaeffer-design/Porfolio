@@ -2,7 +2,7 @@
 
 import { type MotionValue } from 'motion/react'
 import { useEffect, useRef } from 'react'
-import { STUDIO_PAD, createShadowPipeline, createSvgShadow, type ShadowTrack } from './studioShadow'
+import { STUDIO_PAD, STUDIO_PAD_BOTTOM, STUDIO_PAD_RIGHT, createShadowPipeline, createSvgShadow, type ShadowTrack } from './studioShadow'
 
 function pad4(n: number) {
   return String(n).padStart(4, '0')
@@ -296,11 +296,21 @@ export function StudioObject({
   }, [base, frameCount, fps, delay, scrub, staticFrame, shadowMode])
 
   const padPct = `${(STUDIO_PAD * 100).toFixed(0)}%`
+  // Canvas shadow box: symmetric STUDIO_PAD on all sides (matches the canvas
+  // pipeline's shadow.width/height).
   const padBox = {
     left: `-${padPct}`,
     top: `-${padPct}`,
     width: `${100 + STUDIO_PAD * 200}%`,
     height: `${100 + STUDIO_PAD * 200}%`,
+  } as const
+  // SVG shadow box: extended on bottom + right so the down-right cast shadow is
+  // never clipped (must match the asymmetric viewBox in createSvgShadow.size()).
+  const svgPadBox = {
+    left: `-${padPct}`,
+    top: `-${padPct}`,
+    width: `${100 + (STUDIO_PAD + STUDIO_PAD_RIGHT) * 100}%`,
+    height: `${100 + (STUDIO_PAD + STUDIO_PAD_BOTTOM) * 100}%`,
   } as const
   const svgMode = shadowMode === 'svg'
   return (
@@ -311,7 +321,7 @@ export function StudioObject({
         ref={svgRef}
         aria-hidden
         className="pointer-events-none absolute"
-        style={{ ...padBox, display: svgMode ? 'block' : 'none', overflow: 'visible' }}
+        style={{ ...svgPadBox, display: svgMode ? 'block' : 'none', overflow: 'visible' }}
       />
       {/* canvas shadow (default renderer); hidden in svg mode */}
       <canvas

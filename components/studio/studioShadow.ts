@@ -18,6 +18,13 @@
  */
 
 export const STUDIO_PAD = 0.3
+// Cast shadows project DOWN + RIGHT, often farther than STUDIO_PAD allows — so
+// the shadow box is extended on the bottom and right edges to give the
+// projected umbra/ambient room and never clip it with a hard line. Top/left
+// stay at STUDIO_PAD (nothing casts up/left of the object). These MUST stay in
+// sync with the padBox in StudioObject.tsx so SVG viewBox === CSS box geometry.
+export const STUDIO_PAD_BOTTOM = 0.85
+export const STUDIO_PAD_RIGHT = 0.6
 export const SHADOW_RES = 0.34
 
 // Shadow colour — a DESATURATED BLUE, not near-black/grey (per Josh Comeau,
@@ -314,12 +321,13 @@ export function createSvgShadow(svg: SVGSVGElement) {
   const size = (firstW: number, firstH: number) => {
     W = firstW
     H = firstH
-    // viewBox spans the padded box (same geometry as the shadow canvas):
-    // from -pad..(1+pad) of the object in each axis, in OBJECT pixels.
+    // viewBox spans the padded box (same geometry as the CSS padBox in
+    // StudioObject): top/left use STUDIO_PAD, bottom/right are extended so the
+    // down-right cast shadow is never clipped. In OBJECT pixels.
     const padX = W * STUDIO_PAD
     const padY = H * STUDIO_PAD
-    const vbW = W * (1 + STUDIO_PAD * 2)
-    const vbH = H * (1 + STUDIO_PAD * 2)
+    const vbW = W * (1 + STUDIO_PAD + STUDIO_PAD_RIGHT)
+    const vbH = H * (1 + STUDIO_PAD + STUDIO_PAD_BOTTOM)
     svg.setAttribute('viewBox', `${-padX} ${-padY} ${vbW} ${vbH}`)
     svg.setAttribute('preserveAspectRatio', 'none')
     // (re)build the layer stack
