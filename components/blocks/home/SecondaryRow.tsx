@@ -241,11 +241,11 @@ function LabelCard({
 }) {
   return (
     <div
-      className="absolute flex origin-center flex-col items-center overflow-hidden rounded-[4px] border border-white text-white transition-transform duration-500 ease-out will-change-transform group-hover:scale-[0.94]"
-      style={{ left: pctX(24), top: pctY(423), width: pctX(522), height: pctY(270), backgroundColor: bg }}
+      className="absolute flex origin-center flex-col items-center justify-end gap-[clamp(8px,1.6vw,16px)] rounded-[4px] border border-white py-[4%] text-white transition-transform duration-500 ease-out will-change-transform group-hover:scale-[0.94]"
+      style={{ left: pctX(24), bottom: pctY(27), width: pctX(522), minHeight: pctY(270), backgroundColor: bg }}
     >
-      {/* logo zone — top ~52% of the card */}
-      <div className="flex h-[52%] w-full items-center justify-center pt-[4%]">{logo}</div>
+      {/* logo zone */}
+      <div className="flex w-full items-center justify-center">{logo}</div>
       {/* title + pills */}
       <div className="flex w-full flex-col items-center gap-[clamp(8px,1.6vw,18px)] px-[6%]">
         <p
