@@ -162,7 +162,7 @@ function WingstopCard() {
               src="/home/wingstop/screen.webp"
               alt="Wingstop app — flavor quantities"
               fill
-              sizes="(max-width: 768px) 56vw, 290px"
+              sizes="(min-width: 768px) 27vw, 56vw"
               className="object-contain object-top"
             />
           </div>
@@ -206,7 +206,7 @@ function SamsungCard() {
             src="/home/samsung/table.webp"
             alt="Samsung Galaxy interactive retail table"
             fill
-            sizes="(max-width: 768px) 110vw, 600px"
+            sizes="(min-width: 768px) 99vw, 207vw"
             className="object-contain object-left-top"
           />
         </div>
@@ -360,7 +360,7 @@ function CapabilitiesCard() {
                   alt={ph.alt}
                   width={ph.w}
                   height={ph.h}
-                  sizes="(max-width: 1024px) 56vw, 290px"
+                  sizes="(min-width: 1024px) 300px, 56vw"
                   className="h-auto w-full"
                 />
               </div>
