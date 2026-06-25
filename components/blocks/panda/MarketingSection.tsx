@@ -257,17 +257,19 @@ function WireframeStack({ pages }: { pages: { key: string; label: string; src: s
 
   return (
     // Desktop: no overflow-hidden — let the fan breathe so the top corners
-    // aren't clipped. Mobile: the deck reads tiny, so scale the whole stage 3×.
-    // It grows from the TOP-LEFT so the front (largest) card stays anchored on
-    // screen and the fan trails right; the wrapper goes full-bleed (breaks the
-    // container's side padding) so nothing clips until the browser edges; the
-    // stage is pulled up 200px and the reserved height is short so ~500px is
-    // cropped off the bottom.
+    // aren't clipped. Mobile: the deck is scaled to FIT the column — a modest
+    // 1.15× from the TOP-LEFT so the front (largest) card anchors at the left
+    // and the whole 5-card fan stays fully visible, nothing clipped top/bottom.
+    // Every size here is viewport-proportional (50vw stage / 58vw reserved box /
+    // vw-based cards) so the fit holds across the entire sub-lg range instead of
+    // only at one width; the wrapper still goes full-bleed (breaks the
+    // container's side padding) and clips only the side bleed at the browser
+    // edges. lg+ keeps its natural, un-scaled fan.
     <div className="relative mt-10 flex w-[calc(100%+3rem)] justify-center overflow-hidden -mx-6 sm:w-[calc(100%+4rem)] sm:-mx-8 lg:mx-0 lg:w-full lg:overflow-visible">
-      <div className="h-[520px] w-full overflow-hidden lg:h-auto lg:overflow-visible">
+      <div className="h-[58vw] w-full overflow-hidden lg:h-auto lg:overflow-visible">
         <div
           ref={stageRef}
-          className="relative h-[clamp(340px,44vw,560px)] w-full max-w-[1100px] origin-top-left scale-[3] max-lg:-mt-[200px] lg:origin-top lg:mt-0 lg:scale-100"
+          className="relative h-[50vw] w-full max-w-[1100px] origin-top-left scale-[1.15] lg:h-[clamp(340px,44vw,560px)] lg:origin-top lg:scale-100"
         >
           {deck.map((pg, i) => (
             <WireframeCard key={pg.key} page={pg} index={i} total={deck.length} p={p} />
