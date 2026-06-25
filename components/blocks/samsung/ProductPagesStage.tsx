@@ -80,30 +80,32 @@ export function ProductPagesStage() {
           on top, then the pages fan in its own bounded height so it never
           overlaps the copy. */}
       <div className="relative grid grid-cols-1 items-center gap-8 lg:min-h-[1020px] lg:grid-cols-[1.55fr_1fr]">
-        {/* LEFT: the angled, receding page fan. NO horizontal clip — the fan
-            fills the whole left background and bleeds off the left edge; it may
-            sit slightly under the copy (per Joshua). Bounded height at sub-lg so
-            the absolutely-positioned fan has room and can't cover the copy. */}
+        {/* LEFT: the angled, receding page fan. At lg+ it fills the left
+            background and bleeds off the left edge; sub-lg it's centered and
+            fully on-screen. Bounded height at sub-lg so the absolutely-
+            positioned fan has room and can't cover the copy. */}
         <div
-          className="relative order-2 h-[260px] sm:h-[320px] lg:order-1 lg:h-full"
+          className="relative order-2 h-[330px] sm:h-[380px] lg:order-1 lg:h-full"
           style={{ perspective: '2200px', perspectiveOrigin: '50% 50%' }}
         >
-          {/* Right-anchored, rendered Note→Tab→Gear left-to-right so the GEAR
-              page lands FARTHEST RIGHT and largest/nearest; the others recede
-              and bleed off the left.
-              Narrow view (per Joshua, 2026-06-24): the fan was pushed off the
-              LEFT edge and clipped, so on sub-lg it's nudged in from the right
-              (right-[6%]) and the pages are halved (see --pp-w below) so the
-              whole fan reads inside the band. lg+ restores right-[2%]. */}
+          {/* Pages rendered Note→Tab→Gear left-to-right so the GEAR page lands
+              FARTHEST RIGHT and largest/nearest; the others recede to the left.
+              Sub-lg (fix, 2026-06-25): the fan is centered and the pages are
+              sized down (--pp-w) so all three read inside the band — it used to
+              be right-anchored and shoved off-screen, showing only one page.
+              lg+ restores the right-anchored desktop fan (right-[2%]). */}
           <div
-            className="absolute right-[6%] top-1/2 flex items-center gap-3 [--pp-w:clamp(150px,18vw,260px)] [--pp-x:calc(20vw_-_160px)] sm:gap-4 lg:right-[2%] lg:gap-7 lg:[--pp-w:clamp(300px,32vw,520px)] lg:[--pp-x:0px]"
+            className="absolute left-1/2 right-auto top-1/2 flex items-center gap-2.5 [--pp-ry:-20deg] [--pp-tx:calc(-50%_-_12px)] [--pp-w:clamp(88px,24vw,150px)] sm:gap-4 lg:left-auto lg:right-[2%] lg:gap-7 lg:[--pp-ry:-32deg] lg:[--pp-tx:0px] lg:[--pp-w:clamp(300px,32vw,520px)]"
             style={{
-              // --pp-x shifts the whole fan horizontally on narrow screens; per
-              // Joshua (2026-06-24) it's calc(20vw - 160px) so the pages sit well
-              // left (deliberately cropping off the left edge). 0 at lg+ where the
-              // two-column layout already places it.
+              // Sub-lg the fan is CENTERED (not right-anchored) and sized to fit so
+              // all three pages stay on-screen (fix, 2026-06-25 — previously the
+              // fan was shoved off the left edge and only one page showed).
+              //  - --pp-tx centers the row: translateX(-50%) minus a 12px nudge to
+              //    offset the perspective bulge of the nearest (right-most) page.
+              //  - --pp-ry softens the Y-rotation (-20deg) so the recede reads in a
+              //    narrow band. lg+ restores the right-anchored, -32deg desktop fan.
               transform:
-                'translateY(-50%) translateX(var(--pp-x, 0px)) rotateX(10deg) rotateY(-32deg) rotateZ(8deg)',
+                'translateY(-50%) translateX(var(--pp-tx, 0px)) rotateX(10deg) rotateY(var(--pp-ry, -32deg)) rotateZ(8deg)',
               transformStyle: 'preserve-3d',
             }}
           >
