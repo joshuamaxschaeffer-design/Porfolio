@@ -52,7 +52,7 @@ export function FlagshipBaserate({
             <div
               onMouseEnter={() => setCardHover(true)}
               onMouseLeave={() => setCardHover(false)}
-              className="group/card flex aspect-[480/375] w-full max-w-[480px] origin-center cursor-pointer flex-col justify-center gap-[22px] rounded-[8px] border border-[#d6d6d6] bg-white px-8 py-9 shadow-[0_18px_44px_rgba(7,14,44,0.10)] transition-[transform,box-shadow] duration-[600ms] ease-out will-change-transform hover:scale-[0.965] hover:shadow-[0_28px_64px_rgba(7,14,44,0.14)]"
+              className="group/card mx-auto flex aspect-[480/375] w-full max-w-[480px] origin-center cursor-pointer flex-col justify-center gap-[22px] rounded-[8px] border border-[#d6d6d6] bg-white px-8 py-9 shadow-[0_18px_44px_rgba(7,14,44,0.10)] transition-[transform,box-shadow] duration-[600ms] ease-out will-change-transform hover:scale-[0.965] hover:shadow-[0_28px_64px_rgba(7,14,44,0.14)]"
             >
               <BaserateLogo className="h-[42px] w-auto" />
               <p
@@ -96,7 +96,7 @@ export function FlagshipBaserate({
           </div>
           {/* DESKTOP scene — unchanged. */}
           <div className="relative order-1 hidden min-h-[460px] items-center overflow-visible lg:order-2 lg:flex lg:min-h-[620px] lg:justify-start">
-            <BrandingScene hovered={cardHover} className="w-full max-w-none origin-left scale-[1.85]" />
+            <BrandingScene hovered={cardHover} deviceScale={2} accentScale={0.33} className="w-full max-w-none origin-left scale-[1.85]" />
           </div>
         </div>
       </div>

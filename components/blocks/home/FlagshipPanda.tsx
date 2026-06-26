@@ -59,7 +59,7 @@ export function FlagshipPanda({
           {/* label card — floats right (upper) on desktop; stacks under on mobile.
               Content LEFT-aligned; no meta line. */}
           <div
-            className="relative z-20 mt-8 w-full max-w-[480px] lg:absolute lg:right-0 lg:top-[42%] lg:mt-0 lg:-translate-y-1/2"
+            className="relative z-20 mt-8 w-full max-w-[480px] mx-auto lg:absolute lg:right-0 lg:top-[42%] lg:mt-0 lg:mx-0 lg:-translate-y-1/2"
             onMouseEnter={() => setCardHover(true)}
             onMouseLeave={() => setCardHover(false)}
           >
