@@ -96,7 +96,7 @@ export function FlagshipBaserate({
           </div>
           {/* DESKTOP scene — unchanged. */}
           <div className="relative order-1 hidden min-h-[460px] items-center overflow-visible lg:order-2 lg:flex lg:min-h-[620px] lg:justify-start">
-            <BrandingScene hovered={cardHover} deviceScale={2} accentScale={0.45} deviceShiftX={-80} className="w-full max-w-none origin-left scale-[1.85]" />
+            <BrandingScene hovered={cardHover} className="w-full max-w-none origin-left scale-[1.85]" />
           </div>
         </div>
       </div>
