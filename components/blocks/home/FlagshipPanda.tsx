@@ -54,7 +54,9 @@ export function FlagshipPanda({
           {/* the EXACT case-study rewards stage — scaled UP + moved down. Card
               hover passes `hovered` into RewardsStage, which explodes only the
               two PHONES apart individually (radial stays put), shadows tracking. */}
-          <RewardsStage hovered={cardHover} className="relative z-10 mx-auto mt-[320px] w-full max-w-[1060px] origin-top translate-y-[200px] scale-[1.8] lg:mx-0 lg:mt-0 lg:max-w-[58%] lg:origin-[40%_top] lg:translate-y-[60px] lg:scale-[1.325]" />
+          <RewardsStage hovered={cardHover} className="relative z-10 mx-auto mt-[320px] w-full max-w-[1060px] origin-top translate-y-[200px] scale-[1.8] lg:hidden" />
+          {/* DESKTOP stage — phones nudged down/left so they sit over the radial (radial stays put) */}
+          <RewardsStage hovered={cardHover} phoneDX={-60} phoneDY={150} className="relative z-10 hidden w-full max-w-[58%] origin-[40%_top] translate-y-[60px] scale-[1.325] lg:block" />
 
           {/* label card — floats right (upper) on desktop; stacks under on mobile.
               Content LEFT-aligned; no meta line. */}
