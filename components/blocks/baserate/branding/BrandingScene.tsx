@@ -154,6 +154,7 @@ export function BrandingScene({
   devicesOnly = false,
   deviceScale = 1,
   accentScale = 1,
+  deviceShiftX = 0,
 }: {
   className?: string
   hovered?: boolean
@@ -170,6 +171,9 @@ export function BrandingScene({
    *  cluster at the home flagship's scale. Defaults 1 = unchanged everywhere else. */
   deviceScale?: number
   accentScale?: number
+  /** Home desktop: translateX (scene px) on the two devices only; scaled by the
+   *  wrapper scale, so ~-80 reads ~150px left at the 1.85 home scale. */
+  deviceShiftX?: number
 }) {
   // swatch/chip pixel sizes are absolute, so in a narrow mobile box they look
   // oversized vs the %-width devices — scale them DOWN; scale devices UP.
@@ -236,7 +240,7 @@ export function BrandingScene({
             {/* PHONE — the StudioObject shadow canvas has a finite box; feather
                 its left/right edges so no hard shadow-box line shows (the device
                 itself sits centred in the box, well inside the fade). */}
-            <Parallax z={PZ.device} pos={{ x: 19, y: 46 }} exDist={22} className="absolute left-[6%] top-[16%] z-10" style={{ width: (compact ? 46 : 26) * deviceScale + '%' }}>
+            <Parallax z={PZ.device} pos={{ x: 19, y: 46 }} exDist={22} className="absolute left-[6%] top-[16%] z-10" style={{ width: (compact ? 46 : 26) * deviceScale + '%', x: deviceShiftX }}>
               {/* No CSS mask here: a mask clips to the element's BORDER BOX, which
                   would slice off the StudioObject's cast shadow where it extends
                   below/right of the phone canvas (a hard horizontal line). The
@@ -248,7 +252,7 @@ export function BrandingScene({
             {/* DESKTOP / tablet — pulled left toward the phone; sized so neither
                 it nor its shadow reaches the section's right edge (avoids the
                 hard clip-to-white line when the scene scales/explodes). */}
-            <Parallax z={PZ.device} pos={{ x: 58, y: 42 }} exDist={18} className="absolute left-[34%] top-[14%] z-10" style={{ width: (compact ? 62 : 39) * deviceScale + '%' }}>
+            <Parallax z={PZ.device} pos={{ x: 58, y: 42 }} exDist={18} className="absolute left-[34%] top-[14%] z-10" style={{ width: (compact ? 62 : 39) * deviceScale + '%', x: deviceShiftX }}>
               <StudioObject base="/baserate/branding/devices/desktop" frameCount={SCRUB_FRAMES} fps={FPS} staticFrame={-1} shadowMode="svg" shadowAlpha={0.18} shadowBlur={1.7} className="w-full" alt="Baserate marketing site" />
             </Parallax>
 
