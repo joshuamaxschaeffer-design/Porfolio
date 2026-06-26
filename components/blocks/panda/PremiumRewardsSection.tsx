@@ -133,7 +133,7 @@ function useEntryProgress(
  * 715.26×611.50 Figma group used in RewardsCard; only the OUTER box is bigger,
  * so the whole composition scales up cleanly. Motion is lifted 1:1.
  * ───────────────────────────────────────────────────────────────────────── */
-export function RewardsStage({ className, hovered = false, phoneDX = 0, phoneDY = 0 }: { className?: string; hovered?: boolean; phoneDX?: number; phoneDY?: number }) {
+export function RewardsStage({ className, hovered = false }: { className?: string; hovered?: boolean }) {
   const reduce = useReducedMotion()
   const stageRef = useRef<HTMLDivElement>(null)
   const progress = useEntryProgress(stageRef, !reduce)
@@ -167,27 +167,27 @@ export function RewardsStage({ className, hovered = false, phoneDX = 0, phoneDY 
 
   // Phones sit a touch higher than their raw slot so their centres land over
   // the radial's centre. Scaled up from RewardsCard's −70 to suit the hero.
-  const REST_Y = -90 + phoneDY
+  const REST_Y = -90
 
   // ── Phone 1 (front / left): slides in from lower-left, slightly extra CCW.
   //    + hover explode delta (h1*).
-  const p1x = useTransform([a, h1x] as const, ([v, hv]: number[]) => -90 * v + hv + phoneDX)
+  const p1x = useTransform([a, h1x] as const, ([v, hv]: number[]) => -90 * v + hv)
   const p1y = useTransform([a, h1y] as const, ([v, hv]: number[]) => REST_Y + 80 * v + hv)
   const p1r = useTransform([a, h1r] as const, ([v, hv]: number[]) => -8 * v + hv)
   // ── Phone 2 (back / right): slides in from lower-right, slightly extra CW.
-  const p2x = useTransform([a, h2x] as const, ([v, hv]: number[]) => 90 * v + hv + phoneDX)
+  const p2x = useTransform([a, h2x] as const, ([v, hv]: number[]) => 90 * v + hv)
   const p2y = useTransform([a, h2y] as const, ([v, hv]: number[]) => REST_Y + 80 * v + hv)
   const p2r = useTransform([a, h2r] as const, ([v, hv]: number[]) => 8 * v + hv)
 
   // ── Shadows. Horizontal: track the device (same sign, + hover delta). Rotation:
   // opposite. Vertical/elevation: as a→1 push DOWN + lighter + blurrier; settle at
   // rest. The hover deltas are added so the shadows move WITH the phones.
-  const s1x = useTransform([a, h1x] as const, ([v, hv]: number[]) => -90 * v + hv + phoneDX)
+  const s1x = useTransform([a, h1x] as const, ([v, hv]: number[]) => -90 * v + hv)
   const s1y = useTransform([a, h1y] as const, ([v, hv]: number[]) => REST_Y + 80 * v + 34 * v + hv)
   const s1r = useTransform(a, (v) => 8 * v)
   const s1op = useTransform(a, (v) => 0.3 * (1 - 0.6 * v))
   const s1blur = useTransform(a, (v) => `blur(${12 * v}px)`)
-  const s2x = useTransform([a, h2x] as const, ([v, hv]: number[]) => 90 * v + hv + phoneDX)
+  const s2x = useTransform([a, h2x] as const, ([v, hv]: number[]) => 90 * v + hv)
   const s2y = useTransform([a, h2y] as const, ([v, hv]: number[]) => REST_Y + 80 * v + 34 * v + hv)
   const s2r = useTransform(a, (v) => -8 * v)
   const s2op = useTransform(a, (v) => 0.3 * (1 - 0.6 * v))
