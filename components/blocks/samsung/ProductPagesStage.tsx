@@ -85,7 +85,7 @@ export function ProductPagesStage() {
             fully on-screen. Bounded height at sub-lg so the absolutely-
             positioned fan has room and can't cover the copy. */}
         <div
-          className="relative order-2 h-[330px] sm:h-[380px] lg:order-1 lg:h-full"
+          className="relative order-2 h-[clamp(330px,56vw,560px)] lg:order-1 lg:h-full"
           style={{ perspective: '2200px', perspectiveOrigin: '50% 50%' }}
         >
           {/* Pages rendered Note→Tab→Gear left-to-right so the GEAR page lands
@@ -95,17 +95,20 @@ export function ProductPagesStage() {
               be right-anchored and shoved off-screen, showing only one page.
               lg+ restores the right-anchored desktop fan (right-[2%]). */}
           <div
-            className="absolute left-1/2 right-auto top-1/2 flex items-center gap-2.5 [--pp-ry:-20deg] [--pp-tx:calc(-50%_-_12px)] [--pp-w:clamp(88px,24vw,150px)] sm:gap-4 lg:left-auto lg:right-[2%] lg:gap-7 lg:[--pp-ry:-32deg] lg:[--pp-tx:0px] lg:[--pp-w:clamp(300px,32vw,520px)]"
+            className="absolute left-1/2 right-auto top-1/2 flex items-center gap-[clamp(8px,3vw,28px)] [--pp-ry:-20deg] [--pp-rz:3deg] [--pp-tx:calc(-50%_-_2vw)] [--pp-w:clamp(96px,30vw,300px)] lg:left-auto lg:right-[2%] lg:gap-7 lg:[--pp-ry:-32deg] lg:[--pp-rz:8deg] lg:[--pp-tx:0px] lg:[--pp-w:clamp(300px,32vw,520px)]"
             style={{
-              // Sub-lg the fan is CENTERED (not right-anchored) and sized to fit so
-              // all three pages stay on-screen (fix, 2026-06-25 — previously the
-              // fan was shoved off the left edge and only one page showed).
-              //  - --pp-tx centers the row: translateX(-50%) minus a 12px nudge to
-              //    offset the perspective bulge of the nearest (right-most) page.
-              //  - --pp-ry softens the Y-rotation (-20deg) so the recede reads in a
-              //    narrow band. lg+ restores the right-anchored, -32deg desktop fan.
+              // Sub-lg the fan is CENTERED (not right-anchored) and scales with the
+              // viewport so all three pages stay on-screen — ~2x the pages at tablet
+              // width, shrinking to fit down to 320px phones (fix 2026-06-25).
+              //  - --pp-w / gap grow with vw so size AND spread scale together.
+              //  - --pp-tx centers the row: translateX(-50%) minus a 2vw nudge that
+              //    grows with page size to offset the nearest (right-most) page's
+              //    perspective bulge.
+              //  - --pp-ry/--pp-rz soften the rotation (-20deg / 3deg) so the bigger
+              //    fan still fits the band. lg+ restores the right-anchored desktop
+              //    fan (right-[2%], -32deg / 8deg).
               transform:
-                'translateY(-50%) translateX(var(--pp-tx, 0px)) rotateX(10deg) rotateY(var(--pp-ry, -32deg)) rotateZ(8deg)',
+                'translateY(-50%) translateX(var(--pp-tx, 0px)) rotateX(10deg) rotateY(var(--pp-ry, -32deg)) rotateZ(var(--pp-rz, 8deg))',
               transformStyle: 'preserve-3d',
             }}
           >
