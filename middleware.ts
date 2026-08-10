@@ -22,6 +22,36 @@ import { brandFromHostname, asBrand, type Brand } from '@/lib/brand'
 export function middleware(request: NextRequest) {
   const { pathname, search, searchParams } = request.nextUrl
 
+  // ── Staging lock ────────────────────────────────────────────────────────
+  // On Vercel *preview* deployments (the `staging` branch, served privately at
+  // schaeffer.studio) require HTTP Basic auth so work-in-progress is never
+  // publicly visible. Production (schaeffer.design) has VERCEL_ENV set to
+  // 'production', so this block never runs there. Password comes from the
+  // STAGING_PASSWORD env var (preview scope); the fallback only exists so the
+  // lock is closed even before that var is configured.
+  if (process.env.VERCEL_ENV === 'preview') {
+    const expected = process.env.STAGING_PASSWORD || 'unfold2026'
+    const auth = request.headers.get('authorization') || ''
+    let ok = false
+    if (auth.startsWith('Basic ')) {
+      try {
+        const decoded = atob(auth.slice(6))
+        ok = decoded.slice(decoded.indexOf(':') + 1) === expected
+      } catch {
+        ok = false
+      }
+    }
+    if (!ok) {
+      return new NextResponse('Staging — authentication required', {
+        status: 401,
+        headers: {
+          'WWW-Authenticate': 'Basic realm="Schaeffer Staging"',
+          'X-Robots-Tag': 'noindex, nofollow',
+        },
+      })
+    }
+  }
+
   // Never touch the Payload admin/API, Next internals, the revalidate route,
   // or any static file (anything with a file extension, e.g. /baserate/...png).
   // (Belt-and-suspenders alongside `config.matcher` below.)
@@ -57,7 +87,13 @@ export function middleware(request: NextRequest) {
     url.searchParams.delete('brand')
   }
 
-  return NextResponse.rewrite(url)
+  const res = NextResponse.rewrite(url)
+  // Belt-and-suspenders: keep staging pages out of search engines. Production
+  // deployments never have VERCEL_ENV === 'preview', so this is a no-op there.
+  if (process.env.VERCEL_ENV === 'preview') {
+    res.headers.set('X-Robots-Tag', 'noindex, nofollow')
+  }
+  return res
 }
 
 export const config = {

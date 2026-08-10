@@ -28,6 +28,21 @@ async function withDbRetry<T>(fn: () => Promise<T>, attempts = 3): Promise<T> {
   throw lastErr
 }
 
+/**
+ * Staging draft mode. On Vercel *preview* deployments (the `staging` branch,
+ * served privately at schaeffer.studio) draft pages/case studies render so
+ * work-in-progress can be reviewed on the real site before publishing.
+ * Production only ever serves `status: published` — VERCEL_ENV there is
+ * 'production', so this stays false and the query is unchanged.
+ */
+const SHOW_DRAFTS = process.env.VERCEL_ENV === 'preview'
+
+/** Status filter: published-only in production; drafts included on staging. */
+const statusClause = () =>
+  SHOW_DRAFTS
+    ? { status: { in: ['draft', 'published'] } }
+    : { status: { equals: 'published' } }
+
 /** Fetch a page by slug, filtered to a specific brand. */
 export async function getPageBySlug(slug: string, brand: Brand) {
   const payload = await getPayloadClient()
@@ -37,7 +52,7 @@ export async function getPageBySlug(slug: string, brand: Brand) {
       and: [
         { slug: { equals: slug } },
         { brand: { contains: brand } },
-        { status: { equals: 'published' } },
+        statusClause(),
       ],
     },
     limit: 1,
@@ -55,7 +70,7 @@ export async function getCaseStudyBySlug(slug: string, brand: Brand) {
       and: [
         { slug: { equals: slug } },
         { brand: { contains: brand } },
-        { status: { equals: 'published' } },
+        statusClause(),
       ],
     },
     limit: 1,
@@ -72,7 +87,7 @@ export async function getAllCaseStudies(brand: Brand) {
     where: {
       and: [
         { brand: { contains: brand } },
-        { status: { equals: 'published' } },
+        statusClause(),
       ],
     },
     sort: '-publishedAt',
@@ -114,7 +129,7 @@ export async function getAllPageSlugsForBrand(brand: Brand): Promise<string[]> {
     where: {
       and: [
         { brand: { contains: brand } },
-        { status: { equals: 'published' } },
+        statusClause(),
       ],
     },
     limit: 200,
@@ -132,7 +147,7 @@ export async function getAllCaseStudySlugsForBrand(brand: Brand): Promise<string
     where: {
       and: [
         { brand: { contains: brand } },
-        { status: { equals: 'published' } },
+        statusClause(),
       ],
     },
     limit: 200,

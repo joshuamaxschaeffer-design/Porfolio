@@ -25,6 +25,14 @@ export function asBrand(value: string | undefined | null): Brand {
  */
 export function brandFromHostname(hostname: string): Brand {
   const cleanHost = hostname.toLowerCase().replace(/^www\./, '')
+  // Staging mirror: on Vercel *preview* deployments (the `staging` branch),
+  // schaeffer.studio serves the PERSONAL portfolio as a private work-in-progress
+  // copy of schaeffer.design. In production it keeps serving the practice site.
+  // Fail-safe polarity: anything other than an explicit 'preview' env keeps
+  // today's mapping.
+  if (process.env.VERCEL_ENV === 'preview' && cleanHost === 'schaeffer.studio') {
+    return 'personal'
+  }
   if (BRAND_DOMAINS.practice.includes(cleanHost)) return 'practice'
   return 'personal'
 }
