@@ -48,6 +48,8 @@ export const overview = {
   ],
   heroVideo: '/unfold/onboarding/dunes.mp4',
   mark: '/unfold/brand/unfold-mark.png',
+  /** Flip to "live on the App Store" the day Joshua clicks Release. */
+  metaLine: 'Apr – Aug 2026 · iOS · launching August 2026',
 }
 
 export const facts = {
@@ -245,7 +247,7 @@ export const shipping = {
     { date: 'Aug 4, 8 AM', event: 'Rejected — 2.1(b). The review build was a preview-environment binary. Root-caused by noon.' },
     { date: 'Aug 4, PM', event: 'Resubmitted: production profile, kill-switch, fixes. Freeze rules in force from here.' },
     { date: 'Aug 8', event: 'Expedited review requested and granted. Back in the queue with priority.' },
-    { date: 'Aug 2026', event: 'v1.0.1 approved for launch — manual release, runbook staged, content payload ready to load.' },
+    { date: 'Aug 2026', event: 'Launch: manual release — runbook staged, canary verified, study library ready for the production load.' },
   ],
   note:
     'Release discipline was part of the design: freeze rules while review was active, a canary phone serving the exact launch line, and an approval-day runbook so going live is a checklist, not a scramble.',
@@ -262,7 +264,7 @@ export const shipping = {
 }
 
 export const outcomes = {
-  intro: 'Launched August 2026. This section grows as the store numbers do.',
+  intro: 'Launching August 2026. This section grows as the store numbers do.',
   atLaunch: [
     { value: 'Every screen', label: 'of the app designed & built by one person + an agent fleet' },
     { value: '14k-entry', label: 'study library no competitor at this scale has' },

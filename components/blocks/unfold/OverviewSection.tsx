@@ -60,7 +60,7 @@ export function OverviewSection(props: OverviewProps) {
           Unfold
         </p>
 
-        <p className="br-data mt-3 text-sm text-[var(--br-muted)]">{dateRange} · iOS · launched on the App Store</p>
+        <p className="br-data mt-3 text-sm text-[var(--br-muted)]">{defaults.metaLine}</p>
 
         <h2 className="mt-10 text-[32px] font-medium uppercase leading-none text-[var(--br-ink)] md:text-[40px]">
           1. Overview
