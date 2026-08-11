@@ -1,5 +1,4 @@
 import { business } from './data'
-import { PhoneFrame } from './PhoneFrame'
 import { VisualPlaceholder } from './VisualPlaceholder'
 
 const LIGHT_VARS = {
@@ -32,15 +31,9 @@ export function BusinessSection() {
             ))}
           </ul>
 
-          <VisualPlaceholder label={business.roundsPlaceholder} aspect="16 / 7" className="mt-7 max-w-[30rem]" />
         </div>
 
-        <figure className="mx-auto w-full max-w-[280px] md:max-w-[320px]">
-          <PhoneFrame src={business.screenshot} alt={business.screenshotAlt} />
-          <figcaption className="mt-3 text-center text-[13px] leading-snug text-[var(--br-muted)]">
-            {business.caption}
-          </figcaption>
-        </figure>
+        <VisualPlaceholder label={business.roundsPlaceholder} aspect="4 / 5" className="mx-auto w-full max-w-[360px]" />
       </div>
     </section>
   )

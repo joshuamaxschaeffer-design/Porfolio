@@ -22,17 +22,18 @@ export function ProductSection() {
         </h2>
         <p className="mt-3 text-lg text-[var(--br-muted)]">{product.intro}</p>
 
-        <div className="mt-10 grid gap-x-5 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Masonry columns: mixed aspect ratios flow without grid gaps. */}
+        <div className="mt-10 columns-1 gap-5 sm:columns-2 lg:columns-3">
           {product.cells.map((cell) =>
             cell.type === 'placeholder' ? (
               <VisualPlaceholder
                 key={cell.label}
                 label={cell.label}
                 aspect={cell.aspect}
-                className={cell.wide ? 'sm:col-span-2' : ''}
+                className="mb-8 break-inside-avoid"
               />
             ) : (
-              <figure key={cell.src} className={cell.wide ? 'sm:col-span-2' : ''}>
+              <figure key={cell.src} className="mb-8 break-inside-avoid">
                 <div className="overflow-hidden rounded-[20px] shadow-[0_14px_38px_rgba(28,26,23,0.22)]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={cell.src} alt={cell.alt} className="block h-auto w-full" />

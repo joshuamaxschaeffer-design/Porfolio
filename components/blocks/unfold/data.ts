@@ -148,16 +148,13 @@ export const business = {
   intro:
     'Ten products, every one on a 14-day free trial, stated plainly. Email capture sits after the purchase decision, not in front of it. No dark patterns.',
   tiers: ['Individual', 'Two-person', 'Household', 'Lifetime'],
-  screenshot: '/unfold/onboarding/neil-paywall.webp',
-  screenshotAlt: 'The paywall',
-  caption: 'The paywall went through three built rounds of design and copy.',
-  roundsPlaceholder: 'The three paywall rounds, side by side',
+  roundsPlaceholder: 'The paywall: final screen, plus the three built rounds side by side',
 }
 
 export const credits = {
   heading: 'Credits and what’s next',
   roles: [
-    { who: 'I', did: 'designed and built the app. UX, UI, front end, back end, the content system, and the store submission.' },
+    { who: 'Joshua', did: 'designed and built the app. UX, UI, front end, back end, the content system, and the store submission.' },
     { who: 'KC', did: 'built the original app, the logo, and the website.' },
     { who: 'Neil Broere', did: 'owns Unfold. The vision and the voice are his.' },
   ],
