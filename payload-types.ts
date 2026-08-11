@@ -517,6 +517,15 @@ export interface Page {
             blockType: 'samsungCaseStudy';
           }
         | {
+            /**
+             * Optional override for the hero one-liner.
+             */
+            lead?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'unfoldCaseStudy';
+          }
+        | {
             eyebrow?: string | null;
             /**
              * Page title. Line breaks are preserved.
@@ -1089,6 +1098,15 @@ export interface CaseStudy {
             id?: string | null;
             blockName?: string | null;
             blockType: 'samsungCaseStudy';
+          }
+        | {
+            /**
+             * Optional override for the hero one-liner.
+             */
+            lead?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'unfoldCaseStudy';
           }
         | {
             eyebrow?: string | null;
@@ -1803,6 +1821,13 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        unfoldCaseStudy?:
+          | T
+          | {
+              lead?: T;
+              id?: T;
+              blockName?: T;
+            };
         capabilitiesPage?:
           | T
           | {
@@ -2183,6 +2208,13 @@ export interface CaseStudiesSelect<T extends boolean = true> {
               briefIntro?: T;
               workIntro?: T;
               outcomesIntro?: T;
+              id?: T;
+              blockName?: T;
+            };
+        unfoldCaseStudy?:
+          | T
+          | {
+              lead?: T;
               id?: T;
               blockName?: T;
             };
