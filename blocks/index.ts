@@ -17,6 +17,7 @@ import { BaserateCaseStudy } from './BaserateCaseStudy'
 import { PandaCaseStudy } from './PandaCaseStudy'
 import { WingstopCaseStudy } from './WingstopCaseStudy'
 import { SamsungCaseStudy } from './SamsungCaseStudy'
+import { UnfoldCaseStudy } from './UnfoldCaseStudy'
 import { CapabilitiesPage } from './CapabilitiesPage'
 import { HomeFlagshipBaserate, HomeFlagshipPanda } from './HomeFlagship'
 import { HomeSecondaryRow } from './HomeSecondaryRow'
@@ -43,6 +44,7 @@ export const allBlocks = [
   PandaCaseStudy,
   WingstopCaseStudy,
   SamsungCaseStudy,
+  UnfoldCaseStudy,
   CapabilitiesPage,
   HomeHero,
   HomeFlagshipBaserate,
@@ -71,6 +73,7 @@ export {
   PandaCaseStudy,
   WingstopCaseStudy,
   SamsungCaseStudy,
+  UnfoldCaseStudy,
   CapabilitiesPage,
   HomeHero,
   HomeFlagshipBaserate,

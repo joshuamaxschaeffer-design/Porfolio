@@ -16,6 +16,7 @@ import { MarqueeLogosBlockRenderer } from './blocks/MarqueeLogosBlockRenderer'
 import { BaserateCaseStudyBlock } from './blocks/BaserateCaseStudyBlock'
 import { PandaCaseStudyBlock } from './blocks/PandaCaseStudyBlock'
 import { WingstopCaseStudyBlock } from './blocks/WingstopCaseStudyBlock'
+import { UnfoldCaseStudyBlock } from './blocks/UnfoldCaseStudyBlock'
 import { SamsungCaseStudyBlock } from './blocks/SamsungCaseStudyBlock'
 import { CapabilitiesPageBlock } from './blocks/CapabilitiesPageBlock'
 import { HomeFlagshipBaserateBlock } from './blocks/HomeFlagshipBaserateBlock'
@@ -44,6 +45,7 @@ const blockComponents: Record<string, React.ComponentType<any>> = {
   baserateCaseStudy: BaserateCaseStudyBlock,
   pandaCaseStudy: PandaCaseStudyBlock,
   wingstopCaseStudy: WingstopCaseStudyBlock,
+  unfoldCaseStudy: UnfoldCaseStudyBlock,
   samsungCaseStudy: SamsungCaseStudyBlock,
   capabilitiesPage: CapabilitiesPageBlock,
   homeHero: HomeHeroBlock,
