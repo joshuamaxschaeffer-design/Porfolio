@@ -1,12 +1,9 @@
 /**
- * Seed ONLY the Unfold case study doc — as a DRAFT.
+ * Seed ONLY the Unfold case study doc, as a DRAFT.
  * Run with: pnpm payload run scripts/seed-unfold.ts
  *
- * Narrow on purpose — re-running can never touch other docs.
+ * Narrow on purpose; re-running can never touch other docs.
  * Idempotent: matched by slug+brand, updates in place.
- *
- * status stays 'draft' until launch review: drafts render on the staging
- * preview (schaeffer.studio) only; production never serves them.
  */
 import { getPayload } from 'payload'
 import config from '@payload-config'
@@ -25,10 +22,10 @@ const run = async () => {
     status: 'draft',
     featured: true,
     client: 'Unfold · Neil Broere',
-    role: 'Product Designer & Builder — UX, UI, Brand, Content Systems, Front + Back End, Launch',
+    role: 'Product Designer & Builder',
     dates: { start: 'Apr 2026', end: 'Aug 2026' },
     oneLineOutcome:
-      'A Bible reading app rebuilt end to end by one designer directing an AI agent fleet — every screen, the brand, a 14,000-entry study library, and the App Store launch itself.',
+      'A Bible reading app redesigned and shipped end to end by one designer directing a fleet of AI agents: every screen, a 14,000-entry study library, and the App Store launch.',
     blocks: [{ blockType: 'unfoldCaseStudy' }],
     publishedAt: new Date('2026-08-10').toISOString(),
   }
@@ -42,7 +39,7 @@ const run = async () => {
     console.log(`  created unfold (case-studies#${doc.id})`)
   }
 
-  console.log('Done. Draft — visible on staging only. Visit /work/unfold behind the staging lock.')
+  console.log('Done. Draft, staging only. Visit /work/unfold behind the staging lock.')
   process.exit(0)
 }
 

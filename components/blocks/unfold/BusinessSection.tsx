@@ -1,54 +1,46 @@
 import { business } from './data'
 import { PhoneFrame } from './PhoneFrame'
+import { VisualPlaceholder } from './VisualPlaceholder'
 
-/**
- * Section 8 — the business layer: paywall, pricing architecture, growth
- * mechanics. Tier cards + the paywall screen.
- */
+const LIGHT_VARS = {
+  '--br-ink': '#3a342e',
+  '--br-body': '#4c453d',
+  '--br-muted': '#73685c',
+  '--br-muted-2': '#8a7f71',
+  '--br-line': 'rgba(58,52,46,0.14)',
+} as React.CSSProperties
+
+/** 6 · The business layer. Three sentences, four chips, two visuals. */
 export function BusinessSection() {
   return (
-    <section
-      id="business"
-      className="bg-white"
-      style={
-        {
-          '--br-ink': '#3a342e',
-          '--br-body': '#4c453d',
-          '--br-muted': '#73685c',
-          '--br-muted-2': '#8a7f71',
-          '--br-line': 'rgba(58,52,46,0.14)',
-        } as React.CSSProperties
-      }
-    >
-      <div className="br-container grid items-center gap-12 py-16 md:grid-cols-[1.15fr_0.85fr] md:py-24">
+    <section id="business" className="bg-white" style={LIGHT_VARS}>
+      <div className="br-container grid items-center gap-12 py-16 md:grid-cols-[1.1fr_0.9fr] md:py-24">
         <div>
-          <h2 className="text-[32px] font-medium uppercase leading-none text-[var(--br-ink)] md:text-[40px]">
-            8. The Business Layer
+          <h2 className="text-[28px] font-medium uppercase leading-none text-[var(--br-ink)] md:text-[34px]">
+            {business.heading}
           </h2>
-          <p className="mt-3 max-w-[34rem] text-lg text-[var(--br-body)] md:text-[20px]">{business.intro}</p>
+          <p className="mt-4 max-w-[30rem] text-[17px] leading-relaxed text-[var(--br-body)]">{business.intro}</p>
 
-          <ul className="mt-8 grid max-w-[34rem] grid-cols-2 gap-3">
+          <ul className="mt-6 flex flex-wrap gap-2">
             {business.tiers.map((t) => (
-              <li key={t.name} className="rounded-xl border border-[var(--br-line)] bg-[#fffaf0] px-4 py-3">
-                <p className="text-[15px] font-medium text-[var(--br-ink)]">{t.name}</p>
-                <p className="br-data mt-0.5 text-[12px] uppercase tracking-wide text-[var(--br-muted)]">{t.note}</p>
+              <li
+                key={t}
+                className="br-data rounded-full border border-[var(--br-line)] bg-[#fffaf0] px-4 py-1.5 text-[13px] uppercase tracking-wide text-[var(--br-muted)]"
+              >
+                {t}
               </li>
             ))}
           </ul>
-          <p className="br-data mt-4 inline-block rounded-full border border-[var(--uf-green)] px-4 py-1.5 text-[13px] uppercase tracking-wide text-[var(--uf-green)]">
-            14-day free trial on every subscription
-          </p>
 
-          {business.body.map((p) => (
-            <p key={p.slice(0, 24)} className="mt-5 max-w-[34rem] text-[15px] leading-relaxed text-[var(--br-muted)]">
-              {p}
-            </p>
-          ))}
+          <VisualPlaceholder label={business.roundsPlaceholder} aspect="16 / 7" className="mt-7 max-w-[30rem]" />
         </div>
-        <div className="mx-auto w-full max-w-[300px] md:max-w-[340px]">
+
+        <figure className="mx-auto w-full max-w-[280px] md:max-w-[320px]">
           <PhoneFrame src={business.screenshot} alt={business.screenshotAlt} />
-          <p className="mt-3 text-center text-[13px] text-[var(--br-muted)]">{business.screenshotAlt}</p>
-        </div>
+          <figcaption className="mt-3 text-center text-[13px] leading-snug text-[var(--br-muted)]">
+            {business.caption}
+          </figcaption>
+        </figure>
       </div>
     </section>
   )

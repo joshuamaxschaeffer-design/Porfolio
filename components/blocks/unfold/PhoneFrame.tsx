@@ -1,15 +1,13 @@
 /**
  * Minimal device frame for the store screenshots. The ASC 6.5" set already
- * includes a rendered phone on scenic backgrounds, so this is a soft card —
+ * includes a rendered phone on scenic backgrounds, so this is a soft card:
  * rounded, shadowed, no second bezel.
  */
 export function PhoneFrame({ src, alt, className = '' }: { src: string; alt: string; className?: string }) {
   return (
     <div className={`overflow-hidden rounded-[24px] shadow-[0_18px_48px_rgba(28,26,23,0.28)] ${className}`}>
-      {/* Eager on purpose: these are small webps and lazy-loading them makes
-          the column collapse until scroll — visible jank on a portfolio page. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={src} alt={alt} className="block h-auto w-full" />
+      <img src={src} alt={alt} loading="lazy" className="block h-auto w-full" />
     </div>
   )
 }

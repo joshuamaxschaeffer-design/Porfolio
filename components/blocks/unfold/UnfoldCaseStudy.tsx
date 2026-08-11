@@ -1,50 +1,31 @@
-import { OverviewSection } from './OverviewSection'
-import { FastFactsSection } from './FastFactsSection'
-import { ContextSection } from './ContextSection'
-import { OperatingModelSection } from './OperatingModelSection'
-import { RebrandSection } from './RebrandSection'
-import { ReaderSection } from './ReaderSection'
-import { OnboardingSection } from './OnboardingSection'
+import { HeroSection } from './HeroSection'
+import { NumbersSection } from './NumbersSection'
+import { ProductSection } from './ProductSection'
+import { LibrarySection } from './LibrarySection'
+import { ShippedSection } from './ShippedSection'
 import { BusinessSection } from './BusinessSection'
-import { DeepDiveSection } from './DeepDiveSection'
-import { BeyondSection } from './BeyondSection'
-import { ShippingSection } from './ShippingSection'
-import { OutcomesSection } from './OutcomesSection'
+import { CreditsSection } from './CreditsSection'
 import { SectionNav, type SectionNavItem } from '../baserate/SectionNav'
 
 /**
- * Unfold case study — the end-to-end "designed, built, and shipped it" story.
- * Section order mirrors the structure doc (Dropbox: "Unfold Case Study —
- * Structure (2026-08-10).md"):
- *   Overview · Facts · Context · Operating Model · Rebrand · Reader ·
- *   Onboarding · Business · Deep Dive · Beyond · Shipping · Outcomes.
- *
- * Brand: flat green #349c72 on cream #fff6e8; warm charcoal darks. The site's
- * br-* typography system carries through; --uf-green is the accent var.
+ * Unfold case study, v2. Seven beats, visual first, ~600 words of copy total.
+ * Rebuilt per positioning research 2026-08-10: reviewers scan in seconds, so
+ * captions carry the story and every claim is specific and attributable.
+ * Green dashed blocks are VisualPlaceholder markers for art Joshua will make.
  */
 
 const NAV_ITEMS: SectionNavItem[] = [
   { id: 'overview', title: 'Overview' },
-  { id: 'facts', title: 'In Numbers' },
-  { id: 'context', title: 'Context' },
-  { id: 'model', title: 'Operating Model' },
-  { id: 'rebrand', title: 'Rebrand' },
-  { id: 'reader', title: 'The Reader' },
-  { id: 'onboarding', title: 'Onboarding' },
+  { id: 'numbers', title: 'In Numbers' },
+  { id: 'product', title: 'The Product' },
+  { id: 'library', title: 'Study Library' },
+  { id: 'shipped', title: 'How It Shipped' },
   { id: 'business', title: 'Business Layer' },
-  { id: 'deepdive', title: 'Deep Dive' },
-  { id: 'beyond', title: 'Beyond the Core' },
-  { id: 'shipping', title: 'Shipping It' },
-  { id: 'outcomes', title: 'Outcomes' },
+  { id: 'credits', title: 'Credits + Next' },
 ]
 
 export interface UnfoldCaseStudyProps {
-  dateRange?: string
   lead?: string
-  role?: string
-  scope?: { label: string }[]
-  contextIntro?: string
-  outcomesIntro?: string
 }
 
 export function UnfoldCaseStudy(props: UnfoldCaseStudyProps = {}) {
@@ -54,23 +35,13 @@ export function UnfoldCaseStudy(props: UnfoldCaseStudyProps = {}) {
       style={{ '--uf-green': '#349c72', '--uf-cream': '#fff6e8', '--uf-charcoal': '#1c1a17' } as React.CSSProperties}
     >
       <SectionNav items={NAV_ITEMS} />
-      <OverviewSection
-        dateRange={props.dateRange}
-        lead={props.lead}
-        role={props.role}
-        scope={props.scope?.length ? props.scope.map((s) => s.label) : undefined}
-      />
-      <FastFactsSection />
-      <ContextSection intro={props.contextIntro} />
-      <OperatingModelSection />
-      <RebrandSection />
-      <ReaderSection />
-      <OnboardingSection />
+      <HeroSection lead={props.lead} />
+      <NumbersSection />
+      <ProductSection />
+      <LibrarySection />
+      <ShippedSection />
       <BusinessSection />
-      <DeepDiveSection />
-      <BeyondSection />
-      <ShippingSection />
-      <OutcomesSection intro={props.outcomesIntro} />
+      <CreditsSection />
     </article>
   )
 }
